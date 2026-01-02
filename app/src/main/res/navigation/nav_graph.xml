@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/splashFragment">
+    <!--  SplashFragment  -->
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="fr.cyneila.bedbug.application.screens.splash.SplashFragment"
+        android:label="Splash">
+        <action
+            android:id="@+id/action_splash_to_home"
+            app:destination="@id/homeFragment" />
+    </fragment>
+
+    <!--  HomeFragment  -->
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="fr.cyneila.bedbug.application.screens.home.HomeFragment"
+        android:label="Home">
+        <!-- Just for example -->
+        <!--        <action-->
+        <!--            android:id="@+id/action_home_to_home"-->
+        <!--            app:destination="@id/homeFragment" />-->
+        <!--        <argument-->
+        <!--            android:name="itemId"-->
+        <!--            app:argType="integer" />-->
+    </fragment>
+</navigation>

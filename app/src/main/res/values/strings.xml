@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">BedBug</string>
+    <!--  Main  -->
+    <string name="app_title">BedBug臭蟲</string>
+    <string name="retry">Réessayer</string>
+    <string name="quit">Quitter</string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+    <string name="ok">Ok</string>
+    <!--  SplashScreen  -->
+    <string name="splash_dialog_title">Permissions requises</string>
+    <string name="splash_dialog_message">Cette application a besoin des permissions Bluetooth pour fonctionner.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!--  HomeScreen  -->
+</resources>

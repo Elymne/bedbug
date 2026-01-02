@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_home"
+        android:icon="@drawable/bug_path_icon"
+        android:title="BLE" />
+
+    <item
+        android:id="@+id/menu_content"
+        android:title="Content"/>
+
+    <item
+        android:id="@+id/menu_search"
+        android:title="Create"/>
+
+    <item
+        android:id="@+id/menu_profile"
+        android:title="Profile"/>
+</menu>
