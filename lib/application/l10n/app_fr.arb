@@ -1,0 +1,7 @@
+{
+  "@@locale": "fr",
+  "title": "BedBug",
+  "@title": {
+    "description": "Titre de l'application"
+  }
+}

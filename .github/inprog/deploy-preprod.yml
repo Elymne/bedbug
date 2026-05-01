@@ -1,0 +1,45 @@
+# TODO : Déploiement sur les stores Google uniquement pour de la beta testing. Ou sur des stores randoms pour android.
+# A voir.
+
+name: Deploy Flutter Web to Firebase Preprod
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    if: |
+      startsWith(github.event.head_commit.message, 'feat:') ||
+      startsWith(github.event.head_commit.message, 'fix:') ||
+      startsWith(github.event.head_commit.message, 'perf:') ||
+      startsWith(github.event.head_commit.message, 'revert:') ||
+      startsWith(github.event.head_commit.message, 'style:')
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.41.7"
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build web
+        run: |
+          flutter build web --release --dart-define=ENV=preproduction
+
+      - name: Create Firebase credentials file
+        run: echo '${{ secrets.FIREBASE_CREDENTIALS_PREPROD }}' > firebase-preprod.json
+
+      - name: Set GOOGLE_APPLICATION_CREDENTIALS
+        run: echo "GOOGLE_APPLICATION_CREDENTIALS=$PWD/firebase-preprod.json" >> $GITHUB_ENV
+
+      - name: Deploy to Firebase (Preprod)
+        run: npx firebase-tools@15.11.0 deploy --only hosting:preprod --project dslc-tools

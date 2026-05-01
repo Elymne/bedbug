@@ -1,0 +1,54 @@
+name: bedbug
+description: "Android App for BLE/WIFI communication"
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # State management + DI.
+  flutter_riverpod: ^3.2.1
+
+  # Routing.
+  go_router: ^17.1.0
+
+  # Dépendances Firebase.
+  firebase_core: ^4.5.0
+  firebase_auth: ^6.2.0
+  cloud_firestore: ^6.1.3
+
+  # Http requests.
+  dio: ^5.9.2
+
+  # Gestion des formulaires.
+  reactive_forms: ^18.2.2
+
+  # Persistance locale des préférences utilisateur.
+  shared_preferences: ^2.3.0
+
+  # Gestion des langues et du texte.
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^6.0.0
+
+flutter:
+  generate: true
+  uses-material-design: true
+  assets:
+    - assets/config/
