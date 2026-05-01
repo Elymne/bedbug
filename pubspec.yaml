@@ -1,0 +1,97 @@
+name: bedbug
+description: "Android App for BLE/WIFI communication"
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # State management + DI.
+  flutter_riverpod: ^3.2.1
+
+  # Routing.
+  go_router: ^17.1.0
+
+  # Http requests.
+  dio: ^5.9.2
+
+  # Gestion des formulaires.
+  reactive_forms: ^18.2.2
+
+  # Persistance
+  shared_preferences: ^2.3.0 # TODO: Virer ce truc, j'vaias pas en avoir besoin.
+  hive_ce: ^2.19.3
+  hive_ce_flutter: ^2.3.4
+
+  # Gestion des langues et du texte.
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+flutter:
+  generate: true
+  uses-material-design: true
+  assets:
+    - assets/config/
+
+  fonts:
+    - family: DynaPuff
+      fonts:
+        - asset: assets/fonts/DynaPuff_Condensed/DynaPuff-Regular.ttf
+        - asset: assets/fonts/DynaPuff_Condensed/DynaPuff-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/DynaPuff_Condensed/DynaPuff-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/DynaPuff_Condensed/DynaPuff-Bold.ttf
+          weight: 700
+
+    - family: DynaPuffCondensed
+      fonts:
+        - asset: >-
+            assets/fonts/DynaPuff_Condensed/DynaPuff_Condensed-Regular.ttf
+        - asset: >-
+            assets/fonts/DynaPuff_Condensed/DynaPuff_Condensed-Medium.ttf
+          weight: 500
+        - asset: >-
+            assets/fonts/DynaPuff_Condensed/DynaPuff_Condensed-SemiBold.ttf
+          weight: 600
+        - asset: >-
+            assets/fonts/DynaPuff_Condensed/DynaPuff_Condensed-Bold.ttf
+          weight: 700
+
+    - family: DynaPuffSemiCondensed
+      fonts:
+        - asset: >-
+            assets/fonts/DynaPuff_Condensed/DynaPuff_SemiCondensed-Regular.ttf
+        - asset: >-
+            assets/fonts/DynaPuff_Condensed/DynaPuff_SemiCondensed-Medium.ttf
+          weight: 500
+        - asset: >-
+            assets/fonts/DynaPuff_Condensed/DynaPuff_SemiCondensed-SemiBold.ttf
+          weight: 600
+        - asset: >-
+            assets/fonts/DynaPuff_Condensed/DynaPuff_SemiCondensed-Bold.ttf
+          weight: 700
+
+    - family: Quicksand
+      fonts:
+        - asset: assets/fonts/Quicksand/Quicksand-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Quicksand/Quicksand-Regular.ttf
+        - asset: assets/fonts/Quicksand/Quicksand-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Quicksand/Quicksand-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Quicksand/Quicksand-Bold.ttf
+          weight: 700

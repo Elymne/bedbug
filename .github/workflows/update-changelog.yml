@@ -1,0 +1,64 @@
+name: Update Changelog
+
+on:
+  push:
+    tags: ["[1-9]+.[0-9]+.[0-9]+"]
+
+permissions:
+  contents: write
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get tag name
+        id: tag
+        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Validate semver tag (regex)
+        run: |
+          if [[ ! "${{ steps.tag.outputs.TAG }}" =~ ^[1-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Not a valid semver tag, exiting."
+            exit 0
+          fi
+
+      - name: Generate changelog from commits
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          configuration: ".github/changelog-config.json"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update CHANGELOG.md
+        run: |
+          FILE=CHANGELOG.md
+
+          echo "# Changelog" > tmp.md
+          echo "" >> tmp.md
+          echo "## ${{ steps.tag.outputs.TAG }}" >> tmp.md
+          echo "" >> tmp.md
+          echo "${{ steps.changelog.outputs.changelog }}" >> tmp.md
+
+          if [ -f "$FILE" ]; then
+            tail -n +2 "$FILE" >> tmp.md
+          fi
+
+          mv tmp.md $FILE
+
+      - name: Commit updated changelog
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add CHANGELOG.md
+          git commit -m "chore: update changelog ${{ steps.tag.outputs.TAG }}" || echo "No changes"
+
+      - name: Push changes
+        run: git push origin HEAD:main

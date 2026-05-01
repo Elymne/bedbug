@@ -1,0 +1,24 @@
+{
+    "files.exclude": {
+        "**/.claude": true,
+        "lib/shared/application/l10n/generated/": true,
+        "**/.dart_tool": true,
+        "**/.firebase": true,
+        "**/.idea": true,
+        "**/linux": true,
+        "**/macos": true,
+        "**/windows": true,
+        "**/ios": true,
+        "**/android": true,
+        "**/build": true,
+    },
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "always",
+        "source.fixAll": "always"
+    },
+    "dart.lineLength": 80,
+    "[dart]": {
+        "editor.defaultFormatter": "Dart-Code.dart-code",
+        "editor.formatOnSave": true,
+    },
+}

@@ -1,0 +1,2 @@
+///
+extension DoubleX on double {}
