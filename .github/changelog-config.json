@@ -1,0 +1,21 @@
+{
+  "categories": [
+    {
+      "title": "🚀 Features",
+      "labels": ["feat"]
+    },
+    {
+      "title": "🐛 Fixes",
+      "labels": ["fix"]
+    },
+    {
+      "title": "🧹 Chore",
+      "labels": ["chore"]
+    },
+    {
+      "title": "📦 Other",
+      "labels": []
+    }
+  ],
+  "template": "- {{title}} (#{{number}})"
+}

@@ -1,0 +1,5 @@
+# Protection des workflows CI
+.github/workflows/ @Elymne
+
+# Protection du fichier lui-même
+.github/CODEOWNERS @Elymne
