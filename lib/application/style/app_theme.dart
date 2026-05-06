@@ -8,6 +8,8 @@ class AppTheme {
   /// Thème clair de l'application.
   /// L'application va aussi proposer un thème dark soft (fond grisé) en fonction des paramètres utilisateurs.
   static ThemeData get light => ThemeData(
+    fontFamily: 'Quicksand',
+
     /// * Colors.
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.primary,

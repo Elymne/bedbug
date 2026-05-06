@@ -28,8 +28,10 @@ dependencies:
   # Gestion des formulaires.
   reactive_forms: ^18.2.2
 
-  # Persistance locale des préférences utilisateur.
+  # Persistance
   shared_preferences: ^2.3.0
+  hive_ce: ^2.19.3
+  hive_ce_flutter: ^2.3.4
 
   # Gestion des langues et du texte.
   flutter_localizations:
@@ -40,11 +42,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^6.0.0
 
 flutter:
@@ -52,3 +49,54 @@ flutter:
   uses-material-design: true
   assets:
     - assets/config/
+
+  fonts:
+    - family: DynaPuff
+      fonts:
+        - asset: assets/fonts/DynaPuff_Condensed/DynaPuff-Regular.ttf
+        - asset: assets/fonts/DynaPuff_Condensed/DynaPuff-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/DynaPuff_Condensed/DynaPuff-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/DynaPuff_Condensed/DynaPuff-Bold.ttf
+          weight: 700
+
+    - family: DynaPuffCondensed
+      fonts:
+        - asset: >-
+            assets/fonts/DynaPuff_Condensed/DynaPuff_Condensed-Regular.ttf
+        - asset: >-
+            assets/fonts/DynaPuff_Condensed/DynaPuff_Condensed-Medium.ttf
+          weight: 500
+        - asset: >-
+            assets/fonts/DynaPuff_Condensed/DynaPuff_Condensed-SemiBold.ttf
+          weight: 600
+        - asset: >-
+            assets/fonts/DynaPuff_Condensed/DynaPuff_Condensed-Bold.ttf
+          weight: 700
+
+    - family: DynaPuffSemiCondensed
+      fonts:
+        - asset: >-
+            assets/fonts/DynaPuff_Condensed/DynaPuff_SemiCondensed-Regular.ttf
+        - asset: >-
+            assets/fonts/DynaPuff_Condensed/DynaPuff_SemiCondensed-Medium.ttf
+          weight: 500
+        - asset: >-
+            assets/fonts/DynaPuff_Condensed/DynaPuff_SemiCondensed-SemiBold.ttf
+          weight: 600
+        - asset: >-
+            assets/fonts/DynaPuff_Condensed/DynaPuff_SemiCondensed-Bold.ttf
+          weight: 700
+
+    - family: Quicksand
+      fonts:
+        - asset: assets/fonts/Quicksand/Quicksand-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Quicksand/Quicksand-Regular.ttf
+        - asset: assets/fonts/Quicksand/Quicksand-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Quicksand/Quicksand-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Quicksand/Quicksand-Bold.ttf
+          weight: 700

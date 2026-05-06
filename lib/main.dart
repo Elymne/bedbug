@@ -6,11 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // * Only for web app.
-  if (!kIsWeb) {
-    throw Exception(
-      "This is a web project, can't be launched from a ios or android device",
-    );
+  // * Only for mobile.
+  if (kIsWeb) {
+    // throw Exception(
+    //   "This is a web project, can't be launched from a ios or android device",
+    // );
   }
 
   // * Importe un fichier JSON de config en fonction de l'environnement.

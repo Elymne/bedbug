@@ -2,6 +2,11 @@
 
 Riverpod handles both **state management** and **dependency injection**. Every piece of shared state and every dependency is exposed via a provider.
 
+## Widgets
+
+- Always use `ConsumerStatefulWidget` / `ConsumerState` instead of `StatefulWidget` / `State`. Never use `StatefulWidget` in this project.
+- Always use `ConsumerWidget` instead of `StatelessWidget`. Never use `StatelessWidget` in this project.
+
 ## State management
 
 - Only use a variable for `ref.watch` calls.
