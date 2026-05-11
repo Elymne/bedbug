@@ -1,6 +1,7 @@
 {
     "files.exclude": {
         "**/.claude": true,
+        "**/*.g.dart": true,
         "lib/shared/application/l10n/generated/": true,
         "**/.dart_tool": true,
         "**/.firebase": true,
