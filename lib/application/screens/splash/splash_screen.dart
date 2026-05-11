@@ -1,8 +1,8 @@
 import 'package:bedbug/application/screens/splash/splash_notifier.dart';
+import 'package:bedbug/application/screens/splash/widgets/splash_bedbug.dart';
+import 'package:bedbug/application/screens/splash/widgets/splash_title.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_values.dart';
-import 'package:bedbug/application/widgets/texts/app_title_text.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,8 +21,6 @@ class SplashScreen extends ConsumerStatefulWidget {
 class _State extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
-    final l10n = context.loc;
-
     ref.listen(splashNotifierProvider, (previous, next) {
       if (previous?.isLoading == true && next.hasValue) {}
     });
@@ -32,19 +30,18 @@ class _State extends ConsumerState<SplashScreen> {
       body: Center(
         child: Padding(
           padding: EdgeInsets.all(AppValues.baseMargin),
-          child: Column(
+          child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              AppTitleText(
-                text: l10n.title,
-                style: const TextStyle(
+              SplashBedbug(
+                style: TextStyle(
                   fontFamily: 'DynaPuff',
-                  fontSize: 48,
+                  fontSize: 36,
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 4,
                 ),
               ),
+              SplashTitle(),
             ],
           ),
         ),
