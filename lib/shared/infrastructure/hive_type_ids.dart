@@ -1,4 +1,6 @@
-import 'package:bedbug/features/user/domain/entities/user.dart';
+import 'package:bedbug/features/content/infrastructure/models/comment_hive_model.dart';
+import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
+import 'package:bedbug/features/user/infrastructure/models/user_hive_model.dart';
 
 /// Registre centralisé des typeId Hive utilisés dans l'application.
 ///
@@ -6,7 +8,7 @@ import 'package:bedbug/features/user/domain/entities/user.dart';
 class HiveTypeIds {
   HiveTypeIds._();
 
-  /// TypeId de [User].
+  /// TypeId de [UserHiveModel].
   static const int user = 0;
 
   /// TypeId de [ContentHiveModel].

@@ -1,5 +1,6 @@
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
+import 'package:bedbug/features/content/domain/enums/content_priority.dart';
 import 'package:bedbug/shared/infrastructure/hive_type_ids.dart';
 import 'package:hive_ce/hive.dart';
 
@@ -21,6 +22,7 @@ class ContentHiveModel extends HiveObject {
     required this.updatedAt,
     required this.authorId,
     required this.type,
+    required this.priority,
     this.title,
     this.body,
   });
@@ -34,6 +36,7 @@ class ContentHiveModel extends HiveObject {
         updatedAt: entity.updatedAt.millisecondsSinceEpoch,
         authorId: entity.authorId,
         type: _typeTextContent,
+        priority: entity.priority.index,
         title: entity.title,
         body: entity.body,
       );
@@ -71,6 +74,10 @@ class ContentHiveModel extends HiveObject {
   @HiveField(6)
   final String? body;
 
+  /// Priorité du contenu encodée comme index de [ContentPriority].
+  @HiveField(7)
+  final int priority;
+
   /// Convertit ce modèle en entité [Content] concrète.
   Content toEntity() {
     if (type == _typeTextContent) {
@@ -79,6 +86,7 @@ class ContentHiveModel extends HiveObject {
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
         authorId: authorId,
+        priority: ContentPriority.values[priority],
         title: title!,
         body: body!,
       );

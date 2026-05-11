@@ -11,6 +11,7 @@ class TextContent extends Content {
     required super.createdAt,
     required super.updatedAt,
     required super.authorId,
+    required super.priority,
     required this.title,
     required this.body,
   });
