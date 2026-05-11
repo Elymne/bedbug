@@ -1,4 +1,5 @@
-import 'package:bedbug/application/validators/app_validators.dart' show AppValidators;
+import 'package:bedbug/application/validators/app_validators.dart'
+    show AppValidators;
 
 /// Extension de validation sur [String] nullable.
 ///
