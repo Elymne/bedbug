@@ -1,11 +1,12 @@
+import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Champ de formulaire reactive pour les noms propres (prénom, nom).
 ///
-/// S'intègre avec [reactive_forms] via [formControlName]. Interdit la saisie
-/// de chiffres en temps réel via un [InputFormatter].
+/// S'intègre avec [ReactiveForm] via [formControlName]. Interdit la saisie
+/// de chiffres en temps réel via un InputFormatter.
 ///
 /// Le [FormControl] associé doit déclarer [AppValidators.required] et
 /// [AppValidators.noDigits] pour que les messages d'erreur s'affichent.

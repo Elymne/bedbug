@@ -1,6 +1,6 @@
 import 'package:reactive_forms/reactive_forms.dart';
 
-/// Validators personnalisés compatibles avec [reactive_forms].
+/// Validators personnalisés compatibles avec [ReactiveForm].
 ///
 /// Chaque validator est une instance `const` d'une classe étendant
 /// [Validator<dynamic>], à passer dans la liste `validators` d'un

@@ -1,4 +1,6 @@
+import 'package:bedbug/shared/domain/entity.dart';
 import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/shared/domain/repository_params.dart';
 import 'package:bedbug/shared/query/page.dart';
 
 /// Contrat générique de base pour tous les repositories de l'application.
@@ -15,12 +17,12 @@ abstract class Repository<T, P extends Params> {
   /// Persiste une nouvelle entité [entity].
   ///
   /// Retourne l'entité telle qu'elle a été stockée, avec les champs de
-  /// traçabilité ([createdAt], [updatedAt]) renseignés par l'infrastructure.
+  /// traçabilité ([Entity.createdAt], [Entity.updatedAt]) renseignés par l'infrastructure.
   Future<T> addOne(T entity);
 
   /// Met à jour une entité existante [entity].
   ///
-  /// Retourne l'entité mise à jour avec [updatedAt] rafraîchi par
+  /// Retourne l'entité mise à jour avec [Repository.updateOne] rafraîchi par
   /// l'infrastructure.
   Future<T> updateOne(T entity);
 

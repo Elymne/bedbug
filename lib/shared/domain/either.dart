@@ -38,6 +38,7 @@ sealed class Either<L, R> {
 
 /// Côté échec de [Either].
 final class Left<L, R> extends Either<L, R> {
+  ///
   const Left(this.value);
 
   /// La valeur d'échec encapsulée.
@@ -46,6 +47,7 @@ final class Left<L, R> extends Either<L, R> {
 
 /// Côté succès de [Either].
 final class Right<L, R> extends Either<L, R> {
+  ///
   const Right(this.value);
 
   /// La valeur de succès encapsulée.

@@ -1,9 +1,11 @@
+import 'package:bedbug/shared/domain/repository.dart';
 import 'package:bedbug/shared/query/pagination_params.dart';
 
-/// Paramètres de pagination par curseur pour une requête [getMany].
+/// Paramètres de pagination par curseur pour une requête [Repository.getMany].
 ///
 /// La navigation se fait séquentiellement : [cursor] pointe vers le dernier
 /// document de la page précédente. `null` indique la première page.
+/// Utilisé par des bases de données type Firestore par exemple.
 class CursorPagination extends PaginationParams {
   /// Crée une [CursorPagination] avec les paramètres fournis.
   ///

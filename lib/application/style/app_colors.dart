@@ -22,8 +22,12 @@ class AppColors {
   /// Couleur des composants désactivés.
   static const Color disabled = Color(0xFFA0A0A0);
 
-  /// Couleurs informatives.
+  /// Couleurs informatives INFO.
   static const Color info = Color(0xFF51C2FF);
+
+  /// Couleurs informatives SUCCESS.
   static const Color success = Color(0xFF85FF4D);
+
+  /// Couleurs informatives FAILURE.
   static const Color failure = Color(0xFFFF4141);
 }

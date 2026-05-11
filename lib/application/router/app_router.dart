@@ -15,8 +15,8 @@ const String homeScreen = '/home';
 
 /// Provider du [GoRouter] de l'application.
 ///
-/// Le router se rafraîchit automatiquement lorsque l'état de [CurrentUserNotifier]
-/// change, déclenchant la réévaluation de la redirection.
+/// Le router se rafraîchit automatiquement lorsque [_RouterRefreshNotifier] le notifie, ce qui déclanche le redirect.
+/// Pour l'instant, le notifier n'écoute rien mais je le garde au cas où.
 final routerProvider = Provider<GoRouter>((ref) {
   final refreshNotifier = _RouterRefreshNotifier(ref);
   ref.onDispose(refreshNotifier.dispose);
@@ -24,12 +24,10 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: splashPath,
     refreshListenable: refreshNotifier,
-    redirect: (context, state) {
-      return null;
-      // TODO : In case I would need to do something here but I don't think so.
-    },
-    errorPageBuilder: (context, state) =>
-        NoTransitionPage(child: ErrorRoutePage(message: "Page not found")),
+    redirect: (context, state) => null,
+    errorPageBuilder: (context, state) => const NoTransitionPage(
+      child: ErrorRoutePage(message: 'Page not found'),
+    ),
     routes: [
       GoRoute(
         path: splashPath,
@@ -42,6 +40,6 @@ final routerProvider = Provider<GoRouter>((ref) {
 
 /// Notifier interne qui ne fait rien pour l'instant.
 class _RouterRefreshNotifier extends ChangeNotifier {
-  /// Crée un [_RouterRefreshNotifier] en écoutant [currentUserNotifierProvider].
+  /// Crée un [_RouterRefreshNotifier] qui n'écoute rien pour l'instant.
   _RouterRefreshNotifier(Ref ref);
 }

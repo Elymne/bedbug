@@ -34,7 +34,7 @@ class AppSnackbar {
           backgroundColor: backgroundColor,
           duration: const Duration(seconds: 3),
           action: SnackBarAction(
-            label: "context.loc.close",
+            label: 'context.loc.close',
             textColor: Colors.white,
             onPressed: () {
               messengerKey.currentState?.hideCurrentSnackBar();

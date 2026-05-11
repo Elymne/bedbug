@@ -11,7 +11,7 @@ class AppConfig {
 
   /// Charge et initialise la configuration depuis les assets via [ConfigLoader].
   ///
-  /// À appeler une seule fois dans [main] avant [runApp].
+  /// À appeler une seule fois dans main avant de charger l'app.
   static Future<void> init() async {
     _config = await ConfigLoader.load();
     debugPrint('Configuration loaded from json file.');

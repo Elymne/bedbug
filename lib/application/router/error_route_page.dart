@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 /// Page d'erreur générique affichant un [message] donné par l'appelant.
 ///
-/// Utilisée par le router et [ProtectedRoute] pour signaler toute situation
+/// Utilisée par le router pour signaler toute situation
 /// anormale (route inconnue, accès refusé, erreur d'authentification, etc.).
 class ErrorRoutePage extends StatelessWidget {
   /// Crée une [ErrorRoutePage].
@@ -25,7 +25,7 @@ class ErrorRoutePage extends StatelessWidget {
             TextButton.icon(
               onPressed: () => context.go(homeScreen),
               icon: const Icon(Icons.arrow_back),
-              label: Text("context.loc.errorRouteBackButton"),
+              label: const Text('context.loc.errorRouteBackButton'),
             ),
           ],
         ),

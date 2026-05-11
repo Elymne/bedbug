@@ -1,10 +1,11 @@
+import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Champ de formulaire reactive pour la saisie de nombres décimaux positifs.
 ///
-/// S'intègre avec [reactive_forms] via [formControlName]. Restreint la saisie
+/// S'intègre avec [ReactiveForm] via [formControlName]. Restreint la saisie
 /// en temps réel aux chiffres et à un seul séparateur décimal (`.` ou `,`).
 ///
 /// Le [FormControl] associé doit déclarer [AppValidators.decimal] et

@@ -46,7 +46,7 @@ class _AppLoadingTextState extends State<AppLoadingText>
   @override
   Widget build(BuildContext context) {
     final text =
-        widget.text ?? "AppLocalizations.of(context)!.loadingDefaultText";
+        widget.text ?? 'AppLocalizations.of(context)!.loadingDefaultText';
 
     return AnimatedBuilder(
       animation: _controller,

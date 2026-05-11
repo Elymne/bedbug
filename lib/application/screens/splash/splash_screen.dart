@@ -1,7 +1,6 @@
 import 'package:bedbug/application/screens/splash/splash_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_values.dart';
-import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/texts/app_title_text.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
@@ -22,17 +21,10 @@ class SplashScreen extends ConsumerStatefulWidget {
 class _State extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
-    final splashWatcher = ref.watch(splashNotifierProvider);
     final l10n = context.loc;
 
     ref.listen(splashNotifierProvider, (previous, next) {
-      if (next.isLoading) return;
-
-      if (previous?.isLoading == true && !next.isLoading) {
-        final message = next.value?.failureMessage;
-        // TODO = Je vais gérer les erreurs avec un bouton pour relancer l'action.
-        if (message != null) AppSnackbar.showError(context, message);
-      }
+      if (previous?.isLoading == true && next.hasValue) {}
     });
 
     return Scaffold(

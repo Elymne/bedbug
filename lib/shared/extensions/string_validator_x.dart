@@ -1,3 +1,5 @@
+import 'package:bedbug/application/validators/app_validators.dart' show AppValidators;
+
 /// Extension de validation sur [String] nullable.
 ///
 /// Centralise les règles de validation des chaînes pour un usage métier

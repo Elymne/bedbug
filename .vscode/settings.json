@@ -1,6 +1,5 @@
 {
     "files.exclude": {
-        "**/.git": false,
         "**/.claude": true,
         "lib/shared/application/l10n/generated/": true,
         "**/.dart_tool": true,

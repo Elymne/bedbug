@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 /// Type d'affichage du [AppText].
@@ -67,10 +66,11 @@ class _State extends State<AppText> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    // final l10n = context.loc;
+
     switch (widget.type) {
       case AppTextType.error:
-        final message = widget.message ?? "l10n.errorDefaultText";
+        final message = widget.message ?? 'l10n.errorDefaultText';
         return AnimatedBuilder(
           animation: _animation,
           builder: (context, child) => Transform.translate(
@@ -83,7 +83,7 @@ class _State extends State<AppText> with SingleTickerProviderStateMixin {
           child: Text(message, style: const TextStyle(color: Colors.red)),
         );
       case AppTextType.info:
-        final message = widget.message ?? "l10n.infoDefaultText";
+        final message = widget.message ?? 'l10n.infoDefaultText';
         return FadeTransition(
           opacity: _animation,
           child: Text(message, style: const TextStyle(color: Colors.blue)),

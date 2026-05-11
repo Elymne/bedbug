@@ -1,4 +1,8 @@
-/// Résultat paginé d'une requête [getMany].
+import 'package:bedbug/shared/domain/repository.dart';
+import 'package:bedbug/shared/query/cursor_pagination.dart';
+import 'package:bedbug/shared/query/offset_pagination.dart';
+
+/// Résultat paginé d'une requête [Repository.getMany].
 ///
 /// [T] est le type des entités retournées.
 /// [total] représente le nombre total de documents correspondant aux filtres

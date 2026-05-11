@@ -25,7 +25,6 @@ linter:
     avoid_unnecessary_containers: true
     avoid_empty_else: true
     avoid_relative_lib_imports: true
-    avoid_returning_null_for_future: true
     avoid_type_to_string: true
     cancel_subscriptions: true
     close_sinks: true
@@ -51,7 +50,6 @@ linter:
     depend_on_referenced_packages: true
     directives_ordering: true
     eol_at_end_of_file: true
-    package_api_docs: true
 
     # ---- OPTIONAL (strict OSS vibe) ----
     public_member_api_docs: true

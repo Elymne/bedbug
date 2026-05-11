@@ -8,7 +8,10 @@ final splashNotifierProvider =
 /// Notifier gérant l'état du splashscreen.
 class SplashNotifier extends AsyncNotifier<SplashState> {
   @override
-  Future<SplashState> build() async => SplashState();
+  Future<SplashState> build() async {
+    await Future<void>.delayed(const Duration(seconds: 4));
+    return SplashState();
+  }
 }
 
 /// État du [SplashNotifier].

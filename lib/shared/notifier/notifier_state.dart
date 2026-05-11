@@ -3,6 +3,7 @@
 /// Toute classe représentant l'état d'un notifier doit étendre [NotifierState]
 /// afin d'hériter de la gestion unifiée des erreurs.
 abstract class NotifierState {
+  /// Un constructeur Oui.
   NotifierState({required this.failureMessage});
 
   /// Message d'erreur à afficher en cas d'échec.

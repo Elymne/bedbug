@@ -1,8 +1,11 @@
 import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/shared/domain/repository.dart';
+import 'package:bedbug/shared/query/cursor_pagination.dart';
+import 'package:bedbug/shared/query/offset_pagination.dart';
 import 'package:bedbug/shared/query/order_by.dart';
 import 'package:bedbug/shared/query/pagination_params.dart';
 
-/// Classe de base abstraite pour les paramètres d'une requête [getMany].
+/// Classe de base abstraite pour les paramètres d'une requête [Repository.getMany].
 ///
 /// Porte les paramètres communs à tous les repositories : tri et pagination.
 /// Le type générique [P] définit la stratégie de pagination utilisée :
