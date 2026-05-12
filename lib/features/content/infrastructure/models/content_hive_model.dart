@@ -36,7 +36,7 @@ class ContentHiveModel extends HiveObject {
         updatedAt: entity.updatedAt.millisecondsSinceEpoch,
         authorId: entity.authorId,
         type: _typeTextContent,
-        priority: entity.priority.index,
+        priority: entity.priority.value,
         title: entity.title,
         body: entity.body,
       );
@@ -86,7 +86,9 @@ class ContentHiveModel extends HiveObject {
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
         authorId: authorId,
-        priority: ContentPriority.values[priority],
+        priority: ContentPriority.values.firstWhere(
+          (p) => p.value == priority,
+        ),
         title: title!,
         body: body!,
       );
