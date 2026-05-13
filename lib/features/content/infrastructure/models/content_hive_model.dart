@@ -1,4 +1,6 @@
 import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/entities/image_content.dart';
+import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_priority.dart';
 import 'package:bedbug/shared/infrastructure/hive_type_ids.dart';
@@ -8,6 +10,8 @@ part 'content_hive_model.g.dart';
 
 /// Discriminant identifiant le type concret d'un [Content] stocké.
 const _typeTextContent = 'text_content';
+const _typeLinkContent = 'link_content';
+const _typeImageContent = 'image_content';
 
 /// DTO Hive représentant un [Content] persisté localement.
 ///
@@ -23,8 +27,13 @@ class ContentHiveModel extends HiveObject {
     required this.authorId,
     required this.type,
     required this.priority,
+    required this.bounce,
+    required this.senderId,
     this.title,
     this.body,
+    this.url,
+    this.fileName,
+    this.subId,
   });
 
   /// Crée un [ContentHiveModel] depuis une entité [Content].
@@ -37,8 +46,43 @@ class ContentHiveModel extends HiveObject {
         authorId: entity.authorId,
         type: _typeTextContent,
         priority: entity.priority.value,
+        bounce: entity.bounce,
+        senderId: entity.senderId,
         title: entity.title,
         body: entity.body,
+        subId: entity.subId,
+      );
+    }
+    if (entity is LinkContent) {
+      return ContentHiveModel(
+        id: entity.id,
+        createdAt: entity.createdAt.millisecondsSinceEpoch,
+        updatedAt: entity.updatedAt.millisecondsSinceEpoch,
+        authorId: entity.authorId,
+        type: _typeLinkContent,
+        priority: entity.priority.value,
+        bounce: entity.bounce,
+        senderId: entity.senderId,
+        title: entity.title,
+        body: entity.body,
+        url: entity.url,
+        subId: entity.subId,
+      );
+    }
+    if (entity is ImageContent) {
+      return ContentHiveModel(
+        id: entity.id,
+        createdAt: entity.createdAt.millisecondsSinceEpoch,
+        updatedAt: entity.updatedAt.millisecondsSinceEpoch,
+        authorId: entity.authorId,
+        type: _typeImageContent,
+        priority: entity.priority.value,
+        bounce: entity.bounce,
+        senderId: entity.senderId,
+        fileName: entity.fileName,
+        title: entity.title,
+        body: entity.body,
+        subId: entity.subId,
       );
     }
     throw UnimplementedError(
@@ -74,9 +118,31 @@ class ContentHiveModel extends HiveObject {
   @HiveField(6)
   final String? body;
 
-  /// Priorité du contenu encodée comme index de [ContentPriority].
+  /// Priorité du contenu encodée comme valeur de [ContentPriority].
   @HiveField(7)
   final int priority;
+
+  /// Nombre de rebonds du contenu entre appareils.
+  @HiveField(8)
+  final int bounce;
+
+  /// Identifiant de l'appareil ou de l'utilisateur ayant transmis ce contenu.
+  @HiveField(9)
+  final String senderId;
+
+  /// URL du lien. Renseigné pour [LinkContent] uniquement.
+  @HiveField(10)
+  final String? url;
+
+  /// Nom du fichier image dans le dossier géré par l'app.
+  /// Renseigné pour [ImageContent] uniquement.
+  @HiveField(11)
+  final String? fileName;
+
+  /// Identifiant du sub auquel appartient ce contenu.
+  /// `null` si le contenu est purement public.
+  @HiveField(12)
+  final String? subId;
 
   /// Convertit ce modèle en entité [Content] concrète.
   Content toEntity() {
@@ -86,11 +152,42 @@ class ContentHiveModel extends HiveObject {
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
         authorId: authorId,
-        priority: ContentPriority.values.firstWhere(
-          (p) => p.value == priority,
-        ),
+        priority: ContentPriority.values.firstWhere((p) => p.value == priority),
+        bounce: bounce,
+        senderId: senderId,
         title: title!,
         body: body!,
+        subId: subId,
+      );
+    }
+    if (type == _typeLinkContent) {
+      return LinkContent(
+        id: id,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
+        updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
+        authorId: authorId,
+        priority: ContentPriority.values.firstWhere((p) => p.value == priority),
+        bounce: bounce,
+        senderId: senderId,
+        title: title!,
+        body: body!,
+        url: url!,
+        subId: subId,
+      );
+    }
+    if (type == _typeImageContent) {
+      return ImageContent(
+        id: id,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
+        updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
+        authorId: authorId,
+        priority: ContentPriority.values.firstWhere((p) => p.value == priority),
+        bounce: bounce,
+        senderId: senderId,
+        fileName: fileName!,
+        title: title,
+        body: body,
+        subId: subId,
       );
     }
     throw UnimplementedError(

@@ -12,6 +12,9 @@ class TextContent extends Content {
     required super.updatedAt,
     required super.authorId,
     required super.priority,
+    required super.bounce,
+    required super.senderId,
+    super.subId,
     required this.title,
     required this.body,
   });

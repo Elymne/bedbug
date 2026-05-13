@@ -23,15 +23,20 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       authorId: fields[3] as String,
       type: fields[4] as String,
       priority: (fields[7] as num).toInt(),
+      bounce: (fields[8] as num).toInt(),
+      senderId: fields[9] as String,
       title: fields[5] as String?,
       body: fields[6] as String?,
+      url: fields[10] as String?,
+      fileName: fields[11] as String?,
+      subId: fields[12] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ContentHiveModel obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -47,7 +52,17 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       ..writeByte(6)
       ..write(obj.body)
       ..writeByte(7)
-      ..write(obj.priority);
+      ..write(obj.priority)
+      ..writeByte(8)
+      ..write(obj.bounce)
+      ..writeByte(9)
+      ..write(obj.senderId)
+      ..writeByte(10)
+      ..write(obj.url)
+      ..writeByte(11)
+      ..write(obj.fileName)
+      ..writeByte(12)
+      ..write(obj.subId);
   }
 
   @override

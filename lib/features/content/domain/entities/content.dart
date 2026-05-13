@@ -19,6 +19,9 @@ abstract class Content extends Entity {
     required super.updatedAt,
     required this.authorId,
     required this.priority,
+    required this.bounce,
+    required this.senderId,
+    this.subId,
   });
 
   /// Identifiant de l'auteur du contenu.
@@ -27,4 +30,16 @@ abstract class Content extends Entity {
   /// Priorité du contenu, utilisée pour ordonner la suppression automatique
   /// lors d'un nettoyage du stockage local.
   final ContentPriority priority;
+
+  /// Nombre de rebonds du contenu, c'est-à-dire le nombre de fois qu'il a
+  /// été retransmis d'appareil en appareil.
+  final int bounce;
+
+  /// Identifiant de l'appareil ou de l'utilisateur ayant transmis ce contenu
+  /// à l'appareil local.
+  final String senderId;
+
+  /// Identifiant du sub auquel appartient ce contenu.
+  /// `null` si le contenu est purement public.
+  final String? subId;
 }
