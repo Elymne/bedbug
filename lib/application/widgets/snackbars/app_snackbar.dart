@@ -1,4 +1,4 @@
-import 'package:bedbug/app_root.dart';
+import 'package:bedbug/application/app_root.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:flutter/material.dart';
 
