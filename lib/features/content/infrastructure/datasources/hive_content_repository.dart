@@ -50,6 +50,11 @@ class HiveContentRepository implements ContentRepository {
   }
 
   @override
+  Future<void> deleteAll() async {
+    await _box.clear();
+  }
+
+  @override
   Future<Page<Content>> getMany(ContentRepositoryParams params) async {
     var results = _box.values.map((model) => model.toEntity()).toList();
 
@@ -57,6 +62,17 @@ class HiveContentRepository implements ContentRepository {
       results = results
           .where((content) => content.authorId == params.authorId)
           .toList();
+    }
+
+    if (params.orderBy != null) {
+      results.sort((a, b) {
+        final comparison = switch (params.orderBy!.field) {
+          'createdAt' => a.createdAt.compareTo(b.createdAt),
+          'updatedAt' => a.updatedAt.compareTo(b.updatedAt),
+          _ => 0,
+        };
+        return params.orderBy!.descending ? -comparison : comparison;
+      });
     }
 
     return Page(items: results, total: results.length);

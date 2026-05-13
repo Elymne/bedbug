@@ -5,7 +5,10 @@ import 'package:bedbug/shared/query/no_pagination.dart';
 
 /// Contrat du repository gérant les [Content].
 abstract class ContentRepository
-    extends Repository<Content, ContentRepositoryParams> {}
+    extends Repository<Content, ContentRepositoryParams> {
+  /// Supprime l'intégralité des contenus stockés localement.
+  Future<void> deleteAll();
+}
 
 /// Paramètres de requête du [ContentRepository].
 class ContentRepositoryParams extends RepositoryParams<NoPagination> {

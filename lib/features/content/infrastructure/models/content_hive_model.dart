@@ -34,6 +34,7 @@ class ContentHiveModel extends HiveObject {
     this.url,
     this.fileName,
     this.subId,
+    required this.sizeInBytes,
   });
 
   /// Crée un [ContentHiveModel] depuis une entité [Content].
@@ -51,6 +52,7 @@ class ContentHiveModel extends HiveObject {
         title: entity.title,
         body: entity.body,
         subId: entity.subId,
+        sizeInBytes: entity.sizeInBytes,
       );
     }
     if (entity is LinkContent) {
@@ -67,6 +69,7 @@ class ContentHiveModel extends HiveObject {
         body: entity.body,
         url: entity.url,
         subId: entity.subId,
+        sizeInBytes: entity.sizeInBytes,
       );
     }
     if (entity is ImageContent) {
@@ -83,6 +86,7 @@ class ContentHiveModel extends HiveObject {
         title: entity.title,
         body: entity.body,
         subId: entity.subId,
+        sizeInBytes: entity.sizeInBytes,
       );
     }
     throw UnimplementedError(
@@ -144,6 +148,10 @@ class ContentHiveModel extends HiveObject {
   @HiveField(12)
   final String? subId;
 
+  /// Poids du contenu en octets.
+  @HiveField(13)
+  final int sizeInBytes;
+
   /// Convertit ce modèle en entité [Content] concrète.
   Content toEntity() {
     if (type == _typeTextContent) {
@@ -158,6 +166,7 @@ class ContentHiveModel extends HiveObject {
         title: title!,
         body: body!,
         subId: subId,
+        sizeInBytes: sizeInBytes,
       );
     }
     if (type == _typeLinkContent) {
@@ -173,6 +182,7 @@ class ContentHiveModel extends HiveObject {
         body: body!,
         url: url!,
         subId: subId,
+        sizeInBytes: sizeInBytes,
       );
     }
     if (type == _typeImageContent) {
@@ -188,6 +198,7 @@ class ContentHiveModel extends HiveObject {
         title: title,
         body: body,
         subId: subId,
+        sizeInBytes: sizeInBytes,
       );
     }
     throw UnimplementedError(

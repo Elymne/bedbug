@@ -21,6 +21,7 @@ abstract class Content extends Entity {
     required this.priority,
     required this.bounce,
     required this.senderId,
+    required this.sizeInBytes,
     this.subId,
   });
 
@@ -38,6 +39,12 @@ abstract class Content extends Entity {
   /// Identifiant de l'appareil ou de l'utilisateur ayant transmis ce contenu
   /// à l'appareil local.
   final String senderId;
+
+  /// Poids du contenu en octets, calculé à la réception du wrap.
+  ///
+  /// Pour les contenus pointant vers un fichier (ex. image),
+  /// correspond à la taille du fichier sur disque.
+  final int sizeInBytes;
 
   /// Identifiant du sub auquel appartient ce contenu.
   /// `null` si le contenu est purement public.

@@ -1,5 +1,6 @@
 import 'package:bedbug/features/content/infrastructure/models/comment_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
+import 'package:bedbug/features/content/infrastructure/models/storage_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/sub_hive_model.dart';
 import 'package:bedbug/features/discovery/infrastructure/models/keychain_hive_model.dart';
 import 'package:bedbug/features/user/infrastructure/models/user_hive_model.dart';
@@ -27,4 +28,7 @@ class HiveTypeIds {
 
   /// TypeId de [PrivateKeyHiveModel].
   static const int privateKey = 5;
+
+  /// TypeId de [StorageHiveModel].
+  static const int storage = 6;
 }

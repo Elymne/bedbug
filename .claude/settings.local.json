@@ -5,7 +5,8 @@
       "Bash(dart run *)",
       "Bash(flutter pub *)",
       "Bash(dart analyze *)",
-      "Bash(Remove-Item *)"
+      "Bash(Remove-Item *)",
+      "Bash(dart pub *)"
     ]
   }
 }

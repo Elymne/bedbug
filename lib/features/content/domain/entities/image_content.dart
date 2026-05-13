@@ -20,6 +20,7 @@ class ImageContent extends Content {
     required super.priority,
     required super.bounce,
     required super.senderId,
+    required super.sizeInBytes,
     super.subId,
     required this.fileName,
     this.title,
