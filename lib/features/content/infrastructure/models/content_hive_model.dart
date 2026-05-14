@@ -3,6 +3,7 @@ import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_priority.dart';
+import 'package:bedbug/shared/exceptions/data_exception.dart';
 import 'package:bedbug/shared/infrastructure/hive_type_ids.dart';
 import 'package:hive_ce/hive.dart';
 
@@ -154,6 +155,15 @@ class ContentHiveModel extends HiveObject {
 
   /// Convertit ce modèle en entité [Content] concrète.
   Content toEntity() {
+    try {
+      return _toEntity();
+    } catch (error) {
+      if (error is DataException) rethrow;
+      throw DataException('ContentHiveModel', error);
+    }
+  }
+
+  Content _toEntity() {
     if (type == _typeTextContent) {
       return TextContent(
         id: id,
@@ -202,7 +212,7 @@ class ContentHiveModel extends HiveObject {
       );
     }
     throw UnimplementedError(
-      'ContentHiveModel.toEntity : type "$type" non supporté.',
+      'ContentHiveModel._toEntity : type "$type" non supporté.',
     );
   }
 }

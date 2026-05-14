@@ -1,6 +1,7 @@
 import 'package:bedbug/features/content/domain/entities/sub.dart';
 import 'package:bedbug/features/content/domain/repositories/sub_repository.dart';
 import 'package:bedbug/features/content/infrastructure/models/sub_hive_model.dart';
+import 'package:bedbug/shared/exceptions/datasource_exception.dart';
 import 'package:bedbug/shared/query/page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -24,34 +25,58 @@ class HiveSubRepository implements SubRepository {
 
   @override
   Future<Sub> addOne(Sub entity) async {
-    await _box.put(entity.id, SubHiveModel.fromEntity(entity));
-    return entity;
+    try {
+      await _box.put(entity.id, SubHiveModel.fromEntity(entity));
+      return entity;
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveSubRepository', error);
+    }
   }
 
   @override
   Future<Sub> updateOne(Sub entity) async {
-    await _box.put(entity.id, SubHiveModel.fromEntity(entity));
-    return entity;
+    try {
+      await _box.put(entity.id, SubHiveModel.fromEntity(entity));
+      return entity;
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveSubRepository', error);
+    }
   }
 
   @override
   Future<Sub?> getUnique(String id) async {
-    return _box.get(id)?.toEntity();
+    try {
+      return _box.get(id)?.toEntity();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveSubRepository', error);
+    }
   }
 
   @override
   Future<List<Sub>> getAll() async {
-    return _box.values.map((model) => model.toEntity()).toList();
+    try {
+      return _box.values.map((model) => model.toEntity()).toList();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveSubRepository', error);
+    }
   }
 
   @override
   Future<void> deleteOne(String id) async {
-    await _box.delete(id);
+    try {
+      await _box.delete(id);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveSubRepository', error);
+    }
   }
 
   @override
   Future<Page<Sub>> getMany(SubRepositoryParams params) async {
-    final results = _box.values.map((model) => model.toEntity()).toList();
-    return Page(items: results, total: results.length);
+    try {
+      final results = _box.values.map((model) => model.toEntity()).toList();
+      return Page(items: results, total: results.length);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveSubRepository', error);
+    }
   }
 }

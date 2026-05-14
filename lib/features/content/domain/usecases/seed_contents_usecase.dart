@@ -5,6 +5,8 @@ import 'package:bedbug/features/content/infrastructure/datasources/hive_content_
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/domain/usecase.dart';
+import 'package:bedbug/shared/exceptions/data_exception.dart';
+import 'package:bedbug/shared/exceptions/datasource_exception.dart';
 import 'package:bedbug/shared/extensions/string_uuid_x.dart';
 import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,6 +48,12 @@ class SeedContentsUsecase
         );
       }
       return const Right(null);
+    } on DataException catch (error, stackTrace) {
+      AppLogger.error('SeedContentsUsecase', error, stackTrace);
+      return const Left(SeedContentsFailure.invalidData);
+    } on DatasourceException catch (error, stackTrace) {
+      AppLogger.error('SeedContentsUsecase', error, stackTrace);
+      return const Left(SeedContentsFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('SeedContentsUsecase', error, stackTrace);
       return const Left(SeedContentsFailure.unknown);
@@ -55,6 +63,12 @@ class SeedContentsUsecase
 
 /// Échecs possibles du [SeedContentsUsecase].
 enum SeedContentsFailure {
+  /// La donnée lue est invalide ou corrompue.
+  invalidData,
+
+  /// Erreur de la couche de stockage locale.
+  storageError,
+
   /// Erreur inattendue lors de la génération des contenus.
   unknown,
 }

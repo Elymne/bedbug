@@ -1,4 +1,5 @@
 import 'package:bedbug/features/content/domain/entities/comment.dart';
+import 'package:bedbug/shared/exceptions/data_exception.dart';
 import 'package:bedbug/shared/infrastructure/hive_type_ids.dart';
 import 'package:hive_ce/hive.dart';
 
@@ -49,12 +50,16 @@ class CommentHiveModel extends HiveObject {
 
   /// Convertit ce modèle en entité [Comment].
   Comment toEntity() {
-    return Comment(
-      id: id,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
-      updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
-      authorId: authorId,
-      body: body,
-    );
+    try {
+      return Comment(
+        id: id,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
+        updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
+        authorId: authorId,
+        body: body,
+      );
+    } catch (error) {
+      throw DataException('CommentHiveModel', error);
+    }
   }
 }

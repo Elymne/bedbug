@@ -1,4 +1,5 @@
 import 'package:bedbug/features/user/domain/entities/user.dart';
+import 'package:bedbug/shared/exceptions/data_exception.dart';
 import 'package:bedbug/shared/infrastructure/hive_type_ids.dart';
 import 'package:hive_ce/hive.dart';
 
@@ -55,12 +56,16 @@ class UserHiveModel extends HiveObject {
 
   /// Convertit ce modèle en entité [User].
   User toEntity() {
-    return User(
-      id: id,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
-      updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
-      pseudo: pseudo,
-      email: email,
-    );
+    try {
+      return User(
+        id: id,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
+        updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
+        pseudo: pseudo,
+        email: email,
+      );
+    } catch (error) {
+      throw DataException('UserHiveModel', error);
+    }
   }
 }

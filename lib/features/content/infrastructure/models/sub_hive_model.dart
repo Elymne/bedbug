@@ -1,4 +1,5 @@
 import 'package:bedbug/features/content/domain/entities/sub.dart';
+import 'package:bedbug/shared/exceptions/data_exception.dart';
 import 'package:bedbug/shared/infrastructure/hive_type_ids.dart';
 import 'package:hive_ce/hive.dart';
 
@@ -49,12 +50,16 @@ class SubHiveModel extends HiveObject {
 
   /// Convertit ce modèle en entité [Sub].
   Sub toEntity() {
-    return Sub(
-      id: id,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
-      updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
-      name: name,
-      description: description,
-    );
+    try {
+      return Sub(
+        id: id,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
+        updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
+        name: name,
+        description: description,
+      );
+    } catch (error) {
+      throw DataException('SubHiveModel', error);
+    }
   }
 }

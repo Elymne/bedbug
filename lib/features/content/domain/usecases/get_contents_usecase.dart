@@ -4,6 +4,8 @@ import 'package:bedbug/features/content/infrastructure/datasources/hive_content_
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/domain/usecase.dart';
+import 'package:bedbug/shared/exceptions/data_exception.dart';
+import 'package:bedbug/shared/exceptions/datasource_exception.dart';
 import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:bedbug/shared/query/order_by.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,6 +32,12 @@ class GetContentsUsecase
         ContentRepositoryParams(orderBy: params.orderBy),
       );
       return Right(page.items);
+    } on DataException catch (error, stackTrace) {
+      AppLogger.error('GetContentsUsecase', error, stackTrace);
+      return const Left(GetContentsFailure.invalidData);
+    } on DatasourceException catch (error, stackTrace) {
+      AppLogger.error('GetContentsUsecase', error, stackTrace);
+      return const Left(GetContentsFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('GetContentsUsecase', error, stackTrace);
       return const Left(GetContentsFailure.unknown);
@@ -39,6 +47,12 @@ class GetContentsUsecase
 
 /// Échecs possibles du [GetContentsUsecase].
 enum GetContentsFailure {
+  /// La donnée lue est invalide ou corrompue.
+  invalidData,
+
+  /// Erreur de la couche de stockage locale.
+  storageError,
+
   /// Erreur inattendue lors de la récupération des contenus.
   unknown,
 }

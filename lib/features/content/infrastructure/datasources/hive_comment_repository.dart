@@ -1,6 +1,7 @@
 import 'package:bedbug/features/content/domain/entities/comment.dart';
 import 'package:bedbug/features/content/domain/repositories/comment_repository.dart';
 import 'package:bedbug/features/content/infrastructure/models/comment_hive_model.dart';
+import 'package:bedbug/shared/exceptions/datasource_exception.dart';
 import 'package:bedbug/shared/query/page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -24,41 +25,65 @@ class HiveCommentRepository implements CommentRepository {
 
   @override
   Future<Comment> addOne(Comment entity) async {
-    await _box.put(entity.id, CommentHiveModel.fromEntity(entity));
-    return entity;
+    try {
+      await _box.put(entity.id, CommentHiveModel.fromEntity(entity));
+      return entity;
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveCommentRepository', error);
+    }
   }
 
   @override
   Future<Comment> updateOne(Comment entity) async {
-    await _box.put(entity.id, CommentHiveModel.fromEntity(entity));
-    return entity;
+    try {
+      await _box.put(entity.id, CommentHiveModel.fromEntity(entity));
+      return entity;
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveCommentRepository', error);
+    }
   }
 
   @override
   Future<Comment?> getUnique(String id) async {
-    return _box.get(id)?.toEntity();
+    try {
+      return _box.get(id)?.toEntity();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveCommentRepository', error);
+    }
   }
 
   @override
   Future<List<Comment>> getAll() async {
-    return _box.values.map((model) => model.toEntity()).toList();
+    try {
+      return _box.values.map((model) => model.toEntity()).toList();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveCommentRepository', error);
+    }
   }
 
   @override
   Future<void> deleteOne(String id) async {
-    await _box.delete(id);
+    try {
+      await _box.delete(id);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveCommentRepository', error);
+    }
   }
 
   @override
   Future<Page<Comment>> getMany(CommentRepositoryParams params) async {
-    var results = _box.values.map((model) => model.toEntity()).toList();
+    try {
+      var results = _box.values.map((model) => model.toEntity()).toList();
 
-    if (params.authorId != null) {
-      results = results
-          .where((comment) => comment.authorId == params.authorId)
-          .toList();
+      if (params.authorId != null) {
+        results = results
+            .where((comment) => comment.authorId == params.authorId)
+            .toList();
+      }
+
+      return Page(items: results, total: results.length);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveCommentRepository', error);
     }
-
-    return Page(items: results, total: results.length);
   }
 }

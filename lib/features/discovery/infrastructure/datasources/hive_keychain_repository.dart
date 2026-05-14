@@ -1,6 +1,7 @@
 import 'package:bedbug/features/discovery/domain/entities/keychain.dart';
 import 'package:bedbug/features/discovery/domain/repositories/keychain_repository.dart';
 import 'package:bedbug/features/discovery/infrastructure/models/keychain_hive_model.dart';
+import 'package:bedbug/shared/exceptions/datasource_exception.dart';
 import 'package:bedbug/shared/query/page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -24,41 +25,65 @@ class HiveKeychainRepository implements KeychainRepository {
 
   @override
   Future<Keychain> addOne(Keychain entity) async {
-    await _box.put(entity.id, KeychainHiveModel.fromEntity(entity));
-    return entity;
+    try {
+      await _box.put(entity.id, KeychainHiveModel.fromEntity(entity));
+      return entity;
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveKeychainRepository', error);
+    }
   }
 
   @override
   Future<Keychain> updateOne(Keychain entity) async {
-    await _box.put(entity.id, KeychainHiveModel.fromEntity(entity));
-    return entity;
+    try {
+      await _box.put(entity.id, KeychainHiveModel.fromEntity(entity));
+      return entity;
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveKeychainRepository', error);
+    }
   }
 
   @override
   Future<Keychain?> getUnique(String id) async {
-    return _box.get(id)?.toEntity();
+    try {
+      return _box.get(id)?.toEntity();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveKeychainRepository', error);
+    }
   }
 
   @override
   Future<List<Keychain>> getAll() async {
-    return _box.values.map((model) => model.toEntity()).toList();
+    try {
+      return _box.values.map((model) => model.toEntity()).toList();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveKeychainRepository', error);
+    }
   }
 
   @override
   Future<void> deleteOne(String id) async {
-    await _box.delete(id);
+    try {
+      await _box.delete(id);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveKeychainRepository', error);
+    }
   }
 
   @override
   Future<Page<Keychain>> getMany(KeychainRepositoryParams params) async {
-    var results = _box.values.map((model) => model.toEntity()).toList();
+    try {
+      var results = _box.values.map((model) => model.toEntity()).toList();
 
-    if (params.subId != null) {
-      results = results
-          .where((keychain) => keychain.subId == params.subId)
-          .toList();
+      if (params.subId != null) {
+        results = results
+            .where((keychain) => keychain.subId == params.subId)
+            .toList();
+      }
+
+      return Page(items: results, total: results.length);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveKeychainRepository', error);
     }
-
-    return Page(items: results, total: results.length);
   }
 }

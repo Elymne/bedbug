@@ -1,6 +1,7 @@
 import 'package:bedbug/features/user/domain/entities/user.dart';
 import 'package:bedbug/features/user/domain/repositories/user_repository.dart';
 import 'package:bedbug/features/user/infrastructure/models/user_hive_model.dart';
+import 'package:bedbug/shared/exceptions/datasource_exception.dart';
 import 'package:bedbug/shared/query/page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -24,45 +25,69 @@ class HiveUserRepository implements UserRepository {
 
   @override
   Future<User> addOne(User entity) async {
-    await _box.put(entity.id, UserHiveModel.fromEntity(entity));
-    return entity;
+    try {
+      await _box.put(entity.id, UserHiveModel.fromEntity(entity));
+      return entity;
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveUserRepository', error);
+    }
   }
 
   @override
   Future<User> updateOne(User entity) async {
-    await _box.put(entity.id, UserHiveModel.fromEntity(entity));
-    return entity;
+    try {
+      await _box.put(entity.id, UserHiveModel.fromEntity(entity));
+      return entity;
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveUserRepository', error);
+    }
   }
 
   @override
   Future<User?> getUnique(String id) async {
-    return _box.get(id)?.toEntity();
+    try {
+      return _box.get(id)?.toEntity();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveUserRepository', error);
+    }
   }
 
   @override
   Future<List<User>> getAll() async {
-    return _box.values.map((model) => model.toEntity()).toList();
+    try {
+      return _box.values.map((model) => model.toEntity()).toList();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveUserRepository', error);
+    }
   }
 
   @override
   Future<void> deleteOne(String id) async {
-    await _box.delete(id);
+    try {
+      await _box.delete(id);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveUserRepository', error);
+    }
   }
 
   @override
   Future<Page<User>> getMany(UserRepositoryParams params) async {
-    var results = _box.values.map((model) => model.toEntity()).toList();
+    try {
+      var results = _box.values.map((model) => model.toEntity()).toList();
 
-    if (params.pseudo != null) {
-      results = results
-          .where(
-            (user) => user.pseudo.toLowerCase().contains(
-              params.pseudo!.toLowerCase(),
-            ),
-          )
-          .toList();
+      if (params.pseudo != null) {
+        results = results
+            .where(
+              (user) => user.pseudo.toLowerCase().contains(
+                params.pseudo!.toLowerCase(),
+              ),
+            )
+            .toList();
+      }
+
+      return Page(items: results, total: results.length);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveUserRepository', error);
     }
-
-    return Page(items: results, total: results.length);
   }
 }

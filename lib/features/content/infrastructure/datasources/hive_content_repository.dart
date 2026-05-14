@@ -1,6 +1,7 @@
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
+import 'package:bedbug/shared/exceptions/datasource_exception.dart';
 import 'package:bedbug/shared/query/page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -24,57 +25,85 @@ class HiveContentRepository implements ContentRepository {
 
   @override
   Future<Content> addOne(Content entity) async {
-    await _box.put(entity.id, ContentHiveModel.fromEntity(entity));
-    return entity;
+    try {
+      await _box.put(entity.id, ContentHiveModel.fromEntity(entity));
+      return entity;
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
   }
 
   @override
   Future<Content> updateOne(Content entity) async {
-    await _box.put(entity.id, ContentHiveModel.fromEntity(entity));
-    return entity;
+    try {
+      await _box.put(entity.id, ContentHiveModel.fromEntity(entity));
+      return entity;
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
   }
 
   @override
   Future<Content?> getUnique(String id) async {
-    return _box.get(id)?.toEntity();
+    try {
+      return _box.get(id)?.toEntity();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
   }
 
   @override
   Future<List<Content>> getAll() async {
-    return _box.values.map((model) => model.toEntity()).toList();
+    try {
+      return _box.values.map((model) => model.toEntity()).toList();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
   }
 
   @override
   Future<void> deleteOne(String id) async {
-    await _box.delete(id);
+    try {
+      await _box.delete(id);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
   }
 
   @override
   Future<void> deleteAll() async {
-    await _box.clear();
+    try {
+      await _box.clear();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
   }
 
   @override
   Future<Page<Content>> getMany(ContentRepositoryParams params) async {
-    var results = _box.values.map((model) => model.toEntity()).toList();
+    try {
+      var results = _box.values.map((model) => model.toEntity()).toList();
 
-    if (params.authorId != null) {
-      results = results
-          .where((content) => content.authorId == params.authorId)
-          .toList();
+      if (params.authorId != null) {
+        results = results
+            .where((content) => content.authorId == params.authorId)
+            .toList();
+      }
+
+      if (params.orderBy != null) {
+        results.sort((a, b) {
+          final comparison = switch (params.orderBy!.field) {
+            'createdAt' => a.createdAt.compareTo(b.createdAt),
+            'updatedAt' => a.updatedAt.compareTo(b.updatedAt),
+            _ => 0,
+          };
+          return params.orderBy!.descending ? -comparison : comparison;
+        });
+      }
+
+      return Page(items: results, total: results.length);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
     }
-
-    if (params.orderBy != null) {
-      results.sort((a, b) {
-        final comparison = switch (params.orderBy!.field) {
-          'createdAt' => a.createdAt.compareTo(b.createdAt),
-          'updatedAt' => a.updatedAt.compareTo(b.updatedAt),
-          _ => 0,
-        };
-        return params.orderBy!.descending ? -comparison : comparison;
-      });
-    }
-
-    return Page(items: results, total: results.length);
   }
 }

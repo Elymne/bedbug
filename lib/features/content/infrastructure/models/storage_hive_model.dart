@@ -1,5 +1,6 @@
 import 'package:bedbug/features/content/domain/entities/storage.dart';
 import 'package:bedbug/features/content/domain/enums/cleanup_strategy.dart';
+import 'package:bedbug/shared/exceptions/data_exception.dart';
 import 'package:bedbug/shared/infrastructure/hive_type_ids.dart';
 import 'package:hive_ce/hive.dart';
 
@@ -50,14 +51,18 @@ class StorageHiveModel extends HiveObject {
 
   /// Convertit ce modèle en entité [Storage].
   Storage toEntity() {
-    return Storage(
-      id: id,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
-      updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
-      maxSizeInBytes: maxSizeInBytes,
-      strategy: CleanupStrategy.values.firstWhere(
-        (s) => s.value == strategy,
-      ),
-    );
+    try {
+      return Storage(
+        id: id,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
+        updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
+        maxSizeInBytes: maxSizeInBytes,
+        strategy: CleanupStrategy.values.firstWhere(
+          (s) => s.value == strategy,
+        ),
+      );
+    } catch (error) {
+      throw DataException('StorageHiveModel', error);
+    }
   }
 }

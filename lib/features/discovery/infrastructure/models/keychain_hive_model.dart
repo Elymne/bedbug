@@ -1,4 +1,5 @@
 import 'package:bedbug/features/discovery/domain/entities/keychain.dart';
+import 'package:bedbug/shared/exceptions/data_exception.dart';
 import 'package:bedbug/shared/infrastructure/hive_type_ids.dart';
 import 'package:hive_ce/hive.dart';
 
@@ -57,14 +58,18 @@ class KeychainHiveModel extends HiveObject {
 
   /// Convertit ce modèle en entité [Keychain].
   Keychain toEntity() {
-    return Keychain(
-      id: id,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
-      updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
-      label: label,
-      subId: subId,
-      keys: keys.map((key) => key.toValueObject()).toList(),
-    );
+    try {
+      return Keychain(
+        id: id,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
+        updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
+        label: label,
+        subId: subId,
+        keys: keys.map((key) => key.toValueObject()).toList(),
+      );
+    } catch (error) {
+      throw DataException('KeychainHiveModel', error);
+    }
   }
 }
 
@@ -95,9 +100,13 @@ class PrivateKeyHiveModel extends HiveObject {
 
   /// Convertit ce modèle en value object [PrivateKey].
   PrivateKey toValueObject() {
-    return PrivateKey(
-      value: value,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
-    );
+    try {
+      return PrivateKey(
+        value: value,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
+      );
+    } catch (error) {
+      throw DataException('PrivateKeyHiveModel', error);
+    }
   }
 }
