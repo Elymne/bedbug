@@ -3,5 +3,17 @@
   "title": "BEDBUG",
   "@title": {
     "description": "Titre de l'application"
+  },
+  "navHomeLabel": "Accueil",
+  "@navHomeLabel": {
+    "description": "Label sémantique de l'item Home dans la barre de navigation"
+  },
+  "navCreateLabel": "Créer",
+  "@navCreateLabel": {
+    "description": "Label sémantique de l'item Créer dans la barre de navigation"
+  },
+  "navSettingsLabel": "Paramètres",
+  "@navSettingsLabel": {
+    "description": "Label sémantique de l'item Paramètres dans la barre de navigation"
   }
 }

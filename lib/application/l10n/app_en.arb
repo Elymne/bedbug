@@ -3,5 +3,17 @@
   "title": "BEDBUG",
   "@title": {
     "description": "App Title"
+  },
+  "navHomeLabel": "Home",
+  "@navHomeLabel": {
+    "description": "Semantic label for the Home item in the navigation bar"
+  },
+  "navCreateLabel": "Create",
+  "@navCreateLabel": {
+    "description": "Semantic label for the Create item in the navigation bar"
+  },
+  "navSettingsLabel": "Settings",
+  "@navSettingsLabel": {
+    "description": "Semantic label for the Settings item in the navigation bar"
   }
 }

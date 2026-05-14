@@ -1,4 +1,8 @@
 import 'package:bedbug/application/router/error_route_page.dart';
+import 'package:bedbug/application/router/shell.dart';
+import 'package:bedbug/application/screens/create/create_screen.dart';
+import 'package:bedbug/application/screens/home/home_screen.dart';
+import 'package:bedbug/application/screens/settings/settings_screen.dart';
 import 'package:bedbug/application/screens/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,11 +11,14 @@ import 'package:go_router/go_router.dart';
 /// Chemin vers le splashscreen (page de démarrage de l'application).
 const String splashPath = '/splash';
 
-/// Chemin vers la page de chargement et déchiffrage de contenu.
-const String loadPath = '/load';
+/// Chemin vers la page d'accueil.
+const String homePath = '/home';
 
-/// Chemin vers la home page mais imo, j'vais pas en mettre hihihi.
-const String homeScreen = '/home';
+/// Chemin vers la page de création de contenu.
+const String createPath = '/create';
+
+/// Chemin vers la page des paramètres.
+const String settingsPath = '/settings';
 
 /// Provider du [GoRouter] de l'application.
 ///
@@ -33,6 +40,39 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: splashPath,
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: SplashScreen()),
+      ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            Shell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: homePath,
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: HomeScreen()),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: createPath,
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: CreateScreen()),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: settingsPath,
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: SettingsScreen()),
+              ),
+            ],
+          ),
+        ],
       ),
     ],
   );
