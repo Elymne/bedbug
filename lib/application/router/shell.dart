@@ -25,15 +25,9 @@ class Shell extends ConsumerWidget {
       bottomNavigationBar: AppNavBar(
         selectedIndex: navigationShell.currentIndex,
         items: [
-          AppNavBarItem(icon: Icons.home_outlined, label: l10n.navHomeLabel),
-          AppNavBarItem(
-            icon: Icons.add_circle_outline,
-            label: l10n.navCreateLabel,
-          ),
-          AppNavBarItem(
-            icon: Icons.settings_outlined,
-            label: l10n.navSettingsLabel,
-          ),
+          AppNavBarItem(icon: Icons.home, label: l10n.navHomeLabel),
+          AppNavBarItem(icon: Icons.add_circle, label: l10n.navCreateLabel),
+          AppNavBarItem(icon: Icons.settings, label: l10n.navSettingsLabel),
         ],
         onTap: (index) => context.go(_kNavPaths[index]),
       ),

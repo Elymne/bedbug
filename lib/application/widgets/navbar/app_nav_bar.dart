@@ -17,7 +17,7 @@ class AppNavBarItem {
 /// Barre de navigation inférieure de l'application.
 ///
 /// Affiche uniquement des icônes. L'item sélectionné reçoit un effet
-/// de ghost en [AppColors.primary], identique à l'effet du splashscreen.
+/// de ghost animé en [AppColors.primary], identique à l'effet du splashscreen.
 class AppNavBar extends ConsumerWidget {
   /// Crée une [AppNavBar].
   const AppNavBar({
@@ -41,9 +41,7 @@ class AppNavBar extends ConsumerWidget {
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.surface,
-        border: Border(
-          top: BorderSide(color: AppColors.disabled, width: 0.5),
-        ),
+        border: Border(top: BorderSide(color: AppColors.disabled, width: 0.5)),
       ),
       child: SafeArea(
         top: false,
@@ -54,6 +52,7 @@ class AppNavBar extends ConsumerWidget {
             children: [
               for (var index = 0; index < items.length; index++)
                 _NavBarItemWidget(
+                  key: ValueKey(index),
                   item: items[index],
                   isSelected: index == selectedIndex,
                   onTap: () => onTap(index),
@@ -66,10 +65,11 @@ class AppNavBar extends ConsumerWidget {
   }
 }
 
-/// Item individuel de la [AppNavBar].
-class _NavBarItemWidget extends ConsumerWidget {
+/// Item individuel de la [AppNavBar] avec effet ghost animé si sélectionné.
+class _NavBarItemWidget extends ConsumerStatefulWidget {
   /// Crée un [_NavBarItemWidget].
   const _NavBarItemWidget({
+    super.key,
     required this.item,
     required this.isSelected,
     required this.onTap,
@@ -85,41 +85,130 @@ class _NavBarItemWidget extends ConsumerWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_NavBarItemWidget> createState() => _State();
+}
+
+class _State extends ConsumerState<_NavBarItemWidget>
+    with TickerProviderStateMixin {
+  /// Contrôleur du pulse (scale) du ghost.
+  late final AnimationController _pulseController = AnimationController(
+    duration: const Duration(milliseconds: 1_200),
+    vsync: this,
+  );
+
+  /// Contrôleur du léger tremblement du ghost.
+  late final AnimationController _ghostTrembleController = AnimationController(
+    duration: const Duration(milliseconds: 900),
+    vsync: this,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isSelected) _startAnimations();
+  }
+
+  @override
+  void didUpdateWidget(_NavBarItemWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isSelected && !oldWidget.isSelected) {
+      _startAnimations();
+      return;
+    }
+
+    if (!widget.isSelected && oldWidget.isSelected) {
+      _stopAnimations();
+      return;
+    }
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    _ghostTrembleController.dispose();
+    super.dispose();
+  }
+
+  /// Démarre les animations en boucle.
+  void _startAnimations() {
+    _pulseController.repeat(reverse: true);
+    _ghostTrembleController.repeat(reverse: true);
+  }
+
+  /// Arrête les animations et remet les controllers à zéro.
+  void _stopAnimations() {
+    _pulseController.stop();
+    _ghostTrembleController.stop();
+    _pulseController.reset();
+    _ghostTrembleController.reset();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Semantics(
-      label: item.label,
+      label: widget.item.label,
       button: true,
-      selected: isSelected,
+      selected: widget.isSelected,
       child: GestureDetector(
-        onTap: onTap,
+        onTap: widget.onTap,
         behavior: HitTestBehavior.opaque,
         child: SizedBox(
           width: 64,
           height: 56,
           child: Center(
-            child: isSelected ? _ghostIcon(item.icon) : _plainIcon(item.icon),
+            child: widget.isSelected ? _buildGhostIcon() : _buildNormalIcon(),
           ),
         ),
       ),
     );
   }
 
-  /// Icône normale (non sélectionnée).
-  Widget _plainIcon(IconData icon) {
-    return Icon(icon, color: AppColors.disabled, size: 26);
-  }
+  /// Icône sans aucun effet (item non sélectionné).
+  Widget _buildNormalIcon() =>
+      Icon(widget.item.icon, color: AppColors.disabled, size: 26);
 
-  /// Icône avec effet ghost en [AppColors.primary] (sélectionnée).
-  Widget _ghostIcon(IconData icon) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Transform.translate(
-          offset: const Offset(3.0, 2.5),
-          child: Icon(icon, color: AppColors.primary, size: 26),
-        ),
-        Icon(icon, color: AppColors.onLight, size: 26),
-      ],
+  /// Icône principale statique avec ghost animé (pulse + léger tremblement).
+  Widget _buildGhostIcon() {
+    return AnimatedBuilder(
+      animation: Listenable.merge([_pulseController, _ghostTrembleController]),
+      builder: (context, _) {
+        final ghostOffset = Offset(
+          2.8 * _ghostTrembleController.value,
+          1.8 * _ghostTrembleController.value,
+        );
+
+        final iconOffset = Offset(
+          1.5 * _ghostTrembleController.value,
+          0.6 * _ghostTrembleController.value,
+        );
+
+        return SizedBox(
+          width: 26,
+          height: 26,
+          child: Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: [
+              Transform.translate(
+                offset: ghostOffset,
+                child: Icon(
+                  widget.item.icon,
+                  color: AppColors.primary,
+                  size: 26,
+                ),
+              ),
+              Transform.translate(
+                offset: iconOffset,
+                child: Icon(
+                  widget.item.icon,
+                  color: AppColors.onLight,
+                  size: 26,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
