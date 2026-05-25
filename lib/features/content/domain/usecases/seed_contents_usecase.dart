@@ -17,17 +17,14 @@ final seedContentsUsecaseProvider = Provider<SeedContentsUsecase>(
 );
 
 /// Génère une grande quantité de contenus factices pour les tests.
-class SeedContentsUsecase
-    extends Usecase<SeedContentsParams, SeedContentsFailure, void> {
+class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailure, void> {
   /// Crée un [SeedContentsUsecase].
   SeedContentsUsecase(this._contentRepository);
 
   final ContentRepository _contentRepository;
 
   @override
-  Future<Either<SeedContentsFailure, void>> call(
-    SeedContentsParams params,
-  ) async {
+  Future<Either<SeedContentsFailure, void>> call(SeedContentsParams params) async {
     try {
       final now = DateTime.now();
       for (var index = 0; index < params.count; index++) {

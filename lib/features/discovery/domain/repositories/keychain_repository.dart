@@ -12,11 +12,7 @@ class KeychainRepositoryParams extends RepositoryParams<NoPagination> {
   /// Crée des [KeychainRepositoryParams].
   ///
   /// - [subId] : filtre optionnel sur le sub associé.
-  const KeychainRepositoryParams({
-    super.pagination,
-    super.orderBy,
-    this.subId,
-  });
+  const KeychainRepositoryParams({super.pagination, super.orderBy, this.subId});
 
   /// Filtre sur l'identifiant du sub. `null` = aucun filtre.
   final String? subId;

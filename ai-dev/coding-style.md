@@ -2,7 +2,7 @@
 
 ## General
 
-- Line length: **80 characters** (`dart.lineLength: 80`).
+- Line length: **120 characters** (`dart.lineLength: 120`).
 - Prefer block functions over arrow functions. Use `=>` only if the full expression fits in under 60 characters on one line:
 
   ```dart

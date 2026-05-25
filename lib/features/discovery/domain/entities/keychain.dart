@@ -10,10 +10,7 @@ class PrivateKey {
   /// - [value] : valeur brute de la clé privée.
   /// - [createdAt] : date de création, utilisée pour ordonner les clés
   ///   lors d'une rotation.
-  const PrivateKey({
-    required this.value,
-    required this.createdAt,
-  });
+  const PrivateKey({required this.value, required this.createdAt});
 
   /// Valeur brute de la clé privée.
   final String value;

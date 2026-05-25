@@ -10,10 +10,7 @@ class Wrap {
   ///   `null` si le contenu est public et transite en clair.
   /// - [payload] : contenu brut, chiffré si [keyId] est renseigné,
   ///   en clair sinon.
-  const Wrap({
-    this.keyId,
-    required this.payload,
-  });
+  const Wrap({this.keyId, required this.payload});
 
   /// Identifiant du portefeuille de clés permettant de déchiffrer ce contenu.
   /// `null` si le contenu est public.

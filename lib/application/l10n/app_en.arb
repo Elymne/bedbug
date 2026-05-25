@@ -15,5 +15,25 @@
   "navSettingsLabel": "Settings",
   "@navSettingsLabel": {
     "description": "Semantic label for the Settings item in the navigation bar"
+  },
+  "homeGetContentsInvalidData": "The data is corrupted or invalid.",
+  "@homeGetContentsInvalidData": {
+    "description": "Error displayed on home when read data is invalid"
+  },
+  "homeGetContentsStorageError": "Unable to access local storage.",
+  "@homeGetContentsStorageError": {
+    "description": "Error displayed on home when local storage is unavailable"
+  },
+  "homeGetContentsUnknown": "An unexpected error occurred.",
+  "@homeGetContentsUnknown": {
+    "description": "Error displayed on home on an unknown failure"
+  },
+  "homeEmptyList": "No content available.",
+  "@homeEmptyList": {
+    "description": "Message displayed on home when the content list is empty"
+  },
+  "homeSeedButton": "Load test data",
+  "@homeSeedButton": {
+    "description": "Button to load mock data on home when the content list is empty"
   }
 }

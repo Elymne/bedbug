@@ -77,10 +77,7 @@ class KeychainHiveModel extends HiveObject {
 @HiveType(typeId: HiveTypeIds.privateKey)
 class PrivateKeyHiveModel extends HiveObject {
   /// Crée un [PrivateKeyHiveModel].
-  PrivateKeyHiveModel({
-    required this.value,
-    required this.createdAt,
-  });
+  PrivateKeyHiveModel({required this.value, required this.createdAt});
 
   /// Crée un [PrivateKeyHiveModel] depuis un value object [PrivateKey].
   factory PrivateKeyHiveModel.fromValueObject(PrivateKey key) {

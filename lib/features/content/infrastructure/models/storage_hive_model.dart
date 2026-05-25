@@ -57,9 +57,7 @@ class StorageHiveModel extends HiveObject {
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
         maxSizeInBytes: maxSizeInBytes,
-        strategy: CleanupStrategy.values.firstWhere(
-          (s) => s.value == strategy,
-        ),
+        strategy: CleanupStrategy.values.firstWhere((s) => s.value == strategy),
       );
     } catch (error) {
       throw DataException('StorageHiveModel', error);
