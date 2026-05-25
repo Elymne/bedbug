@@ -36,6 +36,9 @@ class ContentHiveModel extends HiveObject {
     this.fileName,
     this.subId,
     required this.sizeInBytes,
+    this.ogImageUrl,
+    this.ogTitle,
+    this.ogDescription,
   });
 
   /// Crée un [ContentHiveModel] depuis une entité [Content].
@@ -71,6 +74,9 @@ class ContentHiveModel extends HiveObject {
         url: entity.url,
         subId: entity.subId,
         sizeInBytes: entity.sizeInBytes,
+        ogImageUrl: entity.ogImageUrl,
+        ogTitle: entity.ogTitle,
+        ogDescription: entity.ogDescription,
       );
     }
     if (entity is ImageContent) {
@@ -153,6 +159,18 @@ class ContentHiveModel extends HiveObject {
   @HiveField(13)
   final int sizeInBytes;
 
+  /// URL de l'image Open Graph. Renseigné pour [LinkContent] uniquement.
+  @HiveField(14)
+  final String? ogImageUrl;
+
+  /// Titre Open Graph. Renseigné pour [LinkContent] uniquement.
+  @HiveField(15)
+  final String? ogTitle;
+
+  /// Description Open Graph. Renseignée pour [LinkContent] uniquement.
+  @HiveField(16)
+  final String? ogDescription;
+
   /// Convertit ce modèle en entité [Content] concrète.
   Content toEntity() {
     try {
@@ -193,6 +211,9 @@ class ContentHiveModel extends HiveObject {
         url: url!,
         subId: subId,
         sizeInBytes: sizeInBytes,
+        ogImageUrl: ogImageUrl,
+        ogTitle: ogTitle,
+        ogDescription: ogDescription,
       );
     }
     if (type == _typeImageContent) {

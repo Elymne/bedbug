@@ -20,6 +20,9 @@ class LinkContent extends Content {
     required this.title,
     required this.body,
     required this.url,
+    this.ogImageUrl,
+    this.ogTitle,
+    this.ogDescription,
   });
 
   /// Titre du lien.
@@ -30,4 +33,13 @@ class LinkContent extends Content {
 
   /// URL pointée par ce contenu.
   final String url;
+
+  /// URL de l'image Open Graph. `null` si non fetchée ou absente.
+  final String? ogImageUrl;
+
+  /// Titre Open Graph. `null` si non fetché ou absent.
+  final String? ogTitle;
+
+  /// Description Open Graph. `null` si non fetchée ou absente.
+  final String? ogDescription;
 }
