@@ -34,10 +34,44 @@ class HiveUserRepository implements UserRepository {
   }
 
   @override
+  Future<void> addMany(List<User> entities) async {
+    try {
+      await _box.putAll({
+        for (final entity in entities) entity.id: UserHiveModel.fromEntity(entity),
+      });
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveUserRepository', error);
+    }
+  }
+
+  @override
   Future<User> updateOne(User entity) async {
     try {
+      if (!_box.containsKey(entity.id)) {
+        throw DatasourceException('HiveUserRepository', 'entity with id "${entity.id}" not found');
+      }
       await _box.put(entity.id, UserHiveModel.fromEntity(entity));
       return entity;
+    } on DatasourceException {
+      rethrow;
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveUserRepository', error);
+    }
+  }
+
+  @override
+  Future<void> updateMany(List<User> entities) async {
+    try {
+      for (final entity in entities) {
+        if (!_box.containsKey(entity.id)) {
+          throw DatasourceException('HiveUserRepository', 'entity with id "${entity.id}" not found');
+        }
+      }
+      await _box.putAll({
+        for (final entity in entities) entity.id: UserHiveModel.fromEntity(entity),
+      });
+    } on DatasourceException {
+      rethrow;
     } on HiveError catch (error) {
       throw DatasourceException('HiveUserRepository', error);
     }
@@ -65,6 +99,24 @@ class HiveUserRepository implements UserRepository {
   Future<void> deleteOne(String id) async {
     try {
       await _box.delete(id);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveUserRepository', error);
+    }
+  }
+
+  @override
+  Future<void> deleteMany(List<String> ids) async {
+    try {
+      await _box.deleteAll(ids);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveUserRepository', error);
+    }
+  }
+
+  @override
+  Future<void> deleteAll() async {
+    try {
+      await _box.clear();
     } on HiveError catch (error) {
       throw DatasourceException('HiveUserRepository', error);
     }

@@ -20,6 +20,21 @@ const String createPath = '/create';
 /// Chemin vers la page des paramètres.
 const String settingsPath = '/settings';
 
+/// Durée du fondu entre les pages.
+const Duration _fadeDuration = Duration(milliseconds: 400);
+
+/// Construit une [CustomTransitionPage] avec un fondu doux pour [child].
+CustomTransitionPage<void> _fadePage(Widget child) {
+  return CustomTransitionPage<void>(
+    child: child,
+    transitionDuration: _fadeDuration,
+    transitionsBuilder: (context, animation, _, child) => FadeTransition(
+      opacity: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+      child: child,
+    ),
+  );
+}
+
 /// Provider du [GoRouter] de l'application.
 ///
 /// Le router se rafraîchit automatiquement lorsque [_RouterRefreshNotifier] le notifie, ce qui déclanche le redirect.
@@ -39,7 +54,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: splashPath,
         pageBuilder: (context, state) =>
-            const NoTransitionPage(child: SplashScreen()),
+            _fadePage(const SplashScreen()),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
@@ -50,7 +65,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: homePath,
                 pageBuilder: (context, state) =>
-                    const NoTransitionPage(child: HomeScreen()),
+                    _fadePage(const HomeScreen()),
               ),
             ],
           ),
@@ -59,7 +74,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: createPath,
                 pageBuilder: (context, state) =>
-                    const NoTransitionPage(child: CreateScreen()),
+                    _fadePage(const CreateScreen()),
               ),
             ],
           ),
@@ -68,7 +83,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: settingsPath,
                 pageBuilder: (context, state) =>
-                    const NoTransitionPage(child: SettingsScreen()),
+                    _fadePage(const SettingsScreen()),
               ),
             ],
           ),

@@ -3,6 +3,7 @@ import 'package:bedbug/features/content/infrastructure/models/content_hive_model
 import 'package:bedbug/features/content/infrastructure/models/storage_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/sub_hive_model.dart';
 import 'package:bedbug/features/discovery/infrastructure/models/keychain_hive_model.dart';
+import 'package:bedbug/features/settings/infrastructure/models/settings_hive_model.dart';
 import 'package:bedbug/features/user/infrastructure/models/user_hive_model.dart';
 
 /// Registre centralisé des typeId Hive utilisés dans l'application.
@@ -31,4 +32,7 @@ class HiveTypeIds {
 
   /// TypeId de [StorageHiveModel].
   static const int storage = 6;
+
+  /// TypeId de [SettingsHiveModel].
+  static const int settings = 7;
 }

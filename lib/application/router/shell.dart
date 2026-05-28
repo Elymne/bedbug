@@ -21,7 +21,15 @@ class Shell extends ConsumerWidget {
     final l10n = context.loc;
 
     return Scaffold(
-      body: navigationShell,
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 400),
+        switchInCurve: Curves.easeInOut,
+        switchOutCurve: Curves.easeInOut,
+        child: KeyedSubtree(
+          key: ValueKey(navigationShell.currentIndex),
+          child: navigationShell,
+        ),
+      ),
       bottomNavigationBar: AppNavBar(
         selectedIndex: navigationShell.currentIndex,
         items: [

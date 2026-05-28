@@ -34,10 +34,44 @@ class HiveContentRepository implements ContentRepository {
   }
 
   @override
+  Future<void> addMany(List<Content> entities) async {
+    try {
+      await _box.putAll({
+        for (final entity in entities) entity.id: ContentHiveModel.fromEntity(entity),
+      });
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
   Future<Content> updateOne(Content entity) async {
     try {
+      if (!_box.containsKey(entity.id)) {
+        throw DatasourceException('HiveContentRepository', 'entity with id "${entity.id}" not found');
+      }
       await _box.put(entity.id, ContentHiveModel.fromEntity(entity));
       return entity;
+    } on DatasourceException {
+      rethrow;
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
+  Future<void> updateMany(List<Content> entities) async {
+    try {
+      for (final entity in entities) {
+        if (!_box.containsKey(entity.id)) {
+          throw DatasourceException('HiveContentRepository', 'entity with id "${entity.id}" not found');
+        }
+      }
+      await _box.putAll({
+        for (final entity in entities) entity.id: ContentHiveModel.fromEntity(entity),
+      });
+    } on DatasourceException {
+      rethrow;
     } on HiveError catch (error) {
       throw DatasourceException('HiveContentRepository', error);
     }
@@ -65,6 +99,15 @@ class HiveContentRepository implements ContentRepository {
   Future<void> deleteOne(String id) async {
     try {
       await _box.delete(id);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
+  Future<void> deleteMany(List<String> ids) async {
+    try {
+      await _box.deleteAll(ids);
     } on HiveError catch (error) {
       throw DatasourceException('HiveContentRepository', error);
     }
