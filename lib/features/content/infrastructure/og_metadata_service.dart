@@ -36,10 +36,7 @@ class OgMetadataService {
     try {
       final response = await _dio.get<String>(
         url,
-        options: Options(
-          headers: {'User-Agent': 'Mozilla/5.0'},
-          responseType: ResponseType.plain,
-        ),
+        options: Options(headers: {'User-Agent': 'Mozilla/5.0'}, responseType: ResponseType.plain),
       );
       final html = response.data;
       if (html == null) return const OgMetadata();

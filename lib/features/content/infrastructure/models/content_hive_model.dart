@@ -98,9 +98,7 @@ class ContentHiveModel extends HiveObject {
         sizeInBytes: entity.sizeInBytes,
       );
     }
-    throw UnimplementedError(
-      'ContentHiveModel.fromEntity : type ${entity.runtimeType} non supporté.',
-    );
+    throw UnimplementedError('ContentHiveModel.fromEntity : type ${entity.runtimeType} non supporté.');
   }
 
   /// Identifiant unique du contenu.
@@ -242,8 +240,6 @@ class ContentHiveModel extends HiveObject {
         sizeInBytes: sizeInBytes,
       );
     }
-    throw UnimplementedError(
-      'ContentHiveModel._toEntity : type "$type" non supporté.',
-    );
+    throw UnimplementedError('ContentHiveModel._toEntity : type "$type" non supporté.');
   }
 }

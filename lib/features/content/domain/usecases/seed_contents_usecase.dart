@@ -53,11 +53,11 @@ const List<String> _brokenImageFileNames = ['nonexistent_file.jpg', 'missing_ima
 /// - dans la plage (300–600px) → affiché tel quel
 /// - au-dessus du maximum (600px) → clampé à 600
 const List<(int, int)> _imageDimensions = [
-  (1080, 200),  // hauteur sous le min → clampé à 300
-  (1080, 400),  // hauteur dans la plage
-  (1080, 600),  // hauteur exactement au max
-  (1080, 900),  // hauteur au-dessus du max → clampé à 600
-  (400, 350),   // image presque carrée, dans la plage
+  (1080, 200), // hauteur sous le min → clampé à 300
+  (1080, 400), // hauteur dans la plage
+  (1080, 600), // hauteur exactement au max
+  (1080, 900), // hauteur au-dessus du max → clampé à 600
+  (400, 350), // image presque carrée, dans la plage
   (1920, 1080), // paysage HD → clampé à 600
 ];
 

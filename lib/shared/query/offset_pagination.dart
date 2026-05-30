@@ -1,6 +1,5 @@
 import 'package:bedbug/shared/domain/repository.dart';
-import 'package:bedbug/shared/query/cursor_pagination.dart'
-    show CursorPagination;
+import 'package:bedbug/shared/query/cursor_pagination.dart' show CursorPagination;
 import 'package:bedbug/shared/query/pagination_params.dart';
 
 /// Paramètres de pagination par offset pour une requête [Repository.getMany].

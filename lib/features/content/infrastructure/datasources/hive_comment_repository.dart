@@ -7,9 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
 /// Provider de la [Box] Hive des commentaires.
-final hiveCommentBoxProvider = Provider<Box<CommentHiveModel>>(
-  (ref) => Hive.box<CommentHiveModel>('comments'),
-);
+final hiveCommentBoxProvider = Provider<Box<CommentHiveModel>>((ref) => Hive.box<CommentHiveModel>('comments'));
 
 /// Provider du [HiveCommentRepository].
 final commentRepositoryProvider = Provider<CommentRepository>(
@@ -36,9 +34,7 @@ class HiveCommentRepository implements CommentRepository {
   @override
   Future<void> addMany(List<Comment> entities) async {
     try {
-      await _box.putAll({
-        for (final entity in entities) entity.id: CommentHiveModel.fromEntity(entity),
-      });
+      await _box.putAll({for (final entity in entities) entity.id: CommentHiveModel.fromEntity(entity)});
     } on HiveError catch (error) {
       throw DatasourceException('HiveCommentRepository', error);
     }
@@ -67,9 +63,7 @@ class HiveCommentRepository implements CommentRepository {
           throw DatasourceException('HiveCommentRepository', 'entity with id "${entity.id}" not found');
         }
       }
-      await _box.putAll({
-        for (final entity in entities) entity.id: CommentHiveModel.fromEntity(entity),
-      });
+      await _box.putAll({for (final entity in entities) entity.id: CommentHiveModel.fromEntity(entity)});
     } on DatasourceException {
       rethrow;
     } on HiveError catch (error) {
@@ -128,9 +122,7 @@ class HiveCommentRepository implements CommentRepository {
       var results = _box.values.map((model) => model.toEntity()).toList();
 
       if (params.authorId != null) {
-        results = results
-            .where((comment) => comment.authorId == params.authorId)
-            .toList();
+        results = results.where((comment) => comment.authorId == params.authorId).toList();
       }
 
       return Page(items: results, total: results.length);

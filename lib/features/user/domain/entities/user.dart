@@ -6,13 +6,7 @@ class User extends Entity {
   ///
   /// - [pseudo] : nom d'affichage choisi par l'utilisateur.
   /// - [email] : adresse e-mail, nullable car non obligatoire.
-  User({
-    required super.id,
-    required super.createdAt,
-    required super.updatedAt,
-    required this.pseudo,
-    this.email,
-  });
+  User({required super.id, required super.createdAt, required super.updatedAt, required this.pseudo, this.email});
 
   /// Nom d'affichage de l'utilisateur.
   final String pseudo;

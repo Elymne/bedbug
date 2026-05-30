@@ -7,9 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
 /// Provider de la [Box] Hive des contenus.
-final hiveContentBoxProvider = Provider<Box<ContentHiveModel>>(
-  (ref) => Hive.box<ContentHiveModel>('contents'),
-);
+final hiveContentBoxProvider = Provider<Box<ContentHiveModel>>((ref) => Hive.box<ContentHiveModel>('contents'));
 
 /// Provider du [HiveContentRepository].
 final contentRepositoryProvider = Provider<ContentRepository>(
@@ -36,9 +34,7 @@ class HiveContentRepository implements ContentRepository {
   @override
   Future<void> addMany(List<Content> entities) async {
     try {
-      await _box.putAll({
-        for (final entity in entities) entity.id: ContentHiveModel.fromEntity(entity),
-      });
+      await _box.putAll({for (final entity in entities) entity.id: ContentHiveModel.fromEntity(entity)});
     } on HiveError catch (error) {
       throw DatasourceException('HiveContentRepository', error);
     }
@@ -67,9 +63,7 @@ class HiveContentRepository implements ContentRepository {
           throw DatasourceException('HiveContentRepository', 'entity with id "${entity.id}" not found');
         }
       }
-      await _box.putAll({
-        for (final entity in entities) entity.id: ContentHiveModel.fromEntity(entity),
-      });
+      await _box.putAll({for (final entity in entities) entity.id: ContentHiveModel.fromEntity(entity)});
     } on DatasourceException {
       rethrow;
     } on HiveError catch (error) {
@@ -128,9 +122,7 @@ class HiveContentRepository implements ContentRepository {
       var results = _box.values.map((model) => model.toEntity()).toList();
 
       if (params.authorId != null) {
-        results = results
-            .where((content) => content.authorId == params.authorId)
-            .toList();
+        results = results.where((content) => content.authorId == params.authorId).toList();
       }
 
       if (params.orderBy != null) {

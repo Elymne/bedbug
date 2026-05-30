@@ -4,8 +4,7 @@ import 'package:bedbug/shared/domain/repository_params.dart';
 import 'package:bedbug/shared/query/no_pagination.dart';
 
 /// Contrat du repository gérant les [Keychain].
-abstract class KeychainRepository
-    extends Repository<Keychain, KeychainRepositoryParams> {}
+abstract class KeychainRepository extends Repository<Keychain, KeychainRepositoryParams> {}
 
 /// Paramètres de requête du [KeychainRepository].
 class KeychainRepositoryParams extends RepositoryParams<NoPagination> {

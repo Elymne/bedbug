@@ -26,9 +26,7 @@ class KeychainHiveModel extends HiveObject {
       updatedAt: entity.updatedAt.millisecondsSinceEpoch,
       label: entity.label,
       subId: entity.subId,
-      keys: entity.keys
-          .map((key) => PrivateKeyHiveModel.fromValueObject(key))
-          .toList(),
+      keys: entity.keys.map((key) => PrivateKeyHiveModel.fromValueObject(key)).toList(),
     );
   }
 
@@ -81,10 +79,7 @@ class PrivateKeyHiveModel extends HiveObject {
 
   /// Crée un [PrivateKeyHiveModel] depuis un value object [PrivateKey].
   factory PrivateKeyHiveModel.fromValueObject(PrivateKey key) {
-    return PrivateKeyHiveModel(
-      value: key.value,
-      createdAt: key.createdAt.millisecondsSinceEpoch,
-    );
+    return PrivateKeyHiveModel(value: key.value, createdAt: key.createdAt.millisecondsSinceEpoch);
   }
 
   /// Valeur brute de la clé privée.
@@ -98,10 +93,7 @@ class PrivateKeyHiveModel extends HiveObject {
   /// Convertit ce modèle en value object [PrivateKey].
   PrivateKey toValueObject() {
     try {
-      return PrivateKey(
-        value: value,
-        createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
-      );
+      return PrivateKey(value: value, createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt));
     } catch (error) {
       throw DataException('PrivateKeyHiveModel', error);
     }

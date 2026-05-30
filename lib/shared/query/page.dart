@@ -20,12 +20,7 @@ class Page<T> {
   ///   pagination par curseur. `null` si dernière page.
   /// - [nextOffset] : décalage à utiliser pour la page suivante, pour la
   ///   pagination par offset. `null` si dernière page.
-  const Page({
-    required this.items,
-    required this.total,
-    this.nextCursor,
-    this.nextOffset,
-  });
+  const Page({required this.items, required this.total, this.nextCursor, this.nextOffset});
 
   /// Documents retournés pour la page courante.
   final List<T> items;

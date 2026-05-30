@@ -84,11 +84,7 @@ class _State extends ConsumerState<AppTitleText> with TickerProviderStateMixin {
     final style = widget.style;
 
     return AnimatedBuilder(
-      animation: Listenable.merge([
-        _revealController,
-        _trembleController,
-        _ghostTrembleController,
-      ]),
+      animation: Listenable.merge([_revealController, _trembleController, _ghostTrembleController]),
       builder: (context, _) {
         final trembleOffset = Offset(
           1.5 * sin(_trembleController.value * pi),
@@ -113,12 +109,7 @@ class _State extends ConsumerState<AppTitleText> with TickerProviderStateMixin {
                       opacity: _letterOpacity(i, text.length),
                       child: Transform.translate(
                         offset: Offset(0, _letterSlideY(i, text.length)),
-                        child: Text(
-                          text[i],
-                          style: (style ?? const TextStyle()).copyWith(
-                            color: AppColors.primary,
-                          ),
-                        ),
+                        child: Text(text[i], style: (style ?? const TextStyle()).copyWith(color: AppColors.primary)),
                       ),
                     ),
                 ],

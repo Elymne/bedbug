@@ -14,8 +14,7 @@ final clearContentsUsecaseProvider = Provider<ClearContentsUsecase>(
 );
 
 /// Supprime l'intégralité des contenus stockés localement.
-class ClearContentsUsecase
-    extends Usecase<NoParams, ClearContentsFailure, void> {
+class ClearContentsUsecase extends Usecase<NoParams, ClearContentsFailure, void> {
   /// Crée un [ClearContentsUsecase].
   ClearContentsUsecase(this._contentRepository);
 

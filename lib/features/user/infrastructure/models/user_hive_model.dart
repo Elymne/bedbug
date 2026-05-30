@@ -15,13 +15,7 @@ class UserHiveModel extends HiveObject {
   /// - [updatedAt] : date de mise à jour en millisecondes depuis l'époque.
   /// - [pseudo] : nom d'affichage de l'utilisateur.
   /// - [email] : adresse e-mail, nullable.
-  UserHiveModel({
-    required this.id,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.pseudo,
-    this.email,
-  });
+  UserHiveModel({required this.id, required this.createdAt, required this.updatedAt, required this.pseudo, this.email});
 
   /// Crée un [UserHiveModel] depuis une entité [User].
   factory UserHiveModel.fromEntity(User entity) {

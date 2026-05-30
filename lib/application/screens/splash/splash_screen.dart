@@ -41,11 +41,7 @@ class _State extends ConsumerState<SplashScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SplashBedbug(
-                style: TextStyle(
-                  fontFamily: 'DynaPuff',
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontFamily: 'DynaPuff', fontSize: 36, fontWeight: FontWeight.bold),
               ),
               AppTitleText(
                 text: l10n.title,

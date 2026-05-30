@@ -6,15 +6,10 @@ class UserSettings extends ValueObject {
   ///
   /// - [blockedUrls] : liste des URLs bloquées (images, liens).
   /// - [blockedWords] : liste des mots bloqués dans les contenus.
-  const UserSettings({
-    required this.blockedUrls,
-    required this.blockedWords,
-  });
+  const UserSettings({required this.blockedUrls, required this.blockedWords});
 
   /// Retourne une instance [UserSettings] avec toutes les listes vides.
-  const UserSettings.empty()
-      : blockedUrls = const [],
-        blockedWords = const [];
+  const UserSettings.empty() : blockedUrls = const [], blockedWords = const [];
 
   /// Liste des URLs bloquées par l'utilisateur.
   final List<String> blockedUrls;
@@ -23,13 +18,7 @@ class UserSettings extends ValueObject {
   final List<String> blockedWords;
 
   /// Retourne une copie de ces settings avec les champs fournis modifiés.
-  UserSettings copyWith({
-    List<String>? blockedUrls,
-    List<String>? blockedWords,
-  }) {
-    return UserSettings(
-      blockedUrls: blockedUrls ?? this.blockedUrls,
-      blockedWords: blockedWords ?? this.blockedWords,
-    );
+  UserSettings copyWith({List<String>? blockedUrls, List<String>? blockedWords}) {
+    return UserSettings(blockedUrls: blockedUrls ?? this.blockedUrls, blockedWords: blockedWords ?? this.blockedWords);
   }
 }

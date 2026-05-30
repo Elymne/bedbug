@@ -16,21 +16,16 @@ final getContentsUsecaseProvider = Provider<GetContentsUsecase>(
 );
 
 /// Récupère tous les contenus, triés du plus récent au plus ancien par défaut.
-class GetContentsUsecase
-    extends Usecase<GetContentsParams, GetContentsFailure, List<Content>> {
+class GetContentsUsecase extends Usecase<GetContentsParams, GetContentsFailure, List<Content>> {
   /// Crée un [GetContentsUsecase].
   GetContentsUsecase(this._contentRepository);
 
   final ContentRepository _contentRepository;
 
   @override
-  Future<Either<GetContentsFailure, List<Content>>> call(
-    GetContentsParams params,
-  ) async {
+  Future<Either<GetContentsFailure, List<Content>>> call(GetContentsParams params) async {
     try {
-      final page = await _contentRepository.getMany(
-        ContentRepositoryParams(orderBy: params.orderBy),
-      );
+      final page = await _contentRepository.getMany(ContentRepositoryParams(orderBy: params.orderBy));
       return Right(page.items);
     } on DataException catch (error, stackTrace) {
       AppLogger.error('GetContentsUsecase', error, stackTrace);
@@ -63,9 +58,7 @@ class GetContentsParams extends Params {
   ///
   /// - [orderBy] : tri appliqué aux résultats. Par défaut, du plus récent
   ///   au plus ancien.
-  const GetContentsParams({
-    this.orderBy = const OrderBy('createdAt', descending: true),
-  });
+  const GetContentsParams({this.orderBy = const OrderBy('createdAt', descending: true)});
 
   /// Tri appliqué aux résultats.
   final OrderBy orderBy;

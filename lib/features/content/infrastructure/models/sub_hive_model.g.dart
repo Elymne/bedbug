@@ -13,9 +13,7 @@ class SubHiveModelAdapter extends TypeAdapter<SubHiveModel> {
   @override
   SubHiveModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
+    final fields = <int, dynamic>{for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read()};
     return SubHiveModel(
       id: fields[0] as String,
       createdAt: (fields[1] as num).toInt(),
@@ -47,7 +45,5 @@ class SubHiveModelAdapter extends TypeAdapter<SubHiveModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SubHiveModelAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+      other is SubHiveModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }

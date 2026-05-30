@@ -47,45 +47,20 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: splashPath,
     refreshListenable: refreshNotifier,
     redirect: (context, state) => null,
-    errorPageBuilder: (context, state) => const NoTransitionPage(
-      child: ErrorRoutePage(message: 'Page not found'),
-    ),
+    errorPageBuilder: (context, state) => const NoTransitionPage(child: ErrorRoutePage(message: 'Page not found')),
     routes: [
-      GoRoute(
-        path: splashPath,
-        pageBuilder: (context, state) =>
-            _fadePage(const SplashScreen()),
-      ),
+      GoRoute(path: splashPath, pageBuilder: (context, state) => _fadePage(const SplashScreen())),
       StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) =>
-            Shell(navigationShell: navigationShell),
+        builder: (context, state, navigationShell) => Shell(navigationShell: navigationShell),
         branches: [
           StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: homePath,
-                pageBuilder: (context, state) =>
-                    _fadePage(const HomeScreen()),
-              ),
-            ],
+            routes: [GoRoute(path: homePath, pageBuilder: (context, state) => _fadePage(const HomeScreen()))],
           ),
           StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: createPath,
-                pageBuilder: (context, state) =>
-                    _fadePage(const CreateScreen()),
-              ),
-            ],
+            routes: [GoRoute(path: createPath, pageBuilder: (context, state) => _fadePage(const CreateScreen()))],
           ),
           StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: settingsPath,
-                pageBuilder: (context, state) =>
-                    _fadePage(const SettingsScreen()),
-              ),
-            ],
+            routes: [GoRoute(path: settingsPath, pageBuilder: (context, state) => _fadePage(const SettingsScreen()))],
           ),
         ],
       ),

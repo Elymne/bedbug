@@ -10,9 +10,7 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 const String _settingsKey = 'user_settings';
 
 /// Provider de la [Box] Hive des settings.
-final hiveSettingsBoxProvider = Provider<Box<SettingsHiveModel>>(
-  (ref) => Hive.box<SettingsHiveModel>('settings'),
-);
+final hiveSettingsBoxProvider = Provider<Box<SettingsHiveModel>>((ref) => Hive.box<SettingsHiveModel>('settings'));
 
 /// Provider du [HiveSettingsRepository].
 final settingsRepositoryProvider = Provider<SettingsRepository>(

@@ -12,17 +12,11 @@ class SettingsHiveModel extends HiveObject {
   ///
   /// - [blockedUrls] : liste des URLs bloquées.
   /// - [blockedWords] : liste des mots bloqués.
-  SettingsHiveModel({
-    required this.blockedUrls,
-    required this.blockedWords,
-  });
+  SettingsHiveModel({required this.blockedUrls, required this.blockedWords});
 
   /// Crée un [SettingsHiveModel] depuis un [UserSettings].
   factory SettingsHiveModel.fromEntity(UserSettings entity) {
-    return SettingsHiveModel(
-      blockedUrls: entity.blockedUrls,
-      blockedWords: entity.blockedWords,
-    );
+    return SettingsHiveModel(blockedUrls: entity.blockedUrls, blockedWords: entity.blockedWords);
   }
 
   /// Liste des URLs bloquées par l'utilisateur.
@@ -36,10 +30,7 @@ class SettingsHiveModel extends HiveObject {
   /// Convertit ce modèle en [UserSettings].
   UserSettings toEntity() {
     try {
-      return UserSettings(
-        blockedUrls: blockedUrls,
-        blockedWords: blockedWords,
-      );
+      return UserSettings(blockedUrls: blockedUrls, blockedWords: blockedWords);
     } catch (error) {
       throw DataException('SettingsHiveModel', error);
     }

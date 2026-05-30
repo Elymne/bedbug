@@ -7,9 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
 /// Provider de la [Box] Hive des portefeuilles de clés.
-final hiveKeychainBoxProvider = Provider<Box<KeychainHiveModel>>(
-  (ref) => Hive.box<KeychainHiveModel>('keychains'),
-);
+final hiveKeychainBoxProvider = Provider<Box<KeychainHiveModel>>((ref) => Hive.box<KeychainHiveModel>('keychains'));
 
 /// Provider du [HiveKeychainRepository].
 final keychainRepositoryProvider = Provider<KeychainRepository>(
@@ -36,9 +34,7 @@ class HiveKeychainRepository implements KeychainRepository {
   @override
   Future<void> addMany(List<Keychain> entities) async {
     try {
-      await _box.putAll({
-        for (final entity in entities) entity.id: KeychainHiveModel.fromEntity(entity),
-      });
+      await _box.putAll({for (final entity in entities) entity.id: KeychainHiveModel.fromEntity(entity)});
     } on HiveError catch (error) {
       throw DatasourceException('HiveKeychainRepository', error);
     }
@@ -67,9 +63,7 @@ class HiveKeychainRepository implements KeychainRepository {
           throw DatasourceException('HiveKeychainRepository', 'entity with id "${entity.id}" not found');
         }
       }
-      await _box.putAll({
-        for (final entity in entities) entity.id: KeychainHiveModel.fromEntity(entity),
-      });
+      await _box.putAll({for (final entity in entities) entity.id: KeychainHiveModel.fromEntity(entity)});
     } on DatasourceException {
       rethrow;
     } on HiveError catch (error) {
@@ -128,9 +122,7 @@ class HiveKeychainRepository implements KeychainRepository {
       var results = _box.values.map((model) => model.toEntity()).toList();
 
       if (params.subId != null) {
-        results = results
-            .where((keychain) => keychain.subId == params.subId)
-            .toList();
+        results = results.where((keychain) => keychain.subId == params.subId).toList();
       }
 
       return Page(items: results, total: results.length);

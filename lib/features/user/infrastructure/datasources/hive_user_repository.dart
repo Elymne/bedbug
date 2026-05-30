@@ -7,14 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
 /// Provider de la [Box] Hive des utilisateurs.
-final hiveUserBoxProvider = Provider<Box<UserHiveModel>>(
-  (ref) => Hive.box<UserHiveModel>('users'),
-);
+final hiveUserBoxProvider = Provider<Box<UserHiveModel>>((ref) => Hive.box<UserHiveModel>('users'));
 
 /// Provider du [HiveUserRepository].
-final userRepositoryProvider = Provider<UserRepository>(
-  (ref) => HiveUserRepository(ref.read(hiveUserBoxProvider)),
-);
+final userRepositoryProvider = Provider<UserRepository>((ref) => HiveUserRepository(ref.read(hiveUserBoxProvider)));
 
 /// Implémentation de [UserRepository] utilisant Hive comme stockage local.
 class HiveUserRepository implements UserRepository {
@@ -36,9 +32,7 @@ class HiveUserRepository implements UserRepository {
   @override
   Future<void> addMany(List<User> entities) async {
     try {
-      await _box.putAll({
-        for (final entity in entities) entity.id: UserHiveModel.fromEntity(entity),
-      });
+      await _box.putAll({for (final entity in entities) entity.id: UserHiveModel.fromEntity(entity)});
     } on HiveError catch (error) {
       throw DatasourceException('HiveUserRepository', error);
     }
@@ -67,9 +61,7 @@ class HiveUserRepository implements UserRepository {
           throw DatasourceException('HiveUserRepository', 'entity with id "${entity.id}" not found');
         }
       }
-      await _box.putAll({
-        for (final entity in entities) entity.id: UserHiveModel.fromEntity(entity),
-      });
+      await _box.putAll({for (final entity in entities) entity.id: UserHiveModel.fromEntity(entity)});
     } on DatasourceException {
       rethrow;
     } on HiveError catch (error) {
@@ -128,13 +120,7 @@ class HiveUserRepository implements UserRepository {
       var results = _box.values.map((model) => model.toEntity()).toList();
 
       if (params.pseudo != null) {
-        results = results
-            .where(
-              (user) => user.pseudo.toLowerCase().contains(
-                params.pseudo!.toLowerCase(),
-              ),
-            )
-            .toList();
+        results = results.where((user) => user.pseudo.toLowerCase().contains(params.pseudo!.toLowerCase())).toList();
       }
 
       return Page(items: results, total: results.length);

@@ -14,13 +14,7 @@ class AppFileImage extends StatelessWidget {
   /// - [width] : largeur de la zone image.
   /// - [height] : hauteur de la zone image.
   /// - [borderRadius] : rayon des coins arrondis (défaut : 8).
-  const AppFileImage({
-    super.key,
-    required this.file,
-    required this.width,
-    required this.height,
-    this.borderRadius = 8,
-  });
+  const AppFileImage({super.key, required this.file, required this.width, required this.height, this.borderRadius = 8});
 
   /// Fichier image local. `null` affiche le placeholder.
   final File? file;

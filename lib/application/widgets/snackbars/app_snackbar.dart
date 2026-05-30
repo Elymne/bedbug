@@ -20,11 +20,7 @@ class AppSnackbar {
   }
 
   /// Affiche une snackbar avec le [message] et la [backgroundColor] fournis.
-  static void _show(
-    BuildContext context, {
-    required String message,
-    required Color backgroundColor,
-  }) {
+  static void _show(BuildContext context, {required String message, required Color backgroundColor}) {
     if (messengerKey.currentState == null) return;
     messengerKey.currentState!
       ..hideCurrentSnackBar()

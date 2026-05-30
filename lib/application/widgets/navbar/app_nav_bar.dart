@@ -20,12 +20,7 @@ class AppNavBarItem {
 /// de ghost animé en [AppColors.primary], identique à l'effet du splashscreen.
 class AppNavBar extends ConsumerWidget {
   /// Crée une [AppNavBar].
-  const AppNavBar({
-    super.key,
-    required this.selectedIndex,
-    required this.onTap,
-    required this.items,
-  });
+  const AppNavBar({super.key, required this.selectedIndex, required this.onTap, required this.items});
 
   /// Index de l'item actuellement sélectionné.
   final int selectedIndex;
@@ -68,12 +63,7 @@ class AppNavBar extends ConsumerWidget {
 /// Item individuel de la [AppNavBar] avec effet ghost animé si sélectionné.
 class _NavBarItemWidget extends ConsumerStatefulWidget {
   /// Crée un [_NavBarItemWidget].
-  const _NavBarItemWidget({
-    super.key,
-    required this.item,
-    required this.isSelected,
-    required this.onTap,
-  });
+  const _NavBarItemWidget({super.key, required this.item, required this.isSelected, required this.onTap});
 
   /// Données de l'item.
   final AppNavBarItem item;
@@ -88,8 +78,7 @@ class _NavBarItemWidget extends ConsumerStatefulWidget {
   ConsumerState<_NavBarItemWidget> createState() => _State();
 }
 
-class _State extends ConsumerState<_NavBarItemWidget>
-    with TickerProviderStateMixin {
+class _State extends ConsumerState<_NavBarItemWidget> with TickerProviderStateMixin {
   /// Contrôleur du pulse (scale) du ghost.
   late final AnimationController _pulseController = AnimationController(
     duration: const Duration(milliseconds: 1_200),
@@ -155,32 +144,23 @@ class _State extends ConsumerState<_NavBarItemWidget>
         child: SizedBox(
           width: 64,
           height: 56,
-          child: Center(
-            child: widget.isSelected ? _buildGhostIcon() : _buildNormalIcon(),
-          ),
+          child: Center(child: widget.isSelected ? _buildGhostIcon() : _buildNormalIcon()),
         ),
       ),
     );
   }
 
   /// Icône sans aucun effet (item non sélectionné).
-  Widget _buildNormalIcon() =>
-      Icon(widget.item.icon, color: AppColors.disabled, size: 26);
+  Widget _buildNormalIcon() => Icon(widget.item.icon, color: AppColors.disabled, size: 26);
 
   /// Icône principale statique avec ghost animé (pulse + léger tremblement).
   Widget _buildGhostIcon() {
     return AnimatedBuilder(
       animation: Listenable.merge([_pulseController, _ghostTrembleController]),
       builder: (context, _) {
-        final ghostOffset = Offset(
-          2.8 * _ghostTrembleController.value,
-          1.8 * _ghostTrembleController.value,
-        );
+        final ghostOffset = Offset(2.8 * _ghostTrembleController.value, 1.8 * _ghostTrembleController.value);
 
-        final iconOffset = Offset(
-          1.5 * _ghostTrembleController.value,
-          0.6 * _ghostTrembleController.value,
-        );
+        final iconOffset = Offset(1.5 * _ghostTrembleController.value, 0.6 * _ghostTrembleController.value);
 
         return SizedBox(
           width: 26,
@@ -191,19 +171,11 @@ class _State extends ConsumerState<_NavBarItemWidget>
             children: [
               Transform.translate(
                 offset: ghostOffset,
-                child: Icon(
-                  widget.item.icon,
-                  color: AppColors.primary,
-                  size: 26,
-                ),
+                child: Icon(widget.item.icon, color: AppColors.primary, size: 26),
               ),
               Transform.translate(
                 offset: iconOffset,
-                child: Icon(
-                  widget.item.icon,
-                  color: AppColors.onLight,
-                  size: 26,
-                ),
+                child: Icon(widget.item.icon, color: AppColors.onLight, size: 26),
               ),
             ],
           ),

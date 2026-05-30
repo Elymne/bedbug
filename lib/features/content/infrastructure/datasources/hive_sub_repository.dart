@@ -7,14 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
 /// Provider de la [Box] Hive des subs.
-final hiveSubBoxProvider = Provider<Box<SubHiveModel>>(
-  (ref) => Hive.box<SubHiveModel>('subs'),
-);
+final hiveSubBoxProvider = Provider<Box<SubHiveModel>>((ref) => Hive.box<SubHiveModel>('subs'));
 
 /// Provider du [HiveSubRepository].
-final subRepositoryProvider = Provider<SubRepository>(
-  (ref) => HiveSubRepository(ref.read(hiveSubBoxProvider)),
-);
+final subRepositoryProvider = Provider<SubRepository>((ref) => HiveSubRepository(ref.read(hiveSubBoxProvider)));
 
 /// Implémentation de [SubRepository] utilisant Hive comme stockage local.
 class HiveSubRepository implements SubRepository {
@@ -36,9 +32,7 @@ class HiveSubRepository implements SubRepository {
   @override
   Future<void> addMany(List<Sub> entities) async {
     try {
-      await _box.putAll({
-        for (final entity in entities) entity.id: SubHiveModel.fromEntity(entity),
-      });
+      await _box.putAll({for (final entity in entities) entity.id: SubHiveModel.fromEntity(entity)});
     } on HiveError catch (error) {
       throw DatasourceException('HiveSubRepository', error);
     }
@@ -67,9 +61,7 @@ class HiveSubRepository implements SubRepository {
           throw DatasourceException('HiveSubRepository', 'entity with id "${entity.id}" not found');
         }
       }
-      await _box.putAll({
-        for (final entity in entities) entity.id: SubHiveModel.fromEntity(entity),
-      });
+      await _box.putAll({for (final entity in entities) entity.id: SubHiveModel.fromEntity(entity)});
     } on DatasourceException {
       rethrow;
     } on HiveError catch (error) {
