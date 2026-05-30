@@ -29,6 +29,8 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       body: fields[6] as String?,
       url: fields[10] as String?,
       fileName: fields[11] as String?,
+      imageWidth: (fields[17] as num?)?.toInt(),
+      imageHeight: (fields[18] as num?)?.toInt(),
       subId: fields[12] as String?,
       sizeInBytes: (fields[13] as num).toInt(),
       ogImageUrl: fields[14] as String?,
@@ -40,7 +42,7 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
   @override
   void write(BinaryWriter writer, ContentHiveModel obj) {
     writer
-      ..writeByte(17)
+      ..writeByte(19)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -74,7 +76,11 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       ..writeByte(15)
       ..write(obj.ogTitle)
       ..writeByte(16)
-      ..write(obj.ogDescription);
+      ..write(obj.ogDescription)
+      ..writeByte(17)
+      ..write(obj.imageWidth)
+      ..writeByte(18)
+      ..write(obj.imageHeight);
   }
 
   @override

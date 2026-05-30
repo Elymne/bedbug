@@ -34,6 +34,8 @@ class ContentHiveModel extends HiveObject {
     this.body,
     this.url,
     this.fileName,
+    this.imageWidth,
+    this.imageHeight,
     this.subId,
     required this.sizeInBytes,
     this.ogImageUrl,
@@ -88,6 +90,8 @@ class ContentHiveModel extends HiveObject {
         bounce: entity.bounce,
         senderId: entity.senderId,
         fileName: entity.fileName,
+        imageWidth: entity.imageWidth,
+        imageHeight: entity.imageHeight,
         title: entity.title,
         body: entity.body,
         subId: entity.subId,
@@ -147,6 +151,14 @@ class ContentHiveModel extends HiveObject {
   /// Renseigné pour [ImageContent] uniquement.
   @HiveField(11)
   final String? fileName;
+
+  /// Largeur native de l'image en pixels. Renseigné pour [ImageContent] uniquement.
+  @HiveField(17)
+  final int? imageWidth;
+
+  /// Hauteur native de l'image en pixels. Renseigné pour [ImageContent] uniquement.
+  @HiveField(18)
+  final int? imageHeight;
 
   /// Identifiant du sub auquel appartient ce contenu.
   /// `null` si le contenu est purement public.
@@ -222,6 +234,8 @@ class ContentHiveModel extends HiveObject {
         bounce: bounce,
         senderId: senderId,
         fileName: fileName!,
+        imageWidth: imageWidth!,
+        imageHeight: imageHeight!,
         title: title,
         body: body,
         subId: subId,

@@ -37,7 +37,7 @@ class LinkContentWidget extends ConsumerWidget {
                 content.ogTitle ?? content.url,
                 style: AppTextStyles.contentTitle,
                 maxLines: 5,
-                overflow: TextOverflow.ellipsis,
+                overflow: TextOverflow.fade,
               ),
             ),
             AppNetworkImage(url: content.ogImageUrl, width: imageWidth, height: _ogImageHeight),

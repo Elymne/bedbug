@@ -26,7 +26,8 @@ class TextContentWidget extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(content.title, style: AppTextStyles.contentTitle, maxLines: 4, overflow: TextOverflow.ellipsis),
-            if (isTitleSingleLine) Text(content.body, style: AppTextStyles.contentPreview, maxLines: 3, overflow: TextOverflow.ellipsis),
+            if (isTitleSingleLine)
+              Text(content.body, style: AppTextStyles.contentPreview, maxLines: 3, overflow: TextOverflow.fade),
           ],
         );
       },

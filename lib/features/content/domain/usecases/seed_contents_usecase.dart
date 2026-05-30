@@ -46,6 +46,21 @@ const List<String> _validImageFileNames = [
 /// Noms de fichiers image intentionnellement cassés pour tester les états d'erreur.
 const List<String> _brokenImageFileNames = ['nonexistent_file.jpg', 'missing_image.png', 'corrupt.xyz', ''];
 
+/// Dimensions natives (largeur, hauteur) des images de seed.
+///
+/// Couvre les trois zones de la hauteur d'affichage :
+/// - sous le minimum (300px) → clampé à 300
+/// - dans la plage (300–600px) → affiché tel quel
+/// - au-dessus du maximum (600px) → clampé à 600
+const List<(int, int)> _imageDimensions = [
+  (1080, 200),  // hauteur sous le min → clampé à 300
+  (1080, 400),  // hauteur dans la plage
+  (1080, 600),  // hauteur exactement au max
+  (1080, 900),  // hauteur au-dessus du max → clampé à 600
+  (400, 350),   // image presque carrée, dans la plage
+  (1920, 1080), // paysage HD → clampé à 600
+];
+
 /// Titres courts pour [TextContent] et [LinkContent].
 const List<String> _shortTitles = ['Note rapide', 'Idée', 'À lire', 'Info', 'Rappel'];
 
@@ -163,6 +178,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     final isBroken = index % 4 == 0;
     final fileNames = isBroken ? _brokenImageFileNames : _validImageFileNames;
     final fileName = fileNames[index % fileNames.length];
+    final dimensions = _imageDimensions[index % _imageDimensions.length];
 
     final hasTitle = index % 3 != 0;
     final hasBody = index % 5 != 0;
@@ -178,6 +194,8 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       sizeInBytes: isBroken ? 0 : 204800,
       subId: subId,
       fileName: fileName,
+      imageWidth: dimensions.$1,
+      imageHeight: dimensions.$2,
       title: hasTitle ? 'Image #${index + 1}' : null,
       body: hasBody ? _shortBodies[index % _shortBodies.length] : null,
     );
@@ -188,8 +206,6 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     final isBroken = index % 3 == 0;
     final urls = isBroken ? _brokenUrls : _validUrls;
     final url = urls[index % urls.length];
-
-    final hasOg = !isBroken && index % 2 == 0;
 
     return LinkContent(
       id: UuidX.generate(),
@@ -202,9 +218,9 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       sizeInBytes: 0,
       subId: subId,
       url: url,
-      ogImageUrl: hasOg ? 'https://og-image-that-does-not-exist.invalid/img.png' : null,
-      ogTitle: hasOg ? 'OG Title #${index + 1}' : null,
-      ogDescription: hasOg ? 'Description Open Graph du lien #${index + 1}.' : null,
+      ogImageUrl: isBroken ? null : 'https://www.leoxa.fr/wp-content/uploads/2023/02/flutter.png',
+      ogTitle: isBroken ? null : 'OG Title #${index + 1}',
+      ogDescription: isBroken ? null : 'Description Open Graph du lien #${index + 1}.',
     );
   }
 }
