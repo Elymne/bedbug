@@ -201,8 +201,6 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       bounce: bounce,
       sizeInBytes: 0,
       subId: subId,
-      title: 'Lien #${index + 1}',
-      body: _shortBodies[index % _shortBodies.length],
       url: url,
       ogImageUrl: hasOg ? 'https://og-image-that-does-not-exist.invalid/img.png' : null,
       ogTitle: hasOg ? 'OG Title #${index + 1}' : null,

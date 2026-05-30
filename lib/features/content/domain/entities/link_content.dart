@@ -1,12 +1,13 @@
 import 'package:bedbug/features/content/domain/entities/content.dart';
 
-/// Contenu de type lien, composé d'un titre, d'un corps et d'une URL.
+/// Contenu de type lien, composé d'une URL et de métadonnées Open Graph optionnelles.
 class LinkContent extends Content {
   /// Crée un [LinkContent].
   ///
-  /// - [title] : titre du lien.
-  /// - [body] : description du lien.
   /// - [url] : URL pointée par ce contenu.
+  /// - [ogImageUrl] : URL de l'image Open Graph.
+  /// - [ogTitle] : titre Open Graph.
+  /// - [ogDescription] : description Open Graph.
   LinkContent({
     required super.id,
     required super.createdAt,
@@ -17,19 +18,11 @@ class LinkContent extends Content {
     required super.senderId,
     required super.sizeInBytes,
     super.subId,
-    required this.title,
-    required this.body,
     required this.url,
     this.ogImageUrl,
     this.ogTitle,
     this.ogDescription,
   });
-
-  /// Titre du lien.
-  final String title;
-
-  /// Description du lien.
-  final String body;
 
   /// URL pointée par ce contenu.
   final String url;
