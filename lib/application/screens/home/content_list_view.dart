@@ -8,11 +8,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Affiche la liste des contenus ou un message vide avec un bouton de reload.
 ///
 /// - [contents] : liste des contenus à afficher.
-class ContentList extends ConsumerWidget {
-  /// Crée un [ContentList].
+class ContentListView extends ConsumerWidget {
+  /// Crée un [ContentListView].
   ///
   /// - [contents] : liste des contenus à afficher.
-  const ContentList({super.key, required this.contents});
+  const ContentListView({super.key, required this.contents});
 
   /// Liste des contenus à afficher.
   final List<Content> contents;
@@ -29,7 +29,10 @@ class ContentList extends ConsumerWidget {
           children: [
             Text(l10n.homeEmptyList),
             TextButton(
-              onPressed: () => ref.read(homeNotifierProvider.notifier).seedAndReload(),
+              onPressed: () {
+                final notifier = ref.read(homeNotifierProvider.notifier);
+                notifier.seedAndReload();
+              },
               child: Text(l10n.homeSeedButton),
             ),
           ],
@@ -37,8 +40,9 @@ class ContentList extends ConsumerWidget {
       );
     }
 
-    return ListView.builder(
+    return ListView.separated(
       itemCount: contents.length,
+      separatorBuilder: (context, index) => const Divider(height: 1),
       itemBuilder: (context, index) => ContentWidget(content: contents[index]),
     );
   }
