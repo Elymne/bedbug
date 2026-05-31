@@ -4,9 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Provider du [LocaleNotifier].
-final localeNotifierProvider = NotifierProvider<LocaleNotifier, Locale>(
-  LocaleNotifier.new,
-);
+final localeNotifierProvider = NotifierProvider<LocaleNotifier, Locale>(LocaleNotifier.new);
 
 /// Notifier gérant la locale active de l'application.
 ///

@@ -1,3 +1,4 @@
+import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/splash/splash_notifier.dart';
 import 'package:bedbug/application/screens/splash/widgets/app_title_text.dart';
 import 'package:bedbug/application/screens/splash/widgets/splash_bedbug.dart';
@@ -6,6 +7,7 @@ import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Splashscreen de l'application.
 ///
@@ -25,9 +27,8 @@ class _State extends ConsumerState<SplashScreen> {
     final l10n = context.loc;
 
     ref.listen(splashNotifierProvider, (previous, next) {
-      if (previous?.isLoading == true && next.hasValue) {
-        debugPrint('Aaaaand start the new screen !');
-      }
+      if (next.isLoading) return;
+      if (next.hasValue) context.go(homePath);
     });
 
     return Scaffold(
@@ -40,11 +41,7 @@ class _State extends ConsumerState<SplashScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SplashBedbug(
-                style: TextStyle(
-                  fontFamily: 'DynaPuff',
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontFamily: 'DynaPuff', fontSize: 36, fontWeight: FontWeight.bold),
               ),
               AppTitleText(
                 text: l10n.title,

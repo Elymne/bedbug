@@ -1,17 +1,21 @@
-/// Codes d'erreur pour les opérations de lecture et de parsing des données.
-enum DataExceptionCode {
-  /// Le document lu ne respecte pas la structure attendue.
-  invalidFormat,
-}
-
-/// Exception de domaine pour les erreurs d'intégrité des données.
+/// Exception levée lorsque la donnée lue est invalide ou corrompue.
 ///
-/// Levée par les repositories lorsque les données reçues d'une source externe
-/// (Firestore, API, etc.) ne correspondent pas à la structure des entités du domaine.
+/// Indique un problème sur la **donnée elle-même** : schéma invalide,
+/// champ manquant, type inattendu. Levée dans les méthodes `toEntity()`
+/// des modèles lors de la désérialisation.
 class DataException implements Exception {
-  /// Crée une [DataException] avec le [code] d'erreur fourni.
-  DataException(this.code);
+  /// Crée une [DataException].
+  ///
+  /// - [source] : nom du modèle où l'erreur s'est produite.
+  /// - [cause] : erreur originale ayant déclenché l'exception.
+  const DataException(this.source, this.cause);
 
-  /// Code identifiant la nature de l'erreur.
-  final DataExceptionCode code;
+  /// Nom du modèle où la désérialisation a échoué.
+  final String source;
+
+  /// Erreur originale ayant déclenché l'exception.
+  final Object cause;
+
+  @override
+  String toString() => 'DataException[$source]: $cause';
 }

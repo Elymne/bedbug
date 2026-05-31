@@ -1,4 +1,4 @@
-import 'package:bedbug/app_root.dart';
+import 'package:bedbug/application/app_root.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -20,11 +20,7 @@ class AppSnackbar {
   }
 
   /// Affiche une snackbar avec le [message] et la [backgroundColor] fournis.
-  static void _show(
-    BuildContext context, {
-    required String message,
-    required Color backgroundColor,
-  }) {
+  static void _show(BuildContext context, {required String message, required Color backgroundColor}) {
     if (messengerKey.currentState == null) return;
     messengerKey.currentState!
       ..hideCurrentSnackBar()

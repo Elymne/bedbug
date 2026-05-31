@@ -2,23 +2,20 @@
 
 ## General
 
-- Line length: **80 characters** (`dart.lineLength: 80`).
-- Prefer block functions over arrow functions. Use `=>` only if the full expression fits in under 60 characters on one line:
+- Line length: **120 characters** (`dart.lineLength: 120`).
+- Prefer block functions over arrow functions. Never use `=>` on named functions (methods, getters, top-level functions). Reserve `=>` strictly for lambdas (anonymous functions passed as arguments or assigned to variables):
 
   ```dart
-  // ✅ OK — short and readable
-  String get label => user.fullName;
+  // ✅ OK — lambda in a collection
+  users.map((user) => user.fullName);
 
-  // ✅ OK — block for longer expressions
+  // ✅ OK — block for named functions, even short ones
   String format(String value) {
     return value.trim().toLowerCase();
   }
 
-  // ❌ Avoid
-  String format(String value) => value
-      .trim()
-      .toLowerCase()
-      .replaceAll(' ', '_');
+  // ❌ Avoid — arrow on a named function
+  String format(String value) => value.trim().toLowerCase();
   ```
 
 - Follow `analysis_options.yaml` strictly (strict-casts, strict-inference, strict-raw-types, prefer*const*\*, avoid_dynamic_calls, etc.).

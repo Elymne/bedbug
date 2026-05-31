@@ -38,10 +38,6 @@ class AppLoadingButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: isLoading ? null : onTap,
-      style: style,
-      child: isLoading ? loadingChild : child,
-    );
+    return ElevatedButton(onPressed: isLoading ? null : onTap, style: style, child: isLoading ? loadingChild : child);
   }
 }

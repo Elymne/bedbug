@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(del *)"
+      "Bash(del *)",
+      "Bash(dart run *)",
+      "Bash(flutter pub *)",
+      "Bash(dart analyze *)",
+      "Bash(Remove-Item *)",
+      "Bash(dart pub *)",
+      "Bash(flutter gen-l10n *)",
+      "Bash(sed -i \"s|package:bedbug/application/widgets/contents/content_item_widget.dart|package:bedbug/application/screens/home/content_item_widget.dart|g\" \"C:\\\\Development\\\\flutter\\\\bedbug\\\\lib\\\\application\\\\screens\\\\home\\\\content_list_widget.dart\")",
+      "Bash(sed -i \"s|package:bedbug/application/widgets/contents/content_list_widget.dart|package:bedbug/application/screens/home/content_list_widget.dart|g\" \"C:\\\\Development\\\\flutter\\\\bedbug\\\\lib\\\\application\\\\screens\\\\home\\\\home_screen.dart\")"
     ]
   }
 }
