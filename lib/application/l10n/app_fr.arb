@@ -3,5 +3,37 @@
   "title": "BEDBUG",
   "@title": {
     "description": "Titre de l'application"
+  },
+  "navHomeLabel": "Accueil",
+  "@navHomeLabel": {
+    "description": "Label sémantique de l'item Home dans la barre de navigation"
+  },
+  "navCreateLabel": "Créer",
+  "@navCreateLabel": {
+    "description": "Label sémantique de l'item Créer dans la barre de navigation"
+  },
+  "navSettingsLabel": "Paramètres",
+  "@navSettingsLabel": {
+    "description": "Label sémantique de l'item Paramètres dans la barre de navigation"
+  },
+  "homeGetContentsInvalidData": "Les données sont corrompues ou invalides.",
+  "@homeGetContentsInvalidData": {
+    "description": "Erreur affichée sur l'accueil quand les données lues sont invalides"
+  },
+  "homeGetContentsStorageError": "Impossible d'accéder au stockage local.",
+  "@homeGetContentsStorageError": {
+    "description": "Erreur affichée sur l'accueil quand le stockage local est inaccessible"
+  },
+  "homeGetContentsUnknown": "Une erreur inattendue est survenue.",
+  "@homeGetContentsUnknown": {
+    "description": "Erreur affichée sur l'accueil lors d'un échec inconnu"
+  },
+  "homeEmptyList": "Aucun contenu disponible.",
+  "@homeEmptyList": {
+    "description": "Message affiché sur l'accueil quand la liste de contenus est vide"
+  },
+  "homeSeedButton": "Charger des données de test",
+  "@homeSeedButton": {
+    "description": "Bouton de chargement de données factices sur l'accueil quand la liste est vide"
   }
 }

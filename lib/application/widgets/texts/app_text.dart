@@ -42,19 +42,15 @@ class _State extends State<AppText> with SingleTickerProviderStateMixin {
     super.initState();
     switch (widget.type) {
       case AppTextType.error:
-        _controller = AnimationController(
-          duration: const Duration(milliseconds: 700),
-          vsync: this,
-        )..forward();
+        _controller = AnimationController(duration: const Duration(milliseconds: 700), vsync: this)..forward();
         _animation = _controller;
       case AppTextType.info:
-        _controller = AnimationController(
-          duration: const Duration(milliseconds: 1400),
-          vsync: this,
-        )..repeat(reverse: true);
-        _animation = Tween<double>(begin: 0.4, end: 1.0).animate(
-          CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-        );
+        _controller = AnimationController(duration: const Duration(milliseconds: 1400), vsync: this)
+          ..repeat(reverse: true);
+        _animation = Tween<double>(
+          begin: 0.4,
+          end: 1.0,
+        ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
     }
   }
 
@@ -74,10 +70,7 @@ class _State extends State<AppText> with SingleTickerProviderStateMixin {
         return AnimatedBuilder(
           animation: _animation,
           builder: (context, child) => Transform.translate(
-            offset: Offset(
-              8.0 * (1.0 - _controller.value) * sin(_controller.value * pi * 6),
-              0,
-            ),
+            offset: Offset(8.0 * (1.0 - _controller.value) * sin(_controller.value * pi * 6), 0),
             child: child,
           ),
           child: Text(message, style: const TextStyle(color: Colors.red)),

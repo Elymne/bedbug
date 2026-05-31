@@ -1,0 +1,10 @@
+{
+  "file_scan_exclusions": [
+    "**/.dart_tool",
+    "**/.git",
+    "**/build",
+
+    "**/*.g.dart",
+    "**/*.freezed.dart",
+  ],
+}

@@ -27,10 +27,7 @@ sealed class Either<L, R> {
   ///
   /// - [onFailure] : appelé avec la valeur d'échec [Left].
   /// - [onSuccess] : appelé avec la valeur de succès [Right].
-  T fold<T>({
-    required T Function(L failure) onFailure,
-    required T Function(R success) onSuccess,
-  }) => switch (this) {
+  T fold<T>({required T Function(L failure) onFailure, required T Function(R success) onSuccess}) => switch (this) {
     Left<L, R>(:final value) => onFailure(value),
     Right<L, R>(:final value) => onSuccess(value),
   };

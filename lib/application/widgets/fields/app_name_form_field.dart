@@ -36,14 +36,9 @@ class ReactiveAppNameFormField extends StatelessWidget {
   Widget build(BuildContext context) {
     return ReactiveTextField<String>(
       formControlName: formControlName,
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r"[a-zA-ZÀ-ÿ\s'\-]")),
-      ],
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[a-zA-ZÀ-ÿ\s'\-]"))],
       decoration: InputDecoration(labelText: labelText),
-      validationMessages: {
-        'required': (_) => requiredErrorText,
-        'noDigits': (_) => containsDigitsErrorText,
-      },
+      validationMessages: {'required': (_) => requiredErrorText, 'noDigits': (_) => containsDigitsErrorText},
     );
   }
 }

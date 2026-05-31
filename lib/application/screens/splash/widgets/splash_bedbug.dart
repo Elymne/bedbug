@@ -40,10 +40,10 @@ class _State extends ConsumerState<SplashBedbug> with TickerProviderStateMixin {
   );
 
   /// Animation de translation verticale avec rebond (40px → 0px).
-  late final Animation<double> _slideY = Tween<double>(begin: 40.0, end: 0.0)
-      .animate(
-        CurvedAnimation(parent: _revealController, curve: Curves.elasticOut),
-      );
+  late final Animation<double> _slideY = Tween<double>(
+    begin: 40.0,
+    end: 0.0,
+  ).animate(CurvedAnimation(parent: _revealController, curve: Curves.elasticOut));
 
   /// Contrôleur du tremblement du texte principal.
   late final AnimationController _trembleController = AnimationController(
@@ -79,11 +79,7 @@ class _State extends ConsumerState<SplashBedbug> with TickerProviderStateMixin {
     final style = widget.style;
 
     return AnimatedBuilder(
-      animation: Listenable.merge([
-        _revealController,
-        _trembleController,
-        _ghostTrembleController,
-      ]),
+      animation: Listenable.merge([_revealController, _trembleController, _ghostTrembleController]),
       builder: (context, _) {
         final trembleOffset = Offset(
           1.5 * sin(_trembleController.value * pi),
@@ -104,12 +100,7 @@ class _State extends ConsumerState<SplashBedbug> with TickerProviderStateMixin {
                 // Ghost en couleur primaire avec son propre tremblement.
                 Transform.translate(
                   offset: ghostTrembleOffset + const Offset(3.0, 2.5),
-                  child: Text(
-                    _kText,
-                    style: (style ?? const TextStyle()).copyWith(
-                      color: AppColors.primary,
-                    ),
-                  ),
+                  child: Text(_kText, style: (style ?? const TextStyle()).copyWith(color: AppColors.primary)),
                 ),
                 // Texte principal.
                 Transform.translate(

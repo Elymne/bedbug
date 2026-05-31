@@ -4,7 +4,20 @@
 
 - Use `const` everywhere possible — widget constructors, lists, stateless instances (validators, formatters).
 - Never use `setState`.
-- Never create functions returning widgets or private widgets to split the view. Inline everything in `build`. If a block is too complex or reused across files, extract it as a **public** widget in its own file and folder.
+- Prefer inlining widget code directly in `build`. When extraction is needed, apply this rule:
+  - **Simple, display-only widget** (no state, no logic, no callbacks) → a private function returning a widget is acceptable.
+  - **Widget with logic, callbacks, or reused across files** → extract as a **public** widget class in its own file and folder.
+
+  ```dart
+  // ✅ OK — simple display, no logic
+  Widget _buildLabel(String text) => Text(text, style: ...);
+
+  // ✅ OK — complex or reused → public widget class
+  class UserAvatarWidget extends ConsumerWidget { ... }
+
+  // ❌ Avoid — function for something that has state or callbacks
+  Widget _buildForm() => ReactiveForm(...);
+  ```
 - Avoid `initState` if attributes can be initialized directly. `late final` initializers are lazy — `widget` is accessible at declaration:
 
   ```dart
