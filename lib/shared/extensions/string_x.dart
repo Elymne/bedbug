@@ -13,10 +13,7 @@ extension StringX on String {
         '0123456789'
         r'!@#$%^&*';
     final random = Random.secure();
-    return List.generate(
-      length,
-      (_) => chars[random.nextInt(chars.length)],
-    ).join();
+    return List.generate(length, (_) => chars[random.nextInt(chars.length)]).join();
   }
 
   /// Simplement pour parser des Strings (souvent d'inputfields) représentant des doubles avec , à la place de .

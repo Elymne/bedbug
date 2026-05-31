@@ -5,7 +5,8 @@ import 'config_loader.dart';
 
 /// Singleton statique donnant accès à la configuration de l'application.
 ///
-/// Doit être initialisé via [init] au démarrage de l'application, avant tout accès à [instance].
+/// Doit être initialisé via [init] au démarrage de l'application,
+/// avant tout accès à [instance].
 class AppConfig {
   static late final AppConfigModel _config;
 

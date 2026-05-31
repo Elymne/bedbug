@@ -20,11 +20,20 @@ abstract class Repository<T, P extends Params> {
   /// traçabilité ([Entity.createdAt], [Entity.updatedAt]) renseignés par l'infrastructure.
   Future<T> addOne(T entity);
 
+  /// Persiste une liste d'entités [entities] en une seule opération atomique.
+  Future<void> addMany(List<T> entities);
+
   /// Met à jour une entité existante [entity].
   ///
-  /// Retourne l'entité mise à jour avec [Repository.updateOne] rafraîchi par
-  /// l'infrastructure.
+  /// Lève une `DatasourceException` si l'entité n'existe pas dans le stockage.
+  /// Retourne l'entité mise à jour rafraîchie par l'infrastructure.
   Future<T> updateOne(T entity);
+
+  /// Met à jour une liste d'entités [entities] en une seule opération atomique.
+  ///
+  /// Lève une `DatasourceException` dès qu'une entité de la liste est introuvable.
+  /// Aucune des mises à jour n'est appliquée si l'une d'elles échoue.
+  Future<void> updateMany(List<T> entities);
 
   /// Retourne l'entité correspondant à l'[id] fourni, ou `null` si
   /// introuvable.
@@ -40,6 +49,14 @@ abstract class Repository<T, P extends Params> {
   /// Les repositories qui ne supportent pas la suppression doivent lever une
   /// [UnimplementedError] avec un message indiquant l'alternative à utiliser.
   Future<void> deleteOne(String id);
+
+  /// Supprime les entités correspondant aux [ids] fournis en une seule opération.
+  ///
+  /// Sans effet pour les identifiants inexistants (opération idempotente).
+  Future<void> deleteMany(List<String> ids);
+
+  /// Supprime l'intégralité des entités stockées.
+  Future<void> deleteAll();
 
   /// Retourne une page de résultats selon les [params] fournis.
   ///

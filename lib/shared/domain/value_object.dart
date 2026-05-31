@@ -2,4 +2,7 @@
 ///
 /// Un value object est un objet de structure de données sans identité propre.
 /// Son égalité est déterminée par ses valeurs, non par une référence.
-abstract class ValueObject {}
+abstract class ValueObject {
+  /// Constructeur constant pour permettre des sous-classes constantes.
+  const ValueObject();
+}

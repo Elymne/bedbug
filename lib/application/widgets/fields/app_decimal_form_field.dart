@@ -39,10 +39,7 @@ class ReactiveAppDecimalFormField extends StatelessWidget {
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: const [_DecimalInputFormatter()],
       decoration: InputDecoration(labelText: labelText),
-      validationMessages: {
-        'decimal': (_) => invalidErrorText,
-        'notNegative': (_) => negativeErrorText,
-      },
+      validationMessages: {'decimal': (_) => invalidErrorText, 'notNegative': (_) => negativeErrorText},
     );
   }
 }
@@ -53,10 +50,7 @@ class _DecimalInputFormatter extends TextInputFormatter {
   const _DecimalInputFormatter();
 
   @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     if (!RegExp(r'^[\d]*([.,][\d]*)?$').hasMatch(newValue.text)) {
       return oldValue;
     }

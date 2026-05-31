@@ -19,12 +19,8 @@ class ConfigLoader {
       const env = String.fromEnvironment('ENV', defaultValue: 'development');
 
       final raw = switch (env) {
-        'production' => await rootBundle.loadString(
-          'assets/config/production.json',
-        ),
-        'preproduction' => await rootBundle.loadString(
-          'assets/config/preproduction.json',
-        ),
+        'production' => await rootBundle.loadString('assets/config/production.json'),
+        'preproduction' => await rootBundle.loadString('assets/config/preproduction.json'),
         _ => await rootBundle.loadString('assets/config/development.json'),
       };
 

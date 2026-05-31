@@ -15,9 +15,7 @@ extension BuildContextX on BuildContext {
   AppLocalizations get loc {
     final l = AppLocalizations.of(this);
     if (l == null) {
-      throw Exception(
-        'AppLocalizations not found! Make sure your context is under MaterialApp with delegates.',
-      );
+      throw Exception('AppLocalizations not found! Make sure your context is under MaterialApp with delegates.');
     }
     return l;
   }

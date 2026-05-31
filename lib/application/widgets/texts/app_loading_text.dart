@@ -13,8 +13,7 @@ class AppLoadingText extends StatefulWidget {
   State<AppLoadingText> createState() => _AppLoadingTextState();
 }
 
-class _AppLoadingTextState extends State<AppLoadingText>
-    with SingleTickerProviderStateMixin {
+class _AppLoadingTextState extends State<AppLoadingText> with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     duration: const Duration(milliseconds: 3000),
     vsync: this,
@@ -45,16 +44,14 @@ class _AppLoadingTextState extends State<AppLoadingText>
 
   @override
   Widget build(BuildContext context) {
-    final text =
-        widget.text ?? 'AppLocalizations.of(context)!.loadingDefaultText';
+    final text = widget.text ?? 'AppLocalizations.of(context)!.loadingDefaultText';
 
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) => Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          for (int i = 0; i < text.length; i++)
-            Opacity(opacity: _opacity(i, text.length), child: Text(text[i])),
+          for (int i = 0; i < text.length; i++) Opacity(opacity: _opacity(i, text.length), child: Text(text[i])),
         ],
       ),
     );

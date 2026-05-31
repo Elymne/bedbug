@@ -23,7 +23,7 @@ class ErrorRoutePage extends StatelessWidget {
             Text(message),
             const SizedBox(height: 16),
             TextButton.icon(
-              onPressed: () => context.go(homeScreen),
+              onPressed: () => context.go(homePath),
               icon: const Icon(Icons.arrow_back),
               label: const Text('context.loc.errorRouteBackButton'),
             ),

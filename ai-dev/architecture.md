@@ -135,7 +135,9 @@ application/
 
 `shared/` contains only **cross-cutting technical code**.
 
-It must **never contain business logic**.
+It must **never contain business logic**, and **never contain UI or widgets**.
+
+Widgets and UI components shared across the app belong in `application/widgets/`, not here.
 
 #### Typical contents
 
