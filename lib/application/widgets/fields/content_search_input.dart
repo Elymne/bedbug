@@ -35,13 +35,13 @@ class _State extends ConsumerState<ContentSearchInput> with TickerProviderStateM
 
   /// Contrôleur du tremblement du layer principal.
   late final AnimationController _trembleController = AnimationController(
-    duration: const Duration(milliseconds: 2400),
+    duration: const Duration(milliseconds: 1300),
     vsync: this,
   );
 
   /// Contrôleur du tremblement du ghost, plus lent et déphasé.
   late final AnimationController _ghostTrembleController = AnimationController(
-    duration: const Duration(milliseconds: 1800),
+    duration: const Duration(milliseconds: 800),
     vsync: this,
   );
 
@@ -85,10 +85,10 @@ class _State extends ConsumerState<ContentSearchInput> with TickerProviderStateM
       animation: Listenable.merge([_trembleController, _ghostTrembleController, _focusNotifier]),
       builder: (context, child) {
         final trembleValue = _trembleController.value * 2 - 1;
-        final ghostTrembleValue = _ghostTrembleController.value * 2 - 1;
+        final trembleOffset = Offset(trembleValue * 0.8, trembleValue * 0.2);
 
-        final trembleOffset = Offset(trembleValue * 0.8, trembleValue * 0.3);
-        final ghostTrembleOffset = Offset(ghostTrembleValue * 1.5, ghostTrembleValue * 0.6);
+        final ghostTrembleValue = _ghostTrembleController.value * 2 - 1;
+        final ghostTrembleOffset = Offset(ghostTrembleValue * 1.2, ghostTrembleValue * 0.6);
 
         return SizedBox(
           height: _kHeight,
