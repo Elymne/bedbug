@@ -1,6 +1,7 @@
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Rayon des coins arrondis du champ de recherche.
 const _kBorderRadius = 24.0;
@@ -12,7 +13,7 @@ const _kBorderWidth = 2.0;
 const _kHeight = 52.0;
 
 /// Widget de recherche pour filtrer les contenus de la liste.
-class ContentSearchInput extends StatefulWidget {
+class ContentSearchInput extends ConsumerStatefulWidget {
   /// Crée un [ContentSearchInput].
   ///
   /// - [hintText] : texte affiché en placeholder.
@@ -22,10 +23,10 @@ class ContentSearchInput extends StatefulWidget {
   final String hintText;
 
   @override
-  State createState() => _State();
+  ConsumerState<ContentSearchInput> createState() => _State();
 }
 
-class _State extends State<ContentSearchInput> with TickerProviderStateMixin {
+class _State extends ConsumerState<ContentSearchInput> with TickerProviderStateMixin {
   /// Contrôleur du champ de texte.
   late final TextEditingController _controller = TextEditingController();
 
@@ -44,8 +45,8 @@ class _State extends State<ContentSearchInput> with TickerProviderStateMixin {
     vsync: this,
   );
 
-  /// Indique si le champ est actuellement actif.
-  bool _isFocused = false;
+  /// Notifier local gérant l'état de focus du champ.
+  late final _FocusNotifier _focusNotifier = _FocusNotifier();
 
   @override
   void initState() {
@@ -61,14 +62,14 @@ class _State extends State<ContentSearchInput> with TickerProviderStateMixin {
       ..dispose();
     _trembleController.dispose();
     _ghostTrembleController.dispose();
+    _focusNotifier.dispose();
     super.dispose();
   }
 
   /// Démarre ou arrête les animations selon l'état du focus.
   void _onFocusChanged() {
     final isFocused = _focusNode.hasFocus;
-    if (isFocused == _isFocused) return;
-    setState(() => _isFocused = isFocused);
+    _focusNotifier.setFocused(isFocused);
     if (isFocused) {
       _trembleController.repeat(reverse: true);
       _ghostTrembleController.repeat(reverse: true);
@@ -81,7 +82,7 @@ class _State extends State<ContentSearchInput> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge([_trembleController, _ghostTrembleController]),
+      animation: Listenable.merge([_trembleController, _ghostTrembleController, _focusNotifier]),
       builder: (context, child) {
         final trembleValue = _trembleController.value * 2 - 1;
         final ghostTrembleValue = _ghostTrembleController.value * 2 - 1;
@@ -95,7 +96,7 @@ class _State extends State<ContentSearchInput> with TickerProviderStateMixin {
             children: [
               // Ghost — bordure primaire décalée et tremblante.
               AnimatedOpacity(
-                opacity: _isFocused ? 1.0 : 0.0,
+                opacity: _focusNotifier.isFocused ? 1.0 : 0.0,
                 duration: const Duration(milliseconds: 200),
                 child: Transform.translate(
                   offset: ghostTrembleOffset + const Offset(2.5, 2.0),
@@ -110,7 +111,7 @@ class _State extends State<ContentSearchInput> with TickerProviderStateMixin {
               ),
               // Layer principal — bordure + row de contenu centré.
               Transform.translate(
-                offset: _isFocused ? trembleOffset : Offset.zero,
+                offset: _focusNotifier.isFocused ? trembleOffset : Offset.zero,
                 child: Container(
                   height: _kHeight,
                   decoration: BoxDecoration(
@@ -125,7 +126,11 @@ class _State extends State<ContentSearchInput> with TickerProviderStateMixin {
                     builder: (context, child) {
                       return Row(
                         children: [
-                          Icon(Icons.search, size: 20, color: _isFocused ? AppColors.primary : AppColors.onLight),
+                          Icon(
+                            Icons.search,
+                            size: 20,
+                            color: _focusNotifier.isFocused ? AppColors.primary : AppColors.onLight,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: TextField(
@@ -160,5 +165,20 @@ class _State extends State<ContentSearchInput> with TickerProviderStateMixin {
         );
       },
     );
+  }
+}
+
+/// Notifier local gérant l'état de focus du champ de recherche.
+class _FocusNotifier extends ChangeNotifier {
+  /// Indique si le champ est actuellement actif.
+  bool isFocused = false;
+
+  /// Met à jour l'état de focus et notifie les listeners si la valeur change.
+  ///
+  /// - [value] : nouvel état de focus.
+  void setFocused(bool value) {
+    if (value == isFocused) return;
+    isFocused = value;
+    notifyListeners();
   }
 }
