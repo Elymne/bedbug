@@ -2,7 +2,7 @@ import 'package:bedbug/features/settings/domain/repositories/settings_repository
 import 'package:bedbug/features/settings/domain/value_objects/user_settings.dart';
 import 'package:bedbug/features/settings/infrastructure/models/settings_hive_model.dart';
 import 'package:bedbug/shared/exceptions/datasource_exception.dart';
-import 'package:bedbug/shared/query/page.dart';
+import 'package:bedbug/shared/domain/page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 

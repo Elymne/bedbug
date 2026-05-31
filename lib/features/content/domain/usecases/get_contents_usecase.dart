@@ -6,8 +6,9 @@ import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/domain/usecase.dart';
 import 'package:bedbug/shared/exceptions/data_exception.dart';
 import 'package:bedbug/shared/exceptions/datasource_exception.dart';
+import 'package:bedbug/shared/exceptions/page_not_found_exception.dart';
 import 'package:bedbug/shared/logger/app_logger.dart';
-import 'package:bedbug/shared/query/order_by.dart';
+import 'package:bedbug/shared/domain/order_by.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetContentsUsecase].
@@ -25,8 +26,13 @@ class GetContentsUsecase extends Usecase<GetContentsParams, GetContentsFailure, 
   @override
   Future<Either<GetContentsFailure, List<Content>>> call(GetContentsParams params) async {
     try {
-      final page = await _contentRepository.getMany(ContentRepositoryParams(orderBy: params.orderBy));
+      final page = await _contentRepository.getMany(
+        ContentRepositoryParams(orderBy: params.orderBy),
+      );
       return Right(page.items);
+    } on PageNotFoundException catch (error, stackTrace) {
+      AppLogger.error('GetContentsUsecase', error, stackTrace);
+      return const Left(GetContentsFailure.pageNotFound);
     } on DataException catch (error, stackTrace) {
       AppLogger.error('GetContentsUsecase', error, stackTrace);
       return const Left(GetContentsFailure.invalidData);
@@ -42,6 +48,9 @@ class GetContentsUsecase extends Usecase<GetContentsParams, GetContentsFailure, 
 
 /// Échecs possibles du [GetContentsUsecase].
 enum GetContentsFailure {
+  /// La page demandée n'existe pas.
+  pageNotFound,
+
   /// La donnée lue est invalide ou corrompue.
   invalidData,
 

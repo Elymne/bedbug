@@ -1,7 +1,7 @@
 import 'package:bedbug/features/settings/domain/value_objects/user_settings.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/domain/repository.dart';
-import 'package:bedbug/shared/query/page.dart';
+import 'package:bedbug/shared/domain/page.dart';
 
 /// Contrat du repository gérant les [UserSettings].
 ///

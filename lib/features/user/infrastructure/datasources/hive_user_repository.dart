@@ -2,7 +2,8 @@ import 'package:bedbug/features/user/domain/entities/user.dart';
 import 'package:bedbug/features/user/domain/repositories/user_repository.dart';
 import 'package:bedbug/features/user/infrastructure/models/user_hive_model.dart';
 import 'package:bedbug/shared/exceptions/datasource_exception.dart';
-import 'package:bedbug/shared/query/page.dart';
+import 'package:bedbug/shared/exceptions/page_not_found_exception.dart';
+import 'package:bedbug/shared/domain/page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
@@ -123,7 +124,25 @@ class HiveUserRepository implements UserRepository {
         results = results.where((user) => user.pseudo.toLowerCase().contains(params.pseudo!.toLowerCase())).toList();
       }
 
-      return Page(items: results, total: results.length);
+      final totalItems = results.length;
+
+      if (params.limit == null) {
+        return Page(items: results, hasNextPage: false, totalItems: totalItems, totalPages: 1);
+      }
+
+      final totalPages = (totalItems / params.limit!).ceil();
+      final offset = (params.page - 1) * params.limit!;
+
+      if (offset >= totalItems && totalItems > 0) {
+        throw PageNotFoundException('HiveUserRepository', params.page);
+      }
+
+      final items = results.skip(offset).take(params.limit!).toList();
+      final hasNextPage = offset + params.limit! < totalItems;
+
+      return Page(items: items, hasNextPage: hasNextPage, totalItems: totalItems, totalPages: totalPages);
+    } on PageNotFoundException {
+      rethrow;
     } on HiveError catch (error) {
       throw DatasourceException('HiveUserRepository', error);
     }

@@ -267,14 +267,27 @@ Each repository:
 - CRUD operations
 - `getMany(params)` → returns `Page<Entity>`
 
-#### Pagination strategies
+#### Page
 
-- Cursor-based → `nextCursor`
-- Offset-based → `nextOffset`
+`Page<T>` contient :
+- `items` : éléments de la page courante
+- `hasNextPage` : seul champ garanti, toujours renseigné
+- `totalItems` : optionnel — `null` si l'implémentation ne peut pas le calculer
+- `totalPages` : optionnel — `null` si l'implémentation ne peut pas le calculer
 
-#### Rule
+#### RepositoryParams
 
-- Never simulate offset on cursor-based systems
+`RepositoryParams` est la classe de base commune à tous les params de `getMany` :
+- `page` : numéro de page, commence à 1 (défaut : 1)
+- `limit` : nombre max d'éléments. `null` = tous les éléments sans pagination
+- `orderBy` : tri optionnel
+
+Chaque repository déclare une sous-classe concrète qui y ajoute ses filtres métier.
+
+#### PageNotFoundException
+
+Levée par l'implémentation infrastructure quand la page demandée n'existe pas.
+Les use cases doivent la catcher explicitement et la mapper vers un failure dédié.
 
 ---
 

@@ -2,7 +2,8 @@ import 'package:bedbug/features/discovery/domain/entities/keychain.dart';
 import 'package:bedbug/features/discovery/domain/repositories/keychain_repository.dart';
 import 'package:bedbug/features/discovery/infrastructure/models/keychain_hive_model.dart';
 import 'package:bedbug/shared/exceptions/datasource_exception.dart';
-import 'package:bedbug/shared/query/page.dart';
+import 'package:bedbug/shared/exceptions/page_not_found_exception.dart';
+import 'package:bedbug/shared/domain/page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
@@ -125,7 +126,25 @@ class HiveKeychainRepository implements KeychainRepository {
         results = results.where((keychain) => keychain.subId == params.subId).toList();
       }
 
-      return Page(items: results, total: results.length);
+      final totalItems = results.length;
+
+      if (params.limit == null) {
+        return Page(items: results, hasNextPage: false, totalItems: totalItems, totalPages: 1);
+      }
+
+      final totalPages = (totalItems / params.limit!).ceil();
+      final offset = (params.page - 1) * params.limit!;
+
+      if (offset >= totalItems && totalItems > 0) {
+        throw PageNotFoundException('HiveKeychainRepository', params.page);
+      }
+
+      final items = results.skip(offset).take(params.limit!).toList();
+      final hasNextPage = offset + params.limit! < totalItems;
+
+      return Page(items: items, hasNextPage: hasNextPage, totalItems: totalItems, totalPages: totalPages);
+    } on PageNotFoundException {
+      rethrow;
     } on HiveError catch (error) {
       throw DatasourceException('HiveKeychainRepository', error);
     }

@@ -1,17 +1,19 @@
 import 'package:bedbug/features/content/domain/entities/comment.dart';
 import 'package:bedbug/shared/domain/repository.dart';
 import 'package:bedbug/shared/domain/repository_params.dart';
-import 'package:bedbug/shared/query/no_pagination.dart';
 
 /// Contrat du repository gérant les [Comment].
 abstract class CommentRepository extends Repository<Comment, CommentRepositoryParams> {}
 
 /// Paramètres de requête du [CommentRepository].
-class CommentRepositoryParams extends RepositoryParams<NoPagination> {
+class CommentRepositoryParams extends RepositoryParams {
   /// Crée des [CommentRepositoryParams].
   ///
   /// - [authorId] : filtre optionnel sur l'auteur du commentaire.
-  const CommentRepositoryParams({super.pagination, super.orderBy, this.authorId});
+  /// - [page] : numéro de la page demandée. Par défaut 1.
+  /// - [limit] : nombre maximum d'éléments à retourner. `null` = tous.
+  /// - [orderBy] : tri appliqué aux résultats.
+  const CommentRepositoryParams({super.page, super.limit, super.orderBy, this.authorId});
 
   /// Filtre sur l'identifiant de l'auteur. `null` = aucun filtre.
   final String? authorId;
