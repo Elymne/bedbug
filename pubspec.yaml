@@ -24,7 +24,8 @@ dependencies:
   reactive_forms: ^18.2.2
 
   # Persistance
-  shared_preferences: ^2.3.0 # TODO: Virer ce truc, j'vaias pas en avoir besoin.
+  path_provider: ^2.1.5
+  shared_preferences: ^2.5.5
   hive_ce: ^2.19.3
   hive_ce_flutter: ^2.3.4
 
