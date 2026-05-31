@@ -269,20 +269,24 @@ Each repository:
 
 #### Page
 
+`Page<T>` et `OrderBy` sont déclarés dans `shared/domain/`.
+
 `Page<T>` contient :
 - `items` : éléments de la page courante
 - `hasNextPage` : seul champ garanti, toujours renseigné
 - `totalItems` : optionnel — `null` si l'implémentation ne peut pas le calculer
 - `totalPages` : optionnel — `null` si l'implémentation ne peut pas le calculer
 
+Dans cette application, la pagination n'est pas utilisée — `limit` est toujours `null`, ce qui retourne tous les éléments en une seule fois (`hasNextPage: false`, `totalItems` renseigné, `totalPages: 1`). Le système est conservé car il pourrait être activé sur ce projet ou réutilisé tel quel sur d'autres projets suivant la même architecture.
+
 #### RepositoryParams
 
-`RepositoryParams` est la classe de base commune à tous les params de `getMany` :
+`RepositoryParams` est la classe de base commune à tous les params de `getMany`, déclarée dans `shared/domain/` :
 - `page` : numéro de page, commence à 1 (défaut : 1)
 - `limit` : nombre max d'éléments. `null` = tous les éléments sans pagination
 - `orderBy` : tri optionnel
 
-Chaque repository déclare une sous-classe concrète qui y ajoute ses filtres métier.
+Chaque repository déclare une sous-classe concrète dans son `domain/repositories/` qui y ajoute ses filtres métier.
 
 #### PageNotFoundException
 
