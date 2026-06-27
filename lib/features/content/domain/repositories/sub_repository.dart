@@ -9,8 +9,7 @@ abstract class SubRepository extends Repository<Sub, SubRepositoryParams> {}
 class SubRepositoryParams extends RepositoryParams {
   /// Crée des [SubRepositoryParams].
   ///
-  /// - [page] : numéro de la page demandée. Par défaut 1.
   /// - [limit] : nombre maximum d'éléments à retourner. `null` = tous.
   /// - [orderBy] : tri appliqué aux résultats.
-  const SubRepositoryParams({super.page, super.limit, super.orderBy});
+  const SubRepositoryParams({super.limit, super.orderBy});
 }

@@ -1,7 +1,6 @@
 import 'package:bedbug/features/settings/domain/value_objects/user_settings.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/domain/repository.dart';
-import 'package:bedbug/shared/domain/page.dart';
 
 /// Contrat du repository gérant les [UserSettings].
 ///
@@ -38,8 +37,8 @@ abstract class SettingsRepository extends Repository<UserSettings, SettingsRepos
   }
 
   @override
-  Future<Page<UserSettings>> getMany(SettingsRepositoryParams params) {
-    throw UnimplementedError('getMany is not supported');
+  Stream<List<UserSettings>> watchAll() {
+    throw UnimplementedError('watchAll is not supported');
   }
 
   @override
@@ -55,6 +54,16 @@ abstract class SettingsRepository extends Repository<UserSettings, SettingsRepos
   @override
   Future<void> deleteAll() {
     throw UnimplementedError('deleteAll is not supported');
+  }
+
+  @override
+  Future<List<UserSettings>> findMany(SettingsRepositoryParams params) {
+    throw UnimplementedError('findMany is not supported');
+  }
+
+  @override
+  Stream<List<UserSettings>> watchMany(SettingsRepositoryParams params) {
+    throw UnimplementedError('watchMany is not supported');
   }
 }
 

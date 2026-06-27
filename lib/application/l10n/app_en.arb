@@ -35,5 +35,61 @@
   "homeSeedButton": "Load test data",
   "@homeSeedButton": {
     "description": "Button to load mock data on home when the content list is empty"
+  },
+  "createTitle": "Create",
+  "@createTitle": {
+    "description": "Title of the content creation page"
+  },
+  "createTypeText": "Text",
+  "@createTypeText": {
+    "description": "Label for the text content type toggle button"
+  },
+  "createTypeImage": "Image",
+  "@createTypeImage": {
+    "description": "Label for the image content type toggle button"
+  },
+  "createTypeLink": "Link",
+  "@createTypeLink": {
+    "description": "Label for the link content type toggle button"
+  },
+  "createTextTitleLabel": "Title",
+  "@createTextTitleLabel": {
+    "description": "Label for the title field in the text content form"
+  },
+  "createTextBodyLabel": "Body",
+  "@createTextBodyLabel": {
+    "description": "Label for the body field in the text content form"
+  },
+  "createImagePickLabel": "Pick an image",
+  "@createImagePickLabel": {
+    "description": "Label for the image picker button in the image content form"
+  },
+  "createImageTitleLabel": "Title (optional)",
+  "@createImageTitleLabel": {
+    "description": "Label for the optional title field in the image content form"
+  },
+  "createImageBodyLabel": "Description (optional)",
+  "@createImageBodyLabel": {
+    "description": "Label for the optional description field in the image content form"
+  },
+  "createLinkUrlLabel": "URL",
+  "@createLinkUrlLabel": {
+    "description": "Label for the URL field in the link content form"
+  },
+  "createSaveButton": "Create",
+  "@createSaveButton": {
+    "description": "Label for the save button on the content creation page"
+  },
+  "createSaveLoading": "Saving…",
+  "@createSaveLoading": {
+    "description": "Label shown on the save button while saving"
+  },
+  "createSuccessMessage": "Content created successfully.",
+  "@createSuccessMessage": {
+    "description": "Snackbar message shown after a content is successfully created"
+  },
+  "createSaveError": "Failed to save content.",
+  "@createSaveError": {
+    "description": "Snackbar error message shown when saving content fails"
   }
 }

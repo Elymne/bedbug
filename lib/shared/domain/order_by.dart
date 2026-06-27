@@ -1,4 +1,4 @@
-/// Paramètre de tri pour une requête [Repository.getMany].
+/// Paramètre de tri pour une requête `Repository.getMany`.
 ///
 /// [field] correspond au nom du champ tel qu'il est stocké en base de données.
 class OrderBy {

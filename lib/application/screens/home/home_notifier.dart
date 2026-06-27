@@ -24,7 +24,7 @@ class HomeNotifier extends AsyncNotifier<HomeState> {
         final message = switch (failure) {
           GetContentsFailure.invalidData => ref.l10n.homeGetContentsInvalidData,
           GetContentsFailure.storageError => ref.l10n.homeGetContentsStorageError,
-          GetContentsFailure.unknown || GetContentsFailure.pageNotFound => ref.l10n.homeGetContentsUnknown,
+          GetContentsFailure.unknown => ref.l10n.homeGetContentsUnknown,
         };
         return HomeState(contents: const [], failureMessage: message);
       },

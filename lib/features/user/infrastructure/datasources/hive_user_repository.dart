@@ -2,8 +2,6 @@ import 'package:bedbug/features/user/domain/entities/user.dart';
 import 'package:bedbug/features/user/domain/repositories/user_repository.dart';
 import 'package:bedbug/features/user/infrastructure/models/user_hive_model.dart';
 import 'package:bedbug/shared/exceptions/datasource_exception.dart';
-import 'package:bedbug/shared/exceptions/page_not_found_exception.dart';
-import 'package:bedbug/shared/domain/page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
@@ -89,6 +87,14 @@ class HiveUserRepository implements UserRepository {
   }
 
   @override
+  Stream<List<User>> watchAll() async* {
+    yield _box.values.map((model) => model.toEntity()).toList();
+    await for (final _ in _box.watch()) {
+      yield _box.values.map((model) => model.toEntity()).toList();
+    }
+  }
+
+  @override
   Future<void> deleteOne(String id) async {
     try {
       await _box.delete(id);
@@ -116,35 +122,45 @@ class HiveUserRepository implements UserRepository {
   }
 
   @override
-  Future<Page<User>> getMany(UserRepositoryParams params) async {
+  Future<List<User>> findMany(UserRepositoryParams params) async {
     try {
-      var results = _box.values.map((model) => model.toEntity()).toList();
-
-      if (params.pseudo != null) {
-        results = results.where((user) => user.pseudo.toLowerCase().contains(params.pseudo!.toLowerCase())).toList();
-      }
-
-      final totalItems = results.length;
-
-      if (params.limit == null) {
-        return Page(items: results, hasNextPage: false, totalItems: totalItems, totalPages: 1);
-      }
-
-      final totalPages = (totalItems / params.limit!).ceil();
-      final offset = (params.page - 1) * params.limit!;
-
-      if (offset >= totalItems && totalItems > 0) {
-        throw PageNotFoundException('HiveUserRepository', params.page);
-      }
-
-      final items = results.skip(offset).take(params.limit!).toList();
-      final hasNextPage = offset + params.limit! < totalItems;
-
-      return Page(items: items, hasNextPage: hasNextPage, totalItems: totalItems, totalPages: totalPages);
-    } on PageNotFoundException {
-      rethrow;
+      return _applyParams(params);
     } on HiveError catch (error) {
       throw DatasourceException('HiveUserRepository', error);
     }
+  }
+
+  @override
+  Stream<List<User>> watchMany(UserRepositoryParams params) async* {
+    yield _applyParams(params);
+    await for (final _ in _box.watch()) {
+      yield _applyParams(params);
+    }
+  }
+
+  /// Applique les filtres, le tri et la limite des [params] sur les valeurs de la box.
+  List<User> _applyParams(UserRepositoryParams params) {
+    var results = _box.values.map((model) => model.toEntity()).toList();
+
+    if (params.pseudo != null) {
+      results = results.where((user) => user.pseudo.toLowerCase().contains(params.pseudo!.toLowerCase())).toList();
+    }
+
+    if (params.orderBy != null) {
+      results.sort((a, b) {
+        final comparison = switch (params.orderBy!.field) {
+          'createdAt' => a.createdAt.compareTo(b.createdAt),
+          'updatedAt' => a.updatedAt.compareTo(b.updatedAt),
+          _ => 0,
+        };
+        return params.orderBy!.descending ? -comparison : comparison;
+      });
+    }
+
+    if (params.limit != null) {
+      return results.take(params.limit!).toList();
+    }
+
+    return results;
   }
 }

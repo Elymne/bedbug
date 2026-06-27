@@ -2,7 +2,6 @@ import 'package:bedbug/features/settings/domain/repositories/settings_repository
 import 'package:bedbug/features/settings/domain/value_objects/user_settings.dart';
 import 'package:bedbug/features/settings/infrastructure/models/settings_hive_model.dart';
 import 'package:bedbug/shared/exceptions/datasource_exception.dart';
-import 'package:bedbug/shared/domain/page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
@@ -74,6 +73,11 @@ class HiveSettingsRepository implements SettingsRepository {
   }
 
   @override
+  Stream<List<UserSettings>> watchAll() {
+    throw UnimplementedError('watchAll is not supported');
+  }
+
+  @override
   Future<void> deleteOne(String id) {
     throw UnimplementedError('deleteOne is not supported');
   }
@@ -89,7 +93,12 @@ class HiveSettingsRepository implements SettingsRepository {
   }
 
   @override
-  Future<Page<UserSettings>> getMany(SettingsRepositoryParams params) {
-    throw UnimplementedError('getMany is not supported');
+  Future<List<UserSettings>> findMany(SettingsRepositoryParams params) {
+    throw UnimplementedError('findMany is not supported');
+  }
+
+  @override
+  Stream<List<UserSettings>> watchMany(SettingsRepositoryParams params) {
+    throw UnimplementedError('watchMany is not supported');
   }
 }

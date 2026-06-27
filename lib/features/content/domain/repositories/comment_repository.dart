@@ -10,10 +10,9 @@ class CommentRepositoryParams extends RepositoryParams {
   /// Crée des [CommentRepositoryParams].
   ///
   /// - [authorId] : filtre optionnel sur l'auteur du commentaire.
-  /// - [page] : numéro de la page demandée. Par défaut 1.
   /// - [limit] : nombre maximum d'éléments à retourner. `null` = tous.
   /// - [orderBy] : tri appliqué aux résultats.
-  const CommentRepositoryParams({super.page, super.limit, super.orderBy, this.authorId});
+  const CommentRepositoryParams({super.limit, super.orderBy, this.authorId});
 
   /// Filtre sur l'identifiant de l'auteur. `null` = aucun filtre.
   final String? authorId;

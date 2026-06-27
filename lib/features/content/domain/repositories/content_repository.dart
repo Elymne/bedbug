@@ -10,10 +10,9 @@ class ContentRepositoryParams extends RepositoryParams {
   /// Crée des [ContentRepositoryParams].
   ///
   /// - [authorId] : filtre optionnel sur l'auteur du contenu.
-  /// - [page] : numéro de la page demandée. Par défaut 1.
   /// - [limit] : nombre maximum d'éléments à retourner. `null` = tous.
   /// - [orderBy] : tri appliqué aux résultats.
-  const ContentRepositoryParams({super.page, super.limit, super.orderBy, this.authorId});
+  const ContentRepositoryParams({super.limit, super.orderBy, this.authorId});
 
   /// Filtre sur l'identifiant de l'auteur. `null` = aucun filtre.
   final String? authorId;
