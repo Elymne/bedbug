@@ -26,6 +26,7 @@ dependencies:
   # Persistance
   path_provider: ^2.1.5
   shared_preferences: ^2.5.5
+  shared_preferences_android: ^2.4.26
   hive_ce: ^2.19.3
   hive_ce_flutter: ^2.3.4
 
