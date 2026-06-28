@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bedbug/application/notifiers/screen_size_notifier.dart';
 import 'package:bedbug/application/providers/app_docs_dir_provider.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/widgets/images/app_file_image.dart';
@@ -8,11 +9,17 @@ import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Hauteur minimale d'affichage de l'image.
-const double _imageMinHeight = 300;
+/// Fraction de la hauteur d'écran utilisée comme hauteur minimale d'affichage.
+const double _imageMinHeightFactor = 0.20;
 
-/// Hauteur maximale d'affichage de l'image.
-const double _imageMaxHeight = 600;
+/// Fraction de la hauteur d'écran utilisée comme hauteur maximale d'affichage.
+const double _imageMaxHeightFactor = 0.35;
+
+/// Fallback fixe si [ScreenSizeNotifier] n'est pas encore initialisé.
+const double _imageMinHeightFallback = 200;
+
+/// Fallback fixe si [ScreenSizeNotifier] n'est pas encore initialisé.
+const double _imageMaxHeightFallback = 350;
 
 /// Sous-dossier de stockage des images dans le dossier de documents de l'app.
 const String _imageFolder = 'content_images';
@@ -32,13 +39,17 @@ class ImageContentWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appDocsDirWatcher = ref.watch(appDocsDirProvider);
+    final screenSize = ref.watch(screenSizeNotifierProvider);
+    final isScreenKnown = screenSize != Size.zero;
+    final minHeight = isScreenKnown ? screenSize.height * _imageMinHeightFactor : _imageMinHeightFallback;
+    final maxHeight = isScreenKnown ? screenSize.height * _imageMaxHeightFactor : _imageMaxHeightFallback;
 
     return appDocsDirWatcher.when(
       loading: () => const AppLoadingText(),
       error: (error, stack) => const Icon(Icons.broken_image_outlined),
       data: (dir) {
         final file = File('${dir.path}/$_imageFolder/${content.fileName}');
-        final displayHeight = content.imageHeight.toDouble().clamp(_imageMinHeight, _imageMaxHeight);
+        final displayHeight = content.imageHeight.toDouble().clamp(minHeight, maxHeight);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,3 +1,4 @@
+import 'package:bedbug/application/notifiers/screen_size_notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/splash/splash_notifier.dart';
 import 'package:bedbug/application/screens/splash/widgets/app_title_text.dart';
@@ -22,6 +23,12 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _State extends ConsumerState<SplashScreen> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    ref.read(screenSizeNotifierProvider.notifier).init(MediaQuery.sizeOf(context));
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.loc;
