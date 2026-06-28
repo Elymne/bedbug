@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
-import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/create/create_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_values.dart';
@@ -68,12 +68,11 @@ class _State extends ConsumerState<CreateScreen> {
   /// Image sélectionnée par l'utilisateur pour [ImageContent].
   XFile? _pickedImage;
 
-  /// Écoutable fusionnant les trois formulaires pour détecter tout changement de valeur.
-  late final Listenable _allForms = Listenable.merge([
-    _textFormGroup as Listenable,
-    _imageFormGroup as Listenable,
-    _linkFormGroup as Listenable,
-  ]);
+  /// Compteur incrémenté à chaque changement dans l'un des formulaires ou lors d'un pick d'image.
+  final ValueNotifier<int> _formChangeTicker = ValueNotifier<int>(0);
+
+  /// Abonnements aux streams de changement des formulaires.
+  late final List<StreamSubscription<dynamic>> _formSubscriptions;
 
   /// Retourne `true` si le type ne peut plus être changé car des valeurs ont été saisies.
   bool get _isTypeLocked {
@@ -96,7 +95,21 @@ class _State extends ConsumerState<CreateScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _formSubscriptions = [
+      _textFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
+      _imageFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
+      _linkFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
+    ];
+  }
+
+  @override
   void dispose() {
+    for (final sub in _formSubscriptions) {
+      sub.cancel();
+    }
+    _formChangeTicker.dispose();
     _textFormGroup.dispose();
     _imageFormGroup.dispose();
     _linkFormGroup.dispose();
@@ -107,7 +120,8 @@ class _State extends ConsumerState<CreateScreen> {
   Future<void> _pickImage() async {
     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (image == null) return;
-    setState(() => _pickedImage = image);
+    _pickedImage = image;
+    _formChangeTicker.value++;
   }
 
   /// Valide le formulaire actif et déclenche la sauvegarde.
@@ -210,7 +224,7 @@ class _State extends ConsumerState<CreateScreen> {
       final createState = next.value!;
       if (createState.isSuccess) {
         AppSnackbar.showSuccess(context, l10n.createSuccessMessage);
-        context.go(homePath);
+        context.pop();
         return;
       }
       if (createState.failureMessage != null) {
@@ -236,7 +250,7 @@ class _State extends ConsumerState<CreateScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin),
               child: ListenableBuilder(
-                listenable: _allForms,
+                listenable: _formChangeTicker,
                 builder: (context, _) {
                   final isLocked = _isTypeLocked;
                   return Row(

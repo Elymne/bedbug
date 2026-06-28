@@ -5,9 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Paths correspondant à chaque index de la navbar.
-const _kNavPaths = [homePath, createPath, settingsPath];
-
 /// Scaffold principal de l'application avec la [AppNavBar].
 class Shell extends ConsumerWidget {
   /// Crée un [Shell].
@@ -16,6 +13,9 @@ class Shell extends ConsumerWidget {
   /// Shell de navigation fourni par GoRouter.
   final StatefulNavigationShell navigationShell;
 
+  /// Convertit l'index de branche (0=home, 1=settings) en index navbar (0=home, 2=settings).
+  int get _navSelectedIndex => navigationShell.currentIndex == 0 ? 0 : 2;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.loc;
@@ -23,21 +23,22 @@ class Shell extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         bottom: false,
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 400),
-          switchInCurve: Curves.easeInOut,
-          switchOutCurve: Curves.easeInOut,
-          child: KeyedSubtree(key: ValueKey(navigationShell.currentIndex), child: navigationShell),
-        ),
+        child: navigationShell,
       ),
       bottomNavigationBar: AppNavBar(
-        selectedIndex: navigationShell.currentIndex,
+        selectedIndex: _navSelectedIndex,
         items: [
           AppNavBarItem(icon: Icons.home, label: l10n.navHomeLabel),
           AppNavBarItem(icon: Icons.add_circle, label: l10n.navCreateLabel),
           AppNavBarItem(icon: Icons.settings, label: l10n.navSettingsLabel),
         ],
-        onTap: (index) => context.go(_kNavPaths[index]),
+        onTap: (index) {
+          if (index == 1) {
+            context.push(createPath);
+            return;
+          }
+          context.go(index == 0 ? homePath : settingsPath);
+        },
       ),
     );
   }

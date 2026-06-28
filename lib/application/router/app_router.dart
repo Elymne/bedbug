@@ -50,14 +50,12 @@ final routerProvider = Provider<GoRouter>((ref) {
     errorPageBuilder: (context, state) => const NoTransitionPage(child: ErrorRoutePage(message: 'Page not found')),
     routes: [
       GoRoute(path: splashPath, pageBuilder: (context, state) => _fadePage(const SplashScreen())),
+      GoRoute(path: createPath, pageBuilder: (context, state) => _fadePage(const CreateScreen())),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => Shell(navigationShell: navigationShell),
         branches: [
           StatefulShellBranch(
             routes: [GoRoute(path: homePath, pageBuilder: (context, state) => _fadePage(const HomeScreen()))],
-          ),
-          StatefulShellBranch(
-            routes: [GoRoute(path: createPath, pageBuilder: (context, state) => _fadePage(const CreateScreen()))],
           ),
           StatefulShellBranch(
             routes: [GoRoute(path: settingsPath, pageBuilder: (context, state) => _fadePage(const SettingsScreen()))],
