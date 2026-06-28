@@ -38,14 +38,13 @@ class ImageContentWidget extends ConsumerWidget {
       error: (error, stack) => const Icon(Icons.broken_image_outlined),
       data: (dir) {
         final file = File('${dir.path}/$_imageFolder/${content.fileName}');
-        final title = content.title ?? content.fileName;
         final displayHeight = content.imageHeight.toDouble().clamp(_imageMinHeight, _imageMaxHeight);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 8,
           children: [
-            Text(title, style: AppTextStyles.contentTitle, maxLines: 2, overflow: TextOverflow.ellipsis),
+            Text(content.title, style: AppTextStyles.contentTitle, maxLines: 2, overflow: TextOverflow.ellipsis),
             AppFileImage(file: file, width: double.infinity, height: displayHeight),
           ],
         );

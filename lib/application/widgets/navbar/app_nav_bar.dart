@@ -1,4 +1,5 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/widgets/ghost/app_ghost_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -78,60 +79,7 @@ class _NavBarItemWidget extends ConsumerStatefulWidget {
   ConsumerState<_NavBarItemWidget> createState() => _State();
 }
 
-class _State extends ConsumerState<_NavBarItemWidget> with TickerProviderStateMixin {
-  /// Contrôleur du pulse (scale) du ghost.
-  late final AnimationController _pulseController = AnimationController(
-    duration: const Duration(milliseconds: 1_200),
-    vsync: this,
-  );
-
-  /// Contrôleur du léger tremblement du ghost.
-  late final AnimationController _ghostTrembleController = AnimationController(
-    duration: const Duration(milliseconds: 900),
-    vsync: this,
-  );
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.isSelected) _startAnimations();
-  }
-
-  @override
-  void didUpdateWidget(_NavBarItemWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.isSelected && !oldWidget.isSelected) {
-      _startAnimations();
-      return;
-    }
-
-    if (!widget.isSelected && oldWidget.isSelected) {
-      _stopAnimations();
-      return;
-    }
-  }
-
-  @override
-  void dispose() {
-    _pulseController.dispose();
-    _ghostTrembleController.dispose();
-    super.dispose();
-  }
-
-  /// Démarre les animations en boucle.
-  void _startAnimations() {
-    _pulseController.repeat(reverse: true);
-    _ghostTrembleController.repeat(reverse: true);
-  }
-
-  /// Arrête les animations et remet les controllers à zéro.
-  void _stopAnimations() {
-    _pulseController.stop();
-    _ghostTrembleController.stop();
-    _pulseController.reset();
-    _ghostTrembleController.reset();
-  }
-
+class _State extends ConsumerState<_NavBarItemWidget> {
   @override
   Widget build(BuildContext context) {
     return Semantics(
@@ -144,43 +92,13 @@ class _State extends ConsumerState<_NavBarItemWidget> with TickerProviderStateMi
         child: SizedBox(
           width: 64,
           height: 56,
-          child: Center(child: widget.isSelected ? _buildGhostIcon() : _buildNormalIcon()),
+          child: Center(
+            child: widget.isSelected
+                ? AppGhostIcon(icon: widget.item.icon, size: 26, isAnimating: true)
+                : Icon(widget.item.icon, color: AppColors.disabled, size: 26),
+          ),
         ),
       ),
-    );
-  }
-
-  /// Icône sans aucun effet (item non sélectionné).
-  Widget _buildNormalIcon() => Icon(widget.item.icon, color: AppColors.disabled, size: 26);
-
-  /// Icône principale statique avec ghost animé (pulse + léger tremblement).
-  Widget _buildGhostIcon() {
-    return AnimatedBuilder(
-      animation: Listenable.merge([_pulseController, _ghostTrembleController]),
-      builder: (context, _) {
-        final ghostOffset = Offset(2.8 * _ghostTrembleController.value, 1.8 * _ghostTrembleController.value);
-
-        final iconOffset = Offset(1.5 * _ghostTrembleController.value, 0.6 * _ghostTrembleController.value);
-
-        return SizedBox(
-          width: 26,
-          height: 26,
-          child: Stack(
-            alignment: Alignment.center,
-            clipBehavior: Clip.none,
-            children: [
-              Transform.translate(
-                offset: ghostOffset,
-                child: Icon(widget.item.icon, color: AppColors.primary, size: 26),
-              ),
-              Transform.translate(
-                offset: iconOffset,
-                child: Icon(widget.item.icon, color: AppColors.onLight, size: 26),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }

@@ -180,7 +180,6 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     final fileName = fileNames[index % fileNames.length];
     final dimensions = _imageDimensions[index % _imageDimensions.length];
 
-    final hasTitle = index % 3 != 0;
     final hasBody = index % 5 != 0;
 
     return ImageContent(
@@ -196,7 +195,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       fileName: fileName,
       imageWidth: dimensions.$1,
       imageHeight: dimensions.$2,
-      title: hasTitle ? 'Image #${index + 1}' : null,
+      title: 'Image #${index + 1}',
       body: hasBody ? _shortBodies[index % _shortBodies.length] : null,
     );
   }
@@ -217,6 +216,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       bounce: bounce,
       sizeInBytes: 0,
       subId: subId,
+      title: 'Lien #${index + 1}',
       url: url,
       ogImageUrl: isBroken ? null : 'https://www.leoxa.fr/wp-content/uploads/2023/02/flutter.png',
       ogTitle: isBroken ? null : 'OG Title #${index + 1}',
