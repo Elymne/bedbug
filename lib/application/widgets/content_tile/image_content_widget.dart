@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bedbug/application/notifiers/screen_size_notifier.dart';
 import 'package:bedbug/application/providers/app_docs_dir_provider.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/widgets/images/app_file_image.dart';
@@ -14,12 +13,6 @@ const double _imageMinHeightFactor = 0.20;
 
 /// Fraction de la hauteur d'écran utilisée comme hauteur maximale d'affichage.
 const double _imageMaxHeightFactor = 0.35;
-
-/// Fallback fixe si [ScreenSizeNotifier] n'est pas encore initialisé.
-const double _imageMinHeightFallback = 200;
-
-/// Fallback fixe si [ScreenSizeNotifier] n'est pas encore initialisé.
-const double _imageMaxHeightFallback = 350;
 
 /// Sous-dossier de stockage des images dans le dossier de documents de l'app.
 const String _imageFolder = 'content_images';
@@ -39,10 +32,9 @@ class ImageContentWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appDocsDirWatcher = ref.watch(appDocsDirProvider);
-    final screenSize = ref.watch(screenSizeNotifierProvider);
-    final isScreenKnown = screenSize != Size.zero;
-    final minHeight = isScreenKnown ? screenSize.height * _imageMinHeightFactor : _imageMinHeightFallback;
-    final maxHeight = isScreenKnown ? screenSize.height * _imageMaxHeightFactor : _imageMaxHeightFallback;
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final minHeight = screenHeight * _imageMinHeightFactor;
+    final maxHeight = screenHeight * _imageMaxHeightFactor;
 
     return appDocsDirWatcher.when(
       loading: () => const AppLoadingText(),
