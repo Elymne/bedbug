@@ -35,7 +35,7 @@ class _State extends ConsumerState<SplashScreen> {
       backgroundColor: AppColors.background,
       body: Center(
         child: Padding(
-          padding: EdgeInsets.all(AppValues.baseMargin),
+          padding: const EdgeInsets.all(AppValues.baseMargin),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,

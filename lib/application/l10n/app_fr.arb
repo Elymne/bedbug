@@ -35,5 +35,61 @@
   "homeSeedButton": "Charger des données de test",
   "@homeSeedButton": {
     "description": "Bouton de chargement de données factices sur l'accueil quand la liste est vide"
+  },
+  "createTitle": "Créer",
+  "@createTitle": {
+    "description": "Titre de la page de création de contenu"
+  },
+  "createTypeText": "Texte",
+  "@createTypeText": {
+    "description": "Label du bouton toggle pour le type texte"
+  },
+  "createTypeImage": "Image",
+  "@createTypeImage": {
+    "description": "Label du bouton toggle pour le type image"
+  },
+  "createTypeLink": "Lien",
+  "@createTypeLink": {
+    "description": "Label du bouton toggle pour le type lien"
+  },
+  "createTextTitleLabel": "Titre",
+  "@createTextTitleLabel": {
+    "description": "Label du champ titre dans le formulaire texte"
+  },
+  "createTextBodyLabel": "Corps",
+  "@createTextBodyLabel": {
+    "description": "Label du champ corps dans le formulaire texte"
+  },
+  "createImagePickLabel": "Choisir une image",
+  "@createImagePickLabel": {
+    "description": "Label du bouton de sélection d'image dans le formulaire image"
+  },
+  "createImageTitleLabel": "Titre (optionnel)",
+  "@createImageTitleLabel": {
+    "description": "Label du champ titre optionnel dans le formulaire image"
+  },
+  "createImageBodyLabel": "Description (optionnelle)",
+  "@createImageBodyLabel": {
+    "description": "Label du champ description optionnel dans le formulaire image"
+  },
+  "createLinkUrlLabel": "URL",
+  "@createLinkUrlLabel": {
+    "description": "Label du champ URL dans le formulaire lien"
+  },
+  "createSaveButton": "Créer",
+  "@createSaveButton": {
+    "description": "Label du bouton de sauvegarde sur la page de création"
+  },
+  "createSaveLoading": "Enregistrement…",
+  "@createSaveLoading": {
+    "description": "Label affiché sur le bouton de sauvegarde pendant l'enregistrement"
+  },
+  "createSuccessMessage": "Contenu créé avec succès.",
+  "@createSuccessMessage": {
+    "description": "Message snackbar affiché après la création d'un contenu"
+  },
+  "createSaveError": "Échec de l'enregistrement du contenu.",
+  "@createSaveError": {
+    "description": "Message snackbar d'erreur affiché quand la sauvegarde échoue"
   }
 }

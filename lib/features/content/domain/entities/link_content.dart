@@ -18,11 +18,19 @@ class LinkContent extends Content {
     required super.senderId,
     required super.sizeInBytes,
     super.subId,
+    required this.title,
+    this.body,
     required this.url,
     this.ogImageUrl,
     this.ogTitle,
     this.ogDescription,
   });
+
+  /// Titre saisi par l'utilisateur.
+  final String title;
+
+  /// Description optionnelle saisie par l'utilisateur.
+  final String? body;
 
   /// URL pointée par ce contenu.
   final String url;
