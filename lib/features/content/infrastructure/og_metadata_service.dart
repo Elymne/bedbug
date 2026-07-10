@@ -1,4 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// Provider du [OgMetadataService].
+final ogMetadataServiceProvider = Provider<OgMetadataService>((ref) => OgMetadataService());
 
 /// Métadonnées Open Graph extraites d'une page web.
 class OgMetadata {

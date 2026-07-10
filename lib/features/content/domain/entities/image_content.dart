@@ -27,7 +27,7 @@ class ImageContent extends Content {
     required this.fileName,
     required this.imageWidth,
     required this.imageHeight,
-    this.title,
+    required this.title,
     this.body,
   });
 
@@ -40,8 +40,8 @@ class ImageContent extends Content {
   /// Hauteur native de l'image en pixels.
   final int imageHeight;
 
-  /// Titre optionnel accompagnant l'image.
-  final String? title;
+  /// Titre accompagnant l'image.
+  final String title;
 
   /// Description optionnelle accompagnant l'image.
   final String? body;
