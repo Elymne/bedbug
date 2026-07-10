@@ -16,6 +16,9 @@ class AppColors {
   /// Couleur des éléments sur une surface claire.
   static const Color onLight = Color(0xFF515151);
 
+  /// Variante sombre de [onLight], utilisée comme second stop de gradient.
+  static const Color onLightDeep = Color(0xFF2A2A2A);
+
   /// Couleur des éléments sur une surface sombre.
   static const Color onDark = Color(0xFFFFFFFF);
 

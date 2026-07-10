@@ -12,7 +12,7 @@ const double _ogImageHeight = 80.0;
 
 /// Affiche un [LinkContent] sous forme de tuile compacte.
 ///
-/// Affiche le thumbnail `og:image` à droite sur 30% de la largeur.
+/// Structure : titre utilisateur + ogTitle en dessous, ogImage à droite.
 class LinkContentWidget extends ConsumerWidget {
   /// Crée un [LinkContentWidget].
   ///
@@ -33,11 +33,19 @@ class LinkContentWidget extends ConsumerWidget {
           spacing: _iconSpacing,
           children: [
             Expanded(
-              child: Text(
-                content.ogTitle ?? content.url,
-                style: AppTextStyles.contentTitle,
-                maxLines: 5,
-                overflow: TextOverflow.fade,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 4,
+                children: [
+                  Text(content.title, style: AppTextStyles.contentTitle, maxLines: 2, overflow: TextOverflow.ellipsis),
+                  if (content.ogTitle != null)
+                    Text(
+                      content.ogTitle!,
+                      style: AppTextStyles.contentPreview,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                ],
               ),
             ),
             AppNetworkImage(url: content.ogImageUrl, width: imageWidth, height: _ogImageHeight),

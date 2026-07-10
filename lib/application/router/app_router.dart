@@ -1,5 +1,4 @@
 import 'package:bedbug/application/router/error_route_page.dart';
-import 'package:bedbug/application/router/shell.dart';
 import 'package:bedbug/application/screens/create/create_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
@@ -50,20 +49,9 @@ final routerProvider = Provider<GoRouter>((ref) {
     errorPageBuilder: (context, state) => const NoTransitionPage(child: ErrorRoutePage(message: 'Page not found')),
     routes: [
       GoRoute(path: splashPath, pageBuilder: (context, state) => _fadePage(const SplashScreen())),
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) => Shell(navigationShell: navigationShell),
-        branches: [
-          StatefulShellBranch(
-            routes: [GoRoute(path: homePath, pageBuilder: (context, state) => _fadePage(const HomeScreen()))],
-          ),
-          StatefulShellBranch(
-            routes: [GoRoute(path: createPath, pageBuilder: (context, state) => _fadePage(const CreateScreen()))],
-          ),
-          StatefulShellBranch(
-            routes: [GoRoute(path: settingsPath, pageBuilder: (context, state) => _fadePage(const SettingsScreen()))],
-          ),
-        ],
-      ),
+      GoRoute(path: homePath, pageBuilder: (context, state) => _fadePage(const HomeScreen())),
+      GoRoute(path: createPath, pageBuilder: (context, state) => _fadePage(const CreateScreen())),
+      GoRoute(path: settingsPath, pageBuilder: (context, state) => _fadePage(const SettingsScreen())),
     ],
   );
 });

@@ -1,15 +1,10 @@
 import 'package:bedbug/shared/domain/entity.dart';
 import 'package:bedbug/shared/domain/params.dart';
-import 'package:bedbug/shared/domain/repository_params.dart';
-import 'package:bedbug/shared/query/page.dart';
 
 /// Contrat générique de base pour tous les repositories de l'application.
 ///
 /// [T] est le type de l'entité gérée par le repository.
-/// [P] est le type des paramètres de la requête paginée, doit étendre [Params].
-/// En pratique, [P] est toujours une sous-classe de [RepositoryParams] — la
-/// contrainte est relâchée ici pour éviter les conflits d'invariance des
-/// génériques Dart.
+/// [P] est le type des paramètres de la requête filtrée, doit étendre [Params].
 ///
 /// Les méthodes non pertinentes pour un repository concret doivent lever une
 /// [UnimplementedError] avec un message explicatif dans leur implémentation.
@@ -35,19 +30,20 @@ abstract class Repository<T, P extends Params> {
   /// Aucune des mises à jour n'est appliquée si l'une d'elles échoue.
   Future<void> updateMany(List<T> entities);
 
-  /// Retourne l'entité correspondant à l'[id] fourni, ou `null` si
-  /// introuvable.
+  /// Retourne l'entité correspondant à l'[id] fourni, ou `null` si introuvable.
   Future<T?> getUnique(String id);
 
-  /// Retourne toutes les entités de la collection, sans filtre ni pagination.
+  /// Retourne toutes les entités de la collection, sans filtre ni limite.
   Future<List<T>> getAll();
+
+  /// Observe toutes les entités de la collection en temps réel.
+  ///
+  /// Émet la liste courante immédiatement, puis à chaque modification du stockage.
+  Stream<List<T>> watchAll();
 
   /// Supprime l'entité correspondant à l'[id] fourni.
   ///
   /// Sans effet si le document n'existe pas (opération idempotente).
-  ///
-  /// Les repositories qui ne supportent pas la suppression doivent lever une
-  /// [UnimplementedError] avec un message indiquant l'alternative à utiliser.
   Future<void> deleteOne(String id);
 
   /// Supprime les entités correspondant aux [ids] fournis en une seule opération.
@@ -58,10 +54,13 @@ abstract class Repository<T, P extends Params> {
   /// Supprime l'intégralité des entités stockées.
   Future<void> deleteAll();
 
-  /// Retourne une page de résultats selon les [params] fournis.
+  /// Retourne une liste filtrée et ordonnée selon les [params] fournis.
   ///
-  /// Supporte le filtrage, le tri et la pagination. Le [Page.total] indique
-  /// le nombre total de documents correspondant aux filtres, toutes pages
-  /// confondues.
-  Future<Page<T>> getMany(P params);
+  /// Supporte le filtrage, le tri et la limitation du nombre de résultats.
+  Future<List<T>> findMany(P params);
+
+  /// Observe une liste filtrée et ordonnée selon les [params] fournis en temps réel.
+  ///
+  /// Émet la liste courante immédiatement, puis à chaque modification du stockage.
+  Stream<List<T>> watchMany(P params);
 }

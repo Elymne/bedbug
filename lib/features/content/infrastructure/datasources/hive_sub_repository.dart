@@ -2,7 +2,6 @@ import 'package:bedbug/features/content/domain/entities/sub.dart';
 import 'package:bedbug/features/content/domain/repositories/sub_repository.dart';
 import 'package:bedbug/features/content/infrastructure/models/sub_hive_model.dart';
 import 'package:bedbug/shared/exceptions/datasource_exception.dart';
-import 'package:bedbug/shared/query/page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
@@ -88,6 +87,14 @@ class HiveSubRepository implements SubRepository {
   }
 
   @override
+  Stream<List<Sub>> watchAll() async* {
+    yield _box.values.map((model) => model.toEntity()).toList();
+    await for (final _ in _box.watch()) {
+      yield _box.values.map((model) => model.toEntity()).toList();
+    }
+  }
+
+  @override
   Future<void> deleteOne(String id) async {
     try {
       await _box.delete(id);
@@ -115,12 +122,41 @@ class HiveSubRepository implements SubRepository {
   }
 
   @override
-  Future<Page<Sub>> getMany(SubRepositoryParams params) async {
+  Future<List<Sub>> findMany(SubRepositoryParams params) async {
     try {
-      final results = _box.values.map((model) => model.toEntity()).toList();
-      return Page(items: results, total: results.length);
+      return _applyParams(params);
     } on HiveError catch (error) {
       throw DatasourceException('HiveSubRepository', error);
     }
+  }
+
+  @override
+  Stream<List<Sub>> watchMany(SubRepositoryParams params) async* {
+    yield _applyParams(params);
+    await for (final _ in _box.watch()) {
+      yield _applyParams(params);
+    }
+  }
+
+  /// Applique le tri et la limite des [params] sur les valeurs de la box.
+  List<Sub> _applyParams(SubRepositoryParams params) {
+    final results = _box.values.map((model) => model.toEntity()).toList();
+
+    if (params.orderBy != null) {
+      results.sort((a, b) {
+        final comparison = switch (params.orderBy!.field) {
+          'createdAt' => a.createdAt.compareTo(b.createdAt),
+          'updatedAt' => a.updatedAt.compareTo(b.updatedAt),
+          _ => 0,
+        };
+        return params.orderBy!.descending ? -comparison : comparison;
+      });
+    }
+
+    if (params.limit != null) {
+      return results.take(params.limit!).toList();
+    }
+
+    return results;
   }
 }
