@@ -360,6 +360,33 @@ Les use cases doivent la catcher explicitement et la mapper vers un failure déd
 
 - Don't extract private functions unless the block is complex or reused. Inline simple expressions directly.
 - Constructors are always declared first in a class, before fields. (consistent with `sort_constructors_first`)
+- Order class members so all public methods come before private ones. Fields and constructors still come first as per `sort_constructors_first`; within the methods that follow, public methods (including `build`) are declared before private (`_`-prefixed) methods:
+
+  ```dart
+  // ✅ OK
+  class ExampleWidget extends ConsumerWidget {
+    const ExampleWidget({super.key});
+
+    @override
+    Widget build(BuildContext context, WidgetRef ref) {
+      return _buildBody();
+    }
+
+    Widget _buildBody() { ... }
+  }
+
+  // ❌ Avoid — private method declared before the public build()
+  class ExampleWidget extends ConsumerWidget {
+    const ExampleWidget({super.key});
+
+    Widget _buildBody() { ... }
+
+    @override
+    Widget build(BuildContext context, WidgetRef ref) {
+      return _buildBody();
+    }
+  }
+  ```
 - For injected dependencies, always use the short `this.` constructor form. Never use `: _field = param`:
 
   ```dart

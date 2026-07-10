@@ -5,6 +5,12 @@ import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.da
 import 'package:bedbug/shared/notifier/notifier_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// Distance maximale (en pixels) sur laquelle la searchbar et la navbar peuvent sortir de l'écran.
+///
+/// Supérieure à la hauteur des deux barres : chacune se clampe indépendamment
+/// à sa propre hauteur lors de l'affichage.
+const double _maxBarsHiddenOffset = 200;
+
 /// Provider du [HomeNotifier].
 final homeNotifierProvider = AsyncNotifierProvider<HomeNotifier, HomeState>(HomeNotifier.new);
 
@@ -38,6 +44,19 @@ class HomeNotifier extends AsyncNotifier<HomeState> {
     await _seedContentsUsecase(const SeedContentsParams());
     ref.invalidateSelf();
   }
+
+  /// Fait avancer la sortie d'écran de la searchbar et de la navbar de [delta] pixels.
+  ///
+  /// - [delta] : distance de scroll depuis la dernière position. Positif
+  ///   (scroll vers le bas) fait sortir les barres, négatif (scroll vers
+  ///   le haut) les fait revenir.
+  void applyScrollDelta(double delta) {
+    final currentState = state.value;
+    if (currentState == null) return;
+    final updatedOffset = (currentState.barsHiddenOffset + delta).clamp(0.0, _maxBarsHiddenOffset);
+    if (updatedOffset == currentState.barsHiddenOffset) return;
+    state = AsyncData(currentState.copyWith(barsHiddenOffset: updatedOffset));
+  }
 }
 
 /// État de la page d'accueil.
@@ -45,9 +64,22 @@ class HomeState extends NotifierState {
   /// Crée un [HomeState].
   ///
   /// - [contents] : liste des contenus chargés.
+  /// - [barsHiddenOffset] : distance (en pixels) sur laquelle la searchbar et la navbar sont sorties de l'écran.
   /// - [failureMessage] : message d'erreur éventuel.
-  HomeState({required this.contents, super.failureMessage});
+  HomeState({required this.contents, this.barsHiddenOffset = 0, super.failureMessage});
 
   /// Liste des contenus chargés.
   final List<Content> contents;
+
+  /// Distance (en pixels) sur laquelle la searchbar et la navbar sont sorties de l'écran.
+  final double barsHiddenOffset;
+
+  /// Retourne une copie de cet état avec [barsHiddenOffset] remplacé si fourni.
+  HomeState copyWith({double? barsHiddenOffset}) {
+    return HomeState(
+      contents: contents,
+      barsHiddenOffset: barsHiddenOffset ?? this.barsHiddenOffset,
+      failureMessage: failureMessage,
+    );
+  }
 }
