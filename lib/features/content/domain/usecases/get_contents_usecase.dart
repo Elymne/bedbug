@@ -25,9 +25,7 @@ class GetContentsUsecase extends Usecase<GetContentsParams, GetContentsFailure, 
   @override
   Future<Either<GetContentsFailure, List<Content>>> call(GetContentsParams params) async {
     try {
-      final contents = await _contentRepository.findMany(
-        ContentRepositoryParams(orderBy: params.orderBy),
-      );
+      final contents = await _contentRepository.findMany(ContentRepositoryParams(orderBy: params.orderBy));
       return Right(contents);
     } on DataException catch (error, stackTrace) {
       AppLogger.error('GetContentsUsecase', error, stackTrace);

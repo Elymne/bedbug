@@ -28,7 +28,10 @@ void main() {
       initialLocation: '/splash',
       routes: [
         GoRoute(path: '/splash', builder: (context, state) => const SplashScreen()),
-        GoRoute(path: '/home', builder: (context, state) => const Scaffold(body: Text('home'))),
+        GoRoute(
+          path: '/home',
+          builder: (context, state) => const Scaffold(body: Text('home')),
+        ),
       ],
     );
 

@@ -39,7 +39,9 @@ void main() {
 
     await getUsecase(const NoParams());
     final saveResult = await saveUsecase(
-      const SaveSettingsParams(settings: UserSettings(blockedUrls: ['spam.com'], blockedWords: ['insulte'])),
+      const SaveSettingsParams(
+        settings: UserSettings(blockedUrls: ['spam.com'], blockedWords: ['insulte']),
+      ),
     );
     expect(saveResult.isSuccess, isTrue);
 

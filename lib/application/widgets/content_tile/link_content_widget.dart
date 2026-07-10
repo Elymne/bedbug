@@ -37,12 +37,7 @@ class LinkContentWidget extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 4,
                 children: [
-                  Text(
-                    content.title,
-                    style: AppTextStyles.contentTitle,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  Text(content.title, style: AppTextStyles.contentTitle, maxLines: 2, overflow: TextOverflow.ellipsis),
                   if (content.ogTitle != null)
                     Text(
                       content.ogTitle!,

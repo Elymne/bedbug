@@ -23,10 +23,7 @@ class AppPageHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppValues.baseMargin,
-        vertical: 12,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin, vertical: 12),
       child: Row(
         children: [
           if (onBack != null)
@@ -36,11 +33,7 @@ class AppPageHeader extends ConsumerWidget {
             ),
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: AppColors.onLight,
-            ),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: AppColors.onLight),
           ),
         ],
       ),

@@ -113,25 +113,15 @@ class _State extends ConsumerState<AppGhostText> with TickerProviderStateMixin {
     if (!widget.isAnimating) {
       return Text(
         widget.label,
-        style: TextStyle(
-          fontSize: widget.fontSize,
-          fontWeight: widget.fontWeight,
-          color: AppColors.onLight,
-        ),
+        style: TextStyle(fontSize: widget.fontSize, fontWeight: widget.fontWeight, color: AppColors.onLight),
       );
     }
 
     return AnimatedBuilder(
       animation: Listenable.merge([_ghostX, _ghostY, _mainX, _mainY]),
       builder: (context, _) {
-        final ghostOffset = Offset(
-          3.2 * widget.intensity * _ghostX.value,
-          2.0 * widget.intensity * _ghostY.value,
-        );
-        final mainOffset = Offset(
-          1.2 * widget.intensity * _mainX.value,
-          0.7 * widget.intensity * _mainY.value,
-        );
+        final ghostOffset = Offset(3.2 * widget.intensity * _ghostX.value, 2.0 * widget.intensity * _ghostY.value);
+        final mainOffset = Offset(1.2 * widget.intensity * _mainX.value, 0.7 * widget.intensity * _mainY.value);
         final style = TextStyle(fontSize: widget.fontSize, fontWeight: widget.fontWeight);
 
         return Stack(

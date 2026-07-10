@@ -37,14 +37,10 @@ class CreateNotifier extends AsyncNotifier<CreateState> {
           SaveContentFailure.storageError => ref.l10n.homeGetContentsStorageError,
           SaveContentFailure.unknown => ref.l10n.createSaveError,
         };
-        state = AsyncData(
-          CreateState(selectedType: currentType, failureMessage: message),
-        );
+        state = AsyncData(CreateState(selectedType: currentType, failureMessage: message));
       },
       onSuccess: (_) {
-        state = AsyncData(
-          CreateState(selectedType: currentType, isSuccess: true),
-        );
+        state = AsyncData(CreateState(selectedType: currentType, isSuccess: true));
       },
     );
   }
@@ -57,11 +53,7 @@ class CreateState {
   /// - [selectedType] : type de contenu actuellement sélectionné.
   /// - [failureMessage] : message d'erreur éventuel après une tentative de sauvegarde.
   /// - [isSuccess] : `true` si la sauvegarde vient de réussir.
-  const CreateState({
-    required this.selectedType,
-    this.failureMessage,
-    this.isSuccess = false,
-  });
+  const CreateState({required this.selectedType, this.failureMessage, this.isSuccess = false});
 
   /// Type de contenu actuellement sélectionné dans le toggle.
   final ContentType selectedType;
@@ -73,11 +65,7 @@ class CreateState {
   final bool isSuccess;
 
   /// Retourne une copie du state avec les champs modifiés fournis.
-  CreateState copyWith({
-    ContentType? selectedType,
-    String? failureMessage,
-    bool? isSuccess,
-  }) {
+  CreateState copyWith({ContentType? selectedType, String? failureMessage, bool? isSuccess}) {
     return CreateState(
       selectedType: selectedType ?? this.selectedType,
       failureMessage: failureMessage,

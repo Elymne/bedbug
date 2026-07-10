@@ -12,12 +12,7 @@ class AppGradientButton extends ConsumerWidget {
   /// - [child] : contenu affiché dans le bouton.
   /// - [onTap] : callback déclenché au tap. `null` désactive le bouton.
   /// - [isLoading] : `true` pour afficher le loader et désactiver le tap.
-  const AppGradientButton({
-    super.key,
-    required this.child,
-    required this.onTap,
-    this.isLoading = false,
-  });
+  const AppGradientButton({super.key, required this.child, required this.onTap, this.isLoading = false});
 
   /// Contenu affiché dans le bouton.
   final Widget child;
@@ -51,17 +46,10 @@ class AppGradientButton extends ConsumerWidget {
               ? const SizedBox(
                   width: 16,
                   height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: AppColors.onDark,
-                  ),
+                  child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.onDark),
                 )
               : DefaultTextStyle(
-                  style: const TextStyle(
-                    color: AppColors.onDark,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
+                  style: const TextStyle(color: AppColors.onDark, fontWeight: FontWeight.w600, fontSize: 14),
                   child: child,
                 ),
         ),
