@@ -331,6 +331,22 @@ Les use cases doivent la catcher explicitement et la mapper vers un failure déd
 
 - Follow `analysis_options.yaml` strictly (strict-casts, strict-inference, strict-raw-types, prefer*const*\*, avoid_dynamic_calls, etc.).
 - Document every **class**, **function**, and **function parameter** — **always in French**. Includes `@override` and private methods.
+- For non-trivial functions — and **always** for use cases — the doc comment must explain **why** the function exists, not just what it does. State the underlying need/intent driving it, not merely a paraphrase of the signature. This is especially critical for use cases: their doc comment must give the business justification for calling them (e.g. why the score needs periodic recalculation), so future readers understand the intent even without conversation context:
+
+  ```dart
+  // ✅ OK — explains the underlying need
+  /// Retourne une copie de ce contenu avec ses scores mis à jour.
+  ///
+  /// Les scores ([broadcastScore], [survivalScore]) sont recalculés
+  /// périodiquement à mesure que les contenus vieillissent ou changent de
+  /// statut ; cette méthode permet d'appliquer ces nouvelles valeurs sans
+  /// reconstruire manuellement chaque sous-type de [Content].
+  Content copyWithScores({double? broadcastScore, double? survivalScore});
+
+  // ❌ Avoid — restates the signature, no rationale
+  /// Copie ce contenu avec de nouveaux scores.
+  Content copyWithScores({double? broadcastScore, double? survivalScore});
+  ```
 - Never use `else` or `else if`. Use early returns or guards:
 
   ```dart

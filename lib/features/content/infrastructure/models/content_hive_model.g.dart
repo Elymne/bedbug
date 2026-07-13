@@ -13,14 +13,18 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
   @override
   ContentHiveModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read()};
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
     return ContentHiveModel(
       id: fields[0] as String,
       createdAt: (fields[1] as num).toInt(),
       updatedAt: (fields[2] as num).toInt(),
       authorId: fields[3] as String,
       type: fields[4] as String,
-      priority: (fields[7] as num).toInt(),
+      origin: (fields[7] as num).toInt(),
+      broadcastScore: (fields[19] as num).toDouble(),
+      survivalScore: (fields[20] as num).toDouble(),
       bounce: (fields[8] as num).toInt(),
       senderId: fields[9] as String,
       title: fields[5] as String?,
@@ -40,7 +44,7 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
   @override
   void write(BinaryWriter writer, ContentHiveModel obj) {
     writer
-      ..writeByte(19)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -56,7 +60,7 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       ..writeByte(6)
       ..write(obj.body)
       ..writeByte(7)
-      ..write(obj.priority)
+      ..write(obj.origin)
       ..writeByte(8)
       ..write(obj.bounce)
       ..writeByte(9)
@@ -78,7 +82,11 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       ..writeByte(17)
       ..write(obj.imageWidth)
       ..writeByte(18)
-      ..write(obj.imageHeight);
+      ..write(obj.imageHeight)
+      ..writeByte(19)
+      ..write(obj.broadcastScore)
+      ..writeByte(20)
+      ..write(obj.survivalScore);
   }
 
   @override
@@ -87,5 +95,7 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ContentHiveModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+      other is ContentHiveModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

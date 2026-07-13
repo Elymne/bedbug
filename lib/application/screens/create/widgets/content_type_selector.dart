@@ -36,17 +36,20 @@ class ContentTypeSelector extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Row(
-      spacing: 4,
-      children: [
-        for (final type in ContentType.values)
-          _TypeIconButton(
-            icon: _kTypeIcons[type]!,
-            isSelected: type == selectedType,
-            isDisabled: isLocked && type != selectedType,
-            onTap: () => onTypeSelected(type),
-          ),
-      ],
+    return Center(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 4,
+        children: [
+          for (final type in ContentType.values)
+            _TypeIconButton(
+              icon: _kTypeIcons[type]!,
+              isSelected: type == selectedType,
+              isDisabled: isLocked && type != selectedType,
+              onTap: () => onTypeSelected(type),
+            ),
+        ],
+      ),
     );
   }
 }

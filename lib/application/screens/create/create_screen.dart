@@ -12,7 +12,7 @@ import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_priority.dart';
+import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/enums/content_type.dart';
 import 'package:bedbug/features/content/infrastructure/og_metadata_service.dart';
 import 'package:bedbug/shared/extensions/string_uuid_x.dart';
@@ -138,7 +138,9 @@ class _State extends ConsumerState<CreateScreen> {
                 updatedAt: DateTime.now(),
                 authorId: 'local',
                 senderId: 'local',
-                priority: ContentPriority.owned,
+                origin: ContentOrigin.owned,
+                broadcastScore: 1,
+                survivalScore: 1,
                 bounce: 0,
                 sizeInBytes: (_textBodyControl.value ?? '').length,
                 title: _textTitleControl.value!,
@@ -172,7 +174,9 @@ class _State extends ConsumerState<CreateScreen> {
                 updatedAt: DateTime.now(),
                 authorId: 'local',
                 senderId: 'local',
-                priority: ContentPriority.owned,
+                origin: ContentOrigin.owned,
+                broadcastScore: 1,
+                survivalScore: 1,
                 bounce: 0,
                 sizeInBytes: fileSize,
                 fileName: fileName,
@@ -199,7 +203,9 @@ class _State extends ConsumerState<CreateScreen> {
                 updatedAt: DateTime.now(),
                 authorId: 'local',
                 senderId: 'local',
-                priority: ContentPriority.owned,
+                origin: ContentOrigin.owned,
+                broadcastScore: 1,
+                survivalScore: 1,
                 bounce: 0,
                 sizeInBytes: 0,
                 title: _linkTitleControl.value!,

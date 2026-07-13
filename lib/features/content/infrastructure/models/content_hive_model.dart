@@ -2,7 +2,7 @@ import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_priority.dart';
+import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/shared/exceptions/data_exception.dart';
 import 'package:bedbug/shared/infrastructure/hive_type_ids.dart';
 import 'package:hive_ce/hive.dart';
@@ -27,7 +27,9 @@ class ContentHiveModel extends HiveObject {
     required this.updatedAt,
     required this.authorId,
     required this.type,
-    required this.priority,
+    required this.origin,
+    required this.broadcastScore,
+    required this.survivalScore,
     required this.bounce,
     required this.senderId,
     this.title,
@@ -52,7 +54,9 @@ class ContentHiveModel extends HiveObject {
         updatedAt: entity.updatedAt.millisecondsSinceEpoch,
         authorId: entity.authorId,
         type: _typeTextContent,
-        priority: entity.priority.value,
+        origin: entity.origin.value,
+        broadcastScore: entity.broadcastScore,
+        survivalScore: entity.survivalScore,
         bounce: entity.bounce,
         senderId: entity.senderId,
         title: entity.title,
@@ -68,7 +72,9 @@ class ContentHiveModel extends HiveObject {
         updatedAt: entity.updatedAt.millisecondsSinceEpoch,
         authorId: entity.authorId,
         type: _typeLinkContent,
-        priority: entity.priority.value,
+        origin: entity.origin.value,
+        broadcastScore: entity.broadcastScore,
+        survivalScore: entity.survivalScore,
         bounce: entity.bounce,
         senderId: entity.senderId,
         title: entity.title,
@@ -88,7 +94,9 @@ class ContentHiveModel extends HiveObject {
         updatedAt: entity.updatedAt.millisecondsSinceEpoch,
         authorId: entity.authorId,
         type: _typeImageContent,
-        priority: entity.priority.value,
+        origin: entity.origin.value,
+        broadcastScore: entity.broadcastScore,
+        survivalScore: entity.survivalScore,
         bounce: entity.bounce,
         senderId: entity.senderId,
         fileName: entity.fileName,
@@ -131,9 +139,9 @@ class ContentHiveModel extends HiveObject {
   @HiveField(6)
   final String? body;
 
-  /// Priorité du contenu encodée comme valeur de [ContentPriority].
+  /// Provenance du contenu encodée comme valeur de [ContentOrigin].
   @HiveField(7)
-  final int priority;
+  final int origin;
 
   /// Nombre de rebonds du contenu entre appareils.
   @HiveField(8)
@@ -181,6 +189,14 @@ class ContentHiveModel extends HiveObject {
   @HiveField(16)
   final String? ogDescription;
 
+  /// Score de probabilité de diffusion prioritaire en BLE/WIFI.
+  @HiveField(19)
+  final double broadcastScore;
+
+  /// Score de probabilité de conservation lors d'un nettoyage automatique.
+  @HiveField(20)
+  final double survivalScore;
+
   /// Convertit ce modèle en entité [Content] concrète.
   Content toEntity() {
     try {
@@ -198,7 +214,9 @@ class ContentHiveModel extends HiveObject {
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
         authorId: authorId,
-        priority: ContentPriority.values.firstWhere((p) => p.value == priority),
+        origin: ContentOrigin.values.firstWhere((value) => value.value == origin),
+        broadcastScore: broadcastScore,
+        survivalScore: survivalScore,
         bounce: bounce,
         senderId: senderId,
         title: title!,
@@ -213,7 +231,9 @@ class ContentHiveModel extends HiveObject {
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
         authorId: authorId,
-        priority: ContentPriority.values.firstWhere((p) => p.value == priority),
+        origin: ContentOrigin.values.firstWhere((value) => value.value == origin),
+        broadcastScore: broadcastScore,
+        survivalScore: survivalScore,
         bounce: bounce,
         senderId: senderId,
         title: title ?? url!,
@@ -232,7 +252,9 @@ class ContentHiveModel extends HiveObject {
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
         authorId: authorId,
-        priority: ContentPriority.values.firstWhere((p) => p.value == priority),
+        origin: ContentOrigin.values.firstWhere((value) => value.value == origin),
+        broadcastScore: broadcastScore,
+        survivalScore: survivalScore,
         bounce: bounce,
         senderId: senderId,
         fileName: fileName!,

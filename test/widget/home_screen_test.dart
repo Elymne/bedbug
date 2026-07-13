@@ -3,7 +3,7 @@ import 'package:bedbug/application/widgets/content_tile/content_widget.dart';
 import 'package:bedbug/application/widgets/fields/content_search_input.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_priority.dart';
+import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/usecases/get_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
 import 'package:bedbug/shared/domain/either.dart';
@@ -33,7 +33,9 @@ TextContent _buildTextContent(String id) {
     updatedAt: DateTime(2026),
     authorId: 'local',
     senderId: 'local',
-    priority: ContentPriority.owned,
+    origin: ContentOrigin.owned,
+    broadcastScore: 1,
+    survivalScore: 1,
     bounce: 0,
     sizeInBytes: 10,
     title: 'Titre $id',

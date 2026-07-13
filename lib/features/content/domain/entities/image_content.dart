@@ -19,7 +19,9 @@ class ImageContent extends Content {
     required super.createdAt,
     required super.updatedAt,
     required super.authorId,
-    required super.priority,
+    required super.origin,
+    required super.broadcastScore,
+    required super.survivalScore,
     required super.bounce,
     required super.senderId,
     required super.sizeInBytes,
@@ -45,4 +47,29 @@ class ImageContent extends Content {
 
   /// Description optionnelle accompagnant l'image.
   final String? body;
+
+  /// Recrée cet [ImageContent] avec ses scores mis à jour, pour permettre au
+  /// use case de recalcul de persister la nouvelle valeur sans connaître le
+  /// détail des champs propres à ce sous-type.
+  @override
+  ImageContent copyWithScores({double? broadcastScore, double? survivalScore}) {
+    return ImageContent(
+      id: id,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      authorId: authorId,
+      origin: origin,
+      broadcastScore: broadcastScore ?? this.broadcastScore,
+      survivalScore: survivalScore ?? this.survivalScore,
+      bounce: bounce,
+      senderId: senderId,
+      sizeInBytes: sizeInBytes,
+      subId: subId,
+      fileName: fileName,
+      imageWidth: imageWidth,
+      imageHeight: imageHeight,
+      title: title,
+      body: body,
+    );
+  }
 }

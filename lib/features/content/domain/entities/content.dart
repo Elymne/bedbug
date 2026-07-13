@@ -1,4 +1,4 @@
-import 'package:bedbug/features/content/domain/enums/content_priority.dart';
+import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/user/domain/entities/user.dart';
 import 'package:bedbug/shared/domain/entity.dart';
 
@@ -11,14 +11,19 @@ abstract class Content extends Entity {
   /// Crée un [Content].
   ///
   /// - [authorId] : identifiant de l'utilisateur ayant créé le contenu.
-  /// - [priority] : priorité du contenu pour le nettoyage automatique du
-  ///   stockage local.
+  /// - [origin] : provenance du contenu, facteur d'entrée des scores
+  ///   [broadcastScore] et [survivalScore].
+  /// - [broadcastScore] : probabilité de diffusion prioritaire en BLE/WIFI.
+  /// - [survivalScore] : probabilité de conservation lors d'un nettoyage
+  ///   automatique du stockage local.
   Content({
     required super.id,
     required super.createdAt,
     required super.updatedAt,
     required this.authorId,
-    required this.priority,
+    required this.origin,
+    required this.broadcastScore,
+    required this.survivalScore,
     required this.bounce,
     required this.senderId,
     required this.sizeInBytes,
@@ -28,9 +33,17 @@ abstract class Content extends Entity {
   /// Identifiant de l'auteur du contenu.
   final String authorId;
 
-  /// Priorité du contenu, utilisée pour ordonner la suppression automatique
-  /// lors d'un nettoyage du stockage local.
-  final ContentPriority priority;
+  /// Provenance du contenu (public, sub, favori, possédé), utilisée comme
+  /// facteur d'entrée pour le recalcul périodique des scores.
+  final ContentOrigin origin;
+
+  /// Score de probabilité de diffusion prioritaire du contenu en BLE/WIFI.
+  /// Recalculé périodiquement.
+  final double broadcastScore;
+
+  /// Score de probabilité de conservation du contenu lors d'un nettoyage
+  /// automatique du stockage local. Recalculé périodiquement.
+  final double survivalScore;
 
   /// Nombre de rebonds du contenu, c'est-à-dire le nombre de fois qu'il a
   /// été retransmis d'appareil en appareil.
@@ -49,4 +62,14 @@ abstract class Content extends Entity {
   /// Identifiant du sub auquel appartient ce contenu.
   /// `null` si le contenu est purement public.
   final String? subId;
+
+  /// Retourne une copie de ce contenu avec [broadcastScore] et/ou
+  /// [survivalScore] remplacés, en conservant le type concret d'origine.
+  ///
+  /// Les scores sont recalculés périodiquement à mesure que les contenus
+  /// vieillissent ou changent de statut (favori, réception d'un rebond,
+  /// etc.). Cette méthode permet aux use cases de recalcul d'appliquer les
+  /// nouvelles valeurs sans connaître ni reconstruire le sous-type concret
+  /// (texte, image, lien) de chaque contenu.
+  Content copyWithScores({double? broadcastScore, double? survivalScore});
 }

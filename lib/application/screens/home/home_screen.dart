@@ -1,18 +1,13 @@
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/home/home_notifier.dart';
 import 'package:bedbug/application/screens/home/widgets/content_list_view.dart';
+import 'package:bedbug/application/style/app_const.dart';
 import 'package:bedbug/application/widgets/fields/content_search_input.dart';
 import 'package:bedbug/application/widgets/navbar/app_nav_bar.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-/// Hauteur totale de la searchbar, padding vertical compris.
-const double _searchBarHeight = 84;
-
-/// Hauteur fixe de la navbar, hors zone de sécurité du bas.
-const double _navBarBaseHeight = 56;
 
 /// Page d'accueil de l'application.
 class HomeScreen extends ConsumerStatefulWidget {
@@ -40,7 +35,7 @@ class _State extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final homeNotifierWatcher = ref.watch(homeNotifierProvider);
     final hiddenOffset = homeNotifierWatcher.value?.barsHiddenOffset ?? 0;
-    final navBarHeight = _navBarBaseHeight + MediaQuery.paddingOf(context).bottom;
+    final navBarHeight = AppConst.homeNavBarBaseHeight + MediaQuery.paddingOf(context).bottom;
     final l10n = context.loc;
 
     return Scaffold(
@@ -49,8 +44,8 @@ class _State extends ConsumerState<HomeScreen> {
         child: Column(
           children: [
             _buildCollapsible(
-              fullHeight: _searchBarHeight,
-              hiddenExtent: hiddenOffset.clamp(0, _searchBarHeight),
+              fullHeight: AppConst.homeSearchBarHeight,
+              hiddenExtent: hiddenOffset.clamp(0, AppConst.homeSearchBarHeight),
               alignment: Alignment.bottomCenter,
               child: const Padding(
                 padding: EdgeInsets.all(16),
