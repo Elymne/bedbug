@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/extensions/content_origin_x.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
 import 'package:bedbug/shared/domain/either.dart';
@@ -59,15 +58,31 @@ class RecalculateSurvivalScoresUsecase extends Usecase<NoParams, RecalculateSurv
 
       final updated = <Content>[];
       for (final content in contents) {
-        if (content.origin == ContentOrigin.owned) continue;
+        if (content.origin == ContentOrigin.owned) {
+          continue;
+        }
 
-        final newScore = _computeSurvivalScore(content, now);
-        if (newScore == content.survivalScore) continue;
+        final ageDays = now.difference(content.createdAt).inHours / 24;
+        final halfLife = content.origin.survivalHalfLifeDays;
+        final ageScore = math.pow(0.5, ageDays / halfLife).toDouble();
+
+        // Bonus volontairement modeste : `bounce` n'est pas vérifiable côté appareil
+        // (rien n'empêche un pair de le falsifier), il ne doit donc influencer le
+        // score qu'à la marge, jamais suffire seul à sauver un contenu autrement
+        // condamné par son ancienneté.
+        final bounceBonus = _bounceBonusWeight * (math.min(content.bounce, _bounceBonusCap) / _bounceBonusCap);
+        final newScore = (ageScore + bounceBonus).clamp(0.0, 1.0);
+
+        if (newScore == content.survivalScore) {
+          continue;
+        }
 
         updated.add(content.copyWithScores(survivalScore: newScore));
       }
 
-      if (updated.isNotEmpty) await _contentRepository.updateMany(updated);
+      if (updated.isNotEmpty) {
+        await _contentRepository.updateMany(updated);
+      }
 
       return const Right(null);
     } on DataException catch (error, stackTrace) {
@@ -80,24 +95,6 @@ class RecalculateSurvivalScoresUsecase extends Usecase<NoParams, RecalculateSurv
       AppLogger.error('RecalculateSurvivalScoresUsecase', error, stackTrace);
       return const Left(RecalculateSurvivalScoresFailure.unknown);
     }
-  }
-
-  /// Combine la décroissance par ancienneté et le bonus de rebonds pour
-  /// produire le nouveau `survivalScore` de [content] à l'instant [now].
-  ///
-  /// Le bonus de rebonds reste volontairement modeste (plafonné à `+0.2`) :
-  /// `bounce` n'est pas vérifiable côté appareil (rien n'empêche un pair de
-  /// le falsifier), donc il ne doit influencer le score qu'à la marge et
-  /// jamais suffire, seul, à sauver un contenu autrement condamné par son
-  /// ancienneté.
-  double _computeSurvivalScore(Content content, DateTime now) {
-    final ageDays = now.difference(content.createdAt).inHours / 24;
-    final halfLife = content.origin.survivalHalfLifeDays;
-    final ageScore = math.pow(0.5, ageDays / halfLife).toDouble();
-
-    final bounceBonus = _bounceBonusWeight * (math.min(content.bounce, _bounceBonusCap) / _bounceBonusCap);
-
-    return (ageScore + bounceBonus).clamp(0.0, 1.0);
   }
 }
 

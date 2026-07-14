@@ -21,6 +21,7 @@ linter:
   rules:
     # ---- STYLE & CLEAN CODE ----
     always_declare_return_types: true
+    curly_braces_in_flow_control_structures: true
     avoid_print: true
     avoid_unnecessary_containers: true
     avoid_empty_else: true

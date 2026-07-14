@@ -347,6 +347,18 @@ Les use cases doivent la catcher explicitement et la mapper vers un failure déd
   /// Copie ce contenu avec de nouveaux scores.
   Content copyWithScores({double? broadcastScore, double? survivalScore});
   ```
+- Always use braces `{}` for `if`, `else`, `for`, `while`, etc., even for single-line bodies. Never write a control-flow statement without braces:
+
+  ```dart
+  // ✅ OK
+  if (condition) {
+    return valueA;
+  }
+
+  // ❌ Avoid
+  if (condition) return valueA;
+  ```
+
 - Never use `else` or `else if`. Use early returns or guards:
 
   ```dart
