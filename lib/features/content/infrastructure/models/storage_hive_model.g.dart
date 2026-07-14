@@ -21,6 +21,7 @@ class StorageHiveModelAdapter extends TypeAdapter<StorageHiveModel> {
       createdAt: (fields[1] as num).toInt(),
       updatedAt: (fields[2] as num).toInt(),
       maxSizeInBytes: (fields[3] as num).toInt(),
+      currentSizeInBytes: (fields[5] as num).toInt(),
       strategy: (fields[4] as num).toInt(),
     );
   }
@@ -28,7 +29,7 @@ class StorageHiveModelAdapter extends TypeAdapter<StorageHiveModel> {
   @override
   void write(BinaryWriter writer, StorageHiveModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class StorageHiveModelAdapter extends TypeAdapter<StorageHiveModel> {
       ..writeByte(3)
       ..write(obj.maxSizeInBytes)
       ..writeByte(4)
-      ..write(obj.strategy);
+      ..write(obj.strategy)
+      ..writeByte(5)
+      ..write(obj.currentSizeInBytes);
   }
 
   @override

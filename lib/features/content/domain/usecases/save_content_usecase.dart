@@ -1,6 +1,8 @@
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
+import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
+import 'package:bedbug/features/content/infrastructure/datasources/hive_storage_repository.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/domain/usecase.dart';
@@ -10,20 +12,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveContentUsecase].
 final saveContentUsecaseProvider = Provider<SaveContentUsecase>(
-  (ref) => SaveContentUsecase(ref.read(contentRepositoryProvider)),
+  (ref) => SaveContentUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider)),
 );
 
 /// Persiste un contenu dans le stockage local.
 class SaveContentUsecase extends Usecase<SaveContentParams, SaveContentFailure, Content> {
   /// Crée un [SaveContentUsecase].
-  SaveContentUsecase(this._contentRepository);
+  SaveContentUsecase(this._contentRepository, this._storageRepository);
 
   final ContentRepository _contentRepository;
+  final StorageRepository _storageRepository;
 
   @override
   Future<Either<SaveContentFailure, Content>> call(SaveContentParams params) async {
     try {
       final content = await _contentRepository.addOne(params.content);
+      await _storageRepository.adjustCurrentSizeInBytes(content.sizeInBytes);
       return Right(content);
     } on DatasourceException catch (error, stackTrace) {
       AppLogger.error('SaveContentUsecase', error, stackTrace);

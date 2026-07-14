@@ -1,9 +1,12 @@
+import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
+import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
+import 'package:bedbug/features/content/infrastructure/datasources/hive_storage_repository.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/domain/usecase.dart';
@@ -15,7 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SeedContentsUsecase].
 final seedContentsUsecaseProvider = Provider<SeedContentsUsecase>(
-  (ref) => SeedContentsUsecase(ref.read(contentRepositoryProvider)),
+  (ref) => SeedContentsUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider)),
 );
 
 /// URLs de liens valides utilisées comme exemples réalistes.
@@ -84,9 +87,10 @@ const List<String> _longBodies = [
 /// Génère une grande quantité de contenus factices pour les tests de charge et d'affichage.
 class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailure, void> {
   /// Crée un [SeedContentsUsecase].
-  SeedContentsUsecase(this._contentRepository);
+  SeedContentsUsecase(this._contentRepository, this._storageRepository);
 
   final ContentRepository _contentRepository;
+  final StorageRepository _storageRepository;
 
   /// Nombre d'items écrits en une seule opération Hive.
   static const int _batchSize = 500;
@@ -95,7 +99,8 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
   Future<Either<SeedContentsFailure, void>> call(SeedContentsParams params) async {
     try {
       final now = DateTime.now();
-      final batch = <dynamic>[];
+      final batch = <Content>[];
+      var totalSizeInBytes = 0;
 
       for (var index = 0; index < params.count; index++) {
         final createdAt = now.subtract(Duration(minutes: index));
@@ -103,7 +108,9 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
         final bounce = index % 11;
         final subId = index % 10 < 3 ? 'seed-sub-${index % 5}' : null;
 
-        batch.add(_buildContent(index, createdAt, origin, bounce, subId));
+        final content = _buildContent(index, createdAt, origin, bounce, subId);
+        totalSizeInBytes += content.sizeInBytes;
+        batch.add(content);
 
         if (batch.length == _batchSize) {
           await _contentRepository.addMany(List.from(batch));
@@ -113,6 +120,10 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
 
       if (batch.isNotEmpty) {
         await _contentRepository.addMany(List.from(batch));
+      }
+
+      if (totalSizeInBytes > 0) {
+        await _storageRepository.adjustCurrentSizeInBytes(totalSizeInBytes);
       }
 
       return const Right(null);
@@ -133,7 +144,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
   /// - index % 10 in [0..3] → [TextContent] (40 %)
   /// - index % 10 in [4..6] → [ImageContent] (30 %)
   /// - index % 10 in [7..9] → [LinkContent] (30 %)
-  dynamic _buildContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String? subId) {
+  Content _buildContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String? subId) {
     final bucket = index % 10;
 
     if (bucket <= 3) {
