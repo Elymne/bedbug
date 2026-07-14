@@ -36,6 +36,7 @@ TextContent _buildTextContent(String id) {
     origin: ContentOrigin.owned,
     broadcastScore: 1,
     survivalScore: 1,
+    displayScore: 1,
     bounce: 0,
     sizeInBytes: 10,
     title: 'Titre $id',

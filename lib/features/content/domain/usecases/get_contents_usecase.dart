@@ -15,7 +15,7 @@ final getContentsUsecaseProvider = Provider<GetContentsUsecase>(
   (ref) => GetContentsUsecase(ref.read(contentRepositoryProvider)),
 );
 
-/// Récupère tous les contenus, triés du plus récent au plus ancien par défaut.
+/// Récupère tous les contenus, triés par `displayScore` décroissant par défaut.
 class GetContentsUsecase extends Usecase<GetContentsParams, GetContentsFailure, List<Content>> {
   /// Crée un [GetContentsUsecase].
   GetContentsUsecase(this._contentRepository);
@@ -56,9 +56,9 @@ enum GetContentsFailure {
 class GetContentsParams extends Params {
   /// Crée des [GetContentsParams].
   ///
-  /// - [orderBy] : tri appliqué aux résultats. Par défaut, du plus récent
-  ///   au plus ancien.
-  const GetContentsParams({this.orderBy = const OrderBy('createdAt', descending: true)});
+  /// - [orderBy] : tri appliqué aux résultats. Par défaut, par priorité
+  ///   d'affichage (`displayScore`) décroissante.
+  const GetContentsParams({this.orderBy = const OrderBy('displayScore', descending: true)});
 
   /// Tri appliqué aux résultats.
   final OrderBy orderBy;

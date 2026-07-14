@@ -15,14 +15,13 @@ Suivi des chantiers liés au système de score des `Content` (voir `ContentOrigi
   qui se referme vite — pénalité de `bounce` plafonnée, `owned` fixe à `1.0`). Testé
   (`test/integration/recalculate_broadcast_scores_usecase_test.dart`).
 
+- `displayScore` (priorité UI) : `RecalculateDisplayScoresUsecase` (décroissance par
+  demi-vie selon `ContentOrigin` — `displayHalfLifeDays`, intermédiaire entre celle du
+  `broadcastScore` et celle du `survivalScore` — bonus de `bounce` plafonné, `owned`
+  fixe à `1.0`). `GetContentsUsecase` trie par défaut sur `displayScore` décroissant.
+  Testé (`test/integration/recalculate_display_scores_usecase_test.dart`).
+
 ## À faire
-
-### Score d'ordre d'affichage (priorité UI)
-
-Nouveau score à créer : détermine l'ordre d'affichage des contenus dans la liste
-(page d'accueil). Distinct de `broadcastScore` et `survivalScore` — reste à définir
-quels facteurs y entrent (fraîcheur, origin, interactions utilisateur, etc.) et si ce
-score est recalculé périodiquement comme les deux autres ou calculé à la volée au tri.
 
 ### Usecase de calcul du poids de stockage total
 

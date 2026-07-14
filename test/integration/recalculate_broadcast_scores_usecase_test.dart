@@ -29,6 +29,7 @@ TextContent _buildContent({
     origin: origin,
     broadcastScore: 0,
     survivalScore: 0,
+    displayScore: 0,
     bounce: bounce,
     sizeInBytes: 10,
     title: 'Titre $id',

@@ -16,6 +16,7 @@ abstract class Content extends Entity {
   /// - [broadcastScore] : probabilité de diffusion prioritaire en BLE/WIFI.
   /// - [survivalScore] : probabilité de conservation lors d'un nettoyage
   ///   automatique du stockage local.
+  /// - [displayScore] : priorité d'affichage dans la liste de la page d'accueil.
   Content({
     required super.id,
     required super.createdAt,
@@ -24,6 +25,7 @@ abstract class Content extends Entity {
     required this.origin,
     required this.broadcastScore,
     required this.survivalScore,
+    required this.displayScore,
     required this.bounce,
     required this.senderId,
     required this.sizeInBytes,
@@ -45,6 +47,10 @@ abstract class Content extends Entity {
   /// automatique du stockage local. Recalculé périodiquement.
   final double survivalScore;
 
+  /// Score de priorité d'affichage du contenu dans la liste de la page
+  /// d'accueil. Recalculé périodiquement.
+  final double displayScore;
+
   /// Nombre de rebonds du contenu, c'est-à-dire le nombre de fois qu'il a
   /// été retransmis d'appareil en appareil.
   final int bounce;
@@ -63,13 +69,13 @@ abstract class Content extends Entity {
   /// `null` si le contenu est purement public.
   final String? subId;
 
-  /// Retourne une copie de ce contenu avec [broadcastScore] et/ou
-  /// [survivalScore] remplacés, en conservant le type concret d'origine.
+  /// Retourne une copie de ce contenu avec [broadcastScore], [survivalScore]
+  /// et/ou [displayScore] remplacés, en conservant le type concret d'origine.
   ///
   /// Les scores sont recalculés périodiquement à mesure que les contenus
   /// vieillissent ou changent de statut (favori, réception d'un rebond,
   /// etc.). Cette méthode permet aux use cases de recalcul d'appliquer les
   /// nouvelles valeurs sans connaître ni reconstruire le sous-type concret
   /// (texte, image, lien) de chaque contenu.
-  Content copyWithScores({double? broadcastScore, double? survivalScore});
+  Content copyWithScores({double? broadcastScore, double? survivalScore, double? displayScore});
 }

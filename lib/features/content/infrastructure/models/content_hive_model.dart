@@ -30,6 +30,7 @@ class ContentHiveModel extends HiveObject {
     required this.origin,
     required this.broadcastScore,
     required this.survivalScore,
+    required this.displayScore,
     required this.bounce,
     required this.senderId,
     this.title,
@@ -57,6 +58,7 @@ class ContentHiveModel extends HiveObject {
         origin: entity.origin.value,
         broadcastScore: entity.broadcastScore,
         survivalScore: entity.survivalScore,
+        displayScore: entity.displayScore,
         bounce: entity.bounce,
         senderId: entity.senderId,
         title: entity.title,
@@ -75,6 +77,7 @@ class ContentHiveModel extends HiveObject {
         origin: entity.origin.value,
         broadcastScore: entity.broadcastScore,
         survivalScore: entity.survivalScore,
+        displayScore: entity.displayScore,
         bounce: entity.bounce,
         senderId: entity.senderId,
         title: entity.title,
@@ -97,6 +100,7 @@ class ContentHiveModel extends HiveObject {
         origin: entity.origin.value,
         broadcastScore: entity.broadcastScore,
         survivalScore: entity.survivalScore,
+        displayScore: entity.displayScore,
         bounce: entity.bounce,
         senderId: entity.senderId,
         fileName: entity.fileName,
@@ -197,6 +201,10 @@ class ContentHiveModel extends HiveObject {
   @HiveField(20)
   final double survivalScore;
 
+  /// Score de priorité d'affichage dans la liste de la page d'accueil.
+  @HiveField(21)
+  final double displayScore;
+
   /// Convertit ce modèle en entité [Content] concrète.
   Content toEntity() {
     try {
@@ -217,6 +225,7 @@ class ContentHiveModel extends HiveObject {
         origin: ContentOrigin.values.firstWhere((value) => value.value == origin),
         broadcastScore: broadcastScore,
         survivalScore: survivalScore,
+        displayScore: displayScore,
         bounce: bounce,
         senderId: senderId,
         title: title!,
@@ -234,6 +243,7 @@ class ContentHiveModel extends HiveObject {
         origin: ContentOrigin.values.firstWhere((value) => value.value == origin),
         broadcastScore: broadcastScore,
         survivalScore: survivalScore,
+        displayScore: displayScore,
         bounce: bounce,
         senderId: senderId,
         title: title ?? url!,
@@ -255,6 +265,7 @@ class ContentHiveModel extends HiveObject {
         origin: ContentOrigin.values.firstWhere((value) => value.value == origin),
         broadcastScore: broadcastScore,
         survivalScore: survivalScore,
+        displayScore: displayScore,
         bounce: bounce,
         senderId: senderId,
         fileName: fileName!,

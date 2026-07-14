@@ -22,6 +22,7 @@ class ImageContent extends Content {
     required super.origin,
     required super.broadcastScore,
     required super.survivalScore,
+    required super.displayScore,
     required super.bounce,
     required super.senderId,
     required super.sizeInBytes,
@@ -52,7 +53,7 @@ class ImageContent extends Content {
   /// use case de recalcul de persister la nouvelle valeur sans connaître le
   /// détail des champs propres à ce sous-type.
   @override
-  ImageContent copyWithScores({double? broadcastScore, double? survivalScore}) {
+  ImageContent copyWithScores({double? broadcastScore, double? survivalScore, double? displayScore}) {
     return ImageContent(
       id: id,
       createdAt: createdAt,
@@ -61,6 +62,7 @@ class ImageContent extends Content {
       origin: origin,
       broadcastScore: broadcastScore ?? this.broadcastScore,
       survivalScore: survivalScore ?? this.survivalScore,
+      displayScore: displayScore ?? this.displayScore,
       bounce: bounce,
       senderId: senderId,
       sizeInBytes: sizeInBytes,

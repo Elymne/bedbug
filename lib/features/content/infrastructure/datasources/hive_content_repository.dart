@@ -153,6 +153,7 @@ class HiveContentRepository implements ContentRepository {
         final comparison = switch (params.orderBy!.field) {
           'createdAt' => a.createdAt.compareTo(b.createdAt),
           'updatedAt' => a.updatedAt.compareTo(b.updatedAt),
+          'displayScore' => a.displayScore.compareTo(b.displayScore),
           _ => 0,
         };
         return params.orderBy!.descending ? -comparison : comparison;
