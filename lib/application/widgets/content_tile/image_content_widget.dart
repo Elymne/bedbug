@@ -5,6 +5,7 @@ import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/widgets/images/app_file_image.dart';
 import 'package:bedbug/application/widgets/texts/app_loading_text.dart';
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
+import 'package:bedbug/shared/config/content_image_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,9 +14,6 @@ const double _imageMinHeightFactor = 0.20;
 
 /// Fraction de la hauteur d'écran utilisée comme hauteur maximale d'affichage.
 const double _imageMaxHeightFactor = 0.35;
-
-/// Sous-dossier de stockage des images dans le dossier de documents de l'app.
-const String _imageFolder = 'content_images';
 
 /// Affiche un [ImageContent] sous forme de tuile compacte.
 ///
@@ -40,7 +38,7 @@ class ImageContentWidget extends ConsumerWidget {
       loading: () => const AppLoadingText(),
       error: (error, stack) => const Icon(Icons.broken_image_outlined),
       data: (dir) {
-        final file = File('${dir.path}/$_imageFolder/${content.fileName}');
+        final file = File('${dir.path}/$contentImagesFolder/${content.fileName}');
         final displayHeight = content.imageHeight.toDouble().clamp(minHeight, maxHeight);
 
         return Column(

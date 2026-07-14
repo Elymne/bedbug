@@ -73,4 +73,31 @@ class LinkContent extends Content {
       ogDescription: ogDescription,
     );
   }
+
+  /// Recrée ce [LinkContent] avec un [sizeInBytes] mis à jour, pour permettre
+  /// au use case de sauvegarde de persister le poids réel sans connaître le
+  /// détail des champs propres à ce sous-type.
+  @override
+  LinkContent copyWithSizeInBytes(int sizeInBytes) {
+    return LinkContent(
+      id: id,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      authorId: authorId,
+      origin: origin,
+      broadcastScore: broadcastScore,
+      survivalScore: survivalScore,
+      displayScore: displayScore,
+      bounce: bounce,
+      senderId: senderId,
+      sizeInBytes: sizeInBytes,
+      subId: subId,
+      title: title,
+      body: body,
+      url: url,
+      ogImageUrl: ogImageUrl,
+      ogTitle: ogTitle,
+      ogDescription: ogDescription,
+    );
+  }
 }

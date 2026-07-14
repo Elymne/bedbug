@@ -78,4 +78,14 @@ abstract class Content extends Entity {
   /// nouvelles valeurs sans connaître ni reconstruire le sous-type concret
   /// (texte, image, lien) de chaque contenu.
   Content copyWithScores({double? broadcastScore, double? survivalScore, double? displayScore});
+
+  /// Retourne une copie de ce contenu avec [sizeInBytes] remplacé, en
+  /// conservant le type concret d'origine.
+  ///
+  /// Le poids fourni par l'appelant à la création n'est pas fiable (un
+  /// contenu reçu d'un pair pourrait mentir sur sa taille) : c'est le use
+  /// case de sauvegarde qui doit déterminer le poids réel avant persistance,
+  /// via cette méthode, sans connaître ni reconstruire le sous-type concret
+  /// (texte, image, lien) de chaque contenu.
+  Content copyWithSizeInBytes(int sizeInBytes);
 }

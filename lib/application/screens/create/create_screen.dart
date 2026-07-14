@@ -15,6 +15,7 @@ import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/enums/content_type.dart';
 import 'package:bedbug/features/content/infrastructure/og_metadata_service.dart';
+import 'package:bedbug/shared/config/content_image_storage.dart';
 import 'package:bedbug/shared/extensions/string_uuid_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -143,7 +144,9 @@ class _State extends ConsumerState<CreateScreen> {
                 survivalScore: 1,
                 displayScore: 1,
                 bounce: 0,
-                sizeInBytes: (_textBodyControl.value ?? '').length,
+                // Placeholder : SaveContentUsecase détermine et corrige le poids réel
+                // avant persistance.
+                sizeInBytes: 0,
                 title: _textTitleControl.value!,
                 body: _textBodyControl.value!,
               ),
@@ -160,11 +163,12 @@ class _State extends ConsumerState<CreateScreen> {
         buffer.dispose();
 
         final dir = await getApplicationDocumentsDirectory();
+        final imagesDir = Directory('${dir.path}/$contentImagesFolder');
+        await imagesDir.create(recursive: true);
         final ext = _pickedImage!.path.split('.').last;
         final fileName = '${UuidX.generate()}.$ext';
-        final destPath = '${dir.path}/$fileName';
+        final destPath = '${imagesDir.path}/$fileName';
         await File(_pickedImage!.path).copy(destPath);
-        final fileSize = await File(destPath).length();
 
         await ref
             .read(createNotifierProvider.notifier)
@@ -180,7 +184,9 @@ class _State extends ConsumerState<CreateScreen> {
                 survivalScore: 1,
                 displayScore: 1,
                 bounce: 0,
-                sizeInBytes: fileSize,
+                // Placeholder : SaveContentUsecase détermine et corrige le poids réel
+                // (taille du fichier sur disque) avant persistance.
+                sizeInBytes: 0,
                 fileName: fileName,
                 imageWidth: width,
                 imageHeight: height,

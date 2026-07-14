@@ -47,3 +47,17 @@ Chantiers liés au système de score des `Content` (voir `ContentOrigin`,
   l'utilisateur de configurer sa propre limite, et le usecase de nettoyage qui
   s'appuiera sur `survivalScore` + `Storage.strategy` pour décider quoi supprimer en
   priorité une fois `maxSizeInBytes` dépassé.
+
+- `SaveContentUsecase` ne fait plus confiance au `sizeInBytes` fourni par l'appelant
+  (un contenu reçu d'un pair pourrait mentir sur sa taille) : il détermine désormais
+  lui-même le poids réel avant persistance, selon le type concret du contenu —
+  `TextContent`/`LinkContent` : somme des octets UTF-8 de leurs champs texte ;
+  `ImageContent` : taille réelle du fichier sur disque (`0` si le fichier est
+  introuvable). Nouvelle méthode `Content.copyWithSizeInBytes` (comme
+  `copyWithScores`) pour appliquer la correction sans connaître le sous-type concret.
+  Au passage, corrigé un bug latent dans `create_screen.dart` qui écrivait les images
+  à la racine du dossier de documents au lieu du sous-dossier `content_images` attendu
+  par les écrans de lecture — le nom de ce sous-dossier est maintenant centralisé dans
+  `contentImagesFolder` (`shared/config/content_image_storage.dart`) plutôt que
+  dupliqué dans chaque fichier. Testé
+  (`test/integration/save_content_usecase_test.dart`).

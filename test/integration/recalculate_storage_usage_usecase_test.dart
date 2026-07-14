@@ -12,9 +12,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/hive_test_helper.dart';
 
-/// Construit un [TextContent] minimal pour les besoins du test, avec un
-/// [sizeInBytes] contrôlé pour vérifier le calcul du poids total.
-TextContent _buildContent({required String id, required int sizeInBytes}) {
+/// Construit un [TextContent] minimal pour les besoins du test.
+///
+/// `SaveContentUsecase` recalcule désormais le poids réel du contenu plutôt
+/// que de faire confiance au `sizeInBytes` fourni au constructeur ; pour
+/// garder un poids contrôlé et déterministe malgré ce recalcul, le corps est
+/// composé de [bodyByteLength] caractères ASCII (1 octet chacun) et le titre
+/// est laissé vide.
+TextContent _buildContent({required String id, required int bodyByteLength}) {
   final now = DateTime.now();
   return TextContent(
     id: id,
@@ -27,9 +32,9 @@ TextContent _buildContent({required String id, required int sizeInBytes}) {
     survivalScore: 1,
     displayScore: 1,
     bounce: 0,
-    sizeInBytes: sizeInBytes,
-    title: 'Titre $id',
-    body: 'Corps $id',
+    sizeInBytes: 0,
+    title: '',
+    body: 'a' * bodyByteLength,
   );
 }
 
@@ -60,9 +65,9 @@ void main() {
     final saveUsecase = container.read(saveContentUsecaseProvider);
     final usecase = container.read(recalculateStorageUsageUsecaseProvider);
 
-    await saveUsecase(SaveContentParams(content: _buildContent(id: 'a', sizeInBytes: 100)));
-    await saveUsecase(SaveContentParams(content: _buildContent(id: 'b', sizeInBytes: 250)));
-    await saveUsecase(SaveContentParams(content: _buildContent(id: 'c', sizeInBytes: 0)));
+    await saveUsecase(SaveContentParams(content: _buildContent(id: 'a', bodyByteLength: 100)));
+    await saveUsecase(SaveContentParams(content: _buildContent(id: 'b', bodyByteLength: 250)));
+    await saveUsecase(SaveContentParams(content: _buildContent(id: 'c', bodyByteLength: 0)));
 
     final result = await usecase(const NoParams());
 
@@ -76,7 +81,7 @@ void main() {
     final getStorageUsecase = container.read(getStorageUsecaseProvider);
     final storageRepository = container.read(storageRepositoryProvider);
 
-    await saveUsecase(SaveContentParams(content: _buildContent(id: 'a', sizeInBytes: 100)));
+    await saveUsecase(SaveContentParams(content: _buildContent(id: 'a', bodyByteLength: 100)));
 
     final drifted = (await storageRepository.getUnique(''))!;
     await storageRepository.updateOne(drifted.copyWithCurrentSizeInBytes(999999));

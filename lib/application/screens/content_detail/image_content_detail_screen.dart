@@ -6,12 +6,10 @@ import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/widgets/images/app_file_image.dart';
 import 'package:bedbug/application/widgets/texts/app_loading_text.dart';
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
+import 'package:bedbug/shared/config/content_image_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-/// Sous-dossier de stockage des images dans le dossier de documents de l'app.
-const String _imageFolder = 'content_images';
 
 /// Page de détail d'un [ImageContent].
 class ImageContentDetailScreen extends ConsumerWidget {
@@ -47,7 +45,7 @@ class ImageContentDetailScreen extends ConsumerWidget {
           loading: () => const AppLoadingText(),
           error: (error, stack) => const Icon(Icons.broken_image_outlined),
           data: (dir) {
-            final file = File('${dir.path}/$_imageFolder/${content.fileName}');
+            final file = File('${dir.path}/$contentImagesFolder/${content.fileName}');
             return AppFileImage(file: file, width: double.infinity, height: 250);
           },
         ),

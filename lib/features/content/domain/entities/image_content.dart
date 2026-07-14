@@ -74,4 +74,31 @@ class ImageContent extends Content {
       body: body,
     );
   }
+
+  /// Recrée cet [ImageContent] avec un [sizeInBytes] mis à jour, pour
+  /// permettre au use case de sauvegarde de persister le poids réel (taille
+  /// du fichier sur disque) sans connaître le détail des champs propres à ce
+  /// sous-type.
+  @override
+  ImageContent copyWithSizeInBytes(int sizeInBytes) {
+    return ImageContent(
+      id: id,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      authorId: authorId,
+      origin: origin,
+      broadcastScore: broadcastScore,
+      survivalScore: survivalScore,
+      displayScore: displayScore,
+      bounce: bounce,
+      senderId: senderId,
+      sizeInBytes: sizeInBytes,
+      subId: subId,
+      fileName: fileName,
+      imageWidth: imageWidth,
+      imageHeight: imageHeight,
+      title: title,
+      body: body,
+    );
+  }
 }
