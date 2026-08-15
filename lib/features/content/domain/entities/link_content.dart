@@ -13,7 +13,10 @@ class LinkContent extends Content {
     required super.createdAt,
     required super.updatedAt,
     required super.authorId,
-    required super.priority,
+    required super.origin,
+    required super.broadcastScore,
+    required super.survivalScore,
+    required super.displayScore,
     required super.bounce,
     required super.senderId,
     required super.sizeInBytes,
@@ -43,4 +46,58 @@ class LinkContent extends Content {
 
   /// Description Open Graph. `null` si non fetchée ou absente.
   final String? ogDescription;
+
+  /// Recrée ce [LinkContent] avec ses scores mis à jour, pour permettre au
+  /// use case de recalcul de persister la nouvelle valeur sans connaître le
+  /// détail des champs propres à ce sous-type.
+  @override
+  LinkContent copyWithScores({double? broadcastScore, double? survivalScore, double? displayScore}) {
+    return LinkContent(
+      id: id,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      authorId: authorId,
+      origin: origin,
+      broadcastScore: broadcastScore ?? this.broadcastScore,
+      survivalScore: survivalScore ?? this.survivalScore,
+      displayScore: displayScore ?? this.displayScore,
+      bounce: bounce,
+      senderId: senderId,
+      sizeInBytes: sizeInBytes,
+      subId: subId,
+      title: title,
+      body: body,
+      url: url,
+      ogImageUrl: ogImageUrl,
+      ogTitle: ogTitle,
+      ogDescription: ogDescription,
+    );
+  }
+
+  /// Recrée ce [LinkContent] avec un [sizeInBytes] mis à jour, pour permettre
+  /// au use case de sauvegarde de persister le poids réel sans connaître le
+  /// détail des champs propres à ce sous-type.
+  @override
+  LinkContent copyWithSizeInBytes(int sizeInBytes) {
+    return LinkContent(
+      id: id,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      authorId: authorId,
+      origin: origin,
+      broadcastScore: broadcastScore,
+      survivalScore: survivalScore,
+      displayScore: displayScore,
+      bounce: bounce,
+      senderId: senderId,
+      sizeInBytes: sizeInBytes,
+      subId: subId,
+      title: title,
+      body: body,
+      url: url,
+      ogImageUrl: ogImageUrl,
+      ogTitle: ogTitle,
+      ogDescription: ogDescription,
+    );
+  }
 }

@@ -15,6 +15,7 @@ class StorageHiveModel extends HiveObject {
     required this.createdAt,
     required this.updatedAt,
     required this.maxSizeInBytes,
+    required this.currentSizeInBytes,
     required this.strategy,
   });
 
@@ -25,6 +26,7 @@ class StorageHiveModel extends HiveObject {
       createdAt: entity.createdAt.millisecondsSinceEpoch,
       updatedAt: entity.updatedAt.millisecondsSinceEpoch,
       maxSizeInBytes: entity.maxSizeInBytes,
+      currentSizeInBytes: entity.currentSizeInBytes,
       strategy: entity.strategy.value,
     );
   }
@@ -49,6 +51,10 @@ class StorageHiveModel extends HiveObject {
   @HiveField(4)
   final int strategy;
 
+  /// Taille actuellement occupée par les contenus, en octets.
+  @HiveField(5)
+  final int currentSizeInBytes;
+
   /// Convertit ce modèle en entité [Storage].
   Storage toEntity() {
     try {
@@ -57,6 +63,7 @@ class StorageHiveModel extends HiveObject {
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
         maxSizeInBytes: maxSizeInBytes,
+        currentSizeInBytes: currentSizeInBytes,
         strategy: CleanupStrategy.values.firstWhere((s) => s.value == strategy),
       );
     } catch (error) {

@@ -91,5 +91,9 @@
   "createSaveError": "Échec de l'enregistrement du contenu.",
   "@createSaveError": {
     "description": "Message snackbar d'erreur affiché quand la sauvegarde échoue"
+  },
+  "contentDetailAnonymousAuthor": "Anonyme",
+  "@contentDetailAnonymousAuthor": {
+    "description": "Nom d'auteur affiché sur la page de détail. Les données brutes reçues en BLE ne sont pas fiables, l'auteur réel n'est donc pas résolu pour l'instant."
   }
 }

@@ -1,19 +1,24 @@
 import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/shared/domain/repository.dart';
-import 'package:bedbug/shared/domain/repository_params.dart';
 
 /// Contrat du repository gérant les [Content].
-abstract class ContentRepository extends Repository<Content, ContentRepositoryParams> {}
+abstract class ContentRepository {
+  /// Persiste un nouveau contenu [entity].
+  Future<Content> addOne(Content entity);
 
-/// Paramètres de requête du [ContentRepository].
-class ContentRepositoryParams extends RepositoryParams {
-  /// Crée des [ContentRepositoryParams].
+  /// Persiste une liste de contenus [entities] en une seule opération atomique.
+  Future<void> addMany(List<Content> entities);
+
+  /// Met à jour une liste de contenus existants [entities] en une seule opération atomique.
   ///
-  /// - [authorId] : filtre optionnel sur l'auteur du contenu.
-  /// - [limit] : nombre maximum d'éléments à retourner. `null` = tous.
-  /// - [orderBy] : tri appliqué aux résultats.
-  const ContentRepositoryParams({super.limit, super.orderBy, this.authorId});
+  /// Lève une `DatasourceException` dès qu'un contenu de la liste est introuvable.
+  Future<void> updateMany(List<Content> entities);
 
-  /// Filtre sur l'identifiant de l'auteur. `null` = aucun filtre.
-  final String? authorId;
+  /// Retourne tous les contenus, sans filtre ni limite.
+  Future<List<Content>> getAll();
+
+  /// Supprime l'intégralité des contenus stockés.
+  Future<void> deleteAll();
+
+  /// Retourne tous les contenus triés par `displayScore` décroissant.
+  Future<List<Content>> getAllOrderedByDisplayScoreDesc();
 }

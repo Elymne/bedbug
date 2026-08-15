@@ -20,7 +20,10 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       updatedAt: (fields[2] as num).toInt(),
       authorId: fields[3] as String,
       type: fields[4] as String,
-      priority: (fields[7] as num).toInt(),
+      origin: (fields[7] as num).toInt(),
+      broadcastScore: (fields[19] as num).toDouble(),
+      survivalScore: (fields[20] as num).toDouble(),
+      displayScore: (fields[21] as num).toDouble(),
       bounce: (fields[8] as num).toInt(),
       senderId: fields[9] as String,
       title: fields[5] as String?,
@@ -40,7 +43,7 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
   @override
   void write(BinaryWriter writer, ContentHiveModel obj) {
     writer
-      ..writeByte(19)
+      ..writeByte(22)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -56,7 +59,7 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       ..writeByte(6)
       ..write(obj.body)
       ..writeByte(7)
-      ..write(obj.priority)
+      ..write(obj.origin)
       ..writeByte(8)
       ..write(obj.bounce)
       ..writeByte(9)
@@ -78,7 +81,13 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       ..writeByte(17)
       ..write(obj.imageWidth)
       ..writeByte(18)
-      ..write(obj.imageHeight);
+      ..write(obj.imageHeight)
+      ..writeByte(19)
+      ..write(obj.broadcastScore)
+      ..writeByte(20)
+      ..write(obj.survivalScore)
+      ..writeByte(21)
+      ..write(obj.displayScore);
   }
 
   @override
