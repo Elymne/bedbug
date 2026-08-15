@@ -14,7 +14,12 @@ enum ContentOrigin {
   favorited(2, survivalHalfLifeDays: 90, broadcastHalfLifeDays: 14, displayHalfLifeDays: 30),
 
   /// Contenu créé par l'utilisateur lui-même.
-  owned(3, survivalHalfLifeDays: double.infinity, broadcastHalfLifeDays: double.infinity, displayHalfLifeDays: double.infinity);
+  owned(
+    3,
+    survivalHalfLifeDays: double.infinity,
+    broadcastHalfLifeDays: double.infinity,
+    displayHalfLifeDays: double.infinity,
+  );
 
   const ContentOrigin(
     this.value, {

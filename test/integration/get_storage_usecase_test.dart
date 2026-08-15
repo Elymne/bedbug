@@ -54,7 +54,10 @@ void main() {
     await repository.addOne(Storage(id: 'a', createdAt: now, updatedAt: now, maxSizeInBytes: 1000));
     // Simule une écriture buguée sous une mauvaise clé, en plus de l'entrée
     // singleton attendue.
-    await box.put('rogue-entry', StorageHiveModel.fromEntity(Storage(id: 'b', createdAt: now, updatedAt: now, maxSizeInBytes: 1000)));
+    await box.put(
+      'rogue-entry',
+      StorageHiveModel.fromEntity(Storage(id: 'b', createdAt: now, updatedAt: now, maxSizeInBytes: 1000)),
+    );
 
     final logs = <String>[];
     final previousDebugPrint = debugPrint;

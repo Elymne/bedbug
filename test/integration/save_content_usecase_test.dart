@@ -38,7 +38,10 @@ void main() {
   });
 
   tearDown(() async {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(_pathProviderChannel, null);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      _pathProviderChannel,
+      null,
+    );
     container.dispose();
     await closeTestHive(tempDir);
   });
@@ -70,66 +73,72 @@ void main() {
     expect(saved.sizeInBytes, 5);
   });
 
-  test('ignore le sizeInBytes fourni par l\'appelant pour un LinkContent et le recalcule depuis ses champs texte', () async {
-    final saveUsecase = container.read(saveContentUsecaseProvider);
-    final repository = container.read(contentRepositoryProvider);
+  test(
+    'ignore le sizeInBytes fourni par l\'appelant pour un LinkContent et le recalcule depuis ses champs texte',
+    () async {
+      final saveUsecase = container.read(saveContentUsecaseProvider);
+      final repository = container.read(contentRepositoryProvider);
 
-    final now = DateTime.now();
-    final content = LinkContent(
-      id: 'a',
-      createdAt: now,
-      updatedAt: now,
-      authorId: 'author',
-      senderId: 'sender',
-      origin: ContentOrigin.owned,
-      broadcastScore: 1,
-      survivalScore: 1,
-      displayScore: 1,
-      bounce: 0,
-      sizeInBytes: 999999,
-      title: 'ab',
-      url: 'cde',
-    );
+      final now = DateTime.now();
+      final content = LinkContent(
+        id: 'a',
+        createdAt: now,
+        updatedAt: now,
+        authorId: 'author',
+        senderId: 'sender',
+        origin: ContentOrigin.owned,
+        broadcastScore: 1,
+        survivalScore: 1,
+        displayScore: 1,
+        bounce: 0,
+        sizeInBytes: 999999,
+        title: 'ab',
+        url: 'cde',
+      );
 
-    await saveUsecase(SaveContentParams(content: content));
+      await saveUsecase(SaveContentParams(content: content));
 
-    final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a');
-    expect(saved.sizeInBytes, 5);
-  });
+      final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a');
+      expect(saved.sizeInBytes, 5);
+    },
+  );
 
-  test('ignore le sizeInBytes fourni par l\'appelant pour un ImageContent et lit la vraie taille du fichier sur disque', () async {
-    final saveUsecase = container.read(saveContentUsecaseProvider);
-    final repository = container.read(contentRepositoryProvider);
+  test(
+    'ignore le sizeInBytes fourni par l\'appelant pour un ImageContent et lit la vraie taille du fichier sur disque',
+    () async {
+      final saveUsecase = container.read(saveContentUsecaseProvider);
+      final repository = container.read(contentRepositoryProvider);
 
-    final imagesDir = Directory('${tempDir.path}/$contentImagesFolder');
-    await imagesDir.create(recursive: true);
-    final file = File('${imagesDir.path}/photo.jpg');
-    await file.writeAsBytes(List.filled(1234, 0));
+      final imagesDir = Directory('${tempDir.path}/$contentImagesFolder');
+      await imagesDir.create(recursive: true);
+      final file = File('${imagesDir.path}/photo.jpg');
+      await file.writeAsBytes(List.filled(1234, 0));
 
-    final now = DateTime.now();
-    final content = ImageContent(
-      id: 'a',
-      createdAt: now,
-      updatedAt: now,
-      authorId: 'author',
-      senderId: 'sender',
-      origin: ContentOrigin.owned,
-      broadcastScore: 1,
-      survivalScore: 1,
-      displayScore: 1,
-      bounce: 0,
-      sizeInBytes: 1,
-      fileName: 'photo.jpg',
-      imageWidth: 100,
-      imageHeight: 100,
-      title: 'Titre',
-    );
+      final now = DateTime.now();
+      final content = ImageContent(
+        id: 'a',
+        createdAt: now,
+        updatedAt: now,
+        authorId: 'author',
+        senderId: 'sender',
+        origin: ContentOrigin.owned,
+        broadcastScore: 1,
+        survivalScore: 1,
+        displayScore: 1,
+        bounce: 0,
+        sizeInBytes: 1,
+        fileName: 'photo.jpg',
+        imageWidth: 100,
+        imageHeight: 100,
+        title: 'Titre',
+      );
 
-    await saveUsecase(SaveContentParams(content: content));
+      await saveUsecase(SaveContentParams(content: content));
 
-    final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a');
-    expect(saved.sizeInBytes, 1234);
-  });
+      final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a');
+      expect(saved.sizeInBytes, 1234);
+    },
+  );
 
   test('retourne un poids de 0 pour un ImageContent dont le fichier est introuvable sur disque', () async {
     final saveUsecase = container.read(saveContentUsecaseProvider);

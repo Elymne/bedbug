@@ -56,21 +56,30 @@ void main() {
     return contents.firstWhere((content) => content.id == id).survivalScore;
   }
 
-  test('ne modifie jamais le survivalScore des contenus owned, quel que soit leur âge, via le vrai repository Hive', () async {
-    final repository = container.read(contentRepositoryProvider);
-    final saveUsecase = container.read(saveContentUsecaseProvider);
-    final usecase = container.read(recalculateSurvivalScoresUsecaseProvider);
+  test(
+    'ne modifie jamais le survivalScore des contenus owned, quel que soit leur âge, via le vrai repository Hive',
+    () async {
+      final repository = container.read(contentRepositoryProvider);
+      final saveUsecase = container.read(saveContentUsecaseProvider);
+      final usecase = container.read(recalculateSurvivalScoresUsecaseProvider);
 
-    final now = DateTime.now();
-    await saveUsecase(
-      SaveContentParams(content: _buildContent(id: 'owned', origin: ContentOrigin.owned, createdAt: now.subtract(const Duration(days: 3650)))),
-    );
+      final now = DateTime.now();
+      await saveUsecase(
+        SaveContentParams(
+          content: _buildContent(
+            id: 'owned',
+            origin: ContentOrigin.owned,
+            createdAt: now.subtract(const Duration(days: 3650)),
+          ),
+        ),
+      );
 
-    final result = await usecase(const NoParams());
+      final result = await usecase(const NoParams());
 
-    expect(result.isSuccess, isTrue);
-    expect(await survivalScoreOf(repository, 'owned'), 0);
-  });
+      expect(result.isSuccess, isTrue);
+      expect(await survivalScoreOf(repository, 'owned'), 0);
+    },
+  );
 
   test('le survivalScore reste toujours dans [0.0, 1.0], via le vrai repository Hive', () async {
     final repository = container.read(contentRepositoryProvider);
@@ -79,10 +88,18 @@ void main() {
 
     final now = DateTime.now();
     await saveUsecase(
-      SaveContentParams(content: _buildContent(id: 'ancient', origin: ContentOrigin.public, createdAt: now.subtract(const Duration(days: 3650)))),
+      SaveContentParams(
+        content: _buildContent(
+          id: 'ancient',
+          origin: ContentOrigin.public,
+          createdAt: now.subtract(const Duration(days: 3650)),
+        ),
+      ),
     );
     await saveUsecase(
-      SaveContentParams(content: _buildContent(id: 'fresh', origin: ContentOrigin.favorited, createdAt: now, bounce: 1000000)),
+      SaveContentParams(
+        content: _buildContent(id: 'fresh', origin: ContentOrigin.favorited, createdAt: now, bounce: 1000000),
+      ),
     );
 
     await usecase(const NoParams());
@@ -92,25 +109,40 @@ void main() {
     }
   });
 
-  test('le survivalScore décroît strictement quand le contenu est plus vieux, pour une origin donnée, via le vrai repository Hive', () async {
-    final repository = container.read(contentRepositoryProvider);
-    final saveUsecase = container.read(saveContentUsecaseProvider);
-    final usecase = container.read(recalculateSurvivalScoresUsecaseProvider);
+  test(
+    'le survivalScore décroît strictement quand le contenu est plus vieux, pour une origin donnée, via le vrai repository Hive',
+    () async {
+      final repository = container.read(contentRepositoryProvider);
+      final saveUsecase = container.read(saveContentUsecaseProvider);
+      final usecase = container.read(recalculateSurvivalScoresUsecaseProvider);
 
-    final now = DateTime.now();
-    await saveUsecase(
-      SaveContentParams(content: _buildContent(id: 'recent', origin: ContentOrigin.public, createdAt: now.subtract(const Duration(days: 1)))),
-    );
-    await saveUsecase(
-      SaveContentParams(content: _buildContent(id: 'old', origin: ContentOrigin.public, createdAt: now.subtract(const Duration(days: 30)))),
-    );
+      final now = DateTime.now();
+      await saveUsecase(
+        SaveContentParams(
+          content: _buildContent(
+            id: 'recent',
+            origin: ContentOrigin.public,
+            createdAt: now.subtract(const Duration(days: 1)),
+          ),
+        ),
+      );
+      await saveUsecase(
+        SaveContentParams(
+          content: _buildContent(
+            id: 'old',
+            origin: ContentOrigin.public,
+            createdAt: now.subtract(const Duration(days: 30)),
+          ),
+        ),
+      );
 
-    await usecase(const NoParams());
+      await usecase(const NoParams());
 
-    final recentScore = await survivalScoreOf(repository, 'recent');
-    final oldScore = await survivalScoreOf(repository, 'old');
-    expect(recentScore, greaterThan(oldScore));
-  });
+      final recentScore = await survivalScoreOf(repository, 'recent');
+      final oldScore = await survivalScoreOf(repository, 'old');
+      expect(recentScore, greaterThan(oldScore));
+    },
+  );
 
   test(
     'à âge égal, favorited résiste au moins autant que subscribed, lui-même au moins autant que public, via le vrai repository Hive',
@@ -120,9 +152,21 @@ void main() {
       final usecase = container.read(recalculateSurvivalScoresUsecaseProvider);
 
       final age = DateTime.now().subtract(const Duration(days: 14));
-      await saveUsecase(SaveContentParams(content: _buildContent(id: 'favorited', origin: ContentOrigin.favorited, createdAt: age)));
-      await saveUsecase(SaveContentParams(content: _buildContent(id: 'subscribed', origin: ContentOrigin.subscribed, createdAt: age)));
-      await saveUsecase(SaveContentParams(content: _buildContent(id: 'public', origin: ContentOrigin.public, createdAt: age)));
+      await saveUsecase(
+        SaveContentParams(
+          content: _buildContent(id: 'favorited', origin: ContentOrigin.favorited, createdAt: age),
+        ),
+      );
+      await saveUsecase(
+        SaveContentParams(
+          content: _buildContent(id: 'subscribed', origin: ContentOrigin.subscribed, createdAt: age),
+        ),
+      );
+      await saveUsecase(
+        SaveContentParams(
+          content: _buildContent(id: 'public', origin: ContentOrigin.public, createdAt: age),
+        ),
+      );
 
       await usecase(const NoParams());
 
@@ -140,9 +184,15 @@ void main() {
     final usecase = container.read(recalculateSurvivalScoresUsecaseProvider);
 
     final createdAt = DateTime.now().subtract(const Duration(days: 10));
-    await saveUsecase(SaveContentParams(content: _buildContent(id: 'lowBounce', origin: ContentOrigin.public, createdAt: createdAt)));
     await saveUsecase(
-      SaveContentParams(content: _buildContent(id: 'highBounce', origin: ContentOrigin.public, createdAt: createdAt, bounce: 50)),
+      SaveContentParams(
+        content: _buildContent(id: 'lowBounce', origin: ContentOrigin.public, createdAt: createdAt),
+      ),
+    );
+    await saveUsecase(
+      SaveContentParams(
+        content: _buildContent(id: 'highBounce', origin: ContentOrigin.public, createdAt: createdAt, bounce: 50),
+      ),
     );
 
     await usecase(const NoParams());
