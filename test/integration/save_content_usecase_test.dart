@@ -66,7 +66,7 @@ void main() {
 
     await saveUsecase(SaveContentParams(content: content));
 
-    final saved = (await repository.getUnique('a'))!;
+    final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a');
     expect(saved.sizeInBytes, 5);
   });
 
@@ -93,7 +93,7 @@ void main() {
 
     await saveUsecase(SaveContentParams(content: content));
 
-    final saved = (await repository.getUnique('a'))!;
+    final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a');
     expect(saved.sizeInBytes, 5);
   });
 
@@ -127,7 +127,7 @@ void main() {
 
     await saveUsecase(SaveContentParams(content: content));
 
-    final saved = (await repository.getUnique('a'))!;
+    final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a');
     expect(saved.sizeInBytes, 1234);
   });
 
@@ -156,7 +156,7 @@ void main() {
 
     await saveUsecase(SaveContentParams(content: content));
 
-    final saved = (await repository.getUnique('a'))!;
+    final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a');
     expect(saved.sizeInBytes, 0);
   });
 }

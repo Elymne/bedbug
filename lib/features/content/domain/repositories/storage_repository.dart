@@ -1,6 +1,4 @@
 import 'package:bedbug/features/content/domain/entities/storage.dart';
-import 'package:bedbug/shared/domain/params.dart';
-import 'package:bedbug/shared/domain/repository.dart';
 
 /// Taille maximale allouée par défaut aux contenus, en octets (500 Mo).
 ///
@@ -11,8 +9,10 @@ const int defaultMaxStorageSizeInBytes = 500 * 1024 * 1024;
 /// Contrat du repository gérant la configuration [Storage].
 ///
 /// Ce repository gère un unique objet de configuration.
-/// Les opérations de liste, pagination et suppression ne sont pas supportées.
-abstract class StorageRepository extends Repository<Storage, StorageRepositoryParams> {
+abstract class StorageRepository {
+  /// Retourne la configuration de stockage persistée, ou `null` si jamais initialisée.
+  Future<Storage?> getUnique(String id);
+
   /// Retourne le nombre d'entrées effectivement présentes dans le stockage
   /// sous-jacent, tous identifiants confondus.
   ///
@@ -22,6 +22,14 @@ abstract class StorageRepository extends Repository<Storage, StorageRepositoryPa
   /// migration ratée, etc.), à surveiller par les use cases qui lisent
   /// cette configuration.
   Future<int> countAll();
+
+  /// Persiste une nouvelle configuration de stockage [entity].
+  Future<Storage> addOne(Storage entity);
+
+  /// Met à jour la configuration de stockage existante [entity].
+  ///
+  /// Lève une `DatasourceException` si la configuration n'existe pas.
+  Future<Storage> updateOne(Storage entity);
 
   /// Ajoute [deltaBytes] (positif ou négatif) à `currentSizeInBytes`.
   ///
@@ -42,10 +50,4 @@ abstract class StorageRepository extends Repository<Storage, StorageRepositoryPa
   /// contenus stockés : recalculer un delta n'aurait pas de sens ici, la
   /// nouvelle valeur connue avec certitude est `0`.
   Future<void> resetCurrentSizeInBytes();
-}
-
-/// Paramètres de requête du [StorageRepository] — non utilisés.
-class StorageRepositoryParams extends Params {
-  /// Crée des [StorageRepositoryParams].
-  const StorageRepositoryParams();
 }

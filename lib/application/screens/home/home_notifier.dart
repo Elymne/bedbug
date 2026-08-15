@@ -1,7 +1,8 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/usecases/get_contents_usecase.dart';
+import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
+import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/notifier/notifier_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,21 +17,21 @@ final homeNotifierProvider = AsyncNotifierProvider<HomeNotifier, HomeState>(Home
 
 /// Notifier gérant l'état de la page d'accueil.
 class HomeNotifier extends AsyncNotifier<HomeState> {
-  /// Cas d'usage de récupération des contenus.
-  late final _getContentsUsecase = ref.read(getContentsUsecaseProvider);
+  /// Cas d'usage de récupération du flux de contenus de la home page.
+  late final _getHomeFeedUsecase = ref.read(getHomeFeedUsecaseProvider);
 
   /// Cas d'usage de génération de contenus factices.
   late final _seedContentsUsecase = ref.read(seedContentsUsecaseProvider);
 
   @override
   Future<HomeState> build() async {
-    final result = await _getContentsUsecase(const GetContentsParams());
+    final result = await _getHomeFeedUsecase(const NoParams());
     return result.fold(
-      onFailure: (GetContentsFailure failure) {
+      onFailure: (GetHomeFeedFailure failure) {
         final message = switch (failure) {
-          GetContentsFailure.invalidData => ref.l10n.homeGetContentsInvalidData,
-          GetContentsFailure.storageError => ref.l10n.homeGetContentsStorageError,
-          GetContentsFailure.unknown => ref.l10n.homeGetContentsUnknown,
+          GetHomeFeedFailure.invalidData => ref.l10n.homeGetContentsInvalidData,
+          GetHomeFeedFailure.storageError => ref.l10n.homeGetContentsStorageError,
+          GetHomeFeedFailure.unknown => ref.l10n.homeGetContentsUnknown,
         };
         return HomeState(contents: const [], failureMessage: message);
       },
