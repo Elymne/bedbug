@@ -331,6 +331,34 @@ Les use cases doivent la catcher explicitement et la mapper vers un failure déd
 
 - Follow `analysis_options.yaml` strictly (strict-casts, strict-inference, strict-raw-types, prefer*const*\*, avoid_dynamic_calls, etc.).
 - Document every **class**, **function**, and **function parameter** — **always in French**. Includes `@override` and private methods.
+- For non-trivial functions — and **always** for use cases — the doc comment must explain **why** the function exists, not just what it does. State the underlying need/intent driving it, not merely a paraphrase of the signature. This is especially critical for use cases: their doc comment must give the business justification for calling them (e.g. why the score needs periodic recalculation), so future readers understand the intent even without conversation context:
+
+  ```dart
+  // ✅ OK — explains the underlying need
+  /// Retourne une copie de ce contenu avec ses scores mis à jour.
+  ///
+  /// Les scores ([broadcastScore], [survivalScore]) sont recalculés
+  /// périodiquement à mesure que les contenus vieillissent ou changent de
+  /// statut ; cette méthode permet d'appliquer ces nouvelles valeurs sans
+  /// reconstruire manuellement chaque sous-type de [Content].
+  Content copyWithScores({double? broadcastScore, double? survivalScore});
+
+  // ❌ Avoid — restates the signature, no rationale
+  /// Copie ce contenu avec de nouveaux scores.
+  Content copyWithScores({double? broadcastScore, double? survivalScore});
+  ```
+- Always use braces `{}` for `if`, `else`, `for`, `while`, etc., even for single-line bodies. Never write a control-flow statement without braces:
+
+  ```dart
+  // ✅ OK
+  if (condition) {
+    return valueA;
+  }
+
+  // ❌ Avoid
+  if (condition) return valueA;
+  ```
+
 - Never use `else` or `else if`. Use early returns or guards:
 
   ```dart
@@ -360,6 +388,33 @@ Les use cases doivent la catcher explicitement et la mapper vers un failure déd
 
 - Don't extract private functions unless the block is complex or reused. Inline simple expressions directly.
 - Constructors are always declared first in a class, before fields. (consistent with `sort_constructors_first`)
+- Order class members so all public methods come before private ones. Fields and constructors still come first as per `sort_constructors_first`; within the methods that follow, public methods (including `build`) are declared before private (`_`-prefixed) methods:
+
+  ```dart
+  // ✅ OK
+  class ExampleWidget extends ConsumerWidget {
+    const ExampleWidget({super.key});
+
+    @override
+    Widget build(BuildContext context, WidgetRef ref) {
+      return _buildBody();
+    }
+
+    Widget _buildBody() { ... }
+  }
+
+  // ❌ Avoid — private method declared before the public build()
+  class ExampleWidget extends ConsumerWidget {
+    const ExampleWidget({super.key});
+
+    Widget _buildBody() { ... }
+
+    @override
+    Widget build(BuildContext context, WidgetRef ref) {
+      return _buildBody();
+    }
+  }
+  ```
 - For injected dependencies, always use the short `this.` constructor form. Never use `: _field = param`:
 
   ```dart
@@ -545,18 +600,23 @@ Riverpod handles both **state management** and **dependency injection**. Every p
 
 #### Notifiers
 
-- Prefer one notifier per page or widget. Avoid splitting state across multiple notifiers for a single screen.
-- The notifier name must match the page or widget it belongs to:
+- Un notifier par préoccupation distincte, pas un seul notifier fourre-tout par page. Un état métier (données chargées depuis un use case) et un état d'UI éphémère (animation pilotée par le scroll, position d'un curseur, etc.) ne doivent jamais partager le même notifier : les deux évoluent à des fréquences et pour des raisons différentes, et les mélanger force des rebuilds inutiles sur tout ce qui `watch` l'état métier dès que l'état d'UI change.
+- Chaque notifier porte un nom qui reflète la préoccupation qu'il gère, pas seulement le nom de la page :
 
   ```dart
-  // ✅ OK
+  // ✅ OK — préoccupations distinctes, noms explicites
   class LoginPage extends ... { ... }
-  class LoginNotifier extends ... { ... }
+  class LoginNotifier extends ... { ... }          // état métier : soumission du formulaire
+  class LoginBarsOffsetNotifier extends ... { ... } // état d'UI : animation de barres au scroll
 
-  // ❌ Avoid
-  class LoginPage extends ... { ... }
-  class AuthNotifier extends ... { ... }  // nom non aligné avec la page
+  // ❌ Avoid — état d'UI éphémère mélangé à l'état métier
+  class LoginNotifier extends ... {
+    // ... logique de connexion ...
+    void applyScrollDelta(double delta) { ... } // n'a rien à faire ici
+  }
   ```
+
+- Un `ref.watch` sur un notifier d'état d'UI éphémère (scroll, animation) doit rester scopé au plus près du widget qui en a besoin (`Consumer` local), jamais fait en tête du `build()` de la page entière — sous peine de rebuild la page entière à chaque évènement haute fréquence.
 
 #### Conventions
 

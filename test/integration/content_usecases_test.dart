@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_priority.dart';
+import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/usecases/clear_contents_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/get_contents_usecase.dart';
+import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
 import 'package:bedbug/shared/domain/params.dart';
@@ -28,12 +28,12 @@ void main() {
 
   test('save puis get retourne le contenu sauvegardé, via le vrai repository Hive', () async {
     final saveUsecase = container.read(saveContentUsecaseProvider);
-    final getUsecase = container.read(getContentsUsecaseProvider);
+    final getUsecase = container.read(getHomeFeedUsecaseProvider);
 
     final saveResult = await saveUsecase(SaveContentParams(content: _buildTextContent('a')));
     expect(saveResult.isSuccess, isTrue);
 
-    final getResult = await getUsecase(const GetContentsParams());
+    final getResult = await getUsecase(const NoParams());
     expect(getResult.isSuccess, isTrue);
     final contents = getResult.right!;
     expect(contents, hasLength(1));
@@ -42,7 +42,7 @@ void main() {
 
   test('clear supprime tous les contenus stockés', () async {
     final saveUsecase = container.read(saveContentUsecaseProvider);
-    final getUsecase = container.read(getContentsUsecaseProvider);
+    final getUsecase = container.read(getHomeFeedUsecaseProvider);
     final clearUsecase = container.read(clearContentsUsecaseProvider);
 
     await saveUsecase(SaveContentParams(content: _buildTextContent('a')));
@@ -51,18 +51,18 @@ void main() {
     final clearResult = await clearUsecase(const NoParams());
     expect(clearResult.isSuccess, isTrue);
 
-    final getResult = await getUsecase(const GetContentsParams());
+    final getResult = await getUsecase(const NoParams());
     expect(getResult.right, isEmpty);
   });
 
   test('seed insère le nombre de contenus demandé', () async {
     final seedUsecase = container.read(seedContentsUsecaseProvider);
-    final getUsecase = container.read(getContentsUsecaseProvider);
+    final getUsecase = container.read(getHomeFeedUsecaseProvider);
 
     final seedResult = await seedUsecase(const SeedContentsParams(count: 7));
     expect(seedResult.isSuccess, isTrue);
 
-    final getResult = await getUsecase(const GetContentsParams());
+    final getResult = await getUsecase(const NoParams());
     expect(getResult.right, hasLength(7));
   });
 }
@@ -74,7 +74,10 @@ TextContent _buildTextContent(String id) {
     updatedAt: DateTime(2026),
     authorId: 'local',
     senderId: 'local',
-    priority: ContentPriority.owned,
+    origin: ContentOrigin.owned,
+    broadcastScore: 1,
+    survivalScore: 1,
+    displayScore: 1,
     bounce: 0,
     sizeInBytes: 10,
     title: 'Titre $id',

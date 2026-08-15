@@ -18,8 +18,8 @@ class AppTextStyles {
   /// Métadonnées d'un contenu (sub, temps écoulé).
   static final TextStyle contentMeta = const TextStyle(
     fontSize: 12,
-    fontWeight: FontWeight.w400,
-    color: AppColors.disabled,
+    fontWeight: FontWeight.w600,
+    color: AppColors.onLight,
   );
 
   /// Titre d'un contenu.

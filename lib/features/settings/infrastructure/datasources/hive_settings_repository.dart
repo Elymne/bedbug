@@ -56,49 +56,4 @@ class HiveSettingsRepository implements SettingsRepository {
       throw DatasourceException('HiveSettingsRepository', error);
     }
   }
-
-  @override
-  Future<void> addMany(List<UserSettings> entities) {
-    throw UnimplementedError('addMany is not supported');
-  }
-
-  @override
-  Future<void> updateMany(List<UserSettings> entities) {
-    throw UnimplementedError('updateMany is not supported');
-  }
-
-  @override
-  Future<List<UserSettings>> getAll() {
-    throw UnimplementedError('getAll is not supported');
-  }
-
-  @override
-  Stream<List<UserSettings>> watchAll() {
-    throw UnimplementedError('watchAll is not supported');
-  }
-
-  @override
-  Future<void> deleteOne(String id) {
-    throw UnimplementedError('deleteOne is not supported');
-  }
-
-  @override
-  Future<void> deleteMany(List<String> ids) {
-    throw UnimplementedError('deleteMany is not supported');
-  }
-
-  @override
-  Future<void> deleteAll() {
-    throw UnimplementedError('deleteAll is not supported');
-  }
-
-  @override
-  Future<List<UserSettings>> findMany(SettingsRepositoryParams params) {
-    throw UnimplementedError('findMany is not supported');
-  }
-
-  @override
-  Stream<List<UserSettings>> watchMany(SettingsRepositoryParams params) {
-    throw UnimplementedError('watchMany is not supported');
-  }
 }

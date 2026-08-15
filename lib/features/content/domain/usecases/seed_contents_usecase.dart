@@ -1,9 +1,12 @@
+import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_priority.dart';
+import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
+import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
+import 'package:bedbug/features/content/infrastructure/datasources/hive_storage_repository.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/domain/usecase.dart';
@@ -15,7 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SeedContentsUsecase].
 final seedContentsUsecaseProvider = Provider<SeedContentsUsecase>(
-  (ref) => SeedContentsUsecase(ref.read(contentRepositoryProvider)),
+  (ref) => SeedContentsUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider)),
 );
 
 /// URLs de liens valides utilisées comme exemples réalistes.
@@ -84,9 +87,10 @@ const List<String> _longBodies = [
 /// Génère une grande quantité de contenus factices pour les tests de charge et d'affichage.
 class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailure, void> {
   /// Crée un [SeedContentsUsecase].
-  SeedContentsUsecase(this._contentRepository);
+  SeedContentsUsecase(this._contentRepository, this._storageRepository);
 
   final ContentRepository _contentRepository;
+  final StorageRepository _storageRepository;
 
   /// Nombre d'items écrits en une seule opération Hive.
   static const int _batchSize = 500;
@@ -95,15 +99,18 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
   Future<Either<SeedContentsFailure, void>> call(SeedContentsParams params) async {
     try {
       final now = DateTime.now();
-      final batch = <dynamic>[];
+      final batch = <Content>[];
+      var totalSizeInBytes = 0;
 
       for (var index = 0; index < params.count; index++) {
         final createdAt = now.subtract(Duration(minutes: index));
-        final priority = ContentPriority.values[index % ContentPriority.values.length];
+        final origin = ContentOrigin.values[index % ContentOrigin.values.length];
         final bounce = index % 11;
         final subId = index % 10 < 3 ? 'seed-sub-${index % 5}' : null;
 
-        batch.add(_buildContent(index, createdAt, priority, bounce, subId));
+        final content = _buildContent(index, createdAt, origin, bounce, subId);
+        totalSizeInBytes += content.sizeInBytes;
+        batch.add(content);
 
         if (batch.length == _batchSize) {
           await _contentRepository.addMany(List.from(batch));
@@ -113,6 +120,10 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
 
       if (batch.isNotEmpty) {
         await _contentRepository.addMany(List.from(batch));
+      }
+
+      if (totalSizeInBytes > 0) {
+        await _storageRepository.adjustCurrentSizeInBytes(totalSizeInBytes);
       }
 
       return const Right(null);
@@ -133,22 +144,22 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
   /// - index % 10 in [0..3] → [TextContent] (40 %)
   /// - index % 10 in [4..6] → [ImageContent] (30 %)
   /// - index % 10 in [7..9] → [LinkContent] (30 %)
-  dynamic _buildContent(int index, DateTime createdAt, ContentPriority priority, int bounce, String? subId) {
+  Content _buildContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String? subId) {
     final bucket = index % 10;
 
     if (bucket <= 3) {
-      return _buildTextContent(index, createdAt, priority, bounce, subId);
+      return _buildTextContent(index, createdAt, origin, bounce, subId);
     }
 
     if (bucket <= 6) {
-      return _buildImageContent(index, createdAt, priority, bounce, subId);
+      return _buildImageContent(index, createdAt, origin, bounce, subId);
     }
 
-    return _buildLinkContent(index, createdAt, priority, bounce, subId);
+    return _buildLinkContent(index, createdAt, origin, bounce, subId);
   }
 
   /// Construit un [TextContent] avec titre court, long, ou corps vide selon l'index.
-  TextContent _buildTextContent(int index, DateTime createdAt, ContentPriority priority, int bounce, String? subId) {
+  TextContent _buildTextContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String? subId) {
     final isLongTitle = index % 7 == 0;
     final isLongBody = index % 5 == 0;
 
@@ -164,7 +175,10 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       updatedAt: createdAt,
       authorId: 'seed-author-${index % 5}',
       senderId: 'seed-sender',
-      priority: priority,
+      origin: origin,
+      broadcastScore: 1,
+      survivalScore: 1,
+      displayScore: 1,
       bounce: bounce,
       sizeInBytes: body.length,
       subId: subId,
@@ -174,7 +188,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
   }
 
   /// Construit un [ImageContent] avec des noms de fichiers valides ou cassés selon l'index.
-  ImageContent _buildImageContent(int index, DateTime createdAt, ContentPriority priority, int bounce, String? subId) {
+  ImageContent _buildImageContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String? subId) {
     final isBroken = index % 4 == 0;
     final fileNames = isBroken ? _brokenImageFileNames : _validImageFileNames;
     final fileName = fileNames[index % fileNames.length];
@@ -188,7 +202,10 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       updatedAt: createdAt,
       authorId: 'seed-author-${index % 5}',
       senderId: 'seed-sender',
-      priority: priority,
+      origin: origin,
+      broadcastScore: 1,
+      survivalScore: 1,
+      displayScore: 1,
       bounce: bounce,
       sizeInBytes: isBroken ? 0 : 204800,
       subId: subId,
@@ -201,7 +218,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
   }
 
   /// Construit un [LinkContent] avec des URLs valides, cassées ou malformées selon l'index.
-  LinkContent _buildLinkContent(int index, DateTime createdAt, ContentPriority priority, int bounce, String? subId) {
+  LinkContent _buildLinkContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String? subId) {
     final isBroken = index % 3 == 0;
     final urls = isBroken ? _brokenUrls : _validUrls;
     final url = urls[index % urls.length];
@@ -212,7 +229,10 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       updatedAt: createdAt,
       authorId: 'seed-author-${index % 5}',
       senderId: 'seed-sender',
-      priority: priority,
+      origin: origin,
+      broadcastScore: 1,
+      survivalScore: 1,
+      displayScore: 1,
       bounce: bounce,
       sizeInBytes: 0,
       subId: subId,
