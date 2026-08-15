@@ -91,5 +91,9 @@
   "createSaveError": "Failed to save content.",
   "@createSaveError": {
     "description": "Snackbar error message shown when saving content fails"
+  },
+  "contentDetailAnonymousAuthor": "Anonymous",
+  "@contentDetailAnonymousAuthor": {
+    "description": "Author name shown on the content detail page. Raw content received over BLE cannot be trusted yet, so the real author is never resolved for now."
   }
 }

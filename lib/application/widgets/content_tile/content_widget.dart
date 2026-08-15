@@ -1,3 +1,4 @@
+import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/widgets/content_tile/image_content_widget.dart';
 import 'package:bedbug/application/widgets/content_tile/link_content_widget.dart';
@@ -50,7 +51,7 @@ class ContentWidget extends ConsumerWidget {
           _buildContent(),
           Row(
             spacing: 8,
-            children: [AppTag(label: '${content.bounce} bounces', color: Colors.blueGrey)],
+            children: [AppTag(label: '${content.bounce} bounces', color: AppColors.primary)],
           ),
         ],
       ),

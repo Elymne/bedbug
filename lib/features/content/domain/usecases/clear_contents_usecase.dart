@@ -1,5 +1,7 @@
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
+import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
+import 'package:bedbug/features/content/infrastructure/datasources/hive_storage_repository.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/domain/usecase.dart';
@@ -10,20 +12,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [ClearContentsUsecase].
 final clearContentsUsecaseProvider = Provider<ClearContentsUsecase>(
-  (ref) => ClearContentsUsecase(ref.read(contentRepositoryProvider)),
+  (ref) => ClearContentsUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider)),
 );
 
 /// Supprime l'intégralité des contenus stockés localement.
 class ClearContentsUsecase extends Usecase<NoParams, ClearContentsFailure, void> {
   /// Crée un [ClearContentsUsecase].
-  ClearContentsUsecase(this._contentRepository);
+  ClearContentsUsecase(this._contentRepository, this._storageRepository);
 
   final ContentRepository _contentRepository;
+  final StorageRepository _storageRepository;
 
   @override
   Future<Either<ClearContentsFailure, void>> call(NoParams params) async {
     try {
       await _contentRepository.deleteAll();
+      await _storageRepository.resetCurrentSizeInBytes();
       return const Right(null);
     } on DataException catch (error, stackTrace) {
       AppLogger.error('ClearContentsUsecase', error, stackTrace);

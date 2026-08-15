@@ -1,15 +1,6 @@
-import 'package:bedbug/features/content/domain/entities/sub.dart';
-import 'package:bedbug/shared/domain/repository.dart';
-import 'package:bedbug/shared/domain/repository_params.dart';
-
-/// Contrat du repository gérant les [Sub].
-abstract class SubRepository extends Repository<Sub, SubRepositoryParams> {}
-
-/// Paramètres de requête du [SubRepository].
-class SubRepositoryParams extends RepositoryParams {
-  /// Crée des [SubRepositoryParams].
-  ///
-  /// - [limit] : nombre maximum d'éléments à retourner. `null` = tous.
-  /// - [orderBy] : tri appliqué aux résultats.
-  const SubRepositoryParams({super.limit, super.orderBy});
-}
+/// Contrat du repository gérant les subs.
+///
+/// Aucun use case n'exploite encore les subs : l'interface reste vide et
+/// sera complétée avec les méthodes réellement nécessaires dès qu'un
+/// premier use case en aura besoin.
+abstract class SubRepository {}

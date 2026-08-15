@@ -1,8 +1,15 @@
 import 'package:bedbug/application/router/error_route_page.dart';
+import 'package:bedbug/application/screens/content_detail/image_content_detail_screen.dart';
+import 'package:bedbug/application/screens/content_detail/link_content_detail_screen.dart';
+import 'package:bedbug/application/screens/content_detail/text_content_detail_screen.dart';
 import 'package:bedbug/application/screens/create/create_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
 import 'package:bedbug/application/screens/splash/splash_screen.dart';
+import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/entities/image_content.dart';
+import 'package:bedbug/features/content/domain/entities/link_content.dart';
+import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +25,11 @@ const String createPath = '/create';
 
 /// Chemin vers la page des paramètres.
 const String settingsPath = '/settings';
+
+/// Chemin vers la page de détail d'un contenu.
+///
+/// Le contenu est transmis via `extra` (pas de fetch par id pour l'instant).
+const String contentDetailPath = '/content-detail';
 
 /// Durée du fondu entre les pages.
 const Duration _fadeDuration = Duration(milliseconds: 400);
@@ -52,6 +64,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: homePath, pageBuilder: (context, state) => _fadePage(const HomeScreen())),
       GoRoute(path: createPath, pageBuilder: (context, state) => _fadePage(const CreateScreen())),
       GoRoute(path: settingsPath, pageBuilder: (context, state) => _fadePage(const SettingsScreen())),
+      GoRoute(
+        path: contentDetailPath,
+        pageBuilder: (context, state) => _fadePage(_contentDetailScreenFor(state.extra! as Content)),
+      ),
     ],
   );
 });
@@ -60,4 +76,12 @@ final routerProvider = Provider<GoRouter>((ref) {
 class _RouterRefreshNotifier extends ChangeNotifier {
   /// Crée un [_RouterRefreshNotifier] qui n'écoute rien pour l'instant.
   _RouterRefreshNotifier(Ref ref);
+}
+
+/// Retourne la page de détail adaptée au type concret de [content].
+Widget _contentDetailScreenFor(Content content) {
+  if (content is TextContent) return TextContentDetailScreen(content: content);
+  if (content is LinkContent) return LinkContentDetailScreen(content: content);
+  if (content is ImageContent) return ImageContentDetailScreen(content: content);
+  return const ErrorRoutePage(message: 'Unknown content type');
 }

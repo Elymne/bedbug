@@ -14,10 +14,13 @@ class AppColors {
   static const Color surface = Color(0xFFFFFFFF);
 
   /// Couleur des éléments sur une surface claire.
-  static const Color onLight = Color(0xFF515151);
+  static const Color onLighter = Color(0xFF414141);
+
+  /// Couleur des éléments sur une surface claire.
+  static const Color onLight = Color(0xFF222222);
 
   /// Variante sombre de [onLight], utilisée comme second stop de gradient.
-  static const Color onLightDeep = Color(0xFF2A2A2A);
+  static const Color onLightDeep = Color(0xFF0F0F0F);
 
   /// Couleur des éléments sur une surface sombre.
   static const Color onDark = Color(0xFFFFFFFF);
@@ -33,4 +36,7 @@ class AppColors {
 
   /// Couleurs informatives FAILURE.
   static const Color failure = Color(0xFFFF4141);
+
+  /// Couleur de bordure des champs de texte.
+  static const Color border = Color(0xFFE0E0E0);
 }

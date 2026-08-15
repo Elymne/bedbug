@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 
 /// Thème principal de l'application.
 class AppTheme {
-  AppTheme._();
-
   /// Thème clair de l'application.
   /// L'application va aussi proposer un thème dark soft (fond grisé) en fonction des paramètres utilisateurs.
   static ThemeData get light => ThemeData(
@@ -15,7 +13,7 @@ class AppTheme {
     scaffoldBackgroundColor: AppColors.background,
     disabledColor: AppColors.disabled,
 
-    /// * Buttons style.
+    /// * Elevated Buttons style.
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
@@ -25,6 +23,8 @@ class AppTheme {
         textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
       ),
     ),
+
+    /// Outlined Button style.
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.primary,
@@ -46,31 +46,17 @@ class AppTheme {
     ),
 
     /// * Textfields style.
-    inputDecorationTheme: InputDecorationTheme(
-      filled: true,
-      fillColor: AppColors.surface,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: AppColors.primary, width: 2),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: AppColors.failure),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: AppColors.failure, width: 2),
-      ),
-      disabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: AppColors.disabled),
-      ),
+    inputDecorationTheme: const InputDecorationTheme(
+      filled: false,
+      contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 14),
+      border: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.border)),
+      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.border)),
+      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.primary, width: 2)),
+      errorBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.failure)),
+      focusedErrorBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.failure, width: 2)),
+      disabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.disabled)),
     ),
   );
+
+  AppTheme._();
 }
