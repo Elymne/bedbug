@@ -1,5 +1,5 @@
 import 'package:bedbug/application/router/app_router.dart';
-import 'package:bedbug/application/screens/home/home_notifier.dart';
+import 'package:bedbug/application/screens/home/home_feed_notifier.dart';
 import 'package:bedbug/application/widgets/content_tile/content_widget.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
@@ -37,7 +37,7 @@ class ContentListView extends ConsumerWidget {
             Text(l10n.homeEmptyList),
             TextButton(
               onPressed: () {
-                final notifier = ref.read(homeNotifierProvider.notifier);
+                final notifier = ref.read(homeFeedNotifierProvider.notifier);
                 notifier.seedAndReload();
               },
               child: Text(l10n.homeSeedButton),

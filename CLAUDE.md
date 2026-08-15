@@ -600,18 +600,23 @@ Riverpod handles both **state management** and **dependency injection**. Every p
 
 #### Notifiers
 
-- Prefer one notifier per page or widget. Avoid splitting state across multiple notifiers for a single screen.
-- The notifier name must match the page or widget it belongs to:
+- Un notifier par préoccupation distincte, pas un seul notifier fourre-tout par page. Un état métier (données chargées depuis un use case) et un état d'UI éphémère (animation pilotée par le scroll, position d'un curseur, etc.) ne doivent jamais partager le même notifier : les deux évoluent à des fréquences et pour des raisons différentes, et les mélanger force des rebuilds inutiles sur tout ce qui `watch` l'état métier dès que l'état d'UI change.
+- Chaque notifier porte un nom qui reflète la préoccupation qu'il gère, pas seulement le nom de la page :
 
   ```dart
-  // ✅ OK
+  // ✅ OK — préoccupations distinctes, noms explicites
   class LoginPage extends ... { ... }
-  class LoginNotifier extends ... { ... }
+  class LoginNotifier extends ... { ... }          // état métier : soumission du formulaire
+  class LoginBarsOffsetNotifier extends ... { ... } // état d'UI : animation de barres au scroll
 
-  // ❌ Avoid
-  class LoginPage extends ... { ... }
-  class AuthNotifier extends ... { ... }  // nom non aligné avec la page
+  // ❌ Avoid — état d'UI éphémère mélangé à l'état métier
+  class LoginNotifier extends ... {
+    // ... logique de connexion ...
+    void applyScrollDelta(double delta) { ... } // n'a rien à faire ici
+  }
   ```
+
+- Un `ref.watch` sur un notifier d'état d'UI éphémère (scroll, animation) doit rester scopé au plus près du widget qui en a besoin (`Consumer` local), jamais fait en tête du `build()` de la page entière — sous peine de rebuild la page entière à chaque évènement haute fréquence.
 
 #### Conventions
 

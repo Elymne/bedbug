@@ -12,7 +12,13 @@
       "Bash(sed -i \"s|package:bedbug/application/widgets/contents/content_list_widget.dart|package:bedbug/application/screens/home/content_list_widget.dart|g\" \"C:\\\\Development\\\\flutter\\\\bedbug\\\\lib\\\\application\\\\screens\\\\home\\\\home_screen.dart\")",
       "Bash(flutter analyze *)",
       "Bash(flutter test *)",
-      "Bash(git mv *)"
+      "Bash(git mv *)",
+      "Bash(flutter emulators *)",
+      "Bash(adb devices *)",
+      "Bash(adb kill-server *)",
+      "Bash(adb start-server *)",
+      "Bash(flutter --version)",
+      "Bash(flutter build *)"
     ]
   }
 }

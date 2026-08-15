@@ -1,5 +1,6 @@
 import 'package:bedbug/application/router/app_router.dart';
-import 'package:bedbug/application/screens/home/home_notifier.dart';
+import 'package:bedbug/application/screens/home/home_bars_offset_notifier.dart';
+import 'package:bedbug/application/screens/home/home_feed_notifier.dart';
 import 'package:bedbug/application/screens/home/widgets/content_list_view.dart';
 import 'package:bedbug/application/style/app_const.dart';
 import 'package:bedbug/application/widgets/fields/content_search_input.dart';
@@ -33,8 +34,7 @@ class _State extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final homeNotifierWatcher = ref.watch(homeNotifierProvider);
-    final hiddenOffset = homeNotifierWatcher.value?.barsHiddenOffset ?? 0;
+    final homeFeedNotifierWatcher = ref.watch(homeFeedNotifierProvider);
     final navBarHeight = AppConst.homeNavBarBaseHeight + MediaQuery.paddingOf(context).bottom;
     final l10n = context.loc;
 
@@ -43,17 +43,23 @@ class _State extends ConsumerState<HomeScreen> {
         bottom: false,
         child: Column(
           children: [
-            _buildCollapsible(
-              fullHeight: AppConst.homeSearchBarHeight,
-              hiddenExtent: hiddenOffset.clamp(0, AppConst.homeSearchBarHeight),
-              alignment: Alignment.bottomCenter,
+            Consumer(
+              builder: (context, ref, child) {
+                final hiddenOffset = ref.watch(homeBarsOffsetNotifierProvider);
+                return _buildCollapsible(
+                  fullHeight: AppConst.homeSearchBarHeight,
+                  hiddenExtent: hiddenOffset.clamp(0, AppConst.homeSearchBarHeight),
+                  alignment: Alignment.bottomCenter,
+                  child: child!,
+                );
+              },
               child: const Padding(
                 padding: EdgeInsets.all(16),
                 child: ContentSearchInput(hintText: 'Rechercher…'),
               ),
             ),
             Expanded(
-              child: homeNotifierWatcher.when(
+              child: homeFeedNotifierWatcher.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, _) => const Center(child: CircularProgressIndicator()),
                 data: (state) => ContentListView(contents: state.contents, controller: _scrollController),
@@ -62,10 +68,16 @@ class _State extends ConsumerState<HomeScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildCollapsible(
-        fullHeight: navBarHeight,
-        hiddenExtent: hiddenOffset.clamp(0, navBarHeight),
-        alignment: Alignment.topCenter,
+      bottomNavigationBar: Consumer(
+        builder: (context, ref, child) {
+          final hiddenOffset = ref.watch(homeBarsOffsetNotifierProvider);
+          return _buildCollapsible(
+            fullHeight: navBarHeight,
+            hiddenExtent: hiddenOffset.clamp(0, navBarHeight),
+            alignment: Alignment.topCenter,
+            child: child!,
+          );
+        },
         child: AppNavBar(
           selectedIndex: 0,
           items: [
@@ -93,7 +105,7 @@ class _State extends ConsumerState<HomeScreen> {
     final delta = currentOffset - _lastOffset;
     _lastOffset = currentOffset;
     if (delta == 0) return;
-    ref.read(homeNotifierProvider.notifier).applyScrollDelta(delta);
+    ref.read(homeBarsOffsetNotifierProvider.notifier).applyScrollDelta(delta);
   }
 
   /// Découpe [child] pour ne montrer que la portion visible une fois [hiddenExtent] pixels
