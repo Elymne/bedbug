@@ -13,7 +13,9 @@ class SettingsHiveModelAdapter extends TypeAdapter<SettingsHiveModel> {
   @override
   SettingsHiveModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read()};
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
     return SettingsHiveModel(
       blockedUrls: (fields[0] as List).cast<String>(),
       blockedWords: (fields[1] as List).cast<String>(),
@@ -36,5 +38,7 @@ class SettingsHiveModelAdapter extends TypeAdapter<SettingsHiveModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SettingsHiveModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+      other is SettingsHiveModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

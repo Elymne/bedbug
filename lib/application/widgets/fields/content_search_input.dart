@@ -17,10 +17,31 @@ class ContentSearchInput extends ConsumerStatefulWidget {
   /// Crée un [ContentSearchInput].
   ///
   /// - [hintText] : texte affiché en placeholder.
-  const ContentSearchInput({super.key, required this.hintText});
+  /// - [isReadOnly] : si `true`, le champ se comporte comme un bouton — il
+  ///   n'ouvre jamais le clavier et se contente de déclencher [onTap]. Sert
+  ///   de leurre sur la home page, à la manière de la barre de recherche de
+  ///   Reddit, pour renvoyer vers l'écran de recherche dédié.
+  /// - [onTap] : callback déclenché au tap quand [isReadOnly] est `true`.
+  /// - [autofocus] : si `true`, ouvre le clavier automatiquement dès le montage du widget.
+  const ContentSearchInput({
+    super.key,
+    required this.hintText,
+    this.isReadOnly = false,
+    this.onTap,
+    this.autofocus = false,
+  });
 
   /// Texte affiché en placeholder.
   final String hintText;
+
+  /// Si `true`, le champ se comporte comme un bouton plutôt qu'un vrai champ de saisie.
+  final bool isReadOnly;
+
+  /// Callback déclenché au tap quand [isReadOnly] est `true`.
+  final VoidCallback? onTap;
+
+  /// Si `true`, ouvre le clavier automatiquement dès le montage du widget.
+  final bool autofocus;
 
   @override
   ConsumerState<ContentSearchInput> createState() => _State();
@@ -67,7 +88,12 @@ class _State extends ConsumerState<ContentSearchInput> with TickerProviderStateM
   }
 
   /// Démarre ou arrête les animations selon l'état du focus.
+  ///
+  /// Sans effet en mode bouton ([ContentSearchInput.isReadOnly]) : ce champ
+  /// ne doit jamais déclencher le tremblement, puisqu'il ne reçoit jamais
+  /// réellement le focus clavier.
   void _onFocusChanged() {
+    if (widget.isReadOnly) return;
     final isFocused = _focusNode.hasFocus;
     _focusNotifier.setFocused(isFocused);
     if (isFocused) {
@@ -136,6 +162,10 @@ class _State extends ConsumerState<ContentSearchInput> with TickerProviderStateM
                             child: TextField(
                               controller: _controller,
                               focusNode: _focusNode,
+                              readOnly: widget.isReadOnly,
+                              showCursor: widget.isReadOnly ? false : null,
+                              autofocus: widget.autofocus,
+                              onTap: widget.isReadOnly ? widget.onTap : null,
                               style: AppTextStyles.textfield,
                               decoration: InputDecoration(
                                 hintText: widget.hintText,

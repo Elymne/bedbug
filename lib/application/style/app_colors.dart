@@ -39,4 +39,10 @@ class AppColors {
 
   /// Couleur de bordure des champs de texte.
   static const Color border = Color(0xFFE0E0E0);
+
+  /// Couleur d'accentuation violette, utilisée entre autres pour les tags.
+  static const Color purple = Color(0xFF9B59B6);
+
+  /// Couleur d'accentuation orange, utilisée entre autres pour les tags.
+  static const Color orange = Color(0xFFFF9D4D);
 }
