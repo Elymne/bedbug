@@ -31,7 +31,7 @@ class TagSelector extends ConsumerWidget {
           children: [
             for (final tag in Tag.values)
               GestureDetector(
-                onTap: () => _toggle(tag, selectedTags),
+                onTap: () => _toggle(tag),
                 child: Opacity(
                   opacity: selectedTags.contains(tag) ? 1 : 0.4,
                   child: AppTag(label: tag.text, color: tag.color.flutterColor),
@@ -43,8 +43,14 @@ class TagSelector extends ConsumerWidget {
     );
   }
 
-  /// Ajoute ou retire [tag] de [selectedTags] et met à jour [control].
-  void _toggle(Tag tag, List<Tag> selectedTags) {
+  /// Ajoute ou retire [tag] de la sélection courante et met à jour [control].
+  ///
+  /// Relit `control.value` au moment de l'appel plutôt que de capturer la
+  /// liste affichée au dernier `build` : deux taps rapprochés (avant le
+  /// rebuild déclenché par le premier) écraseraient sinon la sélection
+  /// précédente au lieu de s'accumuler.
+  void _toggle(Tag tag) {
+    final selectedTags = control.value ?? const [];
     control.value = selectedTags.contains(tag)
         ? selectedTags.where((selectedTag) => selectedTag != tag).toList()
         : [...selectedTags, tag];

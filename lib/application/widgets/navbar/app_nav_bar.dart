@@ -1,5 +1,4 @@
 import 'package:bedbug/application/style/app_colors.dart';
-import 'package:bedbug/application/widgets/ghost/app_ghost_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,8 +16,8 @@ class AppNavBarItem {
 
 /// Barre de navigation inférieure de l'application.
 ///
-/// Affiche uniquement des icônes. L'item sélectionné reçoit un effet
-/// de ghost animé en [AppColors.primary], identique à l'effet du splashscreen.
+/// Affiche uniquement des icônes. L'item sélectionné est coloré en
+/// [AppColors.primary].
 class AppNavBar extends ConsumerWidget {
   /// Crée une [AppNavBar].
   const AppNavBar({super.key, required this.selectedIndex, required this.onTap, required this.items});
@@ -61,8 +60,8 @@ class AppNavBar extends ConsumerWidget {
   }
 }
 
-/// Item individuel de la [AppNavBar] avec effet ghost animé si sélectionné.
-class _NavBarItemWidget extends ConsumerStatefulWidget {
+/// Item individuel de la [AppNavBar], coloré en [AppColors.primary] si sélectionné.
+class _NavBarItemWidget extends ConsumerWidget {
   /// Crée un [_NavBarItemWidget].
   const _NavBarItemWidget({super.key, required this.item, required this.isSelected, required this.onTap});
 
@@ -76,26 +75,19 @@ class _NavBarItemWidget extends ConsumerStatefulWidget {
   final VoidCallback onTap;
 
   @override
-  ConsumerState<_NavBarItemWidget> createState() => _State();
-}
-
-class _State extends ConsumerState<_NavBarItemWidget> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Semantics(
-      label: widget.item.label,
+      label: item.label,
       button: true,
-      selected: widget.isSelected,
+      selected: isSelected,
       child: GestureDetector(
-        onTap: widget.onTap,
+        onTap: onTap,
         behavior: HitTestBehavior.opaque,
         child: SizedBox(
           width: 64,
           height: 56,
           child: Center(
-            child: widget.isSelected
-                ? AppGhostIcon(icon: widget.item.icon, size: 26, isAnimating: true)
-                : Icon(widget.item.icon, color: AppColors.disabled, size: 26),
+            child: Icon(item.icon, color: isSelected ? AppColors.primary : AppColors.disabled, size: 26),
           ),
         ),
       ),

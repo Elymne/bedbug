@@ -1,3 +1,4 @@
+import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/fields/content_search_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,10 +16,11 @@ class SearchScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return const Scaffold(
+      backgroundColor: AppColors.surfaceDark,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16),
-          child: ContentSearchInput(hintText: 'Rechercher…', autofocus: true),
+          child: ContentSearchInput(hintText: 'Rechercher…', autofocus: true, isDark: true),
         ),
       ),
     );
