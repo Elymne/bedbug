@@ -76,6 +76,10 @@
   "@createLinkUrlLabel": {
     "description": "Label du champ URL dans le formulaire lien"
   },
+  "createTagsLabel": "Tags",
+  "@createTagsLabel": {
+    "description": "Label au-dessus du sélecteur de tags sur la page de création"
+  },
   "createSaveButton": "Créer",
   "@createSaveButton": {
     "description": "Label du bouton de sauvegarde sur la page de création"

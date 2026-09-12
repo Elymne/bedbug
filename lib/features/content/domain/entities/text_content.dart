@@ -19,6 +19,7 @@ class TextContent extends Content {
     required super.senderId,
     required super.sizeInBytes,
     super.subId,
+    super.tags,
     required this.title,
     required this.body,
   });
@@ -47,6 +48,7 @@ class TextContent extends Content {
       senderId: senderId,
       sizeInBytes: sizeInBytes,
       subId: subId,
+      tags: tags,
       title: title,
       body: body,
     );
@@ -70,6 +72,7 @@ class TextContent extends Content {
       senderId: senderId,
       sizeInBytes: sizeInBytes,
       subId: subId,
+      tags: tags,
       title: title,
       body: body,
     );

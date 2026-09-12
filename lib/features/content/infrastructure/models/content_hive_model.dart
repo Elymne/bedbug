@@ -3,6 +3,7 @@ import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
+import 'package:bedbug/features/content/domain/enums/tag.dart';
 import 'package:bedbug/shared/exceptions/data_exception.dart';
 import 'package:bedbug/shared/infrastructure/hive_type_ids.dart';
 import 'package:hive_ce/hive.dart';
@@ -44,6 +45,7 @@ class ContentHiveModel extends HiveObject {
     this.ogImageUrl,
     this.ogTitle,
     this.ogDescription,
+    this.tagValues = const [],
   });
 
   /// Crée un [ContentHiveModel] depuis une entité [Content].
@@ -65,6 +67,7 @@ class ContentHiveModel extends HiveObject {
         body: entity.body,
         subId: entity.subId,
         sizeInBytes: entity.sizeInBytes,
+        tagValues: entity.tags.map((tag) => tag.value).toList(),
       );
     }
     if (entity is LinkContent) {
@@ -88,6 +91,7 @@ class ContentHiveModel extends HiveObject {
         ogImageUrl: entity.ogImageUrl,
         ogTitle: entity.ogTitle,
         ogDescription: entity.ogDescription,
+        tagValues: entity.tags.map((tag) => tag.value).toList(),
       );
     }
     if (entity is ImageContent) {
@@ -110,6 +114,7 @@ class ContentHiveModel extends HiveObject {
         body: entity.body,
         subId: entity.subId,
         sizeInBytes: entity.sizeInBytes,
+        tagValues: entity.tags.map((tag) => tag.value).toList(),
       );
     }
     throw UnimplementedError('ContentHiveModel.fromEntity : type ${entity.runtimeType} non supporté.');
@@ -205,6 +210,10 @@ class ContentHiveModel extends HiveObject {
   @HiveField(21)
   final double displayScore;
 
+  /// Valeurs [Tag.value] des tags associés à ce contenu.
+  @HiveField(22)
+  final List<int> tagValues;
+
   /// Convertit ce modèle en entité [Content] concrète.
   Content toEntity() {
     try {
@@ -216,6 +225,7 @@ class ContentHiveModel extends HiveObject {
   }
 
   Content _toEntity() {
+    final tags = tagValues.map((value) => Tag.values.firstWhere((tag) => tag.value == value)).toList();
     if (type == _typeTextContent) {
       return TextContent(
         id: id,
@@ -232,6 +242,7 @@ class ContentHiveModel extends HiveObject {
         body: body!,
         subId: subId,
         sizeInBytes: sizeInBytes,
+        tags: tags,
       );
     }
     if (type == _typeLinkContent) {
@@ -254,6 +265,7 @@ class ContentHiveModel extends HiveObject {
         ogImageUrl: ogImageUrl,
         ogTitle: ogTitle,
         ogDescription: ogDescription,
+        tags: tags,
       );
     }
     if (type == _typeImageContent) {
@@ -275,6 +287,7 @@ class ContentHiveModel extends HiveObject {
         body: body,
         subId: subId,
         sizeInBytes: sizeInBytes,
+        tags: tags,
       );
     }
     throw UnimplementedError('ContentHiveModel._toEntity : type "$type" non supporté.');

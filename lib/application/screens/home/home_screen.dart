@@ -53,9 +53,13 @@ class _State extends ConsumerState<HomeScreen> {
                   child: child!,
                 );
               },
-              child: const Padding(
-                padding: EdgeInsets.all(16),
-                child: ContentSearchInput(hintText: 'Rechercher…'),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: ContentSearchInput(
+                  hintText: 'Rechercher…',
+                  isReadOnly: true,
+                  onTap: () => context.push(searchPath),
+                ),
               ),
             ),
             Expanded(

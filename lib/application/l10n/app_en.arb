@@ -76,6 +76,10 @@
   "@createLinkUrlLabel": {
     "description": "Label for the URL field in the link content form"
   },
+  "createTagsLabel": "Tags",
+  "@createTagsLabel": {
+    "description": "Label above the tag selector on the content creation page"
+  },
   "createSaveButton": "Create",
   "@createSaveButton": {
     "description": "Label for the save button on the content creation page"

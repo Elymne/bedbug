@@ -264,40 +264,14 @@ Used for:
 
 Each repository:
 
-- Declared in domain
+- Declared in domain as a standalone `abstract class` (no shared `Repository<Entity, Params>` base)
 - Implemented in infrastructure
-- Extends `Repository<Entity, Params>`
 
-#### Features
+#### Rules
 
-- CRUD operations
-- `getMany(params)` → returns `Page<Entity>`
-
-#### Page
-
-`Page<T>` et `OrderBy` sont déclarés dans `shared/domain/`.
-
-`Page<T>` contient :
-- `items` : éléments de la page courante
-- `hasNextPage` : seul champ garanti, toujours renseigné
-- `totalItems` : optionnel — `null` si l'implémentation ne peut pas le calculer
-- `totalPages` : optionnel — `null` si l'implémentation ne peut pas le calculer
-
-Dans cette application, la pagination n'est pas utilisée — `limit` est toujours `null`, ce qui retourne tous les éléments en une seule fois (`hasNextPage: false`, `totalItems` renseigné, `totalPages: 1`). Le système est conservé car il pourrait être activé sur ce projet ou réutilisé tel quel sur d'autres projets suivant la même architecture.
-
-#### RepositoryParams
-
-`RepositoryParams` est la classe de base commune à tous les params de `getMany`, déclarée dans `shared/domain/` :
-- `page` : numéro de page, commence à 1 (défaut : 1)
-- `limit` : nombre max d'éléments. `null` = tous les éléments sans pagination
-- `orderBy` : tri optionnel
-
-Chaque repository déclare une sous-classe concrète dans son `domain/repositories/` qui y ajoute ses filtres métier.
-
-#### PageNotFoundException
-
-Levée par l'implémentation infrastructure quand la page demandée n'existe pas.
-Les use cases doivent la catcher explicitement et la mapper vers un failure dédié.
+- Une repository ne déclare que les méthodes dont son entité a réellement besoin métier. Pas de CRUD imposé par une interface commune : une entité qui n'a pas vocation à être mise à jour ou supprimée n'expose ni `update` ni `delete`.
+- Le seul intérêt d'une interface de repository est de pouvoir swapper l'implémentation (changer d'outil de stockage), de faciliter les tests (mocks), et de garder la convention symétrique avec les use cases (interface déclarée en domain, implémentation en infrastructure). Elle ne sert pas à imposer une forme.
+- Pas de système de pagination générique (`Page<T>`, `RepositoryParams`, `PageNotFoundException`) : chaque méthode de listing déclare directement les paramètres et le type de retour dont elle a besoin.
 
 ---
 

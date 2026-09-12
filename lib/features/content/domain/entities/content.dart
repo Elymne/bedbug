@@ -1,4 +1,5 @@
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
+import 'package:bedbug/features/content/domain/enums/tag.dart';
 import 'package:bedbug/features/user/domain/entities/user.dart';
 import 'package:bedbug/shared/domain/entity.dart';
 
@@ -30,6 +31,7 @@ abstract class Content extends Entity {
     required this.senderId,
     required this.sizeInBytes,
     this.subId,
+    this.tags = const [],
   });
 
   /// Identifiant de l'auteur du contenu.
@@ -68,6 +70,9 @@ abstract class Content extends Entity {
   /// Identifiant du sub auquel appartient ce contenu.
   /// `null` si le contenu est purement public.
   final String? subId;
+
+  /// Tags associés à ce contenu, parmi le catalogue statique [Tag].
+  final List<Tag> tags;
 
   /// Retourne une copie de ce contenu avec [broadcastScore], [survivalScore]
   /// et/ou [displayScore] remplacés, en conservant le type concret d'origine.
