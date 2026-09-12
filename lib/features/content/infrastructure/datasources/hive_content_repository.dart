@@ -1,4 +1,5 @@
 import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/extensions/content_title_extension.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
 import 'package:bedbug/shared/exceptions/datasource_exception.dart';
@@ -79,6 +80,19 @@ class HiveContentRepository implements ContentRepository {
       final results = _box.values.map((model) => model.toEntity()).toList();
       results.sort((a, b) => b.displayScore.compareTo(a.displayScore));
       return results;
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
+  Future<List<Content>> getAllMatchingTitle(String query) async {
+    try {
+      final lowerCaseQuery = query.toLowerCase();
+      return _box.values
+          .map((model) => model.toEntity())
+          .where((content) => content.title.toLowerCase().contains(lowerCaseQuery))
+          .toList();
     } on HiveError catch (error) {
       throw DatasourceException('HiveContentRepository', error);
     }

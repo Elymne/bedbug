@@ -21,4 +21,7 @@ abstract class ContentRepository {
 
   /// Retourne tous les contenus triés par `displayScore` décroissant.
   Future<List<Content>> getAllOrderedByDisplayScoreDesc();
+
+  /// Retourne tous les contenus dont le titre contient [query], insensible à la casse.
+  Future<List<Content>> getAllMatchingTitle(String query);
 }

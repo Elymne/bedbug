@@ -13,6 +13,10 @@ class AppColors {
   /// Couleur de fond des cards, des inputs, checkbox et j'en passe.
   static const Color surface = Color(0xFFFFFFFF);
 
+  /// Variante sombre de [surface], utilisée en fond des écrans nécessitant
+  /// un meilleur contraste (ex. écran de recherche).
+  static const Color surfaceDark = Color(0xFF414141);
+
   /// Couleur des éléments sur une surface claire.
   static const Color onLighter = Color(0xFF414141);
 
@@ -39,4 +43,10 @@ class AppColors {
 
   /// Couleur de bordure des champs de texte.
   static const Color border = Color(0xFFE0E0E0);
+
+  /// Couleur d'accentuation violette, utilisée entre autres pour les tags.
+  static const Color purple = Color(0xFF9B59B6);
+
+  /// Couleur d'accentuation orange, utilisée entre autres pour les tags.
+  static const Color orange = Color(0xFFFF9D4D);
 }
