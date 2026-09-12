@@ -13,9 +13,7 @@ class StorageHiveModelAdapter extends TypeAdapter<StorageHiveModel> {
   @override
   StorageHiveModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
+    final fields = <int, dynamic>{for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read()};
     return StorageHiveModel(
       id: fields[0] as String,
       createdAt: (fields[1] as num).toInt(),
@@ -50,7 +48,5 @@ class StorageHiveModelAdapter extends TypeAdapter<StorageHiveModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is StorageHiveModelAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+      other is StorageHiveModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }

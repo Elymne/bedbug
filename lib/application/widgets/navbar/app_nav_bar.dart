@@ -86,9 +86,7 @@ class _NavBarItemWidget extends ConsumerWidget {
         child: SizedBox(
           width: 64,
           height: 56,
-          child: Center(
-            child: Icon(item.icon, color: isSelected ? AppColors.primary : AppColors.disabled, size: 26),
-          ),
+          child: Center(child: Icon(item.icon, color: isSelected ? AppColors.primary : AppColors.disabled, size: 26)),
         ),
       ),
     );

@@ -13,9 +13,7 @@ class UserHiveModelAdapter extends TypeAdapter<UserHiveModel> {
   @override
   UserHiveModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
+    final fields = <int, dynamic>{for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read()};
     return UserHiveModel(
       id: fields[0] as String,
       createdAt: (fields[1] as num).toInt(),
@@ -47,7 +45,5 @@ class UserHiveModelAdapter extends TypeAdapter<UserHiveModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is UserHiveModelAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+      other is UserHiveModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }

@@ -13,9 +13,7 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
   @override
   ContentHiveModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
+    final fields = <int, dynamic>{for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read()};
     return ContentHiveModel(
       id: fields[0] as String,
       createdAt: (fields[1] as num).toInt(),
@@ -39,9 +37,7 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       ogImageUrl: fields[14] as String?,
       ogTitle: fields[15] as String?,
       ogDescription: fields[16] as String?,
-      tagValues: fields[22] == null
-          ? const []
-          : (fields[22] as List).cast<int>(),
+      tagValues: fields[22] == null ? const [] : (fields[22] as List).cast<int>(),
     );
   }
 
@@ -103,7 +99,5 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ContentHiveModelAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+      other is ContentHiveModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }

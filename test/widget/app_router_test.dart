@@ -158,8 +158,11 @@ void main() {
   testWidgets('push puis pop de chaque route simple revient proprement sur la home page', (tester) async {
     final router = await pumpAppOnHome(tester);
 
-    for (final entry in <String, Type>{createPath: CreateScreen, settingsPath: SettingsScreen, searchPath: SearchScreen}
-        .entries) {
+    for (final entry in <String, Type>{
+      createPath: CreateScreen,
+      settingsPath: SettingsScreen,
+      searchPath: SearchScreen,
+    }.entries) {
       router.push(entry.key);
       await settleRoute(tester);
       expect(find.byType(entry.value), findsOneWidget, reason: 'échec en poussant ${entry.key}');
