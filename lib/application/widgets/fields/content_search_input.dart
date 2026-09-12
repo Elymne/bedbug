@@ -6,8 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Rayon des coins arrondis du champ de recherche.
 const _kBorderRadius = 24.0;
 
-/// Épaisseur de la bordure au focus.
-const _kBorderWidth = 2.0;
+/// Épaisseur de la bordure.
+const _kBorderWidth = 1.0;
 
 /// Hauteur fixe du champ de recherche.
 const _kHeight = 52.0;
@@ -17,33 +17,50 @@ class ContentSearchInput extends ConsumerStatefulWidget {
   /// Crée un [ContentSearchInput].
   ///
   /// - [hintText] : texte affiché en placeholder.
-  const ContentSearchInput({super.key, required this.hintText});
+  /// - [isReadOnly] : si `true`, le champ se comporte comme un bouton — il
+  ///   n'ouvre jamais le clavier et se contente de déclencher [onTap]. Sert
+  ///   de leurre sur la home page, à la manière de la barre de recherche de
+  ///   Reddit, pour renvoyer vers l'écran de recherche dédié.
+  /// - [onTap] : callback déclenché au tap quand [isReadOnly] est `true`.
+  /// - [autofocus] : si `true`, ouvre le clavier automatiquement dès le montage du widget.
+  /// - [isDark] : si `true`, applique le variant sombre (fond sombre, sans
+  ///   contour, texte et icônes en [AppColors.onDark]) destiné aux écrans à
+  ///   fond sombre comme `SearchScreen`. `false` par défaut pour l'usage sur
+  ///   fond clair (home page, leurre).
+  const ContentSearchInput({
+    super.key,
+    required this.hintText,
+    this.isReadOnly = false,
+    this.onTap,
+    this.autofocus = false,
+    this.isDark = false,
+  });
 
   /// Texte affiché en placeholder.
   final String hintText;
+
+  /// Si `true`, le champ se comporte comme un bouton plutôt qu'un vrai champ de saisie.
+  final bool isReadOnly;
+
+  /// Callback déclenché au tap quand [isReadOnly] est `true`.
+  final VoidCallback? onTap;
+
+  /// Si `true`, ouvre le clavier automatiquement dès le montage du widget.
+  final bool autofocus;
+
+  /// Si `true`, applique le variant sombre du champ.
+  final bool isDark;
 
   @override
   ConsumerState<ContentSearchInput> createState() => _State();
 }
 
-class _State extends ConsumerState<ContentSearchInput> with TickerProviderStateMixin {
+class _State extends ConsumerState<ContentSearchInput> {
   /// Contrôleur du champ de texte.
   late final TextEditingController _controller = TextEditingController();
 
   /// Nœud de focus pour détecter l'état actif du champ.
   late final FocusNode _focusNode = FocusNode();
-
-  /// Contrôleur du tremblement du layer principal.
-  late final AnimationController _trembleController = AnimationController(
-    duration: const Duration(milliseconds: 1300),
-    vsync: this,
-  );
-
-  /// Contrôleur du tremblement du ghost, plus lent et déphasé.
-  late final AnimationController _ghostTrembleController = AnimationController(
-    duration: const Duration(milliseconds: 800),
-    vsync: this,
-  );
 
   /// Notifier local gérant l'état de focus du champ.
   late final _FocusNotifier _focusNotifier = _FocusNotifier();
@@ -60,107 +77,78 @@ class _State extends ConsumerState<ContentSearchInput> with TickerProviderStateM
     _focusNode
       ..removeListener(_onFocusChanged)
       ..dispose();
-    _trembleController.dispose();
-    _ghostTrembleController.dispose();
     _focusNotifier.dispose();
     super.dispose();
   }
 
-  /// Démarre ou arrête les animations selon l'état du focus.
+  /// Met à jour l'état de focus affiché.
+  ///
+  /// Sans effet en mode bouton ([ContentSearchInput.isReadOnly]) : ce champ
+  /// ne doit jamais déclencher le changement d'apparence, puisqu'il ne reçoit
+  /// jamais réellement le focus clavier.
   void _onFocusChanged() {
-    final isFocused = _focusNode.hasFocus;
-    _focusNotifier.setFocused(isFocused);
-    if (isFocused) {
-      _trembleController.repeat(reverse: true);
-      _ghostTrembleController.repeat(reverse: true);
-      return;
-    }
-    _trembleController.stop();
-    _ghostTrembleController.stop();
+    if (widget.isReadOnly) return;
+    _focusNotifier.setFocused(_focusNode.hasFocus);
   }
 
   @override
   Widget build(BuildContext context) {
+    final backgroundColor = widget.isDark ? AppColors.onLight : AppColors.surface;
+    final textColor = widget.isDark ? AppColors.onDark : AppColors.onLight;
+    final iconColor = widget.isDark ? AppColors.onDark : AppColors.onLight;
+
     return AnimatedBuilder(
-      animation: Listenable.merge([_trembleController, _ghostTrembleController, _focusNotifier]),
+      animation: _focusNotifier,
       builder: (context, child) {
-        final trembleValue = _trembleController.value * 2 - 1;
-        final trembleOffset = Offset(trembleValue * 0.8, trembleValue * 0.2);
-
-        final ghostTrembleValue = _ghostTrembleController.value * 2 - 1;
-        final ghostTrembleOffset = Offset(ghostTrembleValue * 1.2, ghostTrembleValue * 0.6);
-
-        return SizedBox(
+        return Container(
           height: _kHeight,
-          child: Stack(
-            children: [
-              // Ghost — bordure primaire décalée et tremblante.
-              AnimatedOpacity(
-                opacity: _focusNotifier.isFocused ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 200),
-                child: Transform.translate(
-                  offset: ghostTrembleOffset + const Offset(2.5, 2.0),
-                  child: Container(
-                    height: _kHeight,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(_kBorderRadius),
-                      color: AppColors.primary,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(_kBorderRadius),
+            border: widget.isDark ? null : Border.all(color: AppColors.primary, width: _kBorderWidth),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          alignment: Alignment.center,
+          child: ListenableBuilder(
+            listenable: _controller,
+            builder: (context, child) {
+              return Row(
+                children: [
+                  Icon(
+                    Icons.search,
+                    size: 20,
+                    color: _focusNotifier.isFocused && !widget.isDark ? AppColors.primary : iconColor,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      readOnly: widget.isReadOnly,
+                      showCursor: widget.isReadOnly ? false : null,
+                      autofocus: widget.autofocus,
+                      onTap: widget.isReadOnly ? widget.onTap : null,
+                      style: AppTextStyles.textfield.copyWith(color: textColor),
+                      decoration: InputDecoration(
+                        hintText: widget.hintText,
+                        hintStyle: AppTextStyles.textfield.copyWith(color: AppColors.disabled),
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
+                        filled: false,
+                        isDense: true,
+                      ),
                     ),
                   ),
-                ),
-              ),
-              // Layer principal — bordure + row de contenu centré.
-              Transform.translate(
-                offset: _focusNotifier.isFocused ? trembleOffset : Offset.zero,
-                child: Container(
-                  height: _kHeight,
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(_kBorderRadius),
-                    border: Border.all(color: AppColors.onLight, width: _kBorderWidth),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  alignment: Alignment.center,
-                  child: ListenableBuilder(
-                    listenable: _controller,
-                    builder: (context, child) {
-                      return Row(
-                        children: [
-                          Icon(
-                            Icons.search,
-                            size: 20,
-                            color: _focusNotifier.isFocused ? AppColors.primary : AppColors.onLight,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: TextField(
-                              controller: _controller,
-                              focusNode: _focusNode,
-                              style: AppTextStyles.textfield,
-                              decoration: InputDecoration(
-                                hintText: widget.hintText,
-                                hintStyle: AppTextStyles.textfield.copyWith(color: AppColors.disabled),
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                contentPadding: EdgeInsets.zero,
-                                filled: false,
-                                isDense: true,
-                              ),
-                            ),
-                          ),
-                          if (_controller.text.isNotEmpty)
-                            GestureDetector(
-                              onTap: _controller.clear,
-                              child: const Icon(Icons.close, size: 18, color: AppColors.disabled),
-                            ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
+                  if (_controller.text.isNotEmpty)
+                    GestureDetector(
+                      onTap: _controller.clear,
+                      child: Icon(Icons.close, size: 18, color: widget.isDark ? iconColor : AppColors.disabled),
+                    ),
+                ],
+              );
+            },
           ),
         );
       },

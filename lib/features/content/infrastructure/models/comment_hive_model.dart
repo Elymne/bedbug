@@ -13,6 +13,7 @@ class CommentHiveModel extends HiveObject {
     required this.id,
     required this.createdAt,
     required this.updatedAt,
+    required this.contentId,
     required this.authorId,
     required this.body,
   });
@@ -23,6 +24,7 @@ class CommentHiveModel extends HiveObject {
       id: entity.id,
       createdAt: entity.createdAt.millisecondsSinceEpoch,
       updatedAt: entity.updatedAt.millisecondsSinceEpoch,
+      contentId: entity.contentId,
       authorId: entity.authorId,
       body: entity.body,
     );
@@ -48,6 +50,10 @@ class CommentHiveModel extends HiveObject {
   @HiveField(4)
   final String body;
 
+  /// Identifiant du contenu commenté.
+  @HiveField(5)
+  final String contentId;
+
   /// Convertit ce modèle en entité [Comment].
   Comment toEntity() {
     try {
@@ -55,6 +61,7 @@ class CommentHiveModel extends HiveObject {
         id: id,
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
+        contentId: contentId,
         authorId: authorId,
         body: body,
       );

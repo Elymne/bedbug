@@ -18,6 +18,7 @@ class CommentHiveModelAdapter extends TypeAdapter<CommentHiveModel> {
       id: fields[0] as String,
       createdAt: (fields[1] as num).toInt(),
       updatedAt: (fields[2] as num).toInt(),
+      contentId: fields[5] as String,
       authorId: fields[3] as String,
       body: fields[4] as String,
     );
@@ -26,7 +27,7 @@ class CommentHiveModelAdapter extends TypeAdapter<CommentHiveModel> {
   @override
   void write(BinaryWriter writer, CommentHiveModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -36,7 +37,9 @@ class CommentHiveModelAdapter extends TypeAdapter<CommentHiveModel> {
       ..writeByte(3)
       ..write(obj.authorId)
       ..writeByte(4)
-      ..write(obj.body);
+      ..write(obj.body)
+      ..writeByte(5)
+      ..write(obj.contentId);
   }
 
   @override
