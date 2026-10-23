@@ -6,7 +6,7 @@ import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
-import 'package:bedbug/features/user/domain/usecases/seed_users_usecase.dart';
+import 'package:bedbug/features/signature/domain/usecases/seed_signatures_usecase.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,10 +28,10 @@ class _FakeSeedContentsUsecase implements SeedContentsUsecase {
   Future<Either<SeedContentsFailure, void>> call(SeedContentsParams params) async => const Right(null);
 }
 
-/// Fake [SeedUsersUsecase] ne touchant à aucune infrastructure réelle.
-class _FakeSeedUsersUsecase implements SeedUsersUsecase {
+/// Fake [SeedSignaturesUsecase] ne touchant à aucune infrastructure réelle.
+class _FakeSeedSignaturesUsecase implements SeedSignaturesUsecase {
   @override
-  Future<Either<SeedUsersFailure, List<String>>> call(SeedUsersParams params) async => const Right([]);
+  Future<Either<SeedSignaturesFailure, List<String>>> call(SeedSignaturesParams params) async => const Right([]);
 }
 
 TextContent _buildTextContent(String id) {
@@ -61,7 +61,7 @@ void main() {
       overrides: [
         getHomeFeedUsecaseProvider.overrideWithValue(_FakeGetHomeFeedUsecase(const [])),
         seedContentsUsecaseProvider.overrideWithValue(_FakeSeedContentsUsecase()),
-        seedUsersUsecaseProvider.overrideWithValue(_FakeSeedUsersUsecase()),
+        seedSignaturesUsecaseProvider.overrideWithValue(_FakeSeedSignaturesUsecase()),
       ],
     );
     await tester.pump();
@@ -80,7 +80,7 @@ void main() {
           _FakeGetHomeFeedUsecase([_buildTextContent('1'), _buildTextContent('2')]),
         ),
         seedContentsUsecaseProvider.overrideWithValue(_FakeSeedContentsUsecase()),
-        seedUsersUsecaseProvider.overrideWithValue(_FakeSeedUsersUsecase()),
+        seedSignaturesUsecaseProvider.overrideWithValue(_FakeSeedSignaturesUsecase()),
       ],
     );
     await tester.pump();

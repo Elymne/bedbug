@@ -1,8 +1,9 @@
-/// Critère de recherche ayant mené à la page de résultats.
+/// Critère de recherche des contenus à afficher.
 ///
-/// Distingue les intentions de l'utilisateur : choisir un flair ou un auteur
-/// précis parmi les suggestions, ou valider sa saisie telle quelle. Sert aussi
-/// d'argument au provider des résultats, d'où l'égalité par valeur.
+/// Distingue les intentions de l'utilisateur : choisir un flair ou une
+/// signature précise parmi les suggestions, ou valider sa saisie telle
+/// quelle. Sert aussi d'argument au provider des résultats, d'où l'égalité
+/// par valeur.
 sealed class SearchCriteria {
   /// Constructeur constant pour permettre des sous-classes constantes.
   const SearchCriteria();
@@ -29,24 +30,27 @@ class FlairSearchCriteria extends SearchCriteria {
   }
 }
 
-/// Recherche des contenus d'un auteur choisi parmi les suggestions.
-class AuthorSearchCriteria extends SearchCriteria {
-  /// Crée un [AuthorSearchCriteria].
+/// Contenus d'une signature précise, désignée par son identifiant.
+///
+/// Sert la page de signature, ouverte par le choix d'une signature parmi les
+/// suggestions.
+class SignatureSearchCriteria extends SearchCriteria {
+  /// Crée un [SignatureSearchCriteria].
   ///
-  /// - [authorId] : identifiant de l'auteur choisi.
-  const AuthorSearchCriteria(this.authorId);
+  /// - [signatureId] : identifiant de la signature choisie.
+  const SignatureSearchCriteria(this.signatureId);
 
-  /// Identifiant de l'auteur choisi.
-  final String authorId;
+  /// Identifiant de la signature choisie.
+  final String signatureId;
 
   @override
   bool operator ==(Object other) {
-    return other is AuthorSearchCriteria && other.authorId == authorId;
+    return other is SignatureSearchCriteria && other.signatureId == signatureId;
   }
 
   @override
   int get hashCode {
-    return Object.hash(AuthorSearchCriteria, authorId);
+    return Object.hash(SignatureSearchCriteria, signatureId);
   }
 }
 

@@ -2,8 +2,8 @@ import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
-import 'package:bedbug/features/user/domain/entities/anonymous_user.dart';
-import 'package:bedbug/features/user/domain/usecases/seed_users_usecase.dart';
+import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
+import 'package:bedbug/features/signature/domain/usecases/seed_signatures_usecase.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/notifier/notifier_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,7 +20,7 @@ class HomeFeedNotifier extends AsyncNotifier<HomeFeedState> {
   late final _seedContentsUsecase = ref.read(seedContentsUsecaseProvider);
 
   /// Cas d'usage de génération d'utilisateurs factices, auteurs des contenus factices.
-  late final _seedUsersUsecase = ref.read(seedUsersUsecaseProvider);
+  late final _seedSignaturesUsecase = ref.read(seedSignaturesUsecaseProvider);
 
   @override
   Future<HomeFeedState> build() async {
@@ -45,8 +45,8 @@ class HomeFeedNotifier extends AsyncNotifier<HomeFeedState> {
   /// tout de même générés, avec des auteurs fictifs.
   Future<void> seedAndReload() async {
     state = const AsyncLoading();
-    final seedUsersResult = await _seedUsersUsecase(const SeedUsersParams());
-    final authorIds = [...?seedUsersResult.right, anonymousUserId];
+    final seedSignaturesResult = await _seedSignaturesUsecase(const SeedSignaturesParams());
+    final authorIds = [...?seedSignaturesResult.right, anonymousSignatureId];
     await _seedContentsUsecase(SeedContentsParams(authorIds: authorIds));
     ref.invalidateSelf();
   }

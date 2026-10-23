@@ -1,4 +1,6 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_prefixes.dart';
+import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
 import 'package:bedbug/features/content/domain/object_values/flair_suggestion.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
@@ -29,12 +31,13 @@ class FlairSuggestionTile extends ConsumerWidget {
         radius: 16,
         backgroundColor: AppColors.primary,
         child: Text(
-          '/',
-          style: TextStyle(color: AppColors.onDark, fontSize: 16, fontWeight: FontWeight.w700),
+          AppPrefixes.flair,
+          style: TextStyle(color: AppColors.onDark, fontSize: 14, fontWeight: FontWeight.w700),
         ),
       ),
-      title: Text(
-        '/${suggestion.flair}',
+      title: AppPrefixedText(
+        prefix: AppPrefixes.flair,
+        text: suggestion.flair,
         style: const TextStyle(color: AppColors.onDark, fontSize: 15, fontWeight: FontWeight.w600),
       ),
       subtitle: Text(

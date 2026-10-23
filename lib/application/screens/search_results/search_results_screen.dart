@@ -1,6 +1,7 @@
 import 'package:bedbug/application/notifiers/content_author_notifier.dart';
 import 'package:bedbug/application/screens/search_results/search_criteria.dart';
 import 'package:bedbug/application/screens/search_results/search_results_notifier.dart';
+import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/widgets/content_list/content_list_view.dart';
 import 'package:bedbug/application/widgets/headers/app_page_header.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
@@ -15,9 +16,9 @@ import 'package:go_router/go_router.dart';
 /// la saisie ([QuerySearchCriteria]). Le retour ramène à l'écran de
 /// recherche, avec la saisie conservée.
 ///
-/// Un auteur choisi ouvre sa page profil (`UserProfileScreen`), qui réutilise
-/// le même notifier avec un [AuthorSearchCriteria] ; ce critère reste géré
-/// ici pour que le `switch` sur [SearchCriteria] soit exhaustif.
+/// Une signature choisie ouvre, elle, sa page dédiée (`SignatureScreen`), qui
+/// réutilise le même notifier avec un [SignatureSearchCriteria] ; ce critère
+/// reste géré ici pour que le `switch` sur [SearchCriteria] soit exhaustif.
 class SearchResultsScreen extends ConsumerWidget {
   /// Crée un [SearchResultsScreen].
   ///
@@ -32,9 +33,14 @@ class SearchResultsScreen extends ConsumerWidget {
     final l10n = context.loc;
     final searchResultsNotifierWatcher = ref.watch(searchResultsNotifierProvider(criteria));
     final title = switch (criteria) {
-      FlairSearchCriteria(:final flair) => '/$flair',
-      AuthorSearchCriteria(:final authorId) => _authorTitle(ref, authorId),
+      FlairSearchCriteria(:final flair) => flair,
+      SignatureSearchCriteria(:final signatureId) => _signaturePseudo(ref, signatureId),
       QuerySearchCriteria(:final query) => l10n.searchResultsQueryTitle(query),
+    };
+    final titlePrefix = switch (criteria) {
+      FlairSearchCriteria() => AppPrefixes.flair,
+      SignatureSearchCriteria() => AppPrefixes.signature,
+      QuerySearchCriteria() => null,
     };
 
     return Scaffold(
@@ -42,7 +48,7 @@ class SearchResultsScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            AppPageHeader(title: title, onBack: context.pop),
+            AppPageHeader(title: title, titlePrefix: titlePrefix, onBack: context.pop),
             Expanded(
               child: searchResultsNotifierWatcher.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
@@ -59,12 +65,12 @@ class SearchResultsScreen extends ConsumerWidget {
     );
   }
 
-  /// Titre de la page pour les contenus de l'auteur [authorId] : `u/pseudo`.
+  /// Pseudo de la signature [signatureId], affiché en titre derrière le préfixe `s/`.
   ///
-  /// Le pseudo est relu depuis le profil de l'auteur ; le temps de le charger,
-  /// le titre se contente de `u/`.
-  String _authorTitle(WidgetRef ref, String authorId) {
-    final contentAuthorNotifierWatcher = ref.watch(contentAuthorNotifierProvider(authorId));
-    return 'u/${contentAuthorNotifierWatcher.value?.pseudo ?? ''}';
+  /// Le pseudo est relu depuis la signature ; le temps de la charger, le titre
+  /// se contente du préfixe.
+  String _signaturePseudo(WidgetRef ref, String signatureId) {
+    final contentAuthorNotifierWatcher = ref.watch(contentAuthorNotifierProvider(signatureId));
+    return contentAuthorNotifierWatcher.value?.pseudo ?? '';
   }
 }

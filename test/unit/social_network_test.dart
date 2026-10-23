@@ -1,4 +1,4 @@
-import 'package:bedbug/features/user/domain/enums/social_network.dart';
+import 'package:bedbug/features/signature/domain/enums/social_network.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

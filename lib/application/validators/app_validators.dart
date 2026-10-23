@@ -1,6 +1,6 @@
 import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
-import 'package:bedbug/features/user/domain/enums/social_network.dart';
-import 'package:bedbug/features/user/domain/extensions/profile_text_extension.dart';
+import 'package:bedbug/features/signature/domain/enums/social_network.dart';
+import 'package:bedbug/features/signature/domain/extensions/signature_text_extension.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Validators personnalisés compatibles avec [ReactiveForm].

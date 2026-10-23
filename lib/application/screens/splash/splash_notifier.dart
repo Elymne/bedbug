@@ -1,7 +1,7 @@
 import 'package:bedbug/features/content/domain/usecases/clear_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
-import 'package:bedbug/features/user/domain/entities/anonymous_user.dart';
-import 'package:bedbug/features/user/domain/usecases/seed_users_usecase.dart';
+import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
+import 'package:bedbug/features/signature/domain/usecases/seed_signatures_usecase.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/notifier/notifier_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +12,7 @@ final splashNotifierProvider = AsyncNotifierProvider<SplashNotifier, SplashState
 /// Notifier gérant l'état du splashscreen.
 class SplashNotifier extends AsyncNotifier<SplashState> {
   late final _clearContentsUsecase = ref.read(clearContentsUsecaseProvider);
-  late final _seedUsersUsecase = ref.read(seedUsersUsecaseProvider);
+  late final _seedSignaturesUsecase = ref.read(seedSignaturesUsecaseProvider);
   late final _seedContentsUsecase = ref.read(seedContentsUsecaseProvider);
 
   @override
@@ -29,8 +29,8 @@ class SplashNotifier extends AsyncNotifier<SplashState> {
   /// échoue, les contenus sont tout de même générés, avec des auteurs fictifs.
   Future<void> _reseed() async {
     await _clearContentsUsecase(const NoParams());
-    final seedUsersResult = await _seedUsersUsecase(const SeedUsersParams());
-    final authorIds = [...?seedUsersResult.right, anonymousUserId];
+    final seedSignaturesResult = await _seedSignaturesUsecase(const SeedSignaturesParams());
+    final authorIds = [...?seedSignaturesResult.right, anonymousSignatureId];
     await _seedContentsUsecase(SeedContentsParams(authorIds: authorIds));
   }
 }

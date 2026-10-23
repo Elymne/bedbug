@@ -100,7 +100,9 @@ class _State extends ConsumerState<HomeScreen> {
               return;
             }
             if (index == 2) {
-              context.go(settingsPath);
+              // `push` et non `go` : la page s'empile au-dessus de la home,
+              // pour que le retour système y ramène au lieu de quitter l'app.
+              context.push(settingsPath);
             }
           },
         ),

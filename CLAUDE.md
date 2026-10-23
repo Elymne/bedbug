@@ -805,7 +805,9 @@ All shared widgets live in `shared/application/widgets/`. Always reuse them befo
 - `AppTextType.error` (default): red text, one-shot shake animation. Defaults to `errorDefaultText`. To replay the animation on a new error, pass a new `Key` (e.g. `ValueKey(errorCounter)`).
 - `AppTextType.info`: blue text, smooth looping fade animation between 40 % and 100 % opacity. Defaults to `infoDefaultText`.
 
-**`AppPageHeader`** — standard page title row with an optional back `IconButton`. Accepts `title` and an optional `onBack` callback.
+**`AppPageHeader`** — standard page title row with an optional back `IconButton`. Accepts `title`, an optional `onBack` callback and an optional `titlePrefix` (shown in primary colour, see `AppPrefixedText`).
+
+**`AppPrefixedText`** — a name preceded by its prefix (`AppPrefixes.flair` = `f/`, `AppPrefixes.signature` = `s/`), the prefix in primary colour. Accepts `prefix`, `text`, optional `style`, `overflow`, `textAlign`. Always use it to display a flair or a signature pseudo; `AppExpandableSection` also takes a `subtitlePrefix`.
 
 **`AppSnackbar`** — static utility for snackbars. Never instantiated directly.
 
@@ -819,7 +821,7 @@ All shared widgets live in `shared/application/widgets/`. Always reuse them befo
 
 **`AppExpandableSection`** — rounded card with a tappable header (`title`, `icon`, optional `subtitle`) that expands to show `child`. Collapsed by default. Building block of the settings page: one section per setting.
 
-**`AppUserAvatar`** — a user's text icon (kaomoji, emoji, initials…) rendered with `AppGhostText`, the ghost layer using the user's colour. Accepts `avatarText`, `ghostColor`, optional `ghostIntensity` (1, the user's chosen strength), `fontSize` (32) and `isAnimating` (`true`; pass `false` in lists).
+**`AppSignatureAvatar`** — the text icon of a signature (kaomoji, emoji, symbols…) rendered with `AppGhostText`, the ghost layer using the signature colour and speed. Accepts `avatarText`, `ghostColor`, optional `ghostSpeed` (1), `fontSize` (32) and `isAnimating` (`true`; pass `false` in lists).
 
 ---
 

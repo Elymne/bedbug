@@ -3,7 +3,7 @@ import 'package:bedbug/application/screens/settings/widgets/clown_bedbug_dialog.
 import 'package:bedbug/application/screens/settings/widgets/linkedin_click_challenge_dialog.dart';
 import 'package:bedbug/application/screens/settings/widgets/social_links_editor.dart';
 import 'package:bedbug/application/style/app_colors.dart';
-import 'package:bedbug/features/user/domain/enums/social_network.dart';
+import 'package:bedbug/features/signature/domain/enums/social_network.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

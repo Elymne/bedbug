@@ -1,8 +1,8 @@
-import 'package:bedbug/application/router/app_router.dart';
-import 'package:bedbug/application/screens/settings/local_user_notifier.dart';
+import 'package:bedbug/application/screens/settings/local_signature_notifier.dart';
 import 'package:bedbug/application/screens/settings/widgets/own_contents_section.dart';
-import 'package:bedbug/application/screens/settings/widgets/profile_section.dart';
 import 'package:bedbug/application/screens/settings/widgets/publishing_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/signature_section.dart';
+import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/widgets/headers/app_page_header.dart';
 import 'package:bedbug/application/widgets/sections/app_expandable_section.dart';
@@ -21,31 +21,32 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.loc;
-    final localUserNotifierWatcher = ref.watch(localUserNotifierProvider);
-    final pseudo = localUserNotifierWatcher.value?.user?.pseudo;
+    final localSignatureNotifierWatcher = ref.watch(localSignatureNotifierProvider);
+    final pseudo = localSignatureNotifierWatcher.value?.signature?.pseudo;
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            AppPageHeader(title: l10n.navSettingsLabel, onBack: () => context.go(homePath)),
+            AppPageHeader(title: l10n.navSettingsLabel, onBack: context.pop),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin),
                 children: [
                   AppExpandableSection(
                     title: l10n.settingsProfileTitle,
-                    subtitle: pseudo == null ? l10n.settingsProfileNotConfigured : 'u/$pseudo',
+                    subtitle: pseudo ?? l10n.settingsProfileNotConfigured,
+                    subtitlePrefix: pseudo == null ? null : AppPrefixes.signature,
                     icon: Icons.person_outline,
-                    child: localUserNotifierWatcher.when(
+                    child: localSignatureNotifierWatcher.when(
                       loading: () => const Center(child: CircularProgressIndicator()),
                       error: (_, _) => Text(l10n.homeGetContentsUnknown),
                       data: (state) {
                         if (state.failureMessage != null) {
                           return Text(state.failureMessage!);
                         }
-                        return ProfileSection(user: state.user);
+                        return SignatureSection(signature: state.signature);
                       },
                     ),
                   ),

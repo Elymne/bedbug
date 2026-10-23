@@ -6,8 +6,8 @@ import 'package:bedbug/features/content/domain/enums/tag.dart';
 import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
 import 'package:bedbug/features/settings/domain/usecases/get_settings_usecase.dart';
 import 'package:bedbug/features/settings/domain/value_objects/user_settings.dart';
-import 'package:bedbug/features/user/domain/entities/anonymous_user.dart';
-import 'package:bedbug/features/user/domain/repositories/user_repository.dart';
+import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
+import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:flutter/material.dart';
@@ -103,7 +103,7 @@ void main() {
 
     await _fillAndSaveTextContent(tester);
 
-    expect(fakeSaveUsecase.savedContent!.authorId, localUserId);
+    expect(fakeSaveUsecase.savedContent!.authorId, localSignatureId);
   });
 
   testWidgets('la case anonyme part cochée selon le réglage, et le contenu est alors signé anonyme', (tester) async {
@@ -116,7 +116,7 @@ void main() {
 
     await _fillAndSaveTextContent(tester);
 
-    expect(fakeSaveUsecase.savedContent!.authorId, anonymousUserId);
+    expect(fakeSaveUsecase.savedContent!.authorId, anonymousSignatureId);
   });
 
   testWidgets('crée un contenu texte et revient à l\'écran précédent', (tester) async {

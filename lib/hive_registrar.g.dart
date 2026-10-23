@@ -8,7 +8,7 @@ import 'package:bedbug/features/content/infrastructure/models/content_hive_model
 import 'package:bedbug/features/content/infrastructure/models/storage_hive_model.dart';
 import 'package:bedbug/features/discovery/infrastructure/models/keychain_hive_model.dart';
 import 'package:bedbug/features/settings/infrastructure/models/settings_hive_model.dart';
-import 'package:bedbug/features/user/infrastructure/models/user_hive_model.dart';
+import 'package:bedbug/features/signature/infrastructure/models/signature_hive_model.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
@@ -17,8 +17,8 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(KeychainHiveModelAdapter());
     registerAdapter(PrivateKeyHiveModelAdapter());
     registerAdapter(SettingsHiveModelAdapter());
+    registerAdapter(SignatureHiveModelAdapter());
     registerAdapter(StorageHiveModelAdapter());
-    registerAdapter(UserHiveModelAdapter());
   }
 }
 
@@ -29,7 +29,7 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(KeychainHiveModelAdapter());
     registerAdapter(PrivateKeyHiveModelAdapter());
     registerAdapter(SettingsHiveModelAdapter());
+    registerAdapter(SignatureHiveModelAdapter());
     registerAdapter(StorageHiveModelAdapter());
-    registerAdapter(UserHiveModelAdapter());
   }
 }

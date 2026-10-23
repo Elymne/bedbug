@@ -5,7 +5,7 @@ import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/social_network_x.dart';
 import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
-import 'package:bedbug/features/user/domain/enums/social_network.dart';
+import 'package:bedbug/features/signature/domain/enums/social_network.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

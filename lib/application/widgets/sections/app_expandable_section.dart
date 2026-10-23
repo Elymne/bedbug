@@ -1,4 +1,5 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,7 +18,15 @@ class AppExpandableSection extends ConsumerWidget {
   /// - [icon] : icône affichée devant le titre.
   /// - [child] : contenu affiché une fois la section dépliée.
   /// - [subtitle] : texte secondaire optionnel sous le titre.
-  const AppExpandableSection({super.key, required this.title, required this.icon, required this.child, this.subtitle});
+  /// - [subtitlePrefix] : préfixe optionnel affiché en couleur primaire devant [subtitle] (ex. `s/`).
+  const AppExpandableSection({
+    super.key,
+    required this.title,
+    required this.icon,
+    required this.child,
+    this.subtitle,
+    this.subtitlePrefix,
+  });
 
   /// Titre affiché dans l'en-tête.
   final String title;
@@ -31,12 +40,19 @@ class AppExpandableSection extends ConsumerWidget {
   /// Texte secondaire optionnel sous le titre.
   final String? subtitle;
 
+  /// Préfixe optionnel affiché en couleur primaire devant [subtitle] (voir `AppPrefixes`).
+  final String? subtitlePrefix;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const shape = RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(_kBorderRadius)));
     Widget? subtitleWidget;
     if (subtitle != null) {
-      subtitleWidget = Text(subtitle!, style: const TextStyle(fontSize: 13, color: AppColors.disabled));
+      subtitleWidget = AppPrefixedText(
+        prefix: subtitlePrefix ?? '',
+        text: subtitle!,
+        style: const TextStyle(fontSize: 13, color: AppColors.disabled),
+      );
     }
 
     return Material(

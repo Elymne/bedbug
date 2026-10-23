@@ -138,11 +138,11 @@
   "@searchResultsEmpty": {
     "description": "Message affiché sur la page de résultats quand aucun contenu ne correspond"
   },
-  "settingsProfileTitle": "Mon profil",
+  "settingsProfileTitle": "Ma signature",
   "@settingsProfileTitle": {
     "description": "Titre de la section de configuration du profil dans les paramètres"
   },
-  "settingsProfileNotConfigured": "Pas encore configuré",
+  "settingsProfileNotConfigured": "Pas encore configurée",
   "@settingsProfileNotConfigured": {
     "description": "Sous-titre de la section profil quand l'utilisateur n'a jamais enregistré de profil"
   },
@@ -247,11 +247,11 @@
   "@settingsProfileSaveButton": {
     "description": "Bouton d'enregistrement du profil"
   },
-  "settingsProfileSaved": "Profil enregistré.",
+  "settingsProfileSaved": "Signature enregistrée.",
   "@settingsProfileSaved": {
     "description": "Message snackbar affiché après l'enregistrement du profil"
   },
-  "settingsProfileSaveError": "Échec de l'enregistrement du profil.",
+  "settingsProfileSaveError": "Échec de l'enregistrement de la signature.",
   "@settingsProfileSaveError": {
     "description": "Message snackbar d'erreur affiché quand l'enregistrement du profil échoue"
   },
@@ -263,7 +263,7 @@
   "@settingsAnonymousByDefaultLabel": {
     "description": "Libellé de la case à cocher activant la publication anonyme par défaut"
   },
-  "settingsAnonymousByDefaultDescription": "Tes nouveaux contenus seront signés u/anonyme. Tu pourras toujours changer d'avis au moment de publier.",
+  "settingsAnonymousByDefaultDescription": "Tes nouveaux contenus seront signés s/anonyme. Tu pourras toujours changer d'avis au moment de publier.",
   "@settingsAnonymousByDefaultDescription": {
     "description": "Explication sous la case à cocher de publication anonyme par défaut"
   },
@@ -351,7 +351,7 @@
   "@createAnonymousLabel": {
     "description": "Libellé de la case à cocher de publication anonyme dans le formulaire de création"
   },
-  "createAnonymousDescription": "Ton contenu sera signé u/anonyme, sans ton profil.",
+  "createAnonymousDescription": "Ton contenu sera signé s/anonyme, sans ton profil.",
   "@createAnonymousDescription": {
     "description": "Explication sous la case à cocher de publication anonyme dans le formulaire de création"
   },
@@ -403,21 +403,54 @@
   "@deleteContentError": {
     "description": "Message d'erreur générique quand la suppression d'un contenu échoue"
   },
-  "userProfilePostsTab": "Posts",
-  "@userProfilePostsTab": {
-    "description": "Onglet de la page profil listant les contenus publiés par l'utilisateur"
+  "signatureContentsEmpty": "Cette signature n'a encore rien signé.",
+  "@signatureContentsEmpty": {
+    "description": "Message de la page de signature quand aucun contenu ne porte cette signature"
   },
-  "userProfileCommentsTab": "Commentaires",
-  "@userProfileCommentsTab": {
-    "description": "Onglet de la page profil listant les commentaires de l'utilisateur"
+  "timeAgoMinutes": "{count, plural, =0{À l'instant} =1{Il y a une minute} other{Il y a {count} minutes}}",
+  "@timeAgoMinutes": {
+    "description": "Temps écoulé depuis la création d'un contenu, en minutes, écrit en toutes lettres (page de détail)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-  "userProfilePostsEmpty": "Aucun post pour l'instant.",
-  "@userProfilePostsEmpty": {
-    "description": "Message de l'onglet Posts de la page profil quand l'utilisateur n'a rien publié"
+  "timeAgoHours": "{count, plural, =1{Il y a une heure} other{Il y a {count} heures}}",
+  "@timeAgoHours": {
+    "description": "Temps écoulé depuis la création d'un contenu, en heures, écrit en toutes lettres (page de détail)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-  "userProfileCommentsSoon": "Les commentaires arrivent bientôt.",
-  "@userProfileCommentsSoon": {
-    "description": "Message de l'onglet Commentaires de la page profil, en attendant que les commentaires existent"
+  "timeAgoDays": "{count, plural, =1{Il y a une journée} other{Il y a {count} jours}}",
+  "@timeAgoDays": {
+    "description": "Temps écoulé depuis la création d'un contenu, en jours, écrit en toutes lettres (page de détail)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timeAgoMonths": "{count, plural, =1{Il y a un mois} other{Il y a {count} mois}}",
+  "@timeAgoMonths": {
+    "description": "Temps écoulé depuis la création d'un contenu, en mois, écrit en toutes lettres (page de détail)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timeAgoYears": "{count, plural, =1{Il y a un an} other{Il y a {count} ans}}",
+  "@timeAgoYears": {
+    "description": "Temps écoulé depuis la création d'un contenu, en années, écrit en toutes lettres (page de détail)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "close": "Fermer",
   "@close": {

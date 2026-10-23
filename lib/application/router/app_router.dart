@@ -9,8 +9,8 @@ import 'package:bedbug/application/screens/search/search_screen.dart';
 import 'package:bedbug/application/screens/search_results/search_criteria.dart';
 import 'package:bedbug/application/screens/search_results/search_results_screen.dart';
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
+import 'package:bedbug/application/screens/signature/signature_screen.dart';
 import 'package:bedbug/application/screens/splash/splash_screen.dart';
-import 'package:bedbug/application/screens/user_profile/user_profile_screen.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
@@ -44,8 +44,8 @@ const String searchPath = '/search';
 ///
 /// Le critère est transmis en paramètre de requête : [searchFlairParam] pour
 /// un flair choisi parmi les suggestions, [searchQueryParam] pour une
-/// recherche globale. Un auteur choisi ouvre, lui, sa page profil
-/// ([userProfilePath]).
+/// recherche globale. Une signature choisie ouvre, elle, sa page dédiée
+/// ([signaturePath]).
 const String searchResultsPath = '/search/results';
 
 /// Paramètre de requête de [searchResultsPath] portant le flair choisi.
@@ -54,13 +54,13 @@ const String searchFlairParam = 'flair';
 /// Paramètre de requête de [searchResultsPath] portant le texte d'une recherche globale.
 const String searchQueryParam = 'q';
 
-/// Préfixe du chemin des pages profil : `/users/<identifiant>`.
+/// Préfixe du chemin des pages de signature : `/signatures/<identifiant>`.
 ///
-/// Naviguer avec `context.push('$usersPath/${user.id}')`.
-const String usersPath = '/users';
+/// Naviguer avec `context.push('$signaturesPath/${signature.id}')`.
+const String signaturesPath = '/signatures';
 
-/// Chemin de la page profil d'un utilisateur, identifiant en paramètre de chemin.
-const String userProfilePath = '$usersPath/:id';
+/// Chemin de la page d'une signature, identifiant en paramètre de chemin.
+const String signaturePath = '$signaturesPath/:id';
 
 /// Chemin vers la page de détail d'un contenu.
 ///
@@ -115,8 +115,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       GoRoute(
-        path: userProfilePath,
-        pageBuilder: (context, state) => _fadePage(UserProfileScreen(userId: state.pathParameters['id']!)),
+        path: signaturePath,
+        pageBuilder: (context, state) => _fadePage(SignatureScreen(signatureId: state.pathParameters['id']!)),
       ),
       GoRoute(
         path: contentDetailPath,

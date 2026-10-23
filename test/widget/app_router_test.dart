@@ -20,7 +20,7 @@ import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/usecases/clear_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
-import 'package:bedbug/features/user/domain/usecases/seed_users_usecase.dart';
+import 'package:bedbug/features/signature/domain/usecases/seed_signatures_usecase.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:flutter/material.dart';
@@ -40,10 +40,10 @@ class _FakeSeedContentsUsecase implements SeedContentsUsecase {
   Future<Either<SeedContentsFailure, void>> call(SeedContentsParams params) async => const Right(null);
 }
 
-/// Fake [SeedUsersUsecase] ne touchant à aucune infrastructure réelle.
-class _FakeSeedUsersUsecase implements SeedUsersUsecase {
+/// Fake [SeedSignaturesUsecase] ne touchant à aucune infrastructure réelle.
+class _FakeSeedSignaturesUsecase implements SeedSignaturesUsecase {
   @override
-  Future<Either<SeedUsersFailure, List<String>>> call(SeedUsersParams params) async => const Right([]);
+  Future<Either<SeedSignaturesFailure, List<String>>> call(SeedSignaturesParams params) async => const Right([]);
 }
 
 /// Fake [ClearContentsUsecase] ne touchant à aucune infrastructure réelle.
@@ -137,7 +137,7 @@ void main() {
       overrides: [
         getHomeFeedUsecaseProvider.overrideWithValue(_FakeGetHomeFeedUsecase()),
         seedContentsUsecaseProvider.overrideWithValue(_FakeSeedContentsUsecase()),
-        seedUsersUsecaseProvider.overrideWithValue(_FakeSeedUsersUsecase()),
+        seedSignaturesUsecaseProvider.overrideWithValue(_FakeSeedSignaturesUsecase()),
         clearContentsUsecaseProvider.overrideWithValue(_FakeClearContentsUsecase()),
         appDocsDirProvider.overrideWith((ref) async => Directory.systemTemp),
       ],

@@ -1,7 +1,7 @@
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/search/search_suggestions_notifier.dart';
 import 'package:bedbug/application/screens/search/widgets/flair_suggestion_tile.dart';
-import 'package:bedbug/application/screens/search/widgets/user_suggestion_tile.dart';
+import 'package:bedbug/application/screens/search/widgets/signature_suggestion_tile.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/fields/content_search_input.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
@@ -14,10 +14,10 @@ import 'package:go_router/go_router.dart';
 /// Accessible depuis le faux champ de recherche de la home page, à la
 /// manière de Reddit : le champ y est repositionné à l'identique en haut de
 /// l'écran, avec le clavier ouvert automatiquement. Pendant la frappe, les
-/// flairs existants puis les utilisateurs connus commençant par la saisie
-/// sont proposés en dessous :
+/// flairs existants puis les signatures connues dont le pseudo commence par
+/// la saisie sont proposés en dessous :
 /// - un tap sur un flair ouvre les résultats de ce flair exact ;
-/// - un tap sur un utilisateur ouvre les contenus qu'il a signés ;
+/// - un tap sur une signature ouvre sa page, avec les contenus qu'elle a signés ;
 /// - valider la saisie au clavier lance une recherche globale (titre et flair).
 class SearchScreen extends ConsumerWidget {
   /// Crée un [SearchScreen].
@@ -52,7 +52,7 @@ class SearchScreen extends ConsumerWidget {
                 builder: (context, ref, _) {
                   final searchSuggestionsNotifierWatcher = ref.watch(searchSuggestionsNotifierProvider);
                   final flairs = searchSuggestionsNotifierWatcher.value?.flairs ?? const [];
-                  final users = searchSuggestionsNotifierWatcher.value?.users ?? const [];
+                  final signatures = searchSuggestionsNotifierWatcher.value?.signatures ?? const [];
                   return ListView(
                     keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                     children: [
@@ -63,10 +63,10 @@ class SearchScreen extends ConsumerWidget {
                             Uri(path: searchResultsPath, queryParameters: {searchFlairParam: flair.flair}).toString(),
                           ),
                         ),
-                      for (final user in users)
-                        UserSuggestionTile(
-                          user: user,
-                          onTap: () => context.push('$usersPath/${Uri.encodeComponent(user.id)}'),
+                      for (final signature in signatures)
+                        SignatureSuggestionTile(
+                          signature: signature,
+                          onTap: () => context.push('$signaturesPath/${Uri.encodeComponent(signature.id)}'),
                         ),
                     ],
                   );

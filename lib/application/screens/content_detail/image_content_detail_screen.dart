@@ -31,6 +31,7 @@ class ImageContentDetailScreen extends ConsumerWidget {
       authorId: content.authorId,
       createdAt: content.createdAt,
       bounce: content.bounce,
+      tags: content.tags,
       onClose: () => context.pop(),
       contentBody: _buildContentBody(ref),
     );

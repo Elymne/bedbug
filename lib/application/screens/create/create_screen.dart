@@ -8,6 +8,8 @@ import 'package:bedbug/application/screens/create/widgets/image_content_form.dar
 import 'package:bedbug/application/screens/create/widgets/link_content_form.dart';
 import 'package:bedbug/application/screens/create/widgets/tag_selector.dart';
 import 'package:bedbug/application/screens/create/widgets/text_content_form.dart';
+import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:bedbug/application/widgets/buttons/app_close_button.dart';
@@ -22,8 +24,8 @@ import 'package:bedbug/features/content/domain/enums/tag.dart';
 import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
 import 'package:bedbug/features/content/domain/usecases/compress_image_usecase.dart';
 import 'package:bedbug/features/content/infrastructure/og_metadata_service.dart';
-import 'package:bedbug/features/user/domain/entities/anonymous_user.dart';
-import 'package:bedbug/features/user/domain/repositories/user_repository.dart';
+import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
+import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
 import 'package:bedbug/shared/config/content_image_storage.dart';
 import 'package:bedbug/shared/extensions/string_uuid_x.dart';
 import 'package:flutter/material.dart';
@@ -157,12 +159,12 @@ class _State extends ConsumerState<CreateScreen> {
 
   /// Identifiant d'auteur à porter par le contenu créé.
   ///
-  /// [anonymousUserId] si la case « publier en anonyme » est cochée : le
+  /// [anonymousSignatureId] si la case « publier en anonyme » est cochée : le
   /// contenu sera affiché avec le profil anonyme commun. Sinon, l'utilisateur
-  /// du téléphone ([localUserId]), dont le profil configuré dans les options
+  /// du téléphone ([localSignatureId]), dont le profil configuré dans les options
   /// sera affiché.
   String get _authorId {
-    return _isAnonymousControl.value == true ? anonymousUserId : localUserId;
+    return _isAnonymousControl.value == true ? anonymousSignatureId : localSignatureId;
   }
 
   /// Valide le formulaire actif et déclenche la sauvegarde.
@@ -370,7 +372,8 @@ class _State extends ConsumerState<CreateScreen> {
                     decoration: InputDecoration(
                       labelText: l10n.createFlairLabel,
                       hintText: l10n.createFlairHint,
-                      prefixText: '/',
+                      prefixText: AppPrefixes.flair,
+                      prefixStyle: const TextStyle(color: AppColors.primary),
                     ),
                   ),
                   Text(l10n.createTagsLabel),

@@ -2,12 +2,14 @@ import 'package:bedbug/application/notifiers/delete_own_content_notifier.dart';
 import 'package:bedbug/application/notifiers/own_contents_notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/widgets/dialogs/delete_content_dialog.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
+import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/extensions/content_title_extension.dart';
-import 'package:bedbug/features/user/domain/entities/anonymous_user.dart';
+import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:bedbug/shared/extensions/datetime_x.dart';
 import 'package:flutter/material.dart';
@@ -52,14 +54,15 @@ class OwnContentsSection extends ConsumerWidget {
                   spacing: 6,
                   children: [
                     Flexible(
-                      child: Text(
-                        '/${content.flair}  •  ${content.createdAt.timeAgo}',
+                      child: AppPrefixedText(
+                        prefix: AppPrefixes.flair,
+                        text: '${content.flair}  •  ${content.createdAt.timeAgo}',
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(fontSize: 13, color: AppColors.disabled),
                       ),
                     ),
-                    if (content.authorId == anonymousUserId)
-                      AppTag(label: anonymousUser.pseudo, color: AppColors.onLighter),
+                    if (content.authorId == anonymousSignatureId)
+                      AppTag(label: anonymousSignature.pseudo, color: AppColors.onLighter),
                   ],
                 ),
                 trailing: IconButton(

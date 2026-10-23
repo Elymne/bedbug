@@ -118,9 +118,9 @@ class HiveContentRepository implements ContentRepository {
   }
 
   @override
-  Future<List<Content>> getAllByAuthor(String authorId) async {
+  Future<List<Content>> getAllByAuthors(Set<String> authorIds) async {
     try {
-      return _box.values.where((model) => model.authorId == authorId).map((model) => model.toEntity()).toList();
+      return _box.values.where((model) => authorIds.contains(model.authorId)).map((model) => model.toEntity()).toList();
     } on HiveError catch (error) {
       throw DatasourceException('HiveContentRepository', error);
     }
