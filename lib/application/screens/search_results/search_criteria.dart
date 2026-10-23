@@ -1,7 +1,7 @@
 /// Critère de recherche ayant mené à la page de résultats.
 ///
-/// Distingue les deux intentions de l'utilisateur : choisir un flair précis
-/// parmi les suggestions, ou valider sa saisie telle quelle. Sert aussi
+/// Distingue les intentions de l'utilisateur : choisir un flair ou un auteur
+/// précis parmi les suggestions, ou valider sa saisie telle quelle. Sert aussi
 /// d'argument au provider des résultats, d'où l'égalité par valeur.
 sealed class SearchCriteria {
   /// Constructeur constant pour permettre des sous-classes constantes.
@@ -26,6 +26,27 @@ class FlairSearchCriteria extends SearchCriteria {
   @override
   int get hashCode {
     return Object.hash(FlairSearchCriteria, flair);
+  }
+}
+
+/// Recherche des contenus d'un auteur choisi parmi les suggestions.
+class AuthorSearchCriteria extends SearchCriteria {
+  /// Crée un [AuthorSearchCriteria].
+  ///
+  /// - [authorId] : identifiant de l'auteur choisi.
+  const AuthorSearchCriteria(this.authorId);
+
+  /// Identifiant de l'auteur choisi.
+  final String authorId;
+
+  @override
+  bool operator ==(Object other) {
+    return other is AuthorSearchCriteria && other.authorId == authorId;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(AuthorSearchCriteria, authorId);
   }
 }
 

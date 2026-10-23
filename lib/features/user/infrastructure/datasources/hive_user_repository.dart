@@ -28,6 +28,38 @@ class HiveUserRepository implements UserRepository {
   }
 
   @override
+  Future<User?> getById(String id) async {
+    try {
+      return _box.get(id)?.toEntity();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveUserRepository', error);
+    }
+  }
+
+  @override
+  Future<List<User>> getAllWithPseudoStartingWith(String prefix, {required int limit}) async {
+    try {
+      final lowerCasePrefix = prefix.toLowerCase();
+      // Filtre et tri sur le modèle : seuls les utilisateurs retenus paient
+      // le coût de `toEntity()`, appelé ici à chaque frappe.
+      final models = _box.values.where((model) => model.pseudo.toLowerCase().startsWith(lowerCasePrefix)).toList()
+        ..sort((first, second) => first.pseudo.toLowerCase().compareTo(second.pseudo.toLowerCase()));
+      return models.take(limit).map((model) => model.toEntity()).toList();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveUserRepository', error);
+    }
+  }
+
+  @override
+  Future<void> saveMany(List<User> entities) async {
+    try {
+      await _box.putAll({for (final entity in entities) entity.id: UserHiveModel.fromEntity(entity)});
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveUserRepository', error);
+    }
+  }
+
+  @override
   Future<User> saveLocal(User entity) async {
     try {
       await _box.put(localUserId, UserHiveModel.fromEntity(entity));

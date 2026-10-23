@@ -9,6 +9,7 @@ import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/user/app_user_avatar.dart';
+import 'package:bedbug/features/user/domain/entities/anonymous_user.dart';
 import 'package:bedbug/features/user/domain/entities/user.dart';
 import 'package:bedbug/features/user/domain/enums/social_network.dart';
 import 'package:bedbug/features/user/domain/extensions/profile_text_extension.dart';
@@ -118,7 +119,7 @@ class _State extends ConsumerState<ProfileSection> {
                   ghostSpeed: _ghostSpeedControl.value ?? defaultGhostSpeed,
                 ),
                 Text(
-                  'u/${pseudo.isEmpty ? l10n.contentDetailAnonymousAuthor : pseudo}',
+                  'u/${pseudo.isEmpty ? anonymousUser.pseudo : pseudo}',
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.onLight),
                 ),
               ],

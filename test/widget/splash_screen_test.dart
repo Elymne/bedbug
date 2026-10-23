@@ -3,6 +3,7 @@ import 'package:bedbug/application/screens/splash/splash_screen.dart';
 import 'package:bedbug/application/screens/splash/widgets/app_title_text.dart';
 import 'package:bedbug/features/content/domain/usecases/clear_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
+import 'package:bedbug/features/user/domain/usecases/seed_users_usecase.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,12 @@ class _FakeClearContentsUsecase implements ClearContentsUsecase {
 class _FakeSeedContentsUsecase implements SeedContentsUsecase {
   @override
   Future<Either<SeedContentsFailure, void>> call(SeedContentsParams params) async => const Right(null);
+}
+
+/// Fake [SeedUsersUsecase] ne touchant à aucune infrastructure réelle.
+class _FakeSeedUsersUsecase implements SeedUsersUsecase {
+  @override
+  Future<Either<SeedUsersFailure, List<String>>> call(SeedUsersParams params) async => const Right([]);
 }
 
 void main() {
@@ -40,6 +47,7 @@ void main() {
         overrides: [
           clearContentsUsecaseProvider.overrideWithValue(_FakeClearContentsUsecase()),
           seedContentsUsecaseProvider.overrideWithValue(_FakeSeedContentsUsecase()),
+          seedUsersUsecaseProvider.overrideWithValue(_FakeSeedUsersUsecase()),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

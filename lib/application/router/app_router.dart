@@ -42,8 +42,8 @@ const String searchPath = '/search';
 /// Chemin vers la page de résultats de recherche.
 ///
 /// Le critère est transmis en paramètre de requête : [searchFlairParam] pour
-/// un flair choisi parmi les suggestions, [searchQueryParam] pour une
-/// recherche globale.
+/// un flair choisi parmi les suggestions, [searchAuthorParam] pour un auteur
+/// choisi parmi les suggestions, [searchQueryParam] pour une recherche globale.
 const String searchResultsPath = '/search/results';
 
 /// Paramètre de requête de [searchResultsPath] portant le flair choisi.
@@ -51,6 +51,9 @@ const String searchFlairParam = 'flair';
 
 /// Paramètre de requête de [searchResultsPath] portant le texte d'une recherche globale.
 const String searchQueryParam = 'q';
+
+/// Paramètre de requête de [searchResultsPath] portant l'identifiant de l'auteur choisi.
+const String searchAuthorParam = 'author';
 
 /// Chemin vers la page de détail d'un contenu.
 ///
@@ -120,12 +123,16 @@ class _RouterRefreshNotifier extends ChangeNotifier {
 
 /// Retourne la page de résultats correspondant aux paramètres de requête [queryParameters].
 ///
-/// Le flair est prioritaire : sa présence signifie que l'utilisateur a
-/// choisi une suggestion précise.
+/// Le flair puis l'auteur sont prioritaires sur la recherche globale : leur
+/// présence signifie que l'utilisateur a choisi une suggestion précise.
 Widget _searchResultsScreenFor(Map<String, String> queryParameters) {
   final flair = queryParameters[searchFlairParam];
   if (flair != null) {
     return SearchResultsScreen(criteria: FlairSearchCriteria(flair));
+  }
+  final authorId = queryParameters[searchAuthorParam];
+  if (authorId != null) {
+    return SearchResultsScreen(criteria: AuthorSearchCriteria(authorId));
   }
   final query = queryParameters[searchQueryParam];
   if (query != null) {

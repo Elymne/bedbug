@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
@@ -102,6 +104,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
   Future<Either<SeedContentsFailure, void>> call(SeedContentsParams params) async {
     try {
       final now = DateTime.now();
+      final random = Random(params.randomSeed);
       final batch = <Content>[];
       var totalSizeInBytes = 0;
 
@@ -111,7 +114,8 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
         final bounce = index % 11;
         final flair = _flairs[index % _flairs.length];
 
-        final content = _buildContent(index, createdAt, origin, bounce, flair);
+        final authorId = _pickAuthorId(params, random, index);
+        final content = _buildContent(index, createdAt, origin, bounce, flair, authorId);
         totalSizeInBytes += content.sizeInBytes;
         batch.add(content);
 
@@ -142,27 +146,58 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     }
   }
 
+  /// Choisit l'auteur du contenu factice d'index [index].
+  ///
+  /// Tiré au hasard parmi [SeedContentsParams.authorIds] pour que chaque
+  /// auteur factice signe un échantillon varié de contenus (et que la
+  /// recherche par utilisateur ait de quoi être testée). Sans auteur fourni,
+  /// retombe sur cinq identifiants fictifs sans profil.
+  ///
+  /// - [params] : paramètres du seed, portant les auteurs disponibles.
+  /// - [random] : générateur partagé par tout le seed.
+  /// - [index] : position du contenu dans le seed.
+  String _pickAuthorId(SeedContentsParams params, Random random, int index) {
+    if (params.authorIds.isEmpty) {
+      return 'seed-author-${index % 5}';
+    }
+    return params.authorIds[random.nextInt(params.authorIds.length)];
+  }
+
   /// Construit un contenu factice selon le modulo de [index] pour distribuer les types.
   ///
   /// - index % 10 in [0..3] → [TextContent] (40 %)
   /// - index % 10 in [4..6] → [ImageContent] (30 %)
   /// - index % 10 in [7..9] → [LinkContent] (30 %)
-  Content _buildContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String flair) {
+  Content _buildContent(
+    int index,
+    DateTime createdAt,
+    ContentOrigin origin,
+    int bounce,
+    String flair,
+    String authorId,
+  ) {
     final bucket = index % 10;
 
     if (bucket <= 3) {
-      return _buildTextContent(index, createdAt, origin, bounce, flair);
+      return _buildTextContent(index, createdAt, origin, bounce, flair, authorId);
     }
 
     if (bucket <= 6) {
-      return _buildImageContent(index, createdAt, origin, bounce, flair);
+      return _buildImageContent(index, createdAt, origin, bounce, flair, authorId);
     }
 
-    return _buildLinkContent(index, createdAt, origin, bounce, flair);
+    return _buildLinkContent(index, createdAt, origin, bounce, flair, authorId);
   }
 
   /// Construit un [TextContent] avec titre court, long, ou corps vide selon l'index.
-  TextContent _buildTextContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String flair) {
+  TextContent _buildTextContent(
+    int index,
+    DateTime createdAt,
+    ContentOrigin origin,
+    int bounce,
+    String flair,
+    String authorId,
+  ) {
     final isLongTitle = index % 7 == 0;
     final isLongBody = index % 5 == 0;
 
@@ -176,7 +211,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       id: UuidX.generate(),
       createdAt: createdAt,
       updatedAt: createdAt,
-      authorId: 'seed-author-${index % 5}',
+      authorId: authorId,
       senderId: 'seed-sender',
       origin: origin,
       broadcastScore: 1,
@@ -191,7 +226,14 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
   }
 
   /// Construit un [ImageContent] avec des noms de fichiers valides ou cassés selon l'index.
-  ImageContent _buildImageContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String flair) {
+  ImageContent _buildImageContent(
+    int index,
+    DateTime createdAt,
+    ContentOrigin origin,
+    int bounce,
+    String flair,
+    String authorId,
+  ) {
     final isBroken = index % 4 == 0;
     final fileNames = isBroken ? _brokenImageFileNames : _validImageFileNames;
     final fileName = fileNames[index % fileNames.length];
@@ -203,7 +245,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       id: UuidX.generate(),
       createdAt: createdAt,
       updatedAt: createdAt,
-      authorId: 'seed-author-${index % 5}',
+      authorId: authorId,
       senderId: 'seed-sender',
       origin: origin,
       broadcastScore: 1,
@@ -221,7 +263,14 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
   }
 
   /// Construit un [LinkContent] avec des URLs valides, cassées ou malformées selon l'index.
-  LinkContent _buildLinkContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String flair) {
+  LinkContent _buildLinkContent(
+    int index,
+    DateTime createdAt,
+    ContentOrigin origin,
+    int bounce,
+    String flair,
+    String authorId,
+  ) {
     final isBroken = index % 3 == 0;
     final urls = isBroken ? _brokenUrls : _validUrls;
     final url = urls[index % urls.length];
@@ -230,7 +279,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       id: UuidX.generate(),
       createdAt: createdAt,
       updatedAt: createdAt,
-      authorId: 'seed-author-${index % 5}',
+      authorId: authorId,
       senderId: 'seed-sender',
       origin: origin,
       broadcastScore: 1,
@@ -265,8 +314,20 @@ class SeedContentsParams extends Params {
   /// Crée des [SeedContentsParams].
   ///
   /// - [count] : nombre de contenus à générer. Par défaut : 10 000.
-  const SeedContentsParams({this.count = 10000});
+  /// - [authorIds] : identifiants d'auteurs entre lesquels répartir les contenus au hasard.
+  /// - [randomSeed] : graine du tirage des auteurs, pour un seed reproductible (tests). `null` pour un tirage aléatoire.
+  const SeedContentsParams({this.count = 10000, this.authorIds = const [], this.randomSeed});
 
   /// Nombre de contenus factices à générer.
   final int count;
+
+  /// Identifiants d'auteurs entre lesquels répartir les contenus au hasard.
+  ///
+  /// Le domaine des contenus ne connaît pas les utilisateurs : c'est
+  /// l'appelant qui fournit les auteurs (utilisateurs factices, anonyme…).
+  /// Vide : les contenus sont attribués à des identifiants fictifs sans profil.
+  final List<String> authorIds;
+
+  /// Graine du tirage des auteurs, `null` pour un tirage aléatoire.
+  final int? randomSeed;
 }

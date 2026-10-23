@@ -1,8 +1,10 @@
+import 'package:bedbug/application/screens/content_detail/content_author_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/widgets/buttons/app_close_button.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
+import 'package:bedbug/application/widgets/user/app_user_avatar.dart';
+import 'package:bedbug/features/user/domain/entities/anonymous_user.dart';
 import 'package:bedbug/shared/extensions/datetime_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,6 +19,7 @@ class ContentDetailSkeleton extends ConsumerWidget {
   ///
   /// - [title] : titre du contenu, affiché en gras.
   /// - [flair] : flair libre du contenu, sans le `/` initial.
+  /// - [authorId] : identifiant de l'auteur du contenu, dont le profil est affiché.
   /// - [contentBody] : widget spécifique au type de contenu.
   /// - [createdAt] : date de création du contenu, utilisée pour le temps écoulé.
   /// - [bounce] : nombre de rebonds du contenu, affiché dans un chip.
@@ -25,6 +28,7 @@ class ContentDetailSkeleton extends ConsumerWidget {
     super.key,
     required this.title,
     required this.flair,
+    required this.authorId,
     required this.contentBody,
     required this.createdAt,
     required this.bounce,
@@ -36,6 +40,9 @@ class ContentDetailSkeleton extends ConsumerWidget {
 
   /// Flair libre du contenu, sans le `/` initial.
   final String flair;
+
+  /// Identifiant de l'auteur du contenu, dont le profil est affiché.
+  final String authorId;
 
   /// Widget spécifique au type de contenu.
   final Widget contentBody;
@@ -51,7 +58,12 @@ class ContentDetailSkeleton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.loc;
+    final contentAuthorNotifierWatcher = ref.watch(contentAuthorNotifierProvider(authorId));
+    // Le temps de charger le profil, l'auteur est présenté comme anonyme :
+    // la ligne garde sa place au lieu d'apparaître après coup.
+    final author = contentAuthorNotifierWatcher.value ?? anonymousUser;
+    final authorColorArgb = author.colorArgb;
+    final authorColor = authorColorArgb == null ? AppColors.primary : Color(authorColorArgb);
 
     return Scaffold(
       body: SafeArea(
@@ -76,9 +88,17 @@ class ContentDetailSkeleton extends ConsumerWidget {
                           crossAxisAlignment: .start,
                           children: [
                             Text('/$flair', style: AppTextStyles.contentMeta),
-                            Text(
-                              'u/${l10n.contentDetailAnonymousAuthor}  •  ${createdAt.timeAgo}',
-                              style: AppTextStyles.contentMeta,
+                            Row(
+                              spacing: 6,
+                              children: [
+                                AppUserAvatar(
+                                  avatarText: author.avatarText,
+                                  ghostColor: authorColor,
+                                  ghostSpeed: author.ghostSpeed,
+                                  fontSize: 14,
+                                ),
+                                Text('u/${author.pseudo}  •  ${createdAt.timeAgo}', style: AppTextStyles.contentMeta),
+                              ],
                             ),
                           ],
                         ),

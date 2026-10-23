@@ -29,6 +29,9 @@ abstract class ContentRepository {
   /// Retourne tous les contenus rattachés exactement au flair [flair] (déjà normalisé).
   Future<List<Content>> getAllByFlair(String flair);
 
+  /// Retourne tous les contenus dont l'auteur est [authorId].
+  Future<List<Content>> getAllByAuthor(String authorId);
+
   /// Retourne les flairs commençant par [prefix] (déjà normalisé), avec leur nombre de contenus.
   ///
   /// Les flairs sont triés du plus utilisé au moins utilisé, puis par ordre

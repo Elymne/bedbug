@@ -1,6 +1,7 @@
 import 'package:bedbug/application/router/app_router.dart';
-import 'package:bedbug/application/screens/search/flair_suggestions_notifier.dart';
+import 'package:bedbug/application/screens/search/search_suggestions_notifier.dart';
 import 'package:bedbug/application/screens/search/widgets/flair_suggestion_tile.dart';
+import 'package:bedbug/application/screens/search/widgets/user_suggestion_tile.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/fields/content_search_input.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
@@ -13,8 +14,10 @@ import 'package:go_router/go_router.dart';
 /// Accessible depuis le faux champ de recherche de la home page, à la
 /// manière de Reddit : le champ y est repositionné à l'identique en haut de
 /// l'écran, avec le clavier ouvert automatiquement. Pendant la frappe, les
-/// flairs existants commençant par la saisie sont proposés en dessous :
+/// flairs existants puis les utilisateurs connus commençant par la saisie
+/// sont proposés en dessous :
 /// - un tap sur un flair ouvre les résultats de ce flair exact ;
+/// - un tap sur un utilisateur ouvre les contenus qu'il a signés ;
 /// - valider la saisie au clavier lance une recherche globale (titre et flair).
 class SearchScreen extends ConsumerWidget {
   /// Crée un [SearchScreen].
@@ -34,7 +37,7 @@ class SearchScreen extends ConsumerWidget {
                 hintText: context.loc.searchHint,
                 autofocus: true,
                 isDark: true,
-                onChanged: (text) => ref.read(flairSuggestionsNotifierProvider.notifier).search(text),
+                onChanged: (text) => ref.read(searchSuggestionsNotifierProvider.notifier).search(text),
                 onSubmitted: (text) {
                   final query = text.trim();
                   if (query.isEmpty) {
@@ -47,23 +50,27 @@ class SearchScreen extends ConsumerWidget {
             Expanded(
               child: Consumer(
                 builder: (context, ref, _) {
-                  final flairSuggestionsNotifierWatcher = ref.watch(flairSuggestionsNotifierProvider);
-                  final suggestions = flairSuggestionsNotifierWatcher.value?.suggestions ?? const [];
-                  return ListView.builder(
+                  final searchSuggestionsNotifierWatcher = ref.watch(searchSuggestionsNotifierProvider);
+                  final flairs = searchSuggestionsNotifierWatcher.value?.flairs ?? const [];
+                  final users = searchSuggestionsNotifierWatcher.value?.users ?? const [];
+                  return ListView(
                     keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                    itemCount: suggestions.length,
-                    itemBuilder: (context, index) {
-                      final suggestion = suggestions[index];
-                      return FlairSuggestionTile(
-                        suggestion: suggestion,
-                        onTap: () => context.push(
-                          Uri(
-                            path: searchResultsPath,
-                            queryParameters: {searchFlairParam: suggestion.flair},
-                          ).toString(),
+                    children: [
+                      for (final flair in flairs)
+                        FlairSuggestionTile(
+                          suggestion: flair,
+                          onTap: () => context.push(
+                            Uri(path: searchResultsPath, queryParameters: {searchFlairParam: flair.flair}).toString(),
+                          ),
                         ),
-                      );
-                    },
+                      for (final user in users)
+                        UserSuggestionTile(
+                          user: user,
+                          onTap: () => context.push(
+                            Uri(path: searchResultsPath, queryParameters: {searchAuthorParam: user.id}).toString(),
+                          ),
+                        ),
+                    ],
                   );
                 },
               ),

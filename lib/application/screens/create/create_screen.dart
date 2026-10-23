@@ -22,6 +22,8 @@ import 'package:bedbug/features/content/domain/enums/tag.dart';
 import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
 import 'package:bedbug/features/content/domain/usecases/compress_image_usecase.dart';
 import 'package:bedbug/features/content/infrastructure/og_metadata_service.dart';
+import 'package:bedbug/features/user/domain/entities/anonymous_user.dart';
+import 'package:bedbug/features/user/domain/repositories/user_repository.dart';
 import 'package:bedbug/shared/config/content_image_storage.dart';
 import 'package:bedbug/shared/extensions/string_uuid_x.dart';
 import 'package:flutter/material.dart';
@@ -84,6 +86,18 @@ class _State extends ConsumerState<CreateScreen> {
   /// Contrôle du flair libre (ex. `/france`), commun aux trois types de contenu.
   late final _flairControl = FormControl<String>(validators: [AppValidators.flair]);
 
+  /// Contrôle « publier en anonyme », commun aux trois types de contenu.
+  ///
+  /// Sa valeur initiale vient des réglages (publication anonyme par défaut),
+  /// appliquée une seule fois dès que le notifier les a chargés.
+  late final _isAnonymousControl = FormControl<bool>(value: false);
+
+  /// Indique si la valeur par défaut de [_isAnonymousControl] a déjà été appliquée.
+  ///
+  /// Évite d'écraser le choix de l'utilisateur quand l'état du notifier
+  /// change ensuite (sélection du type, tentative de sauvegarde).
+  bool _isAnonymousDefaultApplied = false;
+
   /// Compteur incrémenté à chaque changement dans l'un des formulaires.
   final ValueNotifier<int> _formChangeTicker = ValueNotifier<int>(0);
 
@@ -118,6 +132,12 @@ class _State extends ConsumerState<CreateScreen> {
       _imageFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
       _linkFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
     ];
+    ref.listenManual(createNotifierProvider, (previous, next) {
+      final createState = next.value;
+      if (_isAnonymousDefaultApplied || createState == null) return;
+      _isAnonymousControl.value = createState.isAnonymousByDefault;
+      _isAnonymousDefaultApplied = true;
+    }, fireImmediately: true);
   }
 
   @override
@@ -131,7 +151,18 @@ class _State extends ConsumerState<CreateScreen> {
     _linkFormGroup.dispose();
     _tagsControl.dispose();
     _flairControl.dispose();
+    _isAnonymousControl.dispose();
     super.dispose();
+  }
+
+  /// Identifiant d'auteur à porter par le contenu créé.
+  ///
+  /// [anonymousUserId] si la case « publier en anonyme » est cochée : le
+  /// contenu sera affiché avec le profil anonyme commun. Sinon, l'utilisateur
+  /// du téléphone ([localUserId]), dont le profil configuré dans les options
+  /// sera affiché.
+  String get _authorId {
+    return _isAnonymousControl.value == true ? anonymousUserId : localUserId;
   }
 
   /// Valide le formulaire actif et déclenche la sauvegarde.
@@ -161,7 +192,7 @@ class _State extends ConsumerState<CreateScreen> {
                 id: UuidX.generate(),
                 createdAt: DateTime.now(),
                 updatedAt: DateTime.now(),
-                authorId: 'local',
+                authorId: _authorId,
                 senderId: 'local',
                 origin: ContentOrigin.owned,
                 broadcastScore: 1,
@@ -207,7 +238,7 @@ class _State extends ConsumerState<CreateScreen> {
                 id: UuidX.generate(),
                 createdAt: DateTime.now(),
                 updatedAt: DateTime.now(),
-                authorId: 'local',
+                authorId: _authorId,
                 senderId: 'local',
                 origin: ContentOrigin.owned,
                 broadcastScore: 1,
@@ -241,7 +272,7 @@ class _State extends ConsumerState<CreateScreen> {
                 id: UuidX.generate(),
                 createdAt: DateTime.now(),
                 updatedAt: DateTime.now(),
-                authorId: 'local',
+                authorId: _authorId,
                 senderId: 'local',
                 origin: ContentOrigin.owned,
                 broadcastScore: 1,
@@ -344,6 +375,13 @@ class _State extends ConsumerState<CreateScreen> {
                   ),
                   Text(l10n.createTagsLabel),
                   TagSelector(control: _tagsControl),
+                  ReactiveCheckboxListTile(
+                    formControl: _isAnonymousControl,
+                    contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    title: Text(l10n.createAnonymousLabel),
+                    subtitle: Text(l10n.createAnonymousDescription),
+                  ),
                 ],
               ),
             ),

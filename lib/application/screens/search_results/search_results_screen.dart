@@ -1,3 +1,4 @@
+import 'package:bedbug/application/screens/content_detail/content_author_notifier.dart';
 import 'package:bedbug/application/screens/search_results/search_criteria.dart';
 import 'package:bedbug/application/screens/search_results/search_results_notifier.dart';
 import 'package:bedbug/application/widgets/content_list/content_list_view.dart';
@@ -9,10 +10,11 @@ import 'package:go_router/go_router.dart';
 
 /// Page listant les contenus correspondant à une recherche.
 ///
-/// Ouverte depuis l'écran de recherche, soit par le choix d'un flair parmi
-/// les suggestions ([FlairSearchCriteria]), soit par la validation directe de
-/// la saisie ([QuerySearchCriteria]). Le retour ramène à l'écran de
-/// recherche, avec la saisie conservée.
+/// Ouverte depuis l'écran de recherche, soit par le choix d'un flair
+/// ([FlairSearchCriteria]) ou d'un auteur ([AuthorSearchCriteria]) parmi les
+/// suggestions, soit par la validation directe de la saisie
+/// ([QuerySearchCriteria]). Le retour ramène à l'écran de recherche, avec la
+/// saisie conservée.
 class SearchResultsScreen extends ConsumerWidget {
   /// Crée un [SearchResultsScreen].
   ///
@@ -28,6 +30,7 @@ class SearchResultsScreen extends ConsumerWidget {
     final searchResultsNotifierWatcher = ref.watch(searchResultsNotifierProvider(criteria));
     final title = switch (criteria) {
       FlairSearchCriteria(:final flair) => '/$flair',
+      AuthorSearchCriteria(:final authorId) => _authorTitle(ref, authorId),
       QuerySearchCriteria(:final query) => l10n.searchResultsQueryTitle(query),
     };
 
@@ -51,5 +54,14 @@ class SearchResultsScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  /// Titre de la page pour les contenus de l'auteur [authorId] : `u/pseudo`.
+  ///
+  /// Le pseudo est relu depuis le profil de l'auteur ; le temps de le charger,
+  /// le titre se contente de `u/`.
+  String _authorTitle(WidgetRef ref, String authorId) {
+    final contentAuthorNotifierWatcher = ref.watch(contentAuthorNotifierProvider(authorId));
+    return 'u/${contentAuthorNotifierWatcher.value?.pseudo ?? ''}';
   }
 }

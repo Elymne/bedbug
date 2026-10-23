@@ -26,6 +26,7 @@ class ImageContentDetailScreen extends ConsumerWidget {
     return ContentDetailSkeleton(
       title: content.title,
       flair: content.flair,
+      authorId: content.authorId,
       createdAt: content.createdAt,
       bounce: content.bounce,
       onClose: () => context.pop(),

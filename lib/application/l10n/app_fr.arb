@@ -263,7 +263,7 @@
   "@settingsAnonymousByDefaultLabel": {
     "description": "Libellé de la case à cocher activant la publication anonyme par défaut"
   },
-  "settingsAnonymousByDefaultDescription": "Tes nouveaux contenus seront signés u/Anonyme. Tu pourras toujours changer d'avis au moment de publier.",
+  "settingsAnonymousByDefaultDescription": "Tes nouveaux contenus seront signés u/anonyme. Tu pourras toujours changer d'avis au moment de publier.",
   "@settingsAnonymousByDefaultDescription": {
     "description": "Explication sous la case à cocher de publication anonyme par défaut"
   },
@@ -347,12 +347,16 @@
   "@avatarPickerCategoryAnimal": {
     "description": "Titre de la catégorie des autres kaomojis animaux"
   },
+  "createAnonymousLabel": "Publier en anonyme",
+  "@createAnonymousLabel": {
+    "description": "Libellé de la case à cocher de publication anonyme dans le formulaire de création"
+  },
+  "createAnonymousDescription": "Ton contenu sera signé u/anonyme, sans ton profil.",
+  "@createAnonymousDescription": {
+    "description": "Explication sous la case à cocher de publication anonyme dans le formulaire de création"
+  },
   "close": "Fermer",
   "@close": {
     "description": "Libellé générique d'une action de fermeture (ex. infobulle de la croix des snackbars)"
-  },
-  "contentDetailAnonymousAuthor": "Anonyme",
-  "@contentDetailAnonymousAuthor": {
-    "description": "Nom d'auteur affiché sur la page de détail. Les données brutes reçues en BLE ne sont pas fiables, l'auteur réel n'est donc pas résolu pour l'instant."
   }
 }

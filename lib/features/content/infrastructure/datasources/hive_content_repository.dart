@@ -117,6 +117,15 @@ class HiveContentRepository implements ContentRepository {
   }
 
   @override
+  Future<List<Content>> getAllByAuthor(String authorId) async {
+    try {
+      return _box.values.where((model) => model.authorId == authorId).map((model) => model.toEntity()).toList();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
   Future<List<FlairSuggestion>> getFlairsStartingWith(String prefix, {required int limit}) async {
     try {
       // Appelée à chaque frappe : on ne lit que le flair des modèles, sans

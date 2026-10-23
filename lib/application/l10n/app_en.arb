@@ -263,7 +263,7 @@
   "@settingsAnonymousByDefaultLabel": {
     "description": "Label of the checkbox enabling anonymous posting by default"
   },
-  "settingsAnonymousByDefaultDescription": "Your new posts will be signed u/Anonymous. You can still change your mind when posting.",
+  "settingsAnonymousByDefaultDescription": "Your new posts will be signed u/anonyme. You can still change your mind when posting.",
   "@settingsAnonymousByDefaultDescription": {
     "description": "Explanation under the anonymous-by-default checkbox"
   },
@@ -347,12 +347,16 @@
   "@avatarPickerCategoryAnimal": {
     "description": "Title of the other animal kaomoji category"
   },
+  "createAnonymousLabel": "Post anonymously",
+  "@createAnonymousLabel": {
+    "description": "Label of the anonymous posting checkbox in the creation form"
+  },
+  "createAnonymousDescription": "Your post will be signed u/anonyme, without your profile.",
+  "@createAnonymousDescription": {
+    "description": "Explanation under the anonymous posting checkbox in the creation form"
+  },
   "close": "Close",
   "@close": {
     "description": "Generic label for a close action (e.g. tooltip of the snackbar close icon)"
-  },
-  "contentDetailAnonymousAuthor": "Anonymous",
-  "@contentDetailAnonymousAuthor": {
-    "description": "Author name shown on the content detail page. Raw content received over BLE cannot be trusted yet, so the real author is never resolved for now."
   }
 }
