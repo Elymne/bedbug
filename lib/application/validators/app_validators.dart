@@ -1,3 +1,4 @@
+import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Validators personnalisés compatibles avec [ReactiveForm].
@@ -35,6 +36,12 @@ class AppValidators {
   ///
   /// Retourne `null` si non parseable — déléguer à [decimal].
   static const notNegative = _NotNegativeValidator();
+
+  /// Vérifie qu'il reste un flair exploitable une fois la saisie normalisée.
+  ///
+  /// Plus strict que [required] : une saisie réduite à `/` ou à des espaces
+  /// est refusée, car elle ne produirait aucun flair après normalisation.
+  static const flair = _FlairValidator();
 }
 
 class _RequiredValidator extends Validator<dynamic> {
@@ -110,6 +117,17 @@ class _NotNegativeValidator extends Validator<dynamic> {
     if (value is! String || value.isEmpty) return null;
     final parsed = double.tryParse(value.trim().replaceAll(',', '.'));
     if (parsed != null && parsed < 0) return {'notNegative': true};
+    return null;
+  }
+}
+
+class _FlairValidator extends Validator<dynamic> {
+  const _FlairValidator() : super();
+
+  @override
+  Map<String, dynamic>? validate(AbstractControl<dynamic> control) {
+    final value = control.value;
+    if (value is! String || value.toFlair() == null) return {'required': true};
     return null;
   }
 }

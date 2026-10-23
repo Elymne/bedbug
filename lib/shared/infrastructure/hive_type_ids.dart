@@ -1,7 +1,6 @@
 import 'package:bedbug/features/content/infrastructure/models/comment_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/storage_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/sub_hive_model.dart';
 import 'package:bedbug/features/discovery/infrastructure/models/keychain_hive_model.dart';
 import 'package:bedbug/features/settings/infrastructure/models/settings_hive_model.dart';
 import 'package:bedbug/features/user/infrastructure/models/user_hive_model.dart';
@@ -21,8 +20,7 @@ class HiveTypeIds {
   /// TypeId de [CommentHiveModel].
   static const int comment = 2;
 
-  /// TypeId de [SubHiveModel].
-  static const int sub = 3;
+  // TypeId 3 : anciennement `SubHiveModel` (supprimé). Ne pas réutiliser.
 
   /// TypeId de [KeychainHiveModel].
   static const int keychain = 4;

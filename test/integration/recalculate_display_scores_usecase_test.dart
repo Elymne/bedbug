@@ -26,6 +26,7 @@ TextContent _buildContent({
     updatedAt: createdAt,
     authorId: 'author',
     senderId: 'sender',
+    flair: 'test',
     origin: origin,
     broadcastScore: 0,
     survivalScore: 0,

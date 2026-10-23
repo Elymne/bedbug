@@ -80,6 +80,18 @@
   "@createTagsLabel": {
     "description": "Label above the tag selector on the content creation page"
   },
+  "createFlairLabel": "Flair",
+  "@createFlairLabel": {
+    "description": "Label for the free-text flair field on the content creation page"
+  },
+  "createFlairRequiredError": "Flair is required.",
+  "@createFlairRequiredError": {
+    "description": "Error shown under the flair field when it is empty or only /"
+  },
+  "createFlairHint": "france",
+  "@createFlairHint": {
+    "description": "Example shown in the flair field, prefixed by /"
+  },
   "createSaveButton": "Create",
   "@createSaveButton": {
     "description": "Label for the save button on the content creation page"

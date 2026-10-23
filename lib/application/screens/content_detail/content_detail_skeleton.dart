@@ -9,14 +9,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Squelette commun à toutes les pages de détail de contenu.
 ///
-/// Affiche le sub, puis l'auteur et le temps écoulé depuis la création
+/// Affiche le flair, puis l'auteur et le temps écoulé depuis la création
 /// séparés par un point, puis le titre, puis le corps spécifique au type
 /// de contenu ([contentBody]), puis les chips (bounces).
 class ContentDetailSkeleton extends ConsumerWidget {
   /// Crée un [ContentDetailSkeleton].
   ///
   /// - [title] : titre du contenu, affiché en gras.
-  /// - [subId] : identifiant du sub auquel appartient le contenu. `null` si public.
+  /// - [flair] : flair libre du contenu, sans le `/` initial.
   /// - [contentBody] : widget spécifique au type de contenu.
   /// - [createdAt] : date de création du contenu, utilisée pour le temps écoulé.
   /// - [bounce] : nombre de rebonds du contenu, affiché dans un chip.
@@ -24,7 +24,7 @@ class ContentDetailSkeleton extends ConsumerWidget {
   const ContentDetailSkeleton({
     super.key,
     required this.title,
-    required this.subId,
+    required this.flair,
     required this.contentBody,
     required this.createdAt,
     required this.bounce,
@@ -34,8 +34,8 @@ class ContentDetailSkeleton extends ConsumerWidget {
   /// Titre du contenu, affiché en gras.
   final String title;
 
-  /// Identifiant du sub auquel appartient le contenu. `null` si public.
-  final String? subId;
+  /// Flair libre du contenu, sans le `/` initial.
+  final String flair;
 
   /// Widget spécifique au type de contenu.
   final Widget contentBody;
@@ -75,7 +75,7 @@ class ContentDetailSkeleton extends ConsumerWidget {
                         Column(
                           crossAxisAlignment: .start,
                           children: [
-                            Text('s/${subId ?? 'public'}', style: AppTextStyles.contentMeta),
+                            Text('/$flair', style: AppTextStyles.contentMeta),
                             Text(
                               'u/${l10n.contentDetailAnonymousAuthor}  •  ${createdAt.timeAgo}',
                               style: AppTextStyles.contentMeta,

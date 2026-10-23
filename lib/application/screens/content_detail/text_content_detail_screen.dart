@@ -19,7 +19,7 @@ class TextContentDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ContentDetailSkeleton(
       title: content.title,
-      subId: content.subId,
+      flair: content.flair,
       createdAt: content.createdAt,
       bounce: content.bounce,
       onClose: () => context.pop(),

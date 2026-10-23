@@ -18,7 +18,7 @@ const double _tilePadding = 16;
 
 /// Dispatcher affichant le widget adapté au type concret de [content].
 ///
-/// Encapsule le header (avatar + sub + temps), le widget spécifique,
+/// Encapsule le header (avatar + flair + temps), le widget spécifique,
 /// et la ligne de tags dans une structure commune.
 class ContentWidget extends ConsumerWidget {
   /// Contenu à afficher.
@@ -42,7 +42,7 @@ class ContentWidget extends ConsumerWidget {
             children: [
               const AppRoundImage(file: null),
               Text(
-                's/public  •  ${content.createdAt.timeAgo}',
+                '/${content.flair}  •  ${content.createdAt.timeAgo}',
                 style: AppTextStyles.contentMeta,
                 overflow: TextOverflow.ellipsis,
               ),

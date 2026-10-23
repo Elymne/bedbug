@@ -6,7 +6,6 @@ import 'package:hive_ce/hive_ce.dart';
 import 'package:bedbug/features/content/infrastructure/models/comment_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/storage_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/sub_hive_model.dart';
 import 'package:bedbug/features/discovery/infrastructure/models/keychain_hive_model.dart';
 import 'package:bedbug/features/settings/infrastructure/models/settings_hive_model.dart';
 import 'package:bedbug/features/user/infrastructure/models/user_hive_model.dart';
@@ -19,7 +18,6 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(PrivateKeyHiveModelAdapter());
     registerAdapter(SettingsHiveModelAdapter());
     registerAdapter(StorageHiveModelAdapter());
-    registerAdapter(SubHiveModelAdapter());
     registerAdapter(UserHiveModelAdapter());
   }
 }
@@ -32,7 +30,6 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(PrivateKeyHiveModelAdapter());
     registerAdapter(SettingsHiveModelAdapter());
     registerAdapter(StorageHiveModelAdapter());
-    registerAdapter(SubHiveModelAdapter());
     registerAdapter(UserHiveModelAdapter());
   }
 }

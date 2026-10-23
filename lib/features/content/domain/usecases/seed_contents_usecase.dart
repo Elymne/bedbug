@@ -64,6 +64,9 @@ const List<(int, int)> _imageDimensions = [
   (1920, 1080), // paysage HD → clampé à 600
 ];
 
+/// Flairs d'exemple, attribués à tour de rôle aux contenus générés.
+const List<String> _flairs = ['france', 'paris', 'musique', 'tech', 'random'];
+
 /// Titres courts pour [TextContent] et [LinkContent].
 const List<String> _shortTitles = ['Note rapide', 'Idée', 'À lire', 'Info', 'Rappel'];
 
@@ -106,9 +109,9 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
         final createdAt = now.subtract(Duration(minutes: index));
         final origin = ContentOrigin.values[index % ContentOrigin.values.length];
         final bounce = index % 11;
-        final subId = index % 10 < 3 ? 'seed-sub-${index % 5}' : null;
+        final flair = _flairs[index % _flairs.length];
 
-        final content = _buildContent(index, createdAt, origin, bounce, subId);
+        final content = _buildContent(index, createdAt, origin, bounce, flair);
         totalSizeInBytes += content.sizeInBytes;
         batch.add(content);
 
@@ -144,22 +147,22 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
   /// - index % 10 in [0..3] → [TextContent] (40 %)
   /// - index % 10 in [4..6] → [ImageContent] (30 %)
   /// - index % 10 in [7..9] → [LinkContent] (30 %)
-  Content _buildContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String? subId) {
+  Content _buildContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String flair) {
     final bucket = index % 10;
 
     if (bucket <= 3) {
-      return _buildTextContent(index, createdAt, origin, bounce, subId);
+      return _buildTextContent(index, createdAt, origin, bounce, flair);
     }
 
     if (bucket <= 6) {
-      return _buildImageContent(index, createdAt, origin, bounce, subId);
+      return _buildImageContent(index, createdAt, origin, bounce, flair);
     }
 
-    return _buildLinkContent(index, createdAt, origin, bounce, subId);
+    return _buildLinkContent(index, createdAt, origin, bounce, flair);
   }
 
   /// Construit un [TextContent] avec titre court, long, ou corps vide selon l'index.
-  TextContent _buildTextContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String? subId) {
+  TextContent _buildTextContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String flair) {
     final isLongTitle = index % 7 == 0;
     final isLongBody = index % 5 == 0;
 
@@ -181,14 +184,14 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       displayScore: 1,
       bounce: bounce,
       sizeInBytes: body.length,
-      subId: subId,
+      flair: flair,
       title: title,
       body: body,
     );
   }
 
   /// Construit un [ImageContent] avec des noms de fichiers valides ou cassés selon l'index.
-  ImageContent _buildImageContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String? subId) {
+  ImageContent _buildImageContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String flair) {
     final isBroken = index % 4 == 0;
     final fileNames = isBroken ? _brokenImageFileNames : _validImageFileNames;
     final fileName = fileNames[index % fileNames.length];
@@ -208,7 +211,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       displayScore: 1,
       bounce: bounce,
       sizeInBytes: isBroken ? 0 : 204800,
-      subId: subId,
+      flair: flair,
       fileName: fileName,
       imageWidth: dimensions.$1,
       imageHeight: dimensions.$2,
@@ -218,7 +221,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
   }
 
   /// Construit un [LinkContent] avec des URLs valides, cassées ou malformées selon l'index.
-  LinkContent _buildLinkContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String? subId) {
+  LinkContent _buildLinkContent(int index, DateTime createdAt, ContentOrigin origin, int bounce, String flair) {
     final isBroken = index % 3 == 0;
     final urls = isBroken ? _brokenUrls : _validUrls;
     final url = urls[index % urls.length];
@@ -235,7 +238,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       displayScore: 1,
       bounce: bounce,
       sizeInBytes: 0,
-      subId: subId,
+      flair: flair,
       title: 'Lien #${index + 1}',
       url: url,
       ogImageUrl: isBroken ? null : 'https://www.leoxa.fr/wp-content/uploads/2023/02/flutter.png',

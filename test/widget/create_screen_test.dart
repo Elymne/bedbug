@@ -54,6 +54,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
 
     final l10n = lookupAppLocalizations(const Locale('fr'));
+    await tester.enterText(find.widgetWithText(TextField, l10n.createFlairLabel), '/France ');
     await tester.enterText(find.widgetWithText(TextField, l10n.createTextTitleLabel), 'Mon titre');
     await tester.enterText(find.widgetWithText(TextField, l10n.createTextBodyLabel), 'Mon corps');
     await tester.tap(find.text(l10n.createSaveButton));
@@ -61,7 +62,50 @@ void main() {
     await tester.pump();
 
     expect(fakeSaveUsecase.savedContent, isNotNull);
+    expect(fakeSaveUsecase.savedContent!.flair, 'france');
     expect(find.text('home'), findsOneWidget);
+  });
+
+  testWidgets('refuse la création tant que le flair est vide ou réduit à /', (tester) async {
+    final fakeSaveUsecase = _FakeSaveContentUsecase();
+    final router = GoRouter(
+      initialLocation: '/',
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => const Scaffold(body: Text('home')),
+        ),
+        GoRoute(path: '/create', builder: (context, state) => const CreateScreen()),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [saveContentUsecaseProvider.overrideWithValue(fakeSaveUsecase)],
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('fr'),
+          routerConfig: router,
+        ),
+      ),
+    );
+
+    router.push('/create');
+    await tester.pump();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    final l10n = lookupAppLocalizations(const Locale('fr'));
+    await tester.enterText(find.widgetWithText(TextField, l10n.createFlairLabel), '/');
+    await tester.enterText(find.widgetWithText(TextField, l10n.createTextTitleLabel), 'Mon titre');
+    await tester.enterText(find.widgetWithText(TextField, l10n.createTextBodyLabel), 'Mon corps');
+    await tester.tap(find.text(l10n.createSaveButton));
+    await tester.pump();
+    await tester.pump();
+
+    expect(fakeSaveUsecase.savedContent, isNull);
+    expect(find.text(l10n.createFlairRequiredError), findsOneWidget);
   });
 
   testWidgets('associe les tags sélectionnés au contenu créé', (tester) async {
@@ -97,6 +141,7 @@ void main() {
     final l10n = lookupAppLocalizations(const Locale('fr'));
     await tester.enterText(find.widgetWithText(TextField, l10n.createTextTitleLabel), 'Mon titre');
     await tester.enterText(find.widgetWithText(TextField, l10n.createTextBodyLabel), 'Mon corps');
+    await tester.enterText(find.widgetWithText(TextField, l10n.createFlairLabel), 'test');
     await tester.tap(find.widgetWithText(AppTag, Tag.alert.text));
     await tester.tap(find.widgetWithText(AppTag, Tag.question.text));
     await tester.tap(find.text(l10n.createSaveButton));

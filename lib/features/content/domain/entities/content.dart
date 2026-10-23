@@ -18,6 +18,7 @@ abstract class Content extends Entity {
   /// - [survivalScore] : probabilité de conservation lors d'un nettoyage
   ///   automatique du stockage local.
   /// - [displayScore] : priorité d'affichage dans la liste de la page d'accueil.
+  /// - [flair] : étiquette libre de l'auteur, sans le `/` initial (ex. `france`).
   Content({
     required super.id,
     required super.createdAt,
@@ -30,14 +31,14 @@ abstract class Content extends Entity {
     required this.bounce,
     required this.senderId,
     required this.sizeInBytes,
-    this.subId,
+    required this.flair,
     this.tags = const [],
   });
 
   /// Identifiant de l'auteur du contenu.
   final String authorId;
 
-  /// Provenance du contenu (public, sub, favori, possédé), utilisée comme
+  /// Provenance du contenu (public, abonné, favori, possédé), utilisée comme
   /// facteur d'entrée pour le recalcul périodique des scores.
   final ContentOrigin origin;
 
@@ -67,9 +68,15 @@ abstract class Content extends Entity {
   /// correspond à la taille du fichier sur disque.
   final int sizeInBytes;
 
-  /// Identifiant du sub auquel appartient ce contenu.
-  /// `null` si le contenu est purement public.
-  final String? subId;
+  /// Étiquette libre écrite à la main par l'auteur, affichée en tête du
+  /// contenu sous la forme `/flair` (ex. `/france`).
+  ///
+  /// Contrairement aux [tags], issus d'un catalogue fermé, le flair est un
+  /// texte libre : il permet à l'auteur de rattacher son contenu à un thème
+  /// ou un lieu sans structure préalable. Obligatoire : tout contenu est
+  /// rattaché à un flair. Stocké sans le `/` initial, déjà normalisé via
+  /// `FlairExtension`.
+  final String flair;
 
   /// Tags associés à ce contenu, parmi le catalogue statique [Tag].
   final List<Tag> tags;

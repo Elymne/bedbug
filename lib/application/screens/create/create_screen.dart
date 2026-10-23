@@ -7,6 +7,7 @@ import 'package:bedbug/application/screens/create/create_notifier.dart';
 import 'package:bedbug/application/screens/create/widgets/content_type_selector.dart';
 import 'package:bedbug/application/screens/create/widgets/tag_selector.dart';
 import 'package:bedbug/application/style/app_values.dart';
+import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:bedbug/application/widgets/buttons/app_close_button.dart';
 import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
@@ -16,6 +17,7 @@ import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/enums/content_type.dart';
 import 'package:bedbug/features/content/domain/enums/tag.dart';
+import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
 import 'package:bedbug/features/content/infrastructure/og_metadata_service.dart';
 import 'package:bedbug/shared/config/content_image_storage.dart';
 import 'package:bedbug/shared/extensions/string_uuid_x.dart';
@@ -66,6 +68,9 @@ class _State extends ConsumerState<CreateScreen> {
   /// Contrôle des tags sélectionnés, commun aux trois types de contenu.
   late final _tagsControl = FormControl<List<Tag>>(value: const []);
 
+  /// Contrôle du flair libre (ex. `/france`), commun aux trois types de contenu.
+  late final _flairControl = FormControl<String>(validators: [AppValidators.flair]);
+
   /// Image sélectionnée par l'utilisateur pour [ImageContent].
   XFile? _pickedImage;
 
@@ -115,6 +120,7 @@ class _State extends ConsumerState<CreateScreen> {
     _imageFormGroup.dispose();
     _linkFormGroup.dispose();
     _tagsControl.dispose();
+    _flairControl.dispose();
     super.dispose();
   }
 
@@ -129,6 +135,16 @@ class _State extends ConsumerState<CreateScreen> {
   /// Valide le formulaire actif et déclenche la sauvegarde.
   Future<void> _onSave() async {
     final type = ref.read(createNotifierProvider).requireValue.selectedType;
+
+    // Le flair est commun aux trois types et hors du formulaire actif : il est
+    // validé à part, en marquant aussi le formulaire actif pour afficher toutes
+    // les erreurs d'un coup.
+    if (!_flairControl.valid) {
+      _flairControl.markAsTouched();
+      _activeFormGroup.markAllAsTouched();
+      return;
+    }
+    final flair = _flairControl.value!.toFlair()!;
 
     switch (type) {
       case ContentType.text:
@@ -155,6 +171,7 @@ class _State extends ConsumerState<CreateScreen> {
                 sizeInBytes: 0,
                 title: _textTitleControl.value!,
                 body: _textBodyControl.value!,
+                flair: flair,
                 tags: _tagsControl.value ?? const [],
               ),
             );
@@ -199,6 +216,7 @@ class _State extends ConsumerState<CreateScreen> {
                 imageHeight: height,
                 title: _imageTitleControl.value!,
                 body: _imageBodyControl.value?.isEmpty == true ? null : _imageBodyControl.value,
+                flair: flair,
                 tags: _tagsControl.value ?? const [],
               ),
             );
@@ -230,6 +248,7 @@ class _State extends ConsumerState<CreateScreen> {
                 ogImageUrl: og.imageUrl,
                 ogTitle: og.title,
                 ogDescription: og.description,
+                flair: flair,
                 tags: _tagsControl.value ?? const [],
               ),
             );
@@ -307,6 +326,16 @@ class _State extends ConsumerState<CreateScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 8,
                 children: [
+                  ReactiveTextField<String>(
+                    formControl: _flairControl,
+                    maxLength: 32,
+                    validationMessages: {'required': (_) => l10n.createFlairRequiredError},
+                    decoration: InputDecoration(
+                      labelText: l10n.createFlairLabel,
+                      hintText: l10n.createFlairHint,
+                      prefixText: '/',
+                    ),
+                  ),
                   Text(l10n.createTagsLabel),
                   TagSelector(control: _tagsControl),
                 ],
