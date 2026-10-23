@@ -1,12 +1,17 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui' as ui;
 
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/screens/create/create_notifier.dart';
 import 'package:bedbug/application/screens/create/widgets/content_type_selector.dart';
+import 'package:bedbug/application/screens/create/widgets/image_content_form.dart';
+import 'package:bedbug/application/screens/create/widgets/link_content_form.dart';
 import 'package:bedbug/application/screens/create/widgets/tag_selector.dart';
+import 'package:bedbug/application/screens/create/widgets/text_content_form.dart';
+import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/style/app_values.dart';
+import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:bedbug/application/widgets/buttons/app_close_button.dart';
 import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
@@ -16,7 +21,11 @@ import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/enums/content_type.dart';
 import 'package:bedbug/features/content/domain/enums/tag.dart';
+import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
+import 'package:bedbug/features/content/domain/usecases/compress_image_usecase.dart';
 import 'package:bedbug/features/content/infrastructure/og_metadata_service.dart';
+import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
+import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
 import 'package:bedbug/shared/config/content_image_storage.dart';
 import 'package:bedbug/shared/extensions/string_uuid_x.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +45,9 @@ class CreateScreen extends ConsumerStatefulWidget {
 }
 
 class _State extends ConsumerState<CreateScreen> {
+  /// Cas d'usage de recompression de l'image choisie avant enregistrement.
+  late final _compressImageUsecase = ref.read(compressImageUsecaseProvider);
+
   /// Contrôle du titre pour [TextContent].
   late final _textTitleControl = FormControl<String>(validators: [Validators.required]);
 
@@ -45,6 +57,9 @@ class _State extends ConsumerState<CreateScreen> {
   /// Formulaire pour [TextContent].
   late final FormGroup _textFormGroup = FormGroup({'title': _textTitleControl, 'body': _textBodyControl});
 
+  /// Contrôle de l'image choisie dans la galerie pour [ImageContent].
+  late final _imageFileControl = FormControl<XFile>(validators: [Validators.required]);
+
   /// Contrôle du titre pour [ImageContent].
   late final _imageTitleControl = FormControl<String>(validators: [Validators.required]);
 
@@ -52,7 +67,11 @@ class _State extends ConsumerState<CreateScreen> {
   late final _imageBodyControl = FormControl<String>();
 
   /// Formulaire pour [ImageContent].
-  late final FormGroup _imageFormGroup = FormGroup({'title': _imageTitleControl, 'body': _imageBodyControl});
+  late final FormGroup _imageFormGroup = FormGroup({
+    'image': _imageFileControl,
+    'title': _imageTitleControl,
+    'body': _imageBodyControl,
+  });
 
   /// Contrôle du titre pour [LinkContent].
   late final _linkTitleControl = FormControl<String>(validators: [Validators.required]);
@@ -66,10 +85,22 @@ class _State extends ConsumerState<CreateScreen> {
   /// Contrôle des tags sélectionnés, commun aux trois types de contenu.
   late final _tagsControl = FormControl<List<Tag>>(value: const []);
 
-  /// Image sélectionnée par l'utilisateur pour [ImageContent].
-  XFile? _pickedImage;
+  /// Contrôle du flair libre (ex. `/france`), commun aux trois types de contenu.
+  late final _flairControl = FormControl<String>(validators: [AppValidators.flair]);
 
-  /// Compteur incrémenté à chaque changement dans l'un des formulaires ou lors d'un pick d'image.
+  /// Contrôle « publier en anonyme », commun aux trois types de contenu.
+  ///
+  /// Sa valeur initiale vient des réglages (publication anonyme par défaut),
+  /// appliquée une seule fois dès que le notifier les a chargés.
+  late final _isAnonymousControl = FormControl<bool>(value: false);
+
+  /// Indique si la valeur par défaut de [_isAnonymousControl] a déjà été appliquée.
+  ///
+  /// Évite d'écraser le choix de l'utilisateur quand l'état du notifier
+  /// change ensuite (sélection du type, tentative de sauvegarde).
+  bool _isAnonymousDefaultApplied = false;
+
+  /// Compteur incrémenté à chaque changement dans l'un des formulaires.
   final ValueNotifier<int> _formChangeTicker = ValueNotifier<int>(0);
 
   /// Abonnements aux streams de changement des formulaires.
@@ -80,7 +111,7 @@ class _State extends ConsumerState<CreateScreen> {
     final type = ref.read(createNotifierProvider).requireValue.selectedType;
     return switch (type) {
       ContentType.text => _textTitleControl.value?.isNotEmpty == true || _textBodyControl.value?.isNotEmpty == true,
-      ContentType.image => _pickedImage != null,
+      ContentType.image => _imageFileControl.value != null,
       ContentType.link => _linkUrlControl.value?.isNotEmpty == true,
     };
   }
@@ -103,6 +134,12 @@ class _State extends ConsumerState<CreateScreen> {
       _imageFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
       _linkFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
     ];
+    ref.listenManual(createNotifierProvider, (previous, next) {
+      final createState = next.value;
+      if (_isAnonymousDefaultApplied || createState == null) return;
+      _isAnonymousControl.value = createState.isAnonymousByDefault;
+      _isAnonymousDefaultApplied = true;
+    }, fireImmediately: true);
   }
 
   @override
@@ -115,20 +152,34 @@ class _State extends ConsumerState<CreateScreen> {
     _imageFormGroup.dispose();
     _linkFormGroup.dispose();
     _tagsControl.dispose();
+    _flairControl.dispose();
+    _isAnonymousControl.dispose();
     super.dispose();
   }
 
-  /// Ouvre le sélecteur d'image de la galerie.
-  Future<void> _pickImage() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (image == null) return;
-    _pickedImage = image;
-    _formChangeTicker.value++;
+  /// Identifiant d'auteur à porter par le contenu créé.
+  ///
+  /// [anonymousSignatureId] si la case « publier en anonyme » est cochée : le
+  /// contenu sera affiché avec le profil anonyme commun. Sinon, l'utilisateur
+  /// du téléphone ([localSignatureId]), dont le profil configuré dans les options
+  /// sera affiché.
+  String get _authorId {
+    return _isAnonymousControl.value == true ? anonymousSignatureId : localSignatureId;
   }
 
   /// Valide le formulaire actif et déclenche la sauvegarde.
   Future<void> _onSave() async {
     final type = ref.read(createNotifierProvider).requireValue.selectedType;
+
+    // Le flair est commun aux trois types et hors du formulaire actif : il est
+    // validé à part, en marquant aussi le formulaire actif pour afficher toutes
+    // les erreurs d'un coup.
+    if (!_flairControl.valid) {
+      _flairControl.markAsTouched();
+      _activeFormGroup.markAllAsTouched();
+      return;
+    }
+    final flair = _flairControl.value!.toFlair()!;
 
     switch (type) {
       case ContentType.text:
@@ -143,7 +194,7 @@ class _State extends ConsumerState<CreateScreen> {
                 id: UuidX.generate(),
                 createdAt: DateTime.now(),
                 updatedAt: DateTime.now(),
-                authorId: 'local',
+                authorId: _authorId,
                 senderId: 'local',
                 origin: ContentOrigin.owned,
                 broadcastScore: 1,
@@ -155,27 +206,32 @@ class _State extends ConsumerState<CreateScreen> {
                 sizeInBytes: 0,
                 title: _textTitleControl.value!,
                 body: _textBodyControl.value!,
+                flair: flair,
                 tags: _tagsControl.value ?? const [],
               ),
             );
 
       case ContentType.image:
-        if (_pickedImage == null) return;
-        final bytes = await _pickedImage!.readAsBytes();
-        final buffer = await ui.ImmutableBuffer.fromUint8List(bytes);
-        final descriptor = await ui.ImageDescriptor.encoded(buffer);
-        final width = descriptor.width;
-        final height = descriptor.height;
-        descriptor.dispose();
-        buffer.dispose();
+        if (!_imageFormGroup.valid) {
+          _imageFormGroup.markAllAsTouched();
+          return;
+        }
+        final compressResult = await _compressImageUsecase(
+          CompressImageParams(sourcePath: _imageFileControl.value!.path),
+        );
+        final compressedImage = compressResult.right;
+        if (compressedImage == null) {
+          if (!mounted) return;
+          AppSnackbar.showError(context, AppLocalizations.of(context)!.createImageCompressionError);
+          return;
+        }
 
         final dir = await getApplicationDocumentsDirectory();
         final imagesDir = Directory('${dir.path}/$contentImagesFolder');
         await imagesDir.create(recursive: true);
-        final ext = _pickedImage!.path.split('.').last;
-        final fileName = '${UuidX.generate()}.$ext';
+        final fileName = '${UuidX.generate()}.${compressedImage.fileExtension}';
         final destPath = '${imagesDir.path}/$fileName';
-        await File(_pickedImage!.path).copy(destPath);
+        await File(destPath).writeAsBytes(compressedImage.bytes);
 
         await ref
             .read(createNotifierProvider.notifier)
@@ -184,7 +240,7 @@ class _State extends ConsumerState<CreateScreen> {
                 id: UuidX.generate(),
                 createdAt: DateTime.now(),
                 updatedAt: DateTime.now(),
-                authorId: 'local',
+                authorId: _authorId,
                 senderId: 'local',
                 origin: ContentOrigin.owned,
                 broadcastScore: 1,
@@ -195,10 +251,11 @@ class _State extends ConsumerState<CreateScreen> {
                 // (taille du fichier sur disque) avant persistance.
                 sizeInBytes: 0,
                 fileName: fileName,
-                imageWidth: width,
-                imageHeight: height,
+                imageWidth: compressedImage.width,
+                imageHeight: compressedImage.height,
                 title: _imageTitleControl.value!,
                 body: _imageBodyControl.value?.isEmpty == true ? null : _imageBodyControl.value,
+                flair: flair,
                 tags: _tagsControl.value ?? const [],
               ),
             );
@@ -217,7 +274,7 @@ class _State extends ConsumerState<CreateScreen> {
                 id: UuidX.generate(),
                 createdAt: DateTime.now(),
                 updatedAt: DateTime.now(),
-                authorId: 'local',
+                authorId: _authorId,
                 senderId: 'local',
                 origin: ContentOrigin.owned,
                 broadcastScore: 1,
@@ -230,6 +287,7 @@ class _State extends ConsumerState<CreateScreen> {
                 ogImageUrl: og.imageUrl,
                 ogTitle: og.title,
                 ogDescription: og.description,
+                flair: flair,
                 tags: _tagsControl.value ?? const [],
               ),
             );
@@ -307,8 +365,26 @@ class _State extends ConsumerState<CreateScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 8,
                 children: [
+                  ReactiveTextField<String>(
+                    formControl: _flairControl,
+                    maxLength: 32,
+                    validationMessages: {'required': (_) => l10n.createFlairRequiredError},
+                    decoration: InputDecoration(
+                      labelText: l10n.createFlairLabel,
+                      hintText: l10n.createFlairHint,
+                      prefixText: AppPrefixes.flair,
+                      prefixStyle: const TextStyle(color: AppColors.primary),
+                    ),
+                  ),
                   Text(l10n.createTagsLabel),
                   TagSelector(control: _tagsControl),
+                  ReactiveCheckboxListTile(
+                    formControl: _isAnonymousControl,
+                    contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    title: Text(l10n.createAnonymousLabel),
+                    subtitle: Text(l10n.createAnonymousDescription),
+                  ),
                 ],
               ),
             ),
@@ -316,84 +392,20 @@ class _State extends ConsumerState<CreateScreen> {
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin),
-                child: ReactiveForm(
-                  key: ValueKey(createState.selectedType),
-                  formGroup: _activeFormGroup,
-                  child: switch (createState.selectedType) {
-                    ContentType.text => _buildTextForm(l10n),
-                    ContentType.image => _buildImageForm(l10n),
-                    ContentType.link => _buildLinkForm(l10n),
-                  },
-                ),
+                child: switch (createState.selectedType) {
+                  ContentType.text => TextContentForm(titleControl: _textTitleControl, bodyControl: _textBodyControl),
+                  ContentType.image => ImageContentForm(
+                    imageControl: _imageFileControl,
+                    titleControl: _imageTitleControl,
+                    bodyControl: _imageBodyControl,
+                  ),
+                  ContentType.link => LinkContentForm(titleControl: _linkTitleControl, urlControl: _linkUrlControl),
+                },
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  /// Formulaire de création d'un [TextContent].
-  Widget _buildTextForm(AppLocalizations l10n) {
-    return Column(
-      spacing: 16,
-      children: [
-        ReactiveTextField<String>(
-          formControlName: 'title',
-          decoration: InputDecoration(labelText: l10n.createTextTitleLabel),
-        ),
-        ReactiveTextField<String>(
-          formControlName: 'body',
-          maxLines: 6,
-          decoration: InputDecoration(labelText: l10n.createTextBodyLabel),
-        ),
-      ],
-    );
-  }
-
-  /// Formulaire de création d'un [ImageContent].
-  Widget _buildImageForm(AppLocalizations l10n) {
-    return Column(
-      spacing: 16,
-      children: [
-        if (_pickedImage != null)
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.file(File(_pickedImage!.path), width: double.infinity, fit: BoxFit.cover),
-          ),
-        ElevatedButton.icon(
-          onPressed: _pickImage,
-          icon: const Icon(Icons.image_outlined),
-          label: Text(l10n.createImagePickLabel),
-        ),
-        ReactiveTextField<String>(
-          formControlName: 'title',
-          decoration: InputDecoration(labelText: l10n.createImageTitleLabel),
-        ),
-        ReactiveTextField<String>(
-          formControlName: 'body',
-          maxLines: 3,
-          decoration: InputDecoration(labelText: l10n.createImageBodyLabel),
-        ),
-      ],
-    );
-  }
-
-  /// Formulaire de création d'un [LinkContent].
-  Widget _buildLinkForm(AppLocalizations l10n) {
-    return Column(
-      spacing: 16,
-      children: [
-        ReactiveTextField<String>(
-          formControlName: 'title',
-          decoration: InputDecoration(labelText: l10n.createTextTitleLabel),
-        ),
-        ReactiveTextField<String>(
-          formControlName: 'url',
-          keyboardType: TextInputType.url,
-          decoration: InputDecoration(labelText: l10n.createLinkUrlLabel),
-        ),
-      ],
     );
   }
 }
