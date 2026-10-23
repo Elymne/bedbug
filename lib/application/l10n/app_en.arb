@@ -108,6 +108,14 @@
   "@createSaveError": {
     "description": "Snackbar error message shown when saving content fails"
   },
+  "createImageCompressionError": "Unable to process this image.",
+  "@createImageCompressionError": {
+    "description": "Snackbar error message shown when the picked image cannot be recompressed"
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Generic label for a close action (e.g. tooltip of the snackbar close icon)"
+  },
   "contentDetailAnonymousAuthor": "Anonymous",
   "@contentDetailAnonymousAuthor": {
     "description": "Author name shown on the content detail page. Raw content received over BLE cannot be trusted yet, so the real author is never resolved for now."

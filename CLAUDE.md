@@ -809,9 +809,9 @@ All shared widgets live in `shared/application/widgets/`. Always reuse them befo
 
 **`AppSnackbar`** — static utility for snackbars. Never instantiated directly.
 
-- `AppSnackbar.showError(context, message)` — red background.
-- `AppSnackbar.showSuccess(context, message)` — green background.
-  Snackbars do not auto-dismiss; a close button is always shown.
+- `AppSnackbar.showError(context, message)` — red background, light text.
+- `AppSnackbar.showSuccess(context, message)` — pastel green background, dark text.
+  Snackbars are compact and floating, auto-dismiss after 3 seconds, and always show a close icon.
 
 **`AppTag`** — small coloured pill label for statuses, permissions, or categories. Accepts `label` and `color`; the background is derived automatically at reduced opacity.
 

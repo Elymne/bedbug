@@ -36,7 +36,9 @@ class AppColors {
   static const Color info = Color(0xFF51C2FF);
 
   /// Couleurs informatives SUCCESS.
-  static const Color success = Color(0xFF85FF4D);
+  ///
+  /// Vert pastel, de même douceur que [primary], à associer à [onLight] pour le texte.
+  static const Color success = Color(0xFF9BDDB1);
 
   /// Couleurs informatives FAILURE.
   static const Color failure = Color(0xFFFF4141);

@@ -108,6 +108,14 @@
   "@createSaveError": {
     "description": "Message snackbar d'erreur affiché quand la sauvegarde échoue"
   },
+  "createImageCompressionError": "Impossible de traiter cette image.",
+  "@createImageCompressionError": {
+    "description": "Message snackbar d'erreur affiché quand l'image choisie ne peut pas être recompressée"
+  },
+  "close": "Fermer",
+  "@close": {
+    "description": "Libellé générique d'une action de fermeture (ex. infobulle de la croix des snackbars)"
+  },
   "contentDetailAnonymousAuthor": "Anonyme",
   "@contentDetailAnonymousAuthor": {
     "description": "Nom d'auteur affiché sur la page de détail. Les données brutes reçues en BLE ne sont pas fiables, l'auteur réel n'est donc pas résolu pour l'instant."
