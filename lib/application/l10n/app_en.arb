@@ -64,9 +64,9 @@
   "@createImagePickLabel": {
     "description": "Label for the image picker button in the image content form"
   },
-  "createImageTitleLabel": "Title (optional)",
-  "@createImageTitleLabel": {
-    "description": "Label for the optional title field in the image content form"
+  "createRequiredFieldError": "This field is required.",
+  "@createRequiredFieldError": {
+    "description": "Error message shown under a required field left empty in the creation forms"
   },
   "createImageBodyLabel": "Description (optional)",
   "@createImageBodyLabel": {
@@ -111,6 +111,32 @@
   "createImageCompressionError": "Unable to process this image.",
   "@createImageCompressionError": {
     "description": "Snackbar error message shown when the picked image cannot be recompressed"
+  },
+  "searchHint": "Search…",
+  "@searchHint": {
+    "description": "Placeholder of the search field (home page and search screen)"
+  },
+  "searchFlairSuggestionCount": "{count, plural, =1{1 post} other{{count} posts}}",
+  "@searchFlairSuggestionCount": {
+    "description": "Number of contents attached to a flair, shown under each autocomplete suggestion",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchResultsQueryTitle": "“{query}”",
+  "@searchResultsQueryTitle": {
+    "description": "Title of the global search results page, echoing the typed text",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchResultsEmpty": "No content found.",
+  "@searchResultsEmpty": {
+    "description": "Message shown on the results page when no content matches"
   },
   "close": "Close",
   "@close": {

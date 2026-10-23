@@ -30,10 +30,12 @@ class TextContentForm extends ConsumerWidget {
       children: [
         ReactiveTextField<String>(
           formControl: titleControl,
+          validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
           decoration: InputDecoration(labelText: l10n.createTextTitleLabel),
         ),
         ReactiveTextField<String>(
           formControl: bodyControl,
+          validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
           maxLines: 6,
           decoration: InputDecoration(labelText: l10n.createTextBodyLabel),
         ),

@@ -62,7 +62,8 @@ class ImageContentForm extends ConsumerWidget {
         ),
         ReactiveTextField<String>(
           formControl: titleControl,
-          decoration: InputDecoration(labelText: l10n.createImageTitleLabel),
+          validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
+          decoration: InputDecoration(labelText: l10n.createTextTitleLabel),
         ),
         ReactiveTextField<String>(
           formControl: bodyControl,

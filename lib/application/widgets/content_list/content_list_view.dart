@@ -1,50 +1,36 @@
 import 'package:bedbug/application/router/app_router.dart';
-import 'package:bedbug/application/screens/home/home_feed_notifier.dart';
 import 'package:bedbug/application/widgets/content_tile/content_widget.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Affiche la liste des contenus ou un message vide avec un bouton de reload.
+/// Affiche une liste de contenus cliquables, ou [emptyChild] si elle est vide.
 ///
-/// - [contents] : liste des contenus à afficher.
-/// - [controller] : contrôleur de scroll de la liste.
+/// Un tap sur un contenu ouvre sa page de détail. Partagée entre la home page
+/// et la page de résultats de recherche, chacune fournissant son propre état
+/// vide (bouton de génération sur la home, simple message côté recherche).
 class ContentListView extends ConsumerWidget {
   /// Crée un [ContentListView].
   ///
   /// - [contents] : liste des contenus à afficher.
+  /// - [emptyChild] : widget affiché à la place de la liste quand [contents] est vide.
   /// - [controller] : contrôleur de scroll de la liste.
-  const ContentListView({super.key, required this.contents, this.controller});
+  const ContentListView({super.key, required this.contents, required this.emptyChild, this.controller});
 
   /// Liste des contenus à afficher.
   final List<Content> contents;
+
+  /// Widget affiché à la place de la liste quand [contents] est vide.
+  final Widget emptyChild;
 
   /// Contrôleur de scroll de la liste.
   final ScrollController? controller;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.loc;
-
     if (contents.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          spacing: 16,
-          children: [
-            Text(l10n.homeEmptyList),
-            TextButton(
-              onPressed: () {
-                final notifier = ref.read(homeFeedNotifierProvider.notifier);
-                notifier.seedAndReload();
-              },
-              child: Text(l10n.homeSeedButton),
-            ),
-          ],
-        ),
-      );
+      return emptyChild;
     }
 
     return ListView.separated(

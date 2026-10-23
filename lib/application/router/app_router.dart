@@ -5,6 +5,8 @@ import 'package:bedbug/application/screens/content_detail/text_content_detail_sc
 import 'package:bedbug/application/screens/create/create_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/screens/search/search_screen.dart';
+import 'package:bedbug/application/screens/search_results/search_criteria.dart';
+import 'package:bedbug/application/screens/search_results/search_results_screen.dart';
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
 import 'package:bedbug/application/screens/splash/splash_screen.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
@@ -29,6 +31,19 @@ const String settingsPath = '/settings';
 
 /// Chemin vers la page de recherche dédiée.
 const String searchPath = '/search';
+
+/// Chemin vers la page de résultats de recherche.
+///
+/// Le critère est transmis en paramètre de requête : [searchFlairParam] pour
+/// un flair choisi parmi les suggestions, [searchQueryParam] pour une
+/// recherche globale.
+const String searchResultsPath = '/search/results';
+
+/// Paramètre de requête de [searchResultsPath] portant le flair choisi.
+const String searchFlairParam = 'flair';
+
+/// Paramètre de requête de [searchResultsPath] portant le texte d'une recherche globale.
+const String searchQueryParam = 'q';
 
 /// Chemin vers la page de détail d'un contenu.
 ///
@@ -68,7 +83,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: homePath, pageBuilder: (context, state) => _fadePage(const HomeScreen())),
       GoRoute(path: createPath, pageBuilder: (context, state) => _fadePage(const CreateScreen())),
       GoRoute(path: settingsPath, pageBuilder: (context, state) => _fadePage(const SettingsScreen())),
-      GoRoute(path: searchPath, pageBuilder: (context, state) => _fadePage(const SearchScreen())),
+      GoRoute(
+        path: searchPath,
+        pageBuilder: (context, state) => _fadePage(const SearchScreen()),
+        routes: [
+          GoRoute(
+            path: 'results',
+            pageBuilder: (context, state) => _fadePage(_searchResultsScreenFor(state.uri.queryParameters)),
+          ),
+        ],
+      ),
       GoRoute(
         path: contentDetailPath,
         pageBuilder: (context, state) => _fadePage(_contentDetailScreenFor(state.extra! as Content)),
@@ -81,6 +105,22 @@ final routerProvider = Provider<GoRouter>((ref) {
 class _RouterRefreshNotifier extends ChangeNotifier {
   /// Crée un [_RouterRefreshNotifier] qui n'écoute rien pour l'instant.
   _RouterRefreshNotifier(Ref ref);
+}
+
+/// Retourne la page de résultats correspondant aux paramètres de requête [queryParameters].
+///
+/// Le flair est prioritaire : sa présence signifie que l'utilisateur a
+/// choisi une suggestion précise.
+Widget _searchResultsScreenFor(Map<String, String> queryParameters) {
+  final flair = queryParameters[searchFlairParam];
+  if (flair != null) {
+    return SearchResultsScreen(criteria: FlairSearchCriteria(flair));
+  }
+  final query = queryParameters[searchQueryParam];
+  if (query != null) {
+    return SearchResultsScreen(criteria: QuerySearchCriteria(query));
+  }
+  return const ErrorRoutePage(message: 'Missing search criteria');
 }
 
 /// Retourne la page de détail adaptée au type concret de [content].

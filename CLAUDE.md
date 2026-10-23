@@ -815,6 +815,8 @@ All shared widgets live in `shared/application/widgets/`. Always reuse them befo
 
 **`AppTag`** — small coloured pill label for statuses, permissions, or categories. Accepts `label` and `color`; the background is derived automatically at reduced opacity.
 
+**`ContentListView`** — list of tappable contents (tap opens the detail page). Accepts `contents`, a required `emptyChild` shown when the list is empty, and an optional scroll `controller`. Used by the home feed and the search results page.
+
 ---
 
 #### Form fields

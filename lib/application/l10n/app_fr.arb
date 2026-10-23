@@ -64,9 +64,9 @@
   "@createImagePickLabel": {
     "description": "Label du bouton de sélection d'image dans le formulaire image"
   },
-  "createImageTitleLabel": "Titre (optionnel)",
-  "@createImageTitleLabel": {
-    "description": "Label du champ titre optionnel dans le formulaire image"
+  "createRequiredFieldError": "Ce champ est obligatoire.",
+  "@createRequiredFieldError": {
+    "description": "Message d'erreur affiché sous un champ obligatoire laissé vide dans les formulaires de création"
   },
   "createImageBodyLabel": "Description (optionnelle)",
   "@createImageBodyLabel": {
@@ -111,6 +111,32 @@
   "createImageCompressionError": "Impossible de traiter cette image.",
   "@createImageCompressionError": {
     "description": "Message snackbar d'erreur affiché quand l'image choisie ne peut pas être recompressée"
+  },
+  "searchHint": "Rechercher…",
+  "@searchHint": {
+    "description": "Placeholder du champ de recherche (home page et écran de recherche)"
+  },
+  "searchFlairSuggestionCount": "{count, plural, =1{1 contenu} other{{count} contenus}}",
+  "@searchFlairSuggestionCount": {
+    "description": "Nombre de contenus rattachés à un flair, affiché sous chaque suggestion d'autocomplétion",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchResultsQueryTitle": "« {query} »",
+  "@searchResultsQueryTitle": {
+    "description": "Titre de la page de résultats d'une recherche globale, reprenant le texte saisi",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchResultsEmpty": "Aucun contenu trouvé.",
+  "@searchResultsEmpty": {
+    "description": "Message affiché sur la page de résultats quand aucun contenu ne correspond"
   },
   "close": "Fermer",
   "@close": {
