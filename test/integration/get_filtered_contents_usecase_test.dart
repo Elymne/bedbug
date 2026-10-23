@@ -68,6 +68,7 @@ TextContent _buildTextContent(String id, String title) {
     updatedAt: DateTime(2026),
     authorId: 'local',
     senderId: 'local',
+    flair: 'test',
     origin: ContentOrigin.owned,
     broadcastScore: 1,
     survivalScore: 1,

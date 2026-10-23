@@ -805,15 +805,23 @@ All shared widgets live in `shared/application/widgets/`. Always reuse them befo
 - `AppTextType.error` (default): red text, one-shot shake animation. Defaults to `errorDefaultText`. To replay the animation on a new error, pass a new `Key` (e.g. `ValueKey(errorCounter)`).
 - `AppTextType.info`: blue text, smooth looping fade animation between 40 % and 100 % opacity. Defaults to `infoDefaultText`.
 
-**`AppPageHeader`** — standard page title row with an optional back `IconButton`. Accepts `title` and an optional `onBack` callback.
+**`AppPageHeader`** — standard page title row with an optional back `IconButton`. Accepts `title`, an optional `onBack` callback and an optional `titlePrefix` (shown in primary colour, see `AppPrefixedText`).
+
+**`AppPrefixedText`** — a name preceded by its prefix (`AppPrefixes.flair` = `f/`, `AppPrefixes.signature` = `s/`), the prefix in primary colour. Accepts `prefix`, `text`, optional `style`, `overflow`, `textAlign`. Always use it to display a flair or a signature pseudo; `AppExpandableSection` also takes a `subtitlePrefix`.
 
 **`AppSnackbar`** — static utility for snackbars. Never instantiated directly.
 
-- `AppSnackbar.showError(context, message)` — red background.
-- `AppSnackbar.showSuccess(context, message)` — green background.
-  Snackbars do not auto-dismiss; a close button is always shown.
+- `AppSnackbar.showError(context, message)` — red background, light text.
+- `AppSnackbar.showSuccess(context, message)` — pastel green background, dark text.
+  Snackbars are compact and floating, auto-dismiss after 3 seconds, and always show a close icon.
 
 **`AppTag`** — small coloured pill label for statuses, permissions, or categories. Accepts `label` and `color`; the background is derived automatically at reduced opacity.
+
+**`ContentListView`** — list of tappable contents (tap opens the detail page). Accepts `contents`, a required `emptyChild` shown when the list is empty, and an optional scroll `controller`. Used by the home feed and the search results page.
+
+**`AppExpandableSection`** — rounded card with a tappable header (`title`, `icon`, optional `subtitle`) that expands to show `child`. Collapsed by default. Building block of the settings page: one section per setting.
+
+**`AppSignatureAvatar`** — the text icon of a signature (kaomoji, emoji, symbols…) rendered with `AppGhostText`, the ghost layer using the signature colour and speed. Accepts `avatarText`, `ghostColor`, optional `ghostSpeed` (1), `fontSize` (32) and `isAnimating` (`true`; pass `false` in lists).
 
 ---
 

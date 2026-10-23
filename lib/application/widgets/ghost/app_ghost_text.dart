@@ -13,6 +13,7 @@ class AppGhostText extends ConsumerStatefulWidget {
   /// - [isAnimating] : `true` pour lancer l'animation, `false` pour l'arrêter.
   /// - [speed] : multiplicateur de vitesse (défaut 1.0 — plus grand = plus rapide).
   /// - [intensity] : amplitude des décalages en pixels (défaut 1.0).
+  /// - [ghostColor] : couleur de la couche ghost (défaut [AppColors.primary]).
   const AppGhostText({
     super.key,
     required this.label,
@@ -21,6 +22,7 @@ class AppGhostText extends ConsumerStatefulWidget {
     required this.isAnimating,
     this.speed = 1.0,
     this.intensity = 1.0,
+    this.ghostColor = AppColors.primary,
   });
 
   /// Texte affiché.
@@ -40,6 +42,9 @@ class AppGhostText extends ConsumerStatefulWidget {
 
   /// Amplitude des décalages en pixels.
   final double intensity;
+
+  /// Couleur de la couche ghost.
+  final Color ghostColor;
 
   @override
   ConsumerState<AppGhostText> createState() => _State();
@@ -70,6 +75,9 @@ class _State extends ConsumerState<AppGhostText> with TickerProviderStateMixin {
   @override
   void didUpdateWidget(AppGhostText oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (widget.speed != oldWidget.speed) {
+      _applySpeed(isRunning: widget.isAnimating && oldWidget.isAnimating);
+    }
     if (widget.isAnimating && !oldWidget.isAnimating) {
       _startAnimations();
       return;
@@ -86,6 +94,24 @@ class _State extends ConsumerState<AppGhostText> with TickerProviderStateMixin {
     _mainX.dispose();
     _mainY.dispose();
     super.dispose();
+  }
+
+  /// Recalcule la durée des controllers d'après [AppGhostText.speed].
+  ///
+  /// Les durées sont fixées à la création des controllers : sans ce recalcul,
+  /// changer la vitesse en direct (curseur de réglage) n'aurait aucun effet.
+  /// Une boucle déjà lancée est relancée depuis sa position courante pour
+  /// prendre la nouvelle durée en compte, sans saut visible.
+  ///
+  /// - [isRunning] : `true` si l'animation tournait déjà avant le changement.
+  void _applySpeed({required bool isRunning}) {
+    _ghostX.duration = _dur(850);
+    _ghostY.duration = _dur(1130);
+    _mainX.duration = _dur(970);
+    _mainY.duration = _dur(1370);
+    if (isRunning) {
+      _startAnimations();
+    }
   }
 
   /// Démarre tous les controllers en boucle alternée.
@@ -129,7 +155,7 @@ class _State extends ConsumerState<AppGhostText> with TickerProviderStateMixin {
           children: [
             Transform.translate(
               offset: ghostOffset,
-              child: Text(widget.label, style: style.copyWith(color: AppColors.primary)),
+              child: Text(widget.label, style: style.copyWith(color: widget.ghostColor)),
             ),
             Transform.translate(
               offset: mainOffset,
