@@ -66,6 +66,13 @@ const List<(int, int)> _imageDimensions = [
   (1920, 1080), // paysage HD → clampé à 600
 ];
 
+/// Provenances attribuées à tour de rôle aux contenus générés.
+///
+/// [ContentOrigin.owned] est volontairement exclu : les contenus factices
+/// sont signés par des utilisateurs factices, ils ne doivent jamais passer
+/// pour des contenus de l'utilisateur (liste « Mes posts », suppression).
+const List<ContentOrigin> _seedOrigins = [ContentOrigin.public, ContentOrigin.subscribed, ContentOrigin.favorited];
+
 /// Flairs d'exemple, attribués à tour de rôle aux contenus générés.
 const List<String> _flairs = ['france', 'paris', 'musique', 'tech', 'random'];
 
@@ -110,7 +117,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
 
       for (var index = 0; index < params.count; index++) {
         final createdAt = now.subtract(Duration(minutes: index));
-        final origin = ContentOrigin.values[index % ContentOrigin.values.length];
+        final origin = _seedOrigins[index % _seedOrigins.length];
         final bounce = index % 11;
         final flair = _flairs[index % _flairs.length];
 

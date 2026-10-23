@@ -1,4 +1,5 @@
 import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/extensions/content_title_extension.dart';
 import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
 import 'package:bedbug/features/content/domain/object_values/flair_suggestion.dart';
@@ -120,6 +121,33 @@ class HiveContentRepository implements ContentRepository {
   Future<List<Content>> getAllByAuthor(String authorId) async {
     try {
       return _box.values.where((model) => model.authorId == authorId).map((model) => model.toEntity()).toList();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
+  Future<List<Content>> getAllByOrigin(ContentOrigin origin) async {
+    try {
+      return _box.values.where((model) => model.origin == origin.value).map((model) => model.toEntity()).toList();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
+  Future<Content?> getById(String id) async {
+    try {
+      return _box.get(id)?.toEntity();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
+  Future<void> deleteOne(String id) async {
+    try {
+      await _box.delete(id);
     } on HiveError catch (error) {
       throw DatasourceException('HiveContentRepository', error);
     }

@@ -66,9 +66,7 @@ class SearchScreen extends ConsumerWidget {
                       for (final user in users)
                         UserSuggestionTile(
                           user: user,
-                          onTap: () => context.push(
-                            Uri(path: searchResultsPath, queryParameters: {searchAuthorParam: user.id}).toString(),
-                          ),
+                          onTap: () => context.push('$usersPath/${Uri.encodeComponent(user.id)}'),
                         ),
                     ],
                   );

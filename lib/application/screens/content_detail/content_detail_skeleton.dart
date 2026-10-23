@@ -1,10 +1,14 @@
-import 'package:bedbug/application/screens/content_detail/content_author_notifier.dart';
+import 'package:bedbug/application/notifiers/content_author_notifier.dart';
+import 'package:bedbug/application/notifiers/delete_own_content_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/widgets/buttons/app_close_button.dart';
+import 'package:bedbug/application/widgets/dialogs/delete_content_dialog.dart';
+import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
 import 'package:bedbug/application/widgets/user/app_user_avatar.dart';
 import 'package:bedbug/features/user/domain/entities/anonymous_user.dart';
+import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:bedbug/shared/extensions/datetime_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,8 +28,12 @@ class ContentDetailSkeleton extends ConsumerWidget {
   /// - [createdAt] : date de création du contenu, utilisée pour le temps écoulé.
   /// - [bounce] : nombre de rebonds du contenu, affiché dans un chip.
   /// - [onClose] : callback déclenché lors du tap sur le bouton de fermeture.
+  /// - [contentId] : identifiant du contenu, utilisé pour sa suppression.
+  /// - [isOwned] : `true` si le contenu a été publié par l'utilisateur, qui peut alors le supprimer.
   const ContentDetailSkeleton({
     super.key,
+    required this.contentId,
+    required this.isOwned,
     required this.title,
     required this.flair,
     required this.authorId,
@@ -34,6 +42,12 @@ class ContentDetailSkeleton extends ConsumerWidget {
     required this.bounce,
     required this.onClose,
   });
+
+  /// Identifiant du contenu, utilisé pour sa suppression.
+  final String contentId;
+
+  /// Indique si le contenu a été publié par l'utilisateur, qui peut alors le supprimer.
+  final bool isOwned;
 
   /// Titre du contenu, affiché en gras.
   final String title;
@@ -64,15 +78,26 @@ class ContentDetailSkeleton extends ConsumerWidget {
     final author = contentAuthorNotifierWatcher.value ?? anonymousUser;
     final authorColorArgb = author.colorArgb;
     final authorColor = authorColorArgb == null ? AppColors.primary : Color(authorColorArgb);
+    final deleteOwnContentNotifierWatcher = ref.watch(deleteOwnContentNotifierProvider);
+    // Désactivé pendant une suppression en cours, pour éviter un double tap.
+    final VoidCallback? onDelete = deleteOwnContentNotifierWatcher.isLoading ? null : () => _onDelete(context, ref);
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Align(
-              alignment: Alignment.topLeft,
-              child: AppCloseButton(onTap: onClose),
+            Row(
+              children: [
+                AppCloseButton(onTap: onClose),
+                const Spacer(),
+                if (isOwned)
+                  IconButton(
+                    onPressed: onDelete,
+                    tooltip: context.loc.deleteContentButton,
+                    icon: const Icon(Icons.delete_outline_rounded, color: AppColors.failure),
+                  ),
+              ],
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -121,5 +146,26 @@ class ContentDetailSkeleton extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  /// Demande confirmation, supprime le contenu puis ferme la page de détail.
+  ///
+  /// En cas d'échec, la page reste ouverte et l'erreur est affichée.
+  Future<void> _onDelete(BuildContext context, WidgetRef ref) async {
+    final isConfirmed = await DeleteContentDialog.show(context);
+    if (!isConfirmed || !context.mounted) {
+      return;
+    }
+
+    final failureMessage = await ref.read(deleteOwnContentNotifierProvider.notifier).delete(contentId);
+    if (!context.mounted) {
+      return;
+    }
+    if (failureMessage != null) {
+      AppSnackbar.showError(context, failureMessage);
+      return;
+    }
+    AppSnackbar.showSuccess(context, context.loc.deleteContentSuccess);
+    onClose();
   }
 }

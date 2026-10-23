@@ -1,4 +1,5 @@
 import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/object_values/flair_suggestion.dart';
 
 /// Contrat du repository gérant les [Content].
@@ -31,6 +32,15 @@ abstract class ContentRepository {
 
   /// Retourne tous les contenus dont l'auteur est [authorId].
   Future<List<Content>> getAllByAuthor(String authorId);
+
+  /// Retourne tous les contenus de provenance [origin].
+  Future<List<Content>> getAllByOrigin(ContentOrigin origin);
+
+  /// Retourne le contenu d'identifiant [id], ou `null` s'il n'existe pas.
+  Future<Content?> getById(String id);
+
+  /// Supprime le contenu d'identifiant [id]. Sans effet s'il n'existe pas.
+  Future<void> deleteOne(String id);
 
   /// Retourne les flairs commençant par [prefix] (déjà normalisé), avec leur nombre de contenus.
   ///

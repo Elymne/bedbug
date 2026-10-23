@@ -37,5 +37,6 @@ void main() {
     expect(find.text('Mon profil'), findsOneWidget);
     expect(find.text('Pas encore configuré'), findsOneWidget);
     expect(find.text('Publication'), findsOneWidget);
+    expect(find.text('Mes posts'), findsOneWidget);
   });
 }

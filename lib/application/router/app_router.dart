@@ -10,6 +10,7 @@ import 'package:bedbug/application/screens/search_results/search_criteria.dart';
 import 'package:bedbug/application/screens/search_results/search_results_screen.dart';
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
 import 'package:bedbug/application/screens/splash/splash_screen.dart';
+import 'package:bedbug/application/screens/user_profile/user_profile_screen.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
@@ -42,8 +43,9 @@ const String searchPath = '/search';
 /// Chemin vers la page de résultats de recherche.
 ///
 /// Le critère est transmis en paramètre de requête : [searchFlairParam] pour
-/// un flair choisi parmi les suggestions, [searchAuthorParam] pour un auteur
-/// choisi parmi les suggestions, [searchQueryParam] pour une recherche globale.
+/// un flair choisi parmi les suggestions, [searchQueryParam] pour une
+/// recherche globale. Un auteur choisi ouvre, lui, sa page profil
+/// ([userProfilePath]).
 const String searchResultsPath = '/search/results';
 
 /// Paramètre de requête de [searchResultsPath] portant le flair choisi.
@@ -52,8 +54,13 @@ const String searchFlairParam = 'flair';
 /// Paramètre de requête de [searchResultsPath] portant le texte d'une recherche globale.
 const String searchQueryParam = 'q';
 
-/// Paramètre de requête de [searchResultsPath] portant l'identifiant de l'auteur choisi.
-const String searchAuthorParam = 'author';
+/// Préfixe du chemin des pages profil : `/users/<identifiant>`.
+///
+/// Naviguer avec `context.push('$usersPath/${user.id}')`.
+const String usersPath = '/users';
+
+/// Chemin de la page profil d'un utilisateur, identifiant en paramètre de chemin.
+const String userProfilePath = '$usersPath/:id';
 
 /// Chemin vers la page de détail d'un contenu.
 ///
@@ -108,6 +115,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       GoRoute(
+        path: userProfilePath,
+        pageBuilder: (context, state) => _fadePage(UserProfileScreen(userId: state.pathParameters['id']!)),
+      ),
+      GoRoute(
         path: contentDetailPath,
         pageBuilder: (context, state) => _fadePage(_contentDetailScreenFor(state.extra! as Content)),
       ),
@@ -123,16 +134,12 @@ class _RouterRefreshNotifier extends ChangeNotifier {
 
 /// Retourne la page de résultats correspondant aux paramètres de requête [queryParameters].
 ///
-/// Le flair puis l'auteur sont prioritaires sur la recherche globale : leur
-/// présence signifie que l'utilisateur a choisi une suggestion précise.
+/// Le flair est prioritaire sur la recherche globale : sa présence signifie
+/// que l'utilisateur a choisi une suggestion précise.
 Widget _searchResultsScreenFor(Map<String, String> queryParameters) {
   final flair = queryParameters[searchFlairParam];
   if (flair != null) {
     return SearchResultsScreen(criteria: FlairSearchCriteria(flair));
-  }
-  final authorId = queryParameters[searchAuthorParam];
-  if (authorId != null) {
-    return SearchResultsScreen(criteria: AuthorSearchCriteria(authorId));
   }
   final query = queryParameters[searchQueryParam];
   if (query != null) {

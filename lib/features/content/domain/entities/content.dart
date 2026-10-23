@@ -81,6 +81,17 @@ abstract class Content extends Entity {
   /// Tags associés à ce contenu, parmi le catalogue statique [Tag].
   final List<Tag> tags;
 
+  /// Indique si ce contenu a été créé sur cet appareil, par son utilisateur.
+  ///
+  /// S'appuie sur [origin] et non sur [authorId] : un contenu publié en
+  /// anonyme porte l'identifiant anonyme, mais reste le nôtre. L'origine est
+  /// propre à chaque appareil (un pair qui reçoit ce contenu lui attribue sa
+  /// propre origine), elle ne permet donc à personne d'autre de se faire
+  /// passer pour l'auteur.
+  bool get isOwned {
+    return origin == ContentOrigin.owned;
+  }
+
   /// Retourne une copie de ce contenu avec [broadcastScore], [survivalScore]
   /// et/ou [displayScore] remplacés, en conservant le type concret d'origine.
   ///

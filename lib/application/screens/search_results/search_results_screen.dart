@@ -1,4 +1,4 @@
-import 'package:bedbug/application/screens/content_detail/content_author_notifier.dart';
+import 'package:bedbug/application/notifiers/content_author_notifier.dart';
 import 'package:bedbug/application/screens/search_results/search_criteria.dart';
 import 'package:bedbug/application/screens/search_results/search_results_notifier.dart';
 import 'package:bedbug/application/widgets/content_list/content_list_view.dart';
@@ -10,11 +10,14 @@ import 'package:go_router/go_router.dart';
 
 /// Page listant les contenus correspondant à une recherche.
 ///
-/// Ouverte depuis l'écran de recherche, soit par le choix d'un flair
-/// ([FlairSearchCriteria]) ou d'un auteur ([AuthorSearchCriteria]) parmi les
-/// suggestions, soit par la validation directe de la saisie
-/// ([QuerySearchCriteria]). Le retour ramène à l'écran de recherche, avec la
-/// saisie conservée.
+/// Ouverte depuis l'écran de recherche, soit par le choix d'un flair parmi
+/// les suggestions ([FlairSearchCriteria]), soit par la validation directe de
+/// la saisie ([QuerySearchCriteria]). Le retour ramène à l'écran de
+/// recherche, avec la saisie conservée.
+///
+/// Un auteur choisi ouvre sa page profil (`UserProfileScreen`), qui réutilise
+/// le même notifier avec un [AuthorSearchCriteria] ; ce critère reste géré
+/// ici pour que le `switch` sur [SearchCriteria] soit exhaustif.
 class SearchResultsScreen extends ConsumerWidget {
   /// Crée un [SearchResultsScreen].
   ///

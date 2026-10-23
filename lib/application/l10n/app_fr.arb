@@ -355,6 +355,70 @@
   "@createAnonymousDescription": {
     "description": "Explication sous la case à cocher de publication anonyme dans le formulaire de création"
   },
+  "settingsOwnContentsTitle": "Mes posts",
+  "@settingsOwnContentsTitle": {
+    "description": "Titre de la section des paramètres listant les contenus publiés par l'utilisateur"
+  },
+  "settingsOwnContentsSubtitle": "Retrouve et supprime ce que tu as publié",
+  "@settingsOwnContentsSubtitle": {
+    "description": "Sous-titre de la section « Mes posts » des paramètres"
+  },
+  "settingsOwnContentsEmpty": "Tu n'as encore rien publié.",
+  "@settingsOwnContentsEmpty": {
+    "description": "Message affiché dans la section « Mes posts » quand l'utilisateur n'a publié aucun contenu"
+  },
+  "deleteContentButton": "Supprimer",
+  "@deleteContentButton": {
+    "description": "Infobulle du bouton de suppression d'un contenu publié par l'utilisateur"
+  },
+  "deleteContentDialogTitle": "Supprimer ce post ?",
+  "@deleteContentDialogTitle": {
+    "description": "Titre de la popup de confirmation de suppression d'un contenu"
+  },
+  "deleteContentDialogBody": "Il disparaîtra de ton téléphone. Les copies déjà transmises à d'autres téléphones, elles, ne pourront pas être rappelées.",
+  "@deleteContentDialogBody": {
+    "description": "Texte de la popup de confirmation de suppression, qui rappelle que la suppression est locale"
+  },
+  "deleteContentDialogCancel": "Annuler",
+  "@deleteContentDialogCancel": {
+    "description": "Bouton d'annulation de la popup de suppression d'un contenu"
+  },
+  "deleteContentDialogConfirm": "Supprimer",
+  "@deleteContentDialogConfirm": {
+    "description": "Bouton de confirmation de la popup de suppression d'un contenu"
+  },
+  "deleteContentSuccess": "Post supprimé.",
+  "@deleteContentSuccess": {
+    "description": "Message snackbar affiché après la suppression d'un contenu"
+  },
+  "deleteContentNotFound": "Ce post n'existe déjà plus.",
+  "@deleteContentNotFound": {
+    "description": "Message d'erreur quand le contenu à supprimer est introuvable"
+  },
+  "deleteContentNotOwned": "Tu ne peux supprimer que tes propres posts.",
+  "@deleteContentNotOwned": {
+    "description": "Message d'erreur quand l'utilisateur tente de supprimer un contenu qu'il n'a pas publié"
+  },
+  "deleteContentError": "Échec de la suppression du post.",
+  "@deleteContentError": {
+    "description": "Message d'erreur générique quand la suppression d'un contenu échoue"
+  },
+  "userProfilePostsTab": "Posts",
+  "@userProfilePostsTab": {
+    "description": "Onglet de la page profil listant les contenus publiés par l'utilisateur"
+  },
+  "userProfileCommentsTab": "Commentaires",
+  "@userProfileCommentsTab": {
+    "description": "Onglet de la page profil listant les commentaires de l'utilisateur"
+  },
+  "userProfilePostsEmpty": "Aucun post pour l'instant.",
+  "@userProfilePostsEmpty": {
+    "description": "Message de l'onglet Posts de la page profil quand l'utilisateur n'a rien publié"
+  },
+  "userProfileCommentsSoon": "Les commentaires arrivent bientôt.",
+  "@userProfileCommentsSoon": {
+    "description": "Message de l'onglet Commentaires de la page profil, en attendant que les commentaires existent"
+  },
   "close": "Fermer",
   "@close": {
     "description": "Libellé générique d'une action de fermeture (ex. infobulle de la croix des snackbars)"

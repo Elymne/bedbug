@@ -1,5 +1,6 @@
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/settings/local_user_notifier.dart';
+import 'package:bedbug/application/screens/settings/widgets/own_contents_section.dart';
 import 'package:bedbug/application/screens/settings/widgets/profile_section.dart';
 import 'package:bedbug/application/screens/settings/widgets/publishing_section.dart';
 import 'package:bedbug/application/style/app_values.dart';
@@ -53,6 +54,13 @@ class SettingsScreen extends ConsumerWidget {
                     title: l10n.settingsPublishingTitle,
                     icon: Icons.edit_note_outlined,
                     child: const PublishingSection(),
+                  ),
+                  const SizedBox(height: 12),
+                  AppExpandableSection(
+                    title: l10n.settingsOwnContentsTitle,
+                    subtitle: l10n.settingsOwnContentsSubtitle,
+                    icon: Icons.article_outlined,
+                    child: const OwnContentsSection(),
                   ),
                 ],
               ),

@@ -18,6 +18,8 @@ class TextContentDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ContentDetailSkeleton(
+      contentId: content.id,
+      isOwned: content.isOwned,
       title: content.title,
       flair: content.flair,
       authorId: content.authorId,
