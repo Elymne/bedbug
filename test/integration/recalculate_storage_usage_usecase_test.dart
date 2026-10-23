@@ -27,6 +27,7 @@ TextContent _buildContent({required String id, required int bodyByteLength}) {
     updatedAt: now,
     authorId: 'author',
     senderId: 'sender',
+    flair: 'test',
     origin: ContentOrigin.owned,
     broadcastScore: 1,
     survivalScore: 1,

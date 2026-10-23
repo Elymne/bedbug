@@ -12,11 +12,16 @@ class SettingsHiveModel extends HiveObject {
   ///
   /// - [blockedUrls] : liste des URLs bloquées.
   /// - [blockedWords] : liste des mots bloqués.
-  SettingsHiveModel({required this.blockedUrls, required this.blockedWords});
+  /// - [isAnonymousByDefault] : publication anonyme par défaut des nouveaux contenus.
+  SettingsHiveModel({required this.blockedUrls, required this.blockedWords, required this.isAnonymousByDefault});
 
   /// Crée un [SettingsHiveModel] depuis un [UserSettings].
   factory SettingsHiveModel.fromEntity(UserSettings entity) {
-    return SettingsHiveModel(blockedUrls: entity.blockedUrls, blockedWords: entity.blockedWords);
+    return SettingsHiveModel(
+      blockedUrls: entity.blockedUrls,
+      blockedWords: entity.blockedWords,
+      isAnonymousByDefault: entity.isAnonymousByDefault,
+    );
   }
 
   /// Liste des URLs bloquées par l'utilisateur.
@@ -27,10 +32,21 @@ class SettingsHiveModel extends HiveObject {
   @HiveField(1)
   final List<String> blockedWords;
 
+  /// Publication anonyme par défaut des nouveaux contenus.
+  ///
+  /// Les settings persistés avant l'ajout de cette option n'ont pas ce champ :
+  /// ils sont relus avec l'option désactivée.
+  @HiveField(2, defaultValue: false)
+  final bool isAnonymousByDefault;
+
   /// Convertit ce modèle en [UserSettings].
   UserSettings toEntity() {
     try {
-      return UserSettings(blockedUrls: blockedUrls, blockedWords: blockedWords);
+      return UserSettings(
+        blockedUrls: blockedUrls,
+        blockedWords: blockedWords,
+        isAnonymousByDefault: isAnonymousByDefault,
+      );
     } catch (error) {
       throw DataException('SettingsHiveModel', error);
     }

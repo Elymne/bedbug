@@ -15,6 +15,9 @@ const _typeTextContent = 'text_content';
 const _typeLinkContent = 'link_content';
 const _typeImageContent = 'image_content';
 
+/// Flair attribué aux contenus persistés avant que le flair devienne obligatoire.
+const _legacyFlair = 'public';
+
 /// DTO Hive représentant un [Content] persisté localement.
 ///
 /// Un seul modèle couvre tous les sous-types de [Content] via le champ
@@ -40,7 +43,7 @@ class ContentHiveModel extends HiveObject {
     this.fileName,
     this.imageWidth,
     this.imageHeight,
-    this.subId,
+    required this.flair,
     required this.sizeInBytes,
     this.ogImageUrl,
     this.ogTitle,
@@ -65,7 +68,7 @@ class ContentHiveModel extends HiveObject {
         senderId: entity.senderId,
         title: entity.title,
         body: entity.body,
-        subId: entity.subId,
+        flair: entity.flair,
         sizeInBytes: entity.sizeInBytes,
         tagValues: entity.tags.map((tag) => tag.value).toList(),
       );
@@ -86,7 +89,7 @@ class ContentHiveModel extends HiveObject {
         title: entity.title,
         body: entity.body,
         url: entity.url,
-        subId: entity.subId,
+        flair: entity.flair,
         sizeInBytes: entity.sizeInBytes,
         ogImageUrl: entity.ogImageUrl,
         ogTitle: entity.ogTitle,
@@ -112,7 +115,7 @@ class ContentHiveModel extends HiveObject {
         imageHeight: entity.imageHeight,
         title: entity.title,
         body: entity.body,
-        subId: entity.subId,
+        flair: entity.flair,
         sizeInBytes: entity.sizeInBytes,
         tagValues: entity.tags.map((tag) => tag.value).toList(),
       );
@@ -177,10 +180,14 @@ class ContentHiveModel extends HiveObject {
   @HiveField(18)
   final int? imageHeight;
 
-  /// Identifiant du sub auquel appartient ce contenu.
-  /// `null` si le contenu est purement public.
-  @HiveField(12)
-  final String? subId;
+  /// Flair libre du contenu, sans le `/` initial.
+  ///
+  /// Le champ 12 (ancien `subId`) est volontairement laissé inutilisé : le
+  /// réutiliser ferait relire les anciens identifiants de sub comme des flairs.
+  /// Les contenus persistés avant l'ajout du flair n'ont pas ce champ : ils
+  /// sont relus avec [_legacyFlair] au lieu de faire échouer la lecture.
+  @HiveField(23, defaultValue: _legacyFlair)
+  final String flair;
 
   /// Poids du contenu en octets.
   @HiveField(13)
@@ -240,7 +247,7 @@ class ContentHiveModel extends HiveObject {
         senderId: senderId,
         title: title!,
         body: body!,
-        subId: subId,
+        flair: flair,
         sizeInBytes: sizeInBytes,
         tags: tags,
       );
@@ -260,7 +267,7 @@ class ContentHiveModel extends HiveObject {
         title: title ?? url!,
         body: body,
         url: url!,
-        subId: subId,
+        flair: flair,
         sizeInBytes: sizeInBytes,
         ogImageUrl: ogImageUrl,
         ogTitle: ogTitle,
@@ -285,7 +292,7 @@ class ContentHiveModel extends HiveObject {
         imageHeight: imageHeight!,
         title: title!,
         body: body,
-        subId: subId,
+        flair: flair,
         sizeInBytes: sizeInBytes,
         tags: tags,
       );

@@ -4,7 +4,7 @@
 /// Ne porte aucune notion d'ordre intrinsèque : c'est la pondération de
 /// chaque score qui interprète cette provenance selon son propre besoin.
 enum ContentOrigin {
-  /// Contenu public sans sub associé.
+  /// Contenu public reçu d'un pair, sans lien particulier avec l'utilisateur.
   public(0, survivalHalfLifeDays: 7, broadcastHalfLifeDays: 2, displayHalfLifeDays: 3),
 
   /// Contenu provenant d'un sub auquel l'utilisateur est abonné.

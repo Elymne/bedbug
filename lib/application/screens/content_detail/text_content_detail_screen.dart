@@ -18,10 +18,14 @@ class TextContentDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ContentDetailSkeleton(
+      contentId: content.id,
+      isOwned: content.isOwned,
       title: content.title,
-      subId: content.subId,
+      flair: content.flair,
+      authorId: content.authorId,
       createdAt: content.createdAt,
       bounce: content.bounce,
+      tags: content.tags,
       onClose: () => context.pop(),
       contentBody: Text(content.body, style: AppTextStyles.contentPreview),
     );

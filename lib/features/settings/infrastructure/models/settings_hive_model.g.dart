@@ -17,17 +17,20 @@ class SettingsHiveModelAdapter extends TypeAdapter<SettingsHiveModel> {
     return SettingsHiveModel(
       blockedUrls: (fields[0] as List).cast<String>(),
       blockedWords: (fields[1] as List).cast<String>(),
+      isAnonymousByDefault: fields[2] == null ? false : fields[2] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, SettingsHiveModel obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.blockedUrls)
       ..writeByte(1)
-      ..write(obj.blockedWords);
+      ..write(obj.blockedWords)
+      ..writeByte(2)
+      ..write(obj.isAnonymousByDefault);
   }
 
   @override

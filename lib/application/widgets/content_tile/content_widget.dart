@@ -1,10 +1,12 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/widgets/content_tile/image_content_widget.dart';
 import 'package:bedbug/application/widgets/content_tile/link_content_widget.dart';
 import 'package:bedbug/application/widgets/content_tile/text_content_widget.dart';
 import 'package:bedbug/application/widgets/images/app_round_image.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
+import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
@@ -18,7 +20,7 @@ const double _tilePadding = 16;
 
 /// Dispatcher affichant le widget adapté au type concret de [content].
 ///
-/// Encapsule le header (avatar + sub + temps), le widget spécifique,
+/// Encapsule le header (avatar + flair + temps), le widget spécifique,
 /// et la ligne de tags dans une structure commune.
 class ContentWidget extends ConsumerWidget {
   /// Contenu à afficher.
@@ -41,10 +43,13 @@ class ContentWidget extends ConsumerWidget {
             spacing: 6,
             children: [
               const AppRoundImage(file: null),
-              Text(
-                's/public  •  ${content.createdAt.timeAgo}',
-                style: AppTextStyles.contentMeta,
-                overflow: TextOverflow.ellipsis,
+              Flexible(
+                child: AppPrefixedText(
+                  prefix: AppPrefixes.flair,
+                  text: '${content.flair}  •  ${content.createdAt.timeAgo}',
+                  style: AppTextStyles.contentMeta,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),

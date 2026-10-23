@@ -1,5 +1,6 @@
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_values.dart';
+import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,10 +11,14 @@ class AppPageHeader extends ConsumerWidget {
   /// - [title] : titre affiché dans l'en-tête.
   /// - [onBack] : callback déclenché lors du tap sur le bouton retour.
   ///   Si `null`, aucun bouton retour n'est affiché.
-  const AppPageHeader({super.key, required this.title, this.onBack});
+  /// - [titlePrefix] : préfixe optionnel affiché en couleur primaire devant le titre (ex. `f/`).
+  const AppPageHeader({super.key, required this.title, this.onBack, this.titlePrefix});
 
   /// Titre de la page.
   final String title;
+
+  /// Préfixe optionnel affiché en couleur primaire devant [title] (voir `AppPrefixes`).
+  final String? titlePrefix;
 
   /// Callback déclenché lors du tap sur le bouton retour.
   ///
@@ -31,8 +36,9 @@ class AppPageHeader extends ConsumerWidget {
               onPressed: onBack,
               icon: const Icon(Icons.arrow_back, color: AppColors.onLight),
             ),
-          Text(
-            title,
+          AppPrefixedText(
+            prefix: titlePrefix ?? '',
+            text: title,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: AppColors.onLight),
           ),
         ],

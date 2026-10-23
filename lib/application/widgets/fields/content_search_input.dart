@@ -27,6 +27,9 @@ class ContentSearchInput extends ConsumerStatefulWidget {
   ///   contour, texte et icônes en [AppColors.onDark]) destiné aux écrans à
   ///   fond sombre comme `SearchScreen`. `false` par défaut pour l'usage sur
   ///   fond clair (home page, leurre).
+  /// - [onChanged] : callback déclenché à chaque modification du texte, y
+  ///   compris quand il est vidé par la croix.
+  /// - [onSubmitted] : callback déclenché quand l'utilisateur valide sa saisie au clavier.
   const ContentSearchInput({
     super.key,
     required this.hintText,
@@ -34,6 +37,8 @@ class ContentSearchInput extends ConsumerStatefulWidget {
     this.onTap,
     this.autofocus = false,
     this.isDark = false,
+    this.onChanged,
+    this.onSubmitted,
   });
 
   /// Texte affiché en placeholder.
@@ -50,6 +55,12 @@ class ContentSearchInput extends ConsumerStatefulWidget {
 
   /// Si `true`, applique le variant sombre du champ.
   final bool isDark;
+
+  /// Callback déclenché à chaque modification du texte.
+  final ValueChanged<String>? onChanged;
+
+  /// Callback déclenché quand l'utilisateur valide sa saisie au clavier.
+  final ValueChanged<String>? onSubmitted;
 
   @override
   ConsumerState<ContentSearchInput> createState() => _State();
@@ -128,6 +139,9 @@ class _State extends ConsumerState<ContentSearchInput> {
                       showCursor: widget.isReadOnly ? false : null,
                       autofocus: widget.autofocus,
                       onTap: widget.isReadOnly ? widget.onTap : null,
+                      onChanged: widget.onChanged,
+                      onSubmitted: widget.onSubmitted,
+                      textInputAction: TextInputAction.search,
                       style: AppTextStyles.textfield.copyWith(color: textColor),
                       decoration: InputDecoration(
                         hintText: widget.hintText,
@@ -143,7 +157,12 @@ class _State extends ConsumerState<ContentSearchInput> {
                   ),
                   if (_controller.text.isNotEmpty)
                     GestureDetector(
-                      onTap: _controller.clear,
+                      onTap: () {
+                        // `clear()` ne déclenche pas `onChanged` du TextField :
+                        // on prévient le parent à la main.
+                        _controller.clear();
+                        widget.onChanged?.call('');
+                      },
                       child: Icon(Icons.close, size: 18, color: widget.isDark ? iconColor : AppColors.disabled),
                     ),
                 ],

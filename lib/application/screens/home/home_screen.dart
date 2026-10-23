@@ -1,8 +1,9 @@
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/home/home_bars_offset_notifier.dart';
 import 'package:bedbug/application/screens/home/home_feed_notifier.dart';
-import 'package:bedbug/application/screens/home/widgets/content_list_view.dart';
+import 'package:bedbug/application/screens/home/widgets/home_empty_feed.dart';
 import 'package:bedbug/application/style/app_const.dart';
+import 'package:bedbug/application/widgets/content_list/content_list_view.dart';
 import 'package:bedbug/application/widgets/fields/content_search_input.dart';
 import 'package:bedbug/application/widgets/navbar/app_nav_bar.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
@@ -56,7 +57,7 @@ class _State extends ConsumerState<HomeScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: ContentSearchInput(
-                  hintText: 'Rechercher…',
+                  hintText: context.loc.searchHint,
                   isReadOnly: true,
                   onTap: () => context.push(searchPath),
                 ),
@@ -66,7 +67,11 @@ class _State extends ConsumerState<HomeScreen> {
               child: homeFeedNotifierWatcher.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, _) => const Center(child: CircularProgressIndicator()),
-                data: (state) => ContentListView(contents: state.contents, controller: _scrollController),
+                data: (state) => ContentListView(
+                  contents: state.contents,
+                  emptyChild: const HomeEmptyFeed(),
+                  controller: _scrollController,
+                ),
               ),
             ),
           ],
@@ -95,7 +100,9 @@ class _State extends ConsumerState<HomeScreen> {
               return;
             }
             if (index == 2) {
-              context.go(settingsPath);
+              // `push` et non `go` : la page s'empile au-dessus de la home,
+              // pour que le retour système y ramène au lieu de quitter l'app.
+              context.push(settingsPath);
             }
           },
         ),

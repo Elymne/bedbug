@@ -1,5 +1,8 @@
 import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/extensions/content_title_extension.dart';
+import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
+import 'package:bedbug/features/content/domain/object_values/flair_suggestion.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
 import 'package:bedbug/shared/exceptions/datasource_exception.dart';
@@ -86,13 +89,93 @@ class HiveContentRepository implements ContentRepository {
   }
 
   @override
-  Future<List<Content>> getAllMatchingTitle(String query) async {
+  Future<List<Content>> getAllMatchingTitleOrFlair(String query) async {
     try {
       final lowerCaseQuery = query.toLowerCase();
+      // Les flairs sont stockés normalisés (sans `/`, en minuscules) : la
+      // saisie l'est aussi pour que `/france` trouve le flair `france`.
+      final flairQuery = query.toFlair() ?? lowerCaseQuery;
       return _box.values
           .map((model) => model.toEntity())
-          .where((content) => content.title.toLowerCase().contains(lowerCaseQuery))
+          .where(
+            (content) => content.title.toLowerCase().contains(lowerCaseQuery) || content.flair.contains(flairQuery),
+          )
           .toList();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
+  Future<List<Content>> getAllByFlair(String flair) async {
+    try {
+      // Filtre sur le modèle avant conversion : seuls les contenus retenus
+      // paient le coût de `toEntity()`.
+      return _box.values.where((model) => model.flair == flair).map((model) => model.toEntity()).toList();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
+  Future<List<Content>> getAllByAuthors(Set<String> authorIds) async {
+    try {
+      return _box.values.where((model) => authorIds.contains(model.authorId)).map((model) => model.toEntity()).toList();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
+  Future<List<Content>> getAllByOrigin(ContentOrigin origin) async {
+    try {
+      return _box.values.where((model) => model.origin == origin.value).map((model) => model.toEntity()).toList();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
+  Future<Content?> getById(String id) async {
+    try {
+      return _box.get(id)?.toEntity();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
+  Future<void> deleteOne(String id) async {
+    try {
+      await _box.delete(id);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
+  Future<List<FlairSuggestion>> getFlairsStartingWith(String prefix, {required int limit}) async {
+    try {
+      // Appelée à chaque frappe : on ne lit que le flair des modèles, sans
+      // jamais les convertir en entités.
+      final countsByFlair = <String, int>{};
+      for (final model in _box.values) {
+        if (model.flair.startsWith(prefix)) {
+          countsByFlair.update(model.flair, (count) => count + 1, ifAbsent: () => 1);
+        }
+      }
+
+      final suggestions = [
+        for (final entry in countsByFlair.entries) FlairSuggestion(flair: entry.key, contentCount: entry.value),
+      ];
+      suggestions.sort((first, second) {
+        final countComparison = second.contentCount.compareTo(first.contentCount);
+        if (countComparison != 0) {
+          return countComparison;
+        }
+        return first.flair.compareTo(second.flair);
+      });
+      return suggestions.take(limit).toList();
     } on HiveError catch (error) {
       throw DatasourceException('HiveContentRepository', error);
     }

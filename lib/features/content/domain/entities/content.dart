@@ -1,13 +1,13 @@
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/enums/tag.dart';
-import 'package:bedbug/features/user/domain/entities/user.dart';
+import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/shared/domain/entity.dart';
 
 /// Classe abstraite représentant un contenu publié par un utilisateur.
 ///
 /// Tout type de contenu (post, commentaire, etc.) étend cette classe.
 /// La référence à l'auteur est portée par [authorId] uniquement,
-/// sans couplage direct à l'entité [User].
+/// sans couplage direct à l'entité [Signature].
 abstract class Content extends Entity {
   /// Crée un [Content].
   ///
@@ -18,6 +18,7 @@ abstract class Content extends Entity {
   /// - [survivalScore] : probabilité de conservation lors d'un nettoyage
   ///   automatique du stockage local.
   /// - [displayScore] : priorité d'affichage dans la liste de la page d'accueil.
+  /// - [flair] : étiquette libre de l'auteur, sans le `/` initial (ex. `france`).
   Content({
     required super.id,
     required super.createdAt,
@@ -30,14 +31,14 @@ abstract class Content extends Entity {
     required this.bounce,
     required this.senderId,
     required this.sizeInBytes,
-    this.subId,
+    required this.flair,
     this.tags = const [],
   });
 
   /// Identifiant de l'auteur du contenu.
   final String authorId;
 
-  /// Provenance du contenu (public, sub, favori, possédé), utilisée comme
+  /// Provenance du contenu (public, abonné, favori, possédé), utilisée comme
   /// facteur d'entrée pour le recalcul périodique des scores.
   final ContentOrigin origin;
 
@@ -67,12 +68,29 @@ abstract class Content extends Entity {
   /// correspond à la taille du fichier sur disque.
   final int sizeInBytes;
 
-  /// Identifiant du sub auquel appartient ce contenu.
-  /// `null` si le contenu est purement public.
-  final String? subId;
+  /// Étiquette libre écrite à la main par l'auteur, affichée en tête du
+  /// contenu sous la forme `/flair` (ex. `/france`).
+  ///
+  /// Contrairement aux [tags], issus d'un catalogue fermé, le flair est un
+  /// texte libre : il permet à l'auteur de rattacher son contenu à un thème
+  /// ou un lieu sans structure préalable. Obligatoire : tout contenu est
+  /// rattaché à un flair. Stocké sans le `/` initial, déjà normalisé via
+  /// `FlairExtension`.
+  final String flair;
 
   /// Tags associés à ce contenu, parmi le catalogue statique [Tag].
   final List<Tag> tags;
+
+  /// Indique si ce contenu a été créé sur cet appareil, par son utilisateur.
+  ///
+  /// S'appuie sur [origin] et non sur [authorId] : un contenu publié en
+  /// anonyme porte l'identifiant anonyme, mais reste le nôtre. L'origine est
+  /// propre à chaque appareil (un pair qui reçoit ce contenu lui attribue sa
+  /// propre origine), elle ne permet donc à personne d'autre de se faire
+  /// passer pour l'auteur.
+  bool get isOwned {
+    return origin == ContentOrigin.owned;
+  }
 
   /// Retourne une copie de ce contenu avec [broadcastScore], [survivalScore]
   /// et/ou [displayScore] remplacés, en conservant le type concret d'origine.

@@ -15,7 +15,7 @@ class AppTextStyles {
     color: AppColors.onLight,
   );
 
-  /// Métadonnées d'un contenu (sub, temps écoulé).
+  /// Métadonnées d'un contenu (flair, temps écoulé).
   static final TextStyle contentMeta = const TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w600,
