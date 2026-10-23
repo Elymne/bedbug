@@ -43,6 +43,9 @@ class AppColors {
   /// Couleurs informatives FAILURE.
   static const Color failure = Color(0xFFFF4141);
 
+  /// Voile posé derrière les popups : noir à 20 %, juste assez pour détacher la popup du fond.
+  static const Color barrier = Color(0x33000000);
+
   /// Couleur de bordure des champs de texte.
   static const Color border = Color(0xFFE0E0E0);
 

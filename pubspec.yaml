@@ -38,6 +38,12 @@ dependencies:
   intl: ^0.20.2
   uuid: ^4.5.3
 
+  # Composants d'interface.
+  # Bloqué en 3.x : la 4.x dépend du package autonome `material_ui`, dont les
+  # MaterialLocalizations ne sont pas celles de `flutter/material` utilisé par
+  # l'app — le dialog du picker plante alors avant même de s'afficher.
+  flex_color_picker: ^3.7.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

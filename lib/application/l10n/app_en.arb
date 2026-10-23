@@ -138,6 +138,215 @@
   "@searchResultsEmpty": {
     "description": "Message shown on the results page when no content matches"
   },
+  "settingsProfileTitle": "My profile",
+  "@settingsProfileTitle": {
+    "description": "Title of the profile configuration section in the settings"
+  },
+  "settingsProfileNotConfigured": "Not configured yet",
+  "@settingsProfileNotConfigured": {
+    "description": "Subtitle of the profile section when the user never saved a profile"
+  },
+  "settingsPseudoLabel": "Username",
+  "@settingsPseudoLabel": {
+    "description": "Label of the profile username field"
+  },
+  "settingsPseudoError": "At least 3 characters: unaccented letters and hyphens only.",
+  "@settingsPseudoError": {
+    "description": "Error message when the username contains forbidden characters or is too short"
+  },
+  "settingsAvatarError": "No words in the icon, emotes only.",
+  "@settingsAvatarError": {
+    "description": "Error message when the text icon contains a run of letters (a word)"
+  },
+  "settingsGhostSpeedLabel": "Ghost effect strength",
+  "@settingsGhostSpeedLabel": {
+    "description": "Label of the slider setting the strength of the icon ghost effect"
+  },
+  "settingsProfileInvalid": "Invalid username or icon.",
+  "@settingsProfileInvalid": {
+    "description": "Snackbar error message when the profile is rejected on save (username or icon breaking the rules)"
+  },
+  "settingsAvatarLabel": "Icon (text, emoji, kaomoji…)",
+  "@settingsAvatarLabel": {
+    "description": "Label of the profile text icon field"
+  },
+  "settingsColorLabel": "Color",
+  "@settingsColorLabel": {
+    "description": "Label of the profile color picker, applied to the icon ghost effect"
+  },
+  "settingsSocialLabel": "Socials",
+  "@settingsSocialLabel": {
+    "description": "Label of the list of links to the profile's social networks"
+  },
+  "settingsSocialNetworkHint": "Network",
+  "@settingsSocialNetworkHint": {
+    "description": "Placeholder of the network picker in the add-link row"
+  },
+  "settingsSocialHandleHint": "handle or profile URL",
+  "@settingsSocialHandleHint": {
+    "description": "Placeholder of the handle field in the add-link row"
+  },
+  "settingsSocialHandleError": "Invalid handle for this network, or a URL from another site.",
+  "@settingsSocialHandleError": {
+    "description": "Error message when the handle typed for a network is unusable (spaces, empty)"
+  },
+  "settingsSocialAdd": "Add",
+  "@settingsSocialAdd": {
+    "description": "Tooltip of the add-link button"
+  },
+  "settingsSocialRemove": "Remove",
+  "@settingsSocialRemove": {
+    "description": "Tooltip of the remove-link button"
+  },
+  "settingsLinkedinDialogTitle": "LinkedIn. Really?",
+  "@settingsLinkedinDialogTitle": {
+    "description": "Title of the mocking dialog shown when the user adds a LinkedIn link"
+  },
+  "settingsLinkedinDialogBody": "You're on a serverless app, with no recruiters and no \"I'm thrilled to announce…\". Nobody here wants to see your journey as \"Head of Synergies\". Are you sure?",
+  "@settingsLinkedinDialogBody": {
+    "description": "Body of the mocking dialog shown when the user adds a LinkedIn link"
+  },
+  "settingsLinkedinDialogCancel": "Sorry, I take it back",
+  "@settingsLinkedinDialogCancel": {
+    "description": "Cancel button of the LinkedIn dialog"
+  },
+  "settingsLinkedinDialogConfirm": "I own it, I'm a thought leader",
+  "@settingsLinkedinDialogConfirm": {
+    "description": "Confirm button of the LinkedIn dialog"
+  },
+  "settingsLinkedinChallengeTitle": "Prove it.",
+  "@settingsLinkedinChallengeTitle": {
+    "description": "Title of the dialog requiring 100 taps to confirm adding a LinkedIn link"
+  },
+  "settingsLinkedinChallengeBody": "A true leader never backs down. Tap {count} times to confirm you really want to show your LinkedIn.",
+  "@settingsLinkedinChallengeBody": {
+    "description": "Body of the dialog requiring a number of taps to confirm adding a LinkedIn link",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsLinkedinChallengeButton": "I'm sure",
+  "@settingsLinkedinChallengeButton": {
+    "description": "Button to tap 100 times to confirm adding a LinkedIn link"
+  },
+  "settingsLinkedinChallengeGiveUp": "I give up",
+  "@settingsLinkedinChallengeGiveUp": {
+    "description": "Button to give up the 100-tap confirmation for adding a LinkedIn link"
+  },
+  "settingsLinkedinClownTitle": "CLOWN!",
+  "@settingsLinkedinClownTitle": {
+    "description": "Big text of the clown dialog shown after the 100 LinkedIn confirmation taps"
+  },
+  "settingsLinkedinClownButton": "I deserved it",
+  "@settingsLinkedinClownButton": {
+    "description": "Close button of the clown dialog. The LinkedIn link is never added: that is the joke"
+  },
+  "settingsProfileSaveButton": "Save",
+  "@settingsProfileSaveButton": {
+    "description": "Profile save button"
+  },
+  "settingsProfileSaved": "Profile saved.",
+  "@settingsProfileSaved": {
+    "description": "Snackbar message shown after saving the profile"
+  },
+  "settingsProfileSaveError": "Failed to save the profile.",
+  "@settingsProfileSaveError": {
+    "description": "Snackbar error message shown when saving the profile fails"
+  },
+  "settingsPublishingTitle": "Publishing",
+  "@settingsPublishingTitle": {
+    "description": "Title of the section of settings related to writing contents"
+  },
+  "settingsAnonymousByDefaultLabel": "Post anonymously by default",
+  "@settingsAnonymousByDefaultLabel": {
+    "description": "Label of the checkbox enabling anonymous posting by default"
+  },
+  "settingsAnonymousByDefaultDescription": "Your new posts will be signed u/Anonymous. You can still change your mind when posting.",
+  "@settingsAnonymousByDefaultDescription": {
+    "description": "Explanation under the anonymous-by-default checkbox"
+  },
+  "settingsSaveError": "Failed to save the setting.",
+  "@settingsSaveError": {
+    "description": "Snackbar error message shown when a setting cannot be saved"
+  },
+  "settingsAvatarBrowse": "Browse icons",
+  "@settingsAvatarBrowse": {
+    "description": "Tooltip of the button opening the icon catalog from the profile icon field"
+  },
+  "avatarPickerTitle": "Pick your icon",
+  "@avatarPickerTitle": {
+    "description": "Title of the icon (kaomoji) catalog page"
+  },
+  "avatarPickerCategoryJoy": "Joy",
+  "@avatarPickerCategoryJoy": {
+    "description": "Title of the happy kaomoji category"
+  },
+  "avatarPickerCategoryLove": "Love",
+  "@avatarPickerCategoryLove": {
+    "description": "Title of the loving kaomoji category"
+  },
+  "avatarPickerCategoryShy": "Shy",
+  "@avatarPickerCategoryShy": {
+    "description": "Title of the embarrassed or shy kaomoji category"
+  },
+  "avatarPickerCategorySad": "Sad",
+  "@avatarPickerCategorySad": {
+    "description": "Title of the sad kaomoji category"
+  },
+  "avatarPickerCategoryAngry": "Angry",
+  "@avatarPickerCategoryAngry": {
+    "description": "Title of the angry kaomoji category"
+  },
+  "avatarPickerCategoryScared": "Scared",
+  "@avatarPickerCategoryScared": {
+    "description": "Title of the scared kaomoji category"
+  },
+  "avatarPickerCategorySurprised": "Surprised",
+  "@avatarPickerCategorySurprised": {
+    "description": "Title of the surprised kaomoji category"
+  },
+  "avatarPickerCategoryMeh": "Meh",
+  "@avatarPickerCategoryMeh": {
+    "description": "Title of the indifferent, bored or smug kaomoji category"
+  },
+  "avatarPickerCategoryGreeting": "Hello",
+  "@avatarPickerCategoryGreeting": {
+    "description": "Title of the greeting kaomoji category"
+  },
+  "avatarPickerCategoryHug": "Hugs",
+  "@avatarPickerCategoryHug": {
+    "description": "Title of the hugging kaomoji category"
+  },
+  "avatarPickerCategorySleepy": "Sleepy",
+  "@avatarPickerCategorySleepy": {
+    "description": "Title of the sleeping kaomoji category"
+  },
+  "avatarPickerCategoryVictory": "Victory",
+  "@avatarPickerCategoryVictory": {
+    "description": "Title of the victorious or motivated kaomoji category"
+  },
+  "avatarPickerCategoryDance": "Dance",
+  "@avatarPickerCategoryDance": {
+    "description": "Title of the dancing or partying kaomoji category"
+  },
+  "avatarPickerCategoryTableFlip": "Table flip",
+  "@avatarPickerCategoryTableFlip": {
+    "description": "Title of the table-flipping kaomoji category"
+  },
+  "avatarPickerCategoryCat": "Cats",
+  "@avatarPickerCategoryCat": {
+    "description": "Title of the cat kaomoji category"
+  },
+  "avatarPickerCategoryBear": "Bears",
+  "@avatarPickerCategoryBear": {
+    "description": "Title of the bear kaomoji category"
+  },
+  "avatarPickerCategoryAnimal": "Other critters",
+  "@avatarPickerCategoryAnimal": {
+    "description": "Title of the other animal kaomoji category"
+  },
   "close": "Close",
   "@close": {
     "description": "Generic label for a close action (e.g. tooltip of the snackbar close icon)"

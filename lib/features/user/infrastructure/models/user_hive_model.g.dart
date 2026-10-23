@@ -20,13 +20,17 @@ class UserHiveModelAdapter extends TypeAdapter<UserHiveModel> {
       updatedAt: (fields[2] as num).toInt(),
       pseudo: fields[3] as String,
       email: fields[4] as String?,
+      avatarText: fields[5] == null ? '(◕‿◕)' : fields[5] as String,
+      colorArgb: (fields[8] as num?)?.toInt(),
+      ghostSpeed: fields[9] == null ? 1.0 : (fields[9] as num).toDouble(),
+      socialLinks: fields[7] == null ? {} : (fields[7] as Map).cast<int, String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserHiveModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -36,7 +40,15 @@ class UserHiveModelAdapter extends TypeAdapter<UserHiveModel> {
       ..writeByte(3)
       ..write(obj.pseudo)
       ..writeByte(4)
-      ..write(obj.email);
+      ..write(obj.email)
+      ..writeByte(5)
+      ..write(obj.avatarText)
+      ..writeByte(7)
+      ..write(obj.socialLinks)
+      ..writeByte(8)
+      ..write(obj.colorArgb)
+      ..writeByte(9)
+      ..write(obj.ghostSpeed);
   }
 
   @override

@@ -138,6 +138,215 @@
   "@searchResultsEmpty": {
     "description": "Message affiché sur la page de résultats quand aucun contenu ne correspond"
   },
+  "settingsProfileTitle": "Mon profil",
+  "@settingsProfileTitle": {
+    "description": "Titre de la section de configuration du profil dans les paramètres"
+  },
+  "settingsProfileNotConfigured": "Pas encore configuré",
+  "@settingsProfileNotConfigured": {
+    "description": "Sous-titre de la section profil quand l'utilisateur n'a jamais enregistré de profil"
+  },
+  "settingsPseudoLabel": "Pseudo",
+  "@settingsPseudoLabel": {
+    "description": "Label du champ pseudo du profil"
+  },
+  "settingsPseudoError": "3 caractères minimum : lettres sans accent et tirets uniquement.",
+  "@settingsPseudoError": {
+    "description": "Message d'erreur quand le pseudo contient des caractères interdits ou est trop court"
+  },
+  "settingsAvatarError": "Pas de mots dans l'icône, que des émotes.",
+  "@settingsAvatarError": {
+    "description": "Message d'erreur quand l'icône texte contient une suite de lettres (un mot)"
+  },
+  "settingsGhostSpeedLabel": "Force de l'effet ghost",
+  "@settingsGhostSpeedLabel": {
+    "description": "Label du curseur réglant la force de l'effet ghost de l'icône"
+  },
+  "settingsProfileInvalid": "Pseudo ou icône invalide.",
+  "@settingsProfileInvalid": {
+    "description": "Message snackbar d'erreur quand le profil est refusé à l'enregistrement (pseudo ou icône hors règles)"
+  },
+  "settingsAvatarLabel": "Icône (texte, emoji, kaomoji…)",
+  "@settingsAvatarLabel": {
+    "description": "Label du champ de l'icône texte du profil"
+  },
+  "settingsColorLabel": "Couleur",
+  "@settingsColorLabel": {
+    "description": "Label du sélecteur de couleur du profil, appliquée à l'effet ghost de l'icône"
+  },
+  "settingsSocialLabel": "Réseaux",
+  "@settingsSocialLabel": {
+    "description": "Label de la liste des liens vers les réseaux sociaux du profil"
+  },
+  "settingsSocialNetworkHint": "Réseau",
+  "@settingsSocialNetworkHint": {
+    "description": "Placeholder du sélecteur de réseau dans la ligne d'ajout d'un lien"
+  },
+  "settingsSocialHandleHint": "identifiant ou URL du profil",
+  "@settingsSocialHandleHint": {
+    "description": "Placeholder du champ identifiant dans la ligne d'ajout d'un lien vers un réseau"
+  },
+  "settingsSocialHandleError": "Identifiant invalide pour ce réseau, ou URL d'un autre site.",
+  "@settingsSocialHandleError": {
+    "description": "Message d'erreur quand l'identifiant saisi pour un réseau est inexploitable (espaces, vide)"
+  },
+  "settingsSocialAdd": "Ajouter",
+  "@settingsSocialAdd": {
+    "description": "Infobulle du bouton d'ajout d'un lien vers un réseau"
+  },
+  "settingsSocialRemove": "Retirer",
+  "@settingsSocialRemove": {
+    "description": "Infobulle du bouton de suppression d'un lien vers un réseau"
+  },
+  "settingsLinkedinDialogTitle": "LinkedIn. Vraiment ?",
+  "@settingsLinkedinDialogTitle": {
+    "description": "Titre de la popup moqueuse affichée quand l'utilisateur ajoute un lien LinkedIn"
+  },
+  "settingsLinkedinDialogBody": "Tu es sur une app sans serveur, sans recruteur et sans « Je suis ravi de vous annoncer… ». Personne ici ne veut voir ton parcours de « Head of Synergies ». Tu es sûr de toi ?",
+  "@settingsLinkedinDialogBody": {
+    "description": "Texte de la popup moqueuse affichée quand l'utilisateur ajoute un lien LinkedIn"
+  },
+  "settingsLinkedinDialogCancel": "Pardon, je retire",
+  "@settingsLinkedinDialogCancel": {
+    "description": "Bouton d'annulation de la popup LinkedIn"
+  },
+  "settingsLinkedinDialogConfirm": "J'assume, je suis un leader",
+  "@settingsLinkedinDialogConfirm": {
+    "description": "Bouton de confirmation de la popup LinkedIn"
+  },
+  "settingsLinkedinChallengeTitle": "Prouve-le.",
+  "@settingsLinkedinChallengeTitle": {
+    "description": "Titre de la popup exigeant 100 clics pour confirmer l'ajout d'un lien LinkedIn"
+  },
+  "settingsLinkedinChallengeBody": "Un vrai leader ne recule devant rien. Clique {count} fois pour confirmer que tu veux vraiment afficher ton LinkedIn.",
+  "@settingsLinkedinChallengeBody": {
+    "description": "Texte de la popup exigeant un nombre de clics pour confirmer l'ajout d'un lien LinkedIn",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsLinkedinChallengeButton": "Je suis sûr",
+  "@settingsLinkedinChallengeButton": {
+    "description": "Bouton sur lequel cliquer 100 fois pour confirmer l'ajout d'un lien LinkedIn"
+  },
+  "settingsLinkedinChallengeGiveUp": "J'abandonne",
+  "@settingsLinkedinChallengeGiveUp": {
+    "description": "Bouton pour abandonner la confirmation en 100 clics de l'ajout d'un lien LinkedIn"
+  },
+  "settingsLinkedinClownTitle": "BOUFON !",
+  "@settingsLinkedinClownTitle": {
+    "description": "Gros texte de la popup clown affichée après les 100 clics de confirmation LinkedIn"
+  },
+  "settingsLinkedinClownButton": "Je l'ai mérité",
+  "@settingsLinkedinClownButton": {
+    "description": "Bouton de fermeture de la popup clown. Le lien LinkedIn n'est jamais ajouté : c'est la blague"
+  },
+  "settingsProfileSaveButton": "Enregistrer",
+  "@settingsProfileSaveButton": {
+    "description": "Bouton d'enregistrement du profil"
+  },
+  "settingsProfileSaved": "Profil enregistré.",
+  "@settingsProfileSaved": {
+    "description": "Message snackbar affiché après l'enregistrement du profil"
+  },
+  "settingsProfileSaveError": "Échec de l'enregistrement du profil.",
+  "@settingsProfileSaveError": {
+    "description": "Message snackbar d'erreur affiché quand l'enregistrement du profil échoue"
+  },
+  "settingsPublishingTitle": "Publication",
+  "@settingsPublishingTitle": {
+    "description": "Titre de la section des réglages liés à l'écriture de contenus"
+  },
+  "settingsAnonymousByDefaultLabel": "Publier en anonyme par défaut",
+  "@settingsAnonymousByDefaultLabel": {
+    "description": "Libellé de la case à cocher activant la publication anonyme par défaut"
+  },
+  "settingsAnonymousByDefaultDescription": "Tes nouveaux contenus seront signés u/Anonyme. Tu pourras toujours changer d'avis au moment de publier.",
+  "@settingsAnonymousByDefaultDescription": {
+    "description": "Explication sous la case à cocher de publication anonyme par défaut"
+  },
+  "settingsSaveError": "Échec de l'enregistrement du réglage.",
+  "@settingsSaveError": {
+    "description": "Message snackbar d'erreur affiché quand un réglage ne peut pas être enregistré"
+  },
+  "settingsAvatarBrowse": "Parcourir les icônes",
+  "@settingsAvatarBrowse": {
+    "description": "Infobulle du bouton ouvrant le catalogue d'icônes depuis le champ icône du profil"
+  },
+  "avatarPickerTitle": "Choisis ton icône",
+  "@avatarPickerTitle": {
+    "description": "Titre de la page du catalogue d'icônes (kaomojis)"
+  },
+  "avatarPickerCategoryJoy": "Joie",
+  "@avatarPickerCategoryJoy": {
+    "description": "Titre de la catégorie de kaomojis joyeux"
+  },
+  "avatarPickerCategoryLove": "Amour",
+  "@avatarPickerCategoryLove": {
+    "description": "Titre de la catégorie de kaomojis amoureux"
+  },
+  "avatarPickerCategoryShy": "Gêne",
+  "@avatarPickerCategoryShy": {
+    "description": "Titre de la catégorie de kaomojis gênés ou timides"
+  },
+  "avatarPickerCategorySad": "Tristesse",
+  "@avatarPickerCategorySad": {
+    "description": "Titre de la catégorie de kaomojis tristes"
+  },
+  "avatarPickerCategoryAngry": "Colère",
+  "@avatarPickerCategoryAngry": {
+    "description": "Titre de la catégorie de kaomojis en colère"
+  },
+  "avatarPickerCategoryScared": "Peur",
+  "@avatarPickerCategoryScared": {
+    "description": "Titre de la catégorie de kaomojis effrayés"
+  },
+  "avatarPickerCategorySurprised": "Surprise",
+  "@avatarPickerCategorySurprised": {
+    "description": "Titre de la catégorie de kaomojis surpris"
+  },
+  "avatarPickerCategoryMeh": "Flemme",
+  "@avatarPickerCategoryMeh": {
+    "description": "Titre de la catégorie de kaomojis blasés, indifférents ou malicieux"
+  },
+  "avatarPickerCategoryGreeting": "Salut",
+  "@avatarPickerCategoryGreeting": {
+    "description": "Titre de la catégorie de kaomojis qui saluent"
+  },
+  "avatarPickerCategoryHug": "Câlins",
+  "@avatarPickerCategoryHug": {
+    "description": "Titre de la catégorie de kaomojis qui font un câlin"
+  },
+  "avatarPickerCategorySleepy": "Dodo",
+  "@avatarPickerCategorySleepy": {
+    "description": "Titre de la catégorie de kaomojis endormis"
+  },
+  "avatarPickerCategoryVictory": "Victoire",
+  "@avatarPickerCategoryVictory": {
+    "description": "Titre de la catégorie de kaomojis victorieux ou motivés"
+  },
+  "avatarPickerCategoryDance": "Danse",
+  "@avatarPickerCategoryDance": {
+    "description": "Titre de la catégorie de kaomojis qui dansent ou font la fête"
+  },
+  "avatarPickerCategoryTableFlip": "Table flip",
+  "@avatarPickerCategoryTableFlip": {
+    "description": "Titre de la catégorie de kaomojis qui renversent une table"
+  },
+  "avatarPickerCategoryCat": "Chats",
+  "@avatarPickerCategoryCat": {
+    "description": "Titre de la catégorie de kaomojis chats"
+  },
+  "avatarPickerCategoryBear": "Ours",
+  "@avatarPickerCategoryBear": {
+    "description": "Titre de la catégorie de kaomojis ours"
+  },
+  "avatarPickerCategoryAnimal": "Autres bestioles",
+  "@avatarPickerCategoryAnimal": {
+    "description": "Titre de la catégorie des autres kaomojis animaux"
+  },
   "close": "Fermer",
   "@close": {
     "description": "Libellé générique d'une action de fermeture (ex. infobulle de la croix des snackbars)"

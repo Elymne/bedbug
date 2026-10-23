@@ -110,74 +110,68 @@ void main() {
     }
   });
 
-  test(
-    'le broadcastScore décroît strictement quand le contenu est plus vieux, pour une origin donnée, via le vrai repository Hive',
-    () async {
-      final repository = container.read(contentRepositoryProvider);
-      final saveUsecase = container.read(saveContentUsecaseProvider);
-      final usecase = container.read(recalculateBroadcastScoresUsecaseProvider);
+  test('le broadcastScore décroît strictement quand le contenu est plus vieux, pour une origin donnée, via le vrai repository Hive', () async {
+    final repository = container.read(contentRepositoryProvider);
+    final saveUsecase = container.read(saveContentUsecaseProvider);
+    final usecase = container.read(recalculateBroadcastScoresUsecaseProvider);
 
-      final now = DateTime.now();
-      await saveUsecase(
-        SaveContentParams(
-          content: _buildContent(
-            id: 'recent',
-            origin: ContentOrigin.public,
-            createdAt: now.subtract(const Duration(hours: 6)),
-          ),
+    final now = DateTime.now();
+    await saveUsecase(
+      SaveContentParams(
+        content: _buildContent(
+          id: 'recent',
+          origin: ContentOrigin.public,
+          createdAt: now.subtract(const Duration(hours: 6)),
         ),
-      );
-      await saveUsecase(
-        SaveContentParams(
-          content: _buildContent(
-            id: 'old',
-            origin: ContentOrigin.public,
-            createdAt: now.subtract(const Duration(days: 5)),
-          ),
+      ),
+    );
+    await saveUsecase(
+      SaveContentParams(
+        content: _buildContent(
+          id: 'old',
+          origin: ContentOrigin.public,
+          createdAt: now.subtract(const Duration(days: 5)),
         ),
-      );
+      ),
+    );
 
-      await usecase(const NoParams());
+    await usecase(const NoParams());
 
-      final recentScore = await broadcastScoreOf(repository, 'recent');
-      final oldScore = await broadcastScoreOf(repository, 'old');
-      expect(recentScore, greaterThan(oldScore));
-    },
-  );
+    final recentScore = await broadcastScoreOf(repository, 'recent');
+    final oldScore = await broadcastScoreOf(repository, 'old');
+    expect(recentScore, greaterThan(oldScore));
+  });
 
-  test(
-    'à âge égal, favorited reste au moins aussi prioritaire que subscribed, lui-même au moins que public, via le vrai repository Hive',
-    () async {
-      final repository = container.read(contentRepositoryProvider);
-      final saveUsecase = container.read(saveContentUsecaseProvider);
-      final usecase = container.read(recalculateBroadcastScoresUsecaseProvider);
+  test('à âge égal, favorited reste au moins aussi prioritaire que subscribed, lui-même au moins que public, via le vrai repository Hive', () async {
+    final repository = container.read(contentRepositoryProvider);
+    final saveUsecase = container.read(saveContentUsecaseProvider);
+    final usecase = container.read(recalculateBroadcastScoresUsecaseProvider);
 
-      final age = DateTime.now().subtract(const Duration(days: 3));
-      await saveUsecase(
-        SaveContentParams(
-          content: _buildContent(id: 'favorited', origin: ContentOrigin.favorited, createdAt: age),
-        ),
-      );
-      await saveUsecase(
-        SaveContentParams(
-          content: _buildContent(id: 'subscribed', origin: ContentOrigin.subscribed, createdAt: age),
-        ),
-      );
-      await saveUsecase(
-        SaveContentParams(
-          content: _buildContent(id: 'public', origin: ContentOrigin.public, createdAt: age),
-        ),
-      );
+    final age = DateTime.now().subtract(const Duration(days: 3));
+    await saveUsecase(
+      SaveContentParams(
+        content: _buildContent(id: 'favorited', origin: ContentOrigin.favorited, createdAt: age),
+      ),
+    );
+    await saveUsecase(
+      SaveContentParams(
+        content: _buildContent(id: 'subscribed', origin: ContentOrigin.subscribed, createdAt: age),
+      ),
+    );
+    await saveUsecase(
+      SaveContentParams(
+        content: _buildContent(id: 'public', origin: ContentOrigin.public, createdAt: age),
+      ),
+    );
 
-      await usecase(const NoParams());
+    await usecase(const NoParams());
 
-      final favoritedScore = await broadcastScoreOf(repository, 'favorited');
-      final subscribedScore = await broadcastScoreOf(repository, 'subscribed');
-      final publicScore = await broadcastScoreOf(repository, 'public');
-      expect(favoritedScore, greaterThanOrEqualTo(subscribedScore));
-      expect(subscribedScore, greaterThanOrEqualTo(publicScore));
-    },
-  );
+    final favoritedScore = await broadcastScoreOf(repository, 'favorited');
+    final subscribedScore = await broadcastScoreOf(repository, 'subscribed');
+    final publicScore = await broadcastScoreOf(repository, 'public');
+    expect(favoritedScore, greaterThanOrEqualTo(subscribedScore));
+    expect(subscribedScore, greaterThanOrEqualTo(publicScore));
+  });
 
   test('augmenter le bounce ne peut jamais faire monter le broadcastScore, via le vrai repository Hive', () async {
     final repository = container.read(contentRepositoryProvider);

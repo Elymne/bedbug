@@ -1,4 +1,5 @@
 import 'package:bedbug/application/router/error_route_page.dart';
+import 'package:bedbug/application/screens/avatar_picker/avatar_picker_screen.dart';
 import 'package:bedbug/application/screens/content_detail/image_content_detail_screen.dart';
 import 'package:bedbug/application/screens/content_detail/link_content_detail_screen.dart';
 import 'package:bedbug/application/screens/content_detail/text_content_detail_screen.dart';
@@ -28,6 +29,12 @@ const String createPath = '/create';
 
 /// Chemin vers la page des paramètres.
 const String settingsPath = '/settings';
+
+/// Chemin vers la page de choix d'une icône de profil.
+///
+/// La page renvoie le kaomoji choisi via `context.pop`, à récupérer avec
+/// `context.push<String>(avatarPickerPath)`.
+const String avatarPickerPath = '/settings/avatar';
 
 /// Chemin vers la page de recherche dédiée.
 const String searchPath = '/search';
@@ -82,7 +89,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: splashPath, pageBuilder: (context, state) => _fadePage(const SplashScreen())),
       GoRoute(path: homePath, pageBuilder: (context, state) => _fadePage(const HomeScreen())),
       GoRoute(path: createPath, pageBuilder: (context, state) => _fadePage(const CreateScreen())),
-      GoRoute(path: settingsPath, pageBuilder: (context, state) => _fadePage(const SettingsScreen())),
+      GoRoute(
+        path: settingsPath,
+        pageBuilder: (context, state) => _fadePage(const SettingsScreen()),
+        routes: [GoRoute(path: 'avatar', pageBuilder: (context, state) => _fadePage(const AvatarPickerScreen()))],
+      ),
       GoRoute(
         path: searchPath,
         pageBuilder: (context, state) => _fadePage(const SearchScreen()),

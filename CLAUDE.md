@@ -817,6 +817,10 @@ All shared widgets live in `shared/application/widgets/`. Always reuse them befo
 
 **`ContentListView`** — list of tappable contents (tap opens the detail page). Accepts `contents`, a required `emptyChild` shown when the list is empty, and an optional scroll `controller`. Used by the home feed and the search results page.
 
+**`AppExpandableSection`** — rounded card with a tappable header (`title`, `icon`, optional `subtitle`) that expands to show `child`. Collapsed by default. Building block of the settings page: one section per setting.
+
+**`AppUserAvatar`** — a user's text icon (kaomoji, emoji, initials…) rendered with `AppGhostText`, the ghost layer using the user's colour. Accepts `avatarText`, `ghostColor`, optional `ghostIntensity` (1, the user's chosen strength), `fontSize` (32) and `isAnimating` (`true`; pass `false` in lists).
+
 ---
 
 #### Form fields
