@@ -15,12 +15,14 @@ class AppImage extends StatelessWidget {
   /// - [width] : largeur de la zone image.
   /// - [height] : hauteur de la zone image.
   /// - [borderRadius] : rayon des coins arrondis (défaut : 8).
+  /// - [fit] : façon d'adapter l'image à la zone (défaut : [BoxFit.cover], qui la recadre).
   const AppImage({
     super.key,
     required this.imageProvider,
     required this.width,
     required this.height,
     this.borderRadius = _defaultBorderRadius,
+    this.fit = BoxFit.cover,
   });
 
   /// Source de l'image. `null` affiche le placeholder.
@@ -34,6 +36,9 @@ class AppImage extends StatelessWidget {
 
   /// Rayon des coins arrondis.
   final double borderRadius;
+
+  /// Façon d'adapter l'image à la zone : [BoxFit.contain] pour la voir en entier.
+  final BoxFit fit;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +62,7 @@ class AppImage extends StatelessWidget {
       image: imageProvider!,
       width: width,
       height: height,
-      fit: BoxFit.cover,
+      fit: fit,
       frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
         if (wasSynchronouslyLoaded || frame != null) return child;
         return _buildPlaceholder();

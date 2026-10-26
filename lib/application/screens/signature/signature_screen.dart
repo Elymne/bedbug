@@ -7,6 +7,7 @@ import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/style/social_network_x.dart';
 import 'package:bedbug/application/widgets/content_list/content_list_view.dart';
 import 'package:bedbug/application/widgets/signature/app_signature_avatar.dart';
+import 'package:bedbug/application/widgets/signature/app_signature_bio.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
 import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
@@ -23,7 +24,8 @@ const double _kMaxBedbugHeight = 140;
 
 /// Page d'une signature : son bedbug en grand, son pseudo, ses réseaux, puis les contenus qu'elle a signés.
 ///
-/// Ouverte depuis les suggestions de la recherche. L'en-tête défile avec la
+/// Ouverte depuis les suggestions de la recherche, ou depuis la page de détail
+/// d'un contenu en touchant le pseudo ou le bedbug de son auteur. L'en-tête défile avec la
 /// liste des contenus, pour que le grand bedbug ne prenne pas toute la place.
 class SignatureScreen extends ConsumerWidget {
   /// Crée un [SignatureScreen].
@@ -48,69 +50,74 @@ class SignatureScreen extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: NestedScrollView(
-          headerSliverBuilder: (context, _) => [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: IconButton(
-                        onPressed: context.pop,
-                        icon: const Icon(Icons.arrow_back, color: AppColors.onLight),
+          headerSliverBuilder: (context, _) {
+            return [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: IconButton(
+                          onPressed: context.pop,
+                          icon: const Icon(Icons.arrow_back, color: AppColors.onLight),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxHeight: _kMaxBedbugHeight),
-                      child: FittedBox(
-                        child: Padding(
-                          // Laisse la place au tremblement du ghost, qui
-                          // déborde légèrement du texte.
-                          padding: const EdgeInsets.all(4),
-                          child: AppSignatureAvatar(
-                            avatarText: signature.avatarText,
-                            ghostColor: ghostColor,
-                            ghostSpeed: signature.ghostSpeed,
+                      const SizedBox(height: 8),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxHeight: _kMaxBedbugHeight),
+                        child: FittedBox(
+                          child: Padding(
+                            // Laisse la place au tremblement du ghost, qui
+                            // déborde légèrement du texte.
+                            padding: const EdgeInsets.all(4),
+                            child: AppSignatureAvatar(
+                              avatarText: signature.avatarText,
+                              ghostColor: ghostColor,
+                              ghostSpeed: signature.ghostSpeed,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    AppPrefixedText(
-                      prefix: AppPrefixes.signature,
-                      text: signature.pseudo,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.onLight),
-                    ),
-                    if (signature.socialLinks.isNotEmpty) ...[
-                      const SizedBox(height: 12),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          for (final network in signature.socialLinks.keys)
-                            AppTag(label: network.displayName, color: ghostColor),
-                        ],
+                      const SizedBox(height: 16),
+                      AppPrefixedText(
+                        prefix: AppPrefixes.signature,
+                        text: signature.pseudo,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.onLight),
                       ),
+                      if (signature.bio != null) ...[const SizedBox(height: 8), AppSignatureBio(bio: signature.bio!)],
+                      if (signature.socialLinks.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final network in signature.socialLinks.keys)
+                              AppTag(label: network.displayName, color: ghostColor),
+                          ],
+                        ),
+                      ],
+                      const SizedBox(height: 16),
+                      const Divider(height: 1),
                     ],
-                    const SizedBox(height: 16),
-                    const Divider(height: 1),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ];
+          },
           body: searchResultsNotifierWatcher.when(
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (_, _) => Center(child: Text(l10n.homeGetContentsUnknown)),
-            data: (state) => ContentListView(
-              contents: state.contents,
-              emptyChild: Center(child: Text(state.failureMessage ?? l10n.signatureContentsEmpty)),
-            ),
+            data: (state) {
+              return ContentListView(
+                contents: state.contents,
+                emptyChild: Center(child: Text(state.failureMessage ?? l10n.signatureContentsEmpty)),
+              );
+            },
           ),
         ),
       ),

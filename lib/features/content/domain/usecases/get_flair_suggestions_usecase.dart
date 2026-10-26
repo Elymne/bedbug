@@ -13,9 +13,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 const int maxFlairSuggestions = 6;
 
 /// Provider du [GetFlairSuggestionsUsecase].
-final getFlairSuggestionsUsecaseProvider = Provider<GetFlairSuggestionsUsecase>(
-  (ref) => GetFlairSuggestionsUsecase(ref.read(contentRepositoryProvider)),
-);
+final getFlairSuggestionsUsecaseProvider = Provider<GetFlairSuggestionsUsecase>((ref) {
+  return GetFlairSuggestionsUsecase(ref.read(contentRepositoryProvider));
+});
 
 /// Propose les flairs existants correspondant au début de la saisie de l'utilisateur.
 ///

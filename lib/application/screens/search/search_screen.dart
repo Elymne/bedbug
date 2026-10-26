@@ -59,9 +59,11 @@ class SearchScreen extends ConsumerWidget {
                       for (final flair in flairs)
                         FlairSuggestionTile(
                           suggestion: flair,
-                          onTap: () => context.push(
-                            Uri(path: searchResultsPath, queryParameters: {searchFlairParam: flair.flair}).toString(),
-                          ),
+                          onTap: () {
+                            context.push(
+                              Uri(path: searchResultsPath, queryParameters: {searchFlairParam: flair.flair}).toString(),
+                            );
+                          },
                         ),
                       for (final signature in signatures)
                         SignatureSuggestionTile(

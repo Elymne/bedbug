@@ -18,7 +18,13 @@ const double maxGhostSpeed = 5;
 /// Vitesse de l'effet ghost d'une signature dont l'auteur ne l'a pas réglée.
 const double defaultGhostSpeed = 1;
 
-/// Signature apposée sur un contenu : un pseudo, une icône texte animée d'un effet ghost, et des réseaux.
+/// Longueur maximale, en caractères, de la description d'une signature.
+///
+/// La description est une phrase pour se présenter, pas une biographie : elle
+/// voyage avec la signature de pair à pair et doit rester légère.
+const int maxSignatureBioLength = 80;
+
+/// Signature apposée sur un contenu : un pseudo, une icône texte animée d'un effet ghost, une courte description et des réseaux.
 ///
 /// Ce n'est pas une identité : sans serveur, rien ne la vérifie, et
 /// n'importe qui peut signer sous n'importe quel pseudo. Elle sert à donner
@@ -31,6 +37,7 @@ class Signature extends Entity {
   /// - [avatarText] : icône composée de texte (kaomoji, emoji, symboles), sans mot.
   /// - [colorArgb] : couleur de l'effet ghost appliqué à [avatarText], `null` pour la couleur par défaut de l'app.
   /// - [ghostSpeed] : vitesse de l'effet ghost, entre [minGhostSpeed] et [maxGhostSpeed].
+  /// - [bio] : courte description de l'auteur, au plus [maxSignatureBioLength] caractères, `null` s'il n'en a pas.
   /// - [socialLinks] : identifiant de l'auteur sur chaque réseau renseigné.
   Signature({
     required super.id,
@@ -40,6 +47,7 @@ class Signature extends Entity {
     this.avatarText = defaultSignatureAvatarText,
     this.colorArgb,
     this.ghostSpeed = defaultGhostSpeed,
+    this.bio,
     this.socialLinks = const {},
   });
 
@@ -62,6 +70,9 @@ class Signature extends Entity {
   /// normale) : l'amplitude, elle, ne change pas. Présentée à l'utilisateur
   /// comme la « force » de l'effet.
   final double ghostSpeed;
+
+  /// Courte description que l'auteur donne de lui-même, sur une seule ligne. `null` s'il n'en a pas.
+  final String? bio;
 
   /// Identifiant de l'auteur sur chaque réseau renseigné, au plus un par réseau.
   final Map<SocialNetwork, String> socialLinks;

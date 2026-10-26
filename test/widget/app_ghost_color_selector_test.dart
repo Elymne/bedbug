@@ -1,5 +1,5 @@
-import 'package:bedbug/application/screens/settings/widgets/signature_color_selector.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/widgets/signature/app_ghost_color_selector.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,7 +10,7 @@ import '../helpers/pump_app.dart';
 void main() {
   testWidgets('une pastille prédéfinie applique sa couleur', (tester) async {
     final control = FormControl<Color>(value: AppColors.primary);
-    await pumpApp(tester, Scaffold(body: SignatureColorSelector(control: control)));
+    await pumpApp(tester, Scaffold(body: AppGhostColorSelector(control: control)));
 
     // Deuxième pastille de la palette : AppColors.info.
     await tester.tap(find.byType(GestureDetector).at(1));
@@ -23,7 +23,7 @@ void main() {
   // le dialog plantait faute de MaterialLocalizations et ne s'ouvrait jamais.
   testWidgets('la pastille libre ouvre le color picker et applique la couleur saisie', (tester) async {
     final control = FormControl<Color>(value: AppColors.primary);
-    await pumpApp(tester, Scaffold(body: SignatureColorSelector(control: control)));
+    await pumpApp(tester, Scaffold(body: AppGhostColorSelector(control: control)));
 
     await tester.tap(find.byIcon(Icons.colorize));
     await tester.pumpAndSettle();

@@ -27,12 +27,14 @@ class SaveSignatureNotifier extends AsyncNotifier<SaveSignatureState> {
   /// - [colorArgb] : couleur de l'effet ghost de l'icône en ARGB 32 bits.
   /// - [ghostSpeed] : vitesse de l'effet ghost.
   /// - [socialLinks] : identifiants saisis par réseau.
+  /// - [bio] : description saisie, `null` ou vide pour ne pas en avoir.
   Future<void> save({
     required String pseudo,
     required String avatarText,
     required int colorArgb,
     required double ghostSpeed,
     required Map<SocialNetwork, String> socialLinks,
+    String? bio,
   }) async {
     state = const AsyncLoading();
 
@@ -43,6 +45,7 @@ class SaveSignatureNotifier extends AsyncNotifier<SaveSignatureState> {
         colorArgb: colorArgb,
         ghostSpeed: ghostSpeed,
         socialLinks: socialLinks,
+        bio: bio,
       ),
     );
     result.fold(

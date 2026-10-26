@@ -12,9 +12,9 @@ const String _settingsKey = 'user_settings';
 final hiveSettingsBoxProvider = Provider<Box<SettingsHiveModel>>((ref) => Hive.box<SettingsHiveModel>('settings'));
 
 /// Provider du [HiveSettingsRepository].
-final settingsRepositoryProvider = Provider<SettingsRepository>(
-  (ref) => HiveSettingsRepository(ref.read(hiveSettingsBoxProvider)),
-);
+final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
+  return HiveSettingsRepository(ref.read(hiveSettingsBoxProvider));
+});
 
 /// Implémentation de [SettingsRepository] utilisant Hive comme stockage local.
 class HiveSettingsRepository implements SettingsRepository {

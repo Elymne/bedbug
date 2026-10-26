@@ -10,9 +10,9 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetContentsByAuthorsUsecase].
-final getContentsByAuthorsUsecaseProvider = Provider<GetContentsByAuthorsUsecase>(
-  (ref) => GetContentsByAuthorsUsecase(ref.read(contentRepositoryProvider)),
-);
+final getContentsByAuthorsUsecaseProvider = Provider<GetContentsByAuthorsUsecase>((ref) {
+  return GetContentsByAuthorsUsecase(ref.read(contentRepositoryProvider));
+});
 
 /// Récupère tous les contenus signés par l'un des auteurs donnés.
 ///

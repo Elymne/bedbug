@@ -12,18 +12,19 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveLocalSignatureUsecase].
-final saveLocalSignatureUsecaseProvider = Provider<SaveLocalSignatureUsecase>(
-  (ref) => SaveLocalSignatureUsecase(ref.read(signatureRepositoryProvider)),
-);
+final saveLocalSignatureUsecaseProvider = Provider<SaveLocalSignatureUsecase>((ref) {
+  return SaveLocalSignatureUsecase(ref.read(signatureRepositoryProvider));
+});
 
 /// Enregistre le profil de l'utilisateur du téléphone.
 ///
 /// Ce profil sera diffusé avec les contenus de l'utilisateur : il est donc
 /// normalisé ici, une fois pour toutes, plutôt que de faire confiance à la
 /// saisie brute (espaces en bordure, identifiants collés sous forme d'URL ou
-/// préfixés de `@`, réseaux laissés vides). Le pseudo et l'icône doivent
-/// respecter les règles de `SignatureTextExtension` (pas d'espace ni de symbole
-/// dans le pseudo, pas de mot dans l'icône) et la vitesse du ghost est ramenée
+/// préfixés de `@`, réseaux laissés vides, description vide). Le pseudo,
+/// l'icône et la description doivent respecter les règles de
+/// `SignatureTextExtension` (pas d'espace ni de symbole dans le pseudo, pas de
+/// mot dans l'icône, description courte sur une ligne) et la vitesse du ghost est ramenée
 /// dans ses bornes. La date de création d'origine est conservée d'un
 /// enregistrement à l'autre.
 class SaveLocalSignatureUsecase extends Usecase<SaveLocalSignatureParams, SaveLocalSignatureFailure, Signature> {
@@ -37,7 +38,8 @@ class SaveLocalSignatureUsecase extends Usecase<SaveLocalSignatureParams, SaveLo
     try {
       final pseudo = params.pseudo.trim();
       final avatarText = params.avatarText.trim();
-      if (!pseudo.isValidPseudo || !avatarText.isValidAvatarText) {
+      final bio = params.bio?.trim() ?? '';
+      if (!pseudo.isValidPseudo || !avatarText.isValidAvatarText || !bio.isValidSignatureBio) {
         return const Left(SaveLocalSignatureFailure.invalidProfile);
       }
 
@@ -61,6 +63,7 @@ class SaveLocalSignatureUsecase extends Usecase<SaveLocalSignatureParams, SaveLo
           colorArgb: params.colorArgb,
           ghostSpeed: params.ghostSpeed.clamp(minGhostSpeed, maxGhostSpeed),
           socialLinks: socialLinks,
+          bio: bio.isEmpty ? null : bio,
         ),
       );
       return Right(signature);
@@ -79,7 +82,7 @@ class SaveLocalSignatureUsecase extends Usecase<SaveLocalSignatureParams, SaveLo
 
 /// Échecs possibles du [SaveLocalSignatureUsecase].
 enum SaveLocalSignatureFailure {
-  /// Le pseudo ou l'icône ne respecte pas les règles de `SignatureTextExtension`.
+  /// Le pseudo, l'icône ou la description ne respecte pas les règles de `SignatureTextExtension`.
   invalidProfile,
 
   /// Erreur de la couche de stockage locale.
@@ -98,12 +101,14 @@ class SaveLocalSignatureParams extends Params {
   /// - [colorArgb] : couleur de l'effet ghost de l'icône en ARGB 32 bits, `null` pour la couleur par défaut.
   /// - [ghostSpeed] : vitesse de l'effet ghost (ramenée dans ses bornes par le use case).
   /// - [socialLinks] : identifiants saisis par réseau, bruts (normalisés par le use case).
+  /// - [bio] : description saisie, `null` ou vide pour ne pas en avoir.
   const SaveLocalSignatureParams({
     required this.pseudo,
     required this.avatarText,
     required this.colorArgb,
     required this.ghostSpeed,
     required this.socialLinks,
+    this.bio,
   });
 
   /// Pseudo saisi.
@@ -120,4 +125,7 @@ class SaveLocalSignatureParams extends Params {
 
   /// Identifiants saisis par réseau, bruts.
   final Map<SocialNetwork, String> socialLinks;
+
+  /// Description saisie, `null` ou vide pour ne pas en avoir.
+  final String? bio;
 }

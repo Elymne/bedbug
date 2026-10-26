@@ -13,9 +13,9 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [RecalculateStorageUsageUsecase].
-final recalculateStorageUsageUsecaseProvider = Provider<RecalculateStorageUsageUsecase>(
-  (ref) => RecalculateStorageUsageUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider)),
-);
+final recalculateStorageUsageUsecaseProvider = Provider<RecalculateStorageUsageUsecase>((ref) {
+  return RecalculateStorageUsageUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider));
+});
 
 /// Recalcule `Storage.currentSizeInBytes` en additionnant `sizeInBytes` de
 /// tous les contenus stockés localement, puis persiste la valeur corrigée.

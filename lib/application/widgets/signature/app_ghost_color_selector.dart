@@ -17,16 +17,19 @@ const List<Color> _kPresetColors = [
   AppColors.failure,
 ];
 
-/// Sélecteur de la couleur de profil : quelques pastilles prédéfinies, et une pastille ouvrant un color picker libre.
+/// Sélecteur de la couleur d'un effet ghost : quelques pastilles prédéfinies, et une pastille ouvrant un color picker libre.
+///
+/// Sert pour la couleur d'une signature comme pour celle du bedbug d'une
+/// réaction.
 ///
 /// Piloté via un [FormControl] passé directement au widget, la couleur
 /// n'ayant pas de champ de saisie standard. La pastille libre affiche la
 /// couleur choisie dès qu'elle ne fait pas partie des couleurs prédéfinies.
-class SignatureColorSelector extends ConsumerWidget {
-  /// Crée un [SignatureColorSelector].
+class AppGhostColorSelector extends ConsumerWidget {
+  /// Crée un [AppGhostColorSelector].
   ///
   /// - [control] : contrôle portant la couleur sélectionnée.
-  const SignatureColorSelector({super.key, required this.control});
+  const AppGhostColorSelector({super.key, required this.control});
 
   /// Contrôle portant la couleur sélectionnée.
   final FormControl<Color> control;

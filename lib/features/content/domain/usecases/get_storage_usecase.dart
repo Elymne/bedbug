@@ -11,9 +11,9 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetStorageUsecase].
-final getStorageUsecaseProvider = Provider<GetStorageUsecase>(
-  (ref) => GetStorageUsecase(ref.read(storageRepositoryProvider)),
-);
+final getStorageUsecaseProvider = Provider<GetStorageUsecase>((ref) {
+  return GetStorageUsecase(ref.read(storageRepositoryProvider));
+});
 
 /// Récupère la configuration de stockage local.
 ///

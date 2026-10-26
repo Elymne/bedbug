@@ -1,5 +1,6 @@
 import 'package:bedbug/features/content/infrastructure/models/comment_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
+import 'package:bedbug/features/content/infrastructure/models/reaction_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/storage_hive_model.dart';
 import 'package:bedbug/features/discovery/infrastructure/models/keychain_hive_model.dart';
 import 'package:bedbug/features/settings/infrastructure/models/settings_hive_model.dart';
@@ -18,6 +19,7 @@ Future<void> initHive() async {
     Hive.openBox<SignatureHiveModel>('signatures'),
     Hive.openBox<ContentHiveModel>('contents'),
     Hive.openBox<CommentHiveModel>('comments'),
+    Hive.openBox<ReactionHiveModel>('reactions'),
     Hive.openBox<KeychainHiveModel>('keychains'),
     Hive.openBox<StorageHiveModel>('storage'),
     Hive.openBox<SettingsHiveModel>('settings'),

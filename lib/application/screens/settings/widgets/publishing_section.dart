@@ -29,22 +29,24 @@ class PublishingSection extends ConsumerWidget {
     return userSettingsNotifierWatcher.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (_, _) => Text(l10n.homeGetContentsUnknown),
-      data: (state) => CheckboxListTile(
-        value: state.settings.isAnonymousByDefault,
-        onChanged: (isChecked) {
-          ref.read(userSettingsNotifierProvider.notifier).setAnonymousByDefault(isChecked ?? false);
-        },
-        contentPadding: EdgeInsets.zero,
-        controlAffinity: ListTileControlAffinity.leading,
-        title: Text(
-          l10n.settingsAnonymousByDefaultLabel,
-          style: const TextStyle(fontSize: 15, color: AppColors.onLight),
-        ),
-        subtitle: Text(
-          l10n.settingsAnonymousByDefaultDescription,
-          style: const TextStyle(fontSize: 13, color: AppColors.disabled),
-        ),
-      ),
+      data: (state) {
+        return CheckboxListTile(
+          value: state.settings.isAnonymousByDefault,
+          onChanged: (isChecked) {
+            ref.read(userSettingsNotifierProvider.notifier).setAnonymousByDefault(isChecked ?? false);
+          },
+          contentPadding: EdgeInsets.zero,
+          controlAffinity: ListTileControlAffinity.leading,
+          title: Text(
+            l10n.settingsAnonymousByDefaultLabel,
+            style: const TextStyle(fontSize: 15, color: AppColors.onLight),
+          ),
+          subtitle: Text(
+            l10n.settingsAnonymousByDefaultDescription,
+            style: const TextStyle(fontSize: 13, color: AppColors.disabled),
+          ),
+        );
+      },
     );
   }
 }

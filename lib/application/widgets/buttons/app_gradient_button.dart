@@ -2,7 +2,7 @@ import 'package:bedbug/application/style/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Bouton générique avec fond en dégradé et coins arrondis.
+/// Bouton générique avec fond uni (couleur `onSurface` de l'app) et coins arrondis.
 ///
 /// Affiche [child] en état normal. Quand [isLoading] est `true`,
 /// le bouton est désactivé et affiche un [CircularProgressIndicator].
@@ -34,14 +34,7 @@ class AppGradientButton extends ConsumerWidget {
         opacity: isDisabled ? 0.5 : 1.0,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: const LinearGradient(
-              colors: [AppColors.onLight, AppColors.onLightDeep],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: AppColors.onLight),
           child: isLoading
               ? const SizedBox(
                   width: 16,

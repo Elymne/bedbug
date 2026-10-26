@@ -17,9 +17,11 @@ import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
+import 'package:bedbug/features/content/domain/object_values/content_image.dart';
 import 'package:bedbug/features/content/domain/usecases/clear_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
+import 'package:bedbug/features/content/domain/usecases/seed_reactions_usecase.dart';
 import 'package:bedbug/features/signature/domain/usecases/seed_signatures_usecase.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
@@ -38,6 +40,13 @@ class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
 class _FakeSeedContentsUsecase implements SeedContentsUsecase {
   @override
   Future<Either<SeedContentsFailure, void>> call(SeedContentsParams params) async => const Right(null);
+}
+
+class _FakeSeedReactionsUsecase implements SeedReactionsUsecase {
+  @override
+  Future<Either<SeedReactionsFailure, void>> call(SeedReactionsParams params) async {
+    return const Right(null);
+  }
 }
 
 /// Fake [SeedSignaturesUsecase] ne touchant à aucune infrastructure réelle.
@@ -104,9 +113,7 @@ ImageContent _buildImageContent() {
     displayScore: 1,
     bounce: 0,
     sizeInBytes: 10,
-    fileName: 'inexistant.jpg',
-    imageWidth: 100,
-    imageHeight: 100,
+    images: const [ContentImage(fileName: 'inexistant.jpg', width: 100, height: 100)],
     title: 'Titre',
   );
 }
@@ -137,6 +144,7 @@ void main() {
       overrides: [
         getHomeFeedUsecaseProvider.overrideWithValue(_FakeGetHomeFeedUsecase()),
         seedContentsUsecaseProvider.overrideWithValue(_FakeSeedContentsUsecase()),
+        seedReactionsUsecaseProvider.overrideWithValue(_FakeSeedReactionsUsecase()),
         seedSignaturesUsecaseProvider.overrideWithValue(_FakeSeedSignaturesUsecase()),
         clearContentsUsecaseProvider.overrideWithValue(_FakeClearContentsUsecase()),
         appDocsDirProvider.overrideWith((ref) async => Directory.systemTemp),

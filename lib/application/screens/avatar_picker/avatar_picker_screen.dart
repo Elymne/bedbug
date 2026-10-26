@@ -12,9 +12,17 @@ import 'package:go_router/go_router.dart';
 ///
 /// Un tap sur un kaomoji ferme la page et le renvoie à l'appelant via
 /// `context.pop`. Le retour sans choix renvoie `null`.
+///
+/// Sert au choix de l'icône d'une signature comme au choix du bedbug d'une
+/// réaction : seul le titre change.
 class AvatarPickerScreen extends ConsumerWidget {
   /// Crée un [AvatarPickerScreen].
-  const AvatarPickerScreen({super.key});
+  ///
+  /// - [title] : titre de la page, celui du choix d'icône de profil si `null`.
+  const AvatarPickerScreen({super.key, this.title});
+
+  /// Titre de la page. `null` pour celui du choix d'icône de profil.
+  final String? title;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,7 +33,7 @@ class AvatarPickerScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            AppPageHeader(title: l10n.avatarPickerTitle, onBack: context.pop),
+            AppPageHeader(title: title ?? l10n.avatarPickerTitle, onBack: context.pop),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(AppValues.baseMargin, 0, AppValues.baseMargin, 32),

@@ -43,6 +43,7 @@ dependencies:
   # MaterialLocalizations ne sont pas celles de `flutter/material` utilisé par
   # l'app — le dialog du picker plante alors avant même de s'afficher.
   flex_color_picker: ^3.7.1
+  gal: ^2.3.3
 
 dev_dependencies:
   flutter_test:

@@ -19,9 +19,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// Provider du [SaveContentUsecase].
-final saveContentUsecaseProvider = Provider<SaveContentUsecase>(
-  (ref) => SaveContentUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider)),
-);
+final saveContentUsecaseProvider = Provider<SaveContentUsecase>((ref) {
+  return SaveContentUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider));
+});
 
 /// Persiste un contenu dans le stockage local.
 ///
@@ -59,8 +59,9 @@ class SaveContentUsecase extends Usecase<SaveContentParams, SaveContentFailure, 
   ///
   /// - [TextContent]/[LinkContent] : somme des octets UTF-8 de leurs champs
   ///   texte, calculable directement depuis les données du domaine.
-  /// - [ImageContent] : taille du fichier image sur disque, seule mesure
-  ///   fidèle au poids effectivement occupé sur l'appareil.
+  /// - [ImageContent] : taille cumulée de ses fichiers images sur disque, seule
+  ///   mesure fidèle au poids effectivement occupé sur l'appareil. Un fichier
+  ///   manquant compte pour `0`.
   Future<int> _computeSizeInBytes(Content content) async {
     if (content is TextContent) {
       return utf8.encode(content.title).length + utf8.encode(content.body).length;
@@ -80,11 +81,14 @@ class SaveContentUsecase extends Usecase<SaveContentParams, SaveContentFailure, 
 
     if (content is ImageContent) {
       final dir = await getApplicationDocumentsDirectory();
-      final file = File('${dir.path}/$contentImagesFolder/${content.fileName}');
-      if (!file.existsSync()) {
-        return 0;
+      var totalSizeInBytes = 0;
+      for (final image in content.images) {
+        final file = File('${dir.path}/$contentImagesFolder/${image.fileName}');
+        if (file.existsSync()) {
+          totalSizeInBytes += file.lengthSync();
+        }
       }
-      return file.lengthSync();
+      return totalSizeInBytes;
     }
 
     return content.sizeInBytes;

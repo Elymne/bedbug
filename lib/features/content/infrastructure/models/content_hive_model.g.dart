@@ -32,6 +32,9 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       fileName: fields[11] as String?,
       imageWidth: (fields[17] as num?)?.toInt(),
       imageHeight: (fields[18] as num?)?.toInt(),
+      imageFileNames: fields[24] == null ? [] : (fields[24] as List).cast<String>(),
+      imageWidths: fields[25] == null ? [] : (fields[25] as List).cast<int>(),
+      imageHeights: fields[26] == null ? [] : (fields[26] as List).cast<int>(),
       flair: fields[23] == null ? 'public' : fields[23] as String,
       sizeInBytes: (fields[13] as num).toInt(),
       ogImageUrl: fields[14] as String?,
@@ -44,7 +47,7 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
   @override
   void write(BinaryWriter writer, ContentHiveModel obj) {
     writer
-      ..writeByte(23)
+      ..writeByte(26)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -90,7 +93,13 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       ..writeByte(22)
       ..write(obj.tagValues)
       ..writeByte(23)
-      ..write(obj.flair);
+      ..write(obj.flair)
+      ..writeByte(24)
+      ..write(obj.imageFileNames)
+      ..writeByte(25)
+      ..write(obj.imageWidths)
+      ..writeByte(26)
+      ..write(obj.imageHeights);
   }
 
   @override

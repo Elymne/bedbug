@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
+import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/create/create_screen.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
+import 'package:bedbug/application/widgets/texts/app_loading_text.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/tag.dart';
 import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
 import 'package:bedbug/features/settings/domain/usecases/get_settings_usecase.dart';
@@ -24,6 +29,19 @@ class _FakeSaveContentUsecase implements SaveContentUsecase {
   Future<Either<SaveContentFailure, Content>> call(SaveContentParams params) async {
     savedContent = params.content;
     return Right(params.content);
+  }
+}
+
+/// Fake [SaveContentUsecase] qui ne termine la sauvegarde qu'une fois [completer] complété,
+/// pour observer l'écran pendant une publication lente.
+class _SlowSaveContentUsecase extends _FakeSaveContentUsecase {
+  /// Complété par le test pour laisser la sauvegarde se terminer.
+  final Completer<void> completer = Completer<void>();
+
+  @override
+  Future<Either<SaveContentFailure, Content>> call(SaveContentParams params) async {
+    await completer.future;
+    return super.call(params);
   }
 }
 
@@ -59,6 +77,10 @@ Future<void> _pumpCreateScreen(
         builder: (context, state) => const Scaffold(body: Text('home')),
       ),
       GoRoute(path: '/create', builder: (context, state) => const CreateScreen()),
+      GoRoute(
+        path: contentDetailPath,
+        builder: (context, state) => Scaffold(body: Text('detail ${(state.extra! as TextContent).title}')),
+      ),
     ],
   );
 
@@ -119,7 +141,7 @@ void main() {
     expect(fakeSaveUsecase.savedContent!.authorId, anonymousSignatureId);
   });
 
-  testWidgets('crée un contenu texte et revient à l\'écran précédent', (tester) async {
+  testWidgets('crée un contenu texte, ouvre son détail, et un retour ramène à l\'accueil', (tester) async {
     final fakeSaveUsecase = _FakeSaveContentUsecase();
     final router = GoRouter(
       initialLocation: '/',
@@ -129,6 +151,10 @@ void main() {
           builder: (context, state) => const Scaffold(body: Text('home')),
         ),
         GoRoute(path: '/create', builder: (context, state) => const CreateScreen()),
+        GoRoute(
+          path: contentDetailPath,
+          builder: (context, state) => Scaffold(body: Text('detail ${(state.extra! as TextContent).title}')),
+        ),
       ],
     );
 
@@ -162,6 +188,12 @@ void main() {
 
     expect(fakeSaveUsecase.savedContent, isNotNull);
     expect(fakeSaveUsecase.savedContent!.flair, 'france');
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.text('detail Mon titre'), findsOneWidget);
+
+    router.pop();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
     expect(find.text('home'), findsOneWidget);
   });
 
@@ -175,6 +207,10 @@ void main() {
           builder: (context, state) => const Scaffold(body: Text('home')),
         ),
         GoRoute(path: '/create', builder: (context, state) => const CreateScreen()),
+        GoRoute(
+          path: contentDetailPath,
+          builder: (context, state) => Scaffold(body: Text('detail ${(state.extra! as TextContent).title}')),
+        ),
       ],
     );
 
@@ -220,6 +256,10 @@ void main() {
           builder: (context, state) => const Scaffold(body: Text('home')),
         ),
         GoRoute(path: '/create', builder: (context, state) => const CreateScreen()),
+        GoRoute(
+          path: contentDetailPath,
+          builder: (context, state) => Scaffold(body: Text('detail ${(state.extra! as TextContent).title}')),
+        ),
       ],
     );
 
@@ -256,5 +296,24 @@ void main() {
     expect(fakeSaveUsecase.savedContent, isNotNull);
     expect(fakeSaveUsecase.savedContent!.tags, containsAll(<Tag>[Tag.alert, Tag.question]));
     expect(fakeSaveUsecase.savedContent!.tags, hasLength(2));
+  });
+
+  testWidgets('affiche une page de chargement pendant toute la publication, puis ouvre le contenu créé', (
+    tester,
+  ) async {
+    final slowSaveUsecase = _SlowSaveContentUsecase();
+    await _pumpCreateScreen(tester, saveUsecase: slowSaveUsecase);
+
+    await _fillAndSaveTextContent(tester);
+
+    expect(find.byType(AppLoadingText), findsOneWidget);
+
+    slowSaveUsecase.completer.complete();
+    await tester.pump();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.byType(AppLoadingText), findsNothing);
+    expect(find.text('detail Mon titre'), findsOneWidget);
   });
 }

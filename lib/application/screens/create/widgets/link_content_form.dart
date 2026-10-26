@@ -30,6 +30,7 @@ class LinkContentForm extends ConsumerWidget {
       children: [
         ReactiveTextField<String>(
           formControl: titleControl,
+          textCapitalization: TextCapitalization.sentences,
           validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
           decoration: InputDecoration(labelText: l10n.createTextTitleLabel),
         ),

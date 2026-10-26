@@ -14,9 +14,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 const int maxSignatureSuggestions = 4;
 
 /// Provider du [GetSignatureSuggestionsUsecase].
-final getSignatureSuggestionsUsecaseProvider = Provider<GetSignatureSuggestionsUsecase>(
-  (ref) => GetSignatureSuggestionsUsecase(ref.read(signatureRepositoryProvider)),
-);
+final getSignatureSuggestionsUsecaseProvider = Provider<GetSignatureSuggestionsUsecase>((ref) {
+  return GetSignatureSuggestionsUsecase(ref.read(signatureRepositoryProvider));
+});
 
 /// Propose les signatures connues de l'appareil dont le pseudo commence par la saisie de l'utilisateur.
 ///

@@ -1,3 +1,5 @@
+import 'package:bedbug/features/signature/domain/entities/signature.dart';
+
 /// Longueur minimale d'un pseudo.
 const int minPseudoLength = 3;
 
@@ -17,7 +19,7 @@ final RegExp _wordLetterRun = RegExp('[A-Za-zÀ-ÖØ-öø-ÿＡ-Ｚａ-ｚͰ-Ͽ�
 /// Suite de lettres tolérée malgré tout : le `zzZ` des kaomojis endormis.
 final RegExp _sleepLetterRun = RegExp(r'^[zZ]+$');
 
-/// Règles de forme du pseudo et de l'icône texte d'un profil.
+/// Règles de forme du pseudo, de l'icône texte et de la description d'un profil.
 ///
 /// Centralisées dans le domaine parce qu'elles valent partout : à la saisie
 /// (formulaire), à l'enregistrement (use case), et plus tard à la réception
@@ -42,5 +44,13 @@ extension SignatureTextExtension on String {
       return false;
     }
     return _wordLetterRun.allMatches(this).every((match) => _sleepLetterRun.hasMatch(match.group(0)!));
+  }
+
+  /// Indique si ce texte est une description valide : une seule ligne, au plus [maxSignatureBioLength] caractères.
+  ///
+  /// La longueur est comptée en caractères Unicode (runes) et non en unités
+  /// UTF-16, pour qu'un emoji ne compte pas double.
+  bool get isValidSignatureBio {
+    return runes.length <= maxSignatureBioLength && !contains('\n');
   }
 }

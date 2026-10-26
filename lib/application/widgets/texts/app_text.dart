@@ -69,10 +69,12 @@ class _State extends State<AppText> with SingleTickerProviderStateMixin {
         final message = widget.message ?? 'l10n.errorDefaultText';
         return AnimatedBuilder(
           animation: _animation,
-          builder: (context, child) => Transform.translate(
-            offset: Offset(8.0 * (1.0 - _controller.value) * sin(_controller.value * pi * 6), 0),
-            child: child,
-          ),
+          builder: (context, child) {
+            return Transform.translate(
+              offset: Offset(8.0 * (1.0 - _controller.value) * sin(_controller.value * pi * 6), 0),
+              child: child,
+            );
+          },
           child: Text(message, style: const TextStyle(color: Colors.red)),
         );
       case AppTextType.info:

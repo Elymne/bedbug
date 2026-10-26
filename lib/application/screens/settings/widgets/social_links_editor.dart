@@ -218,22 +218,24 @@ class _State extends ConsumerState<SocialLinksEditor> {
     final isConfirmed = await showDialog<bool>(
       context: context,
       barrierColor: AppColors.barrier,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        surfaceTintColor: AppColors.surface,
-        title: Text(l10n.settingsLinkedinDialogTitle),
-        content: Text(l10n.settingsLinkedinDialogBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(l10n.settingsLinkedinDialogCancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(l10n.settingsLinkedinDialogConfirm),
-          ),
-        ],
-      ),
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.surface,
+          surfaceTintColor: AppColors.surface,
+          title: Text(l10n.settingsLinkedinDialogTitle),
+          content: Text(l10n.settingsLinkedinDialogBody),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(l10n.settingsLinkedinDialogCancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.settingsLinkedinDialogConfirm),
+            ),
+          ],
+        );
+      },
     );
     if (isConfirmed != true || !mounted) {
       return;

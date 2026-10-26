@@ -27,9 +27,9 @@ const double _downscaleFactor = 0.8;
 const int _minDimension = 640;
 
 /// Provider du [FlutterImageCompressImageCompressorGateway].
-final imageCompressorGatewayProvider = Provider<ImageCompressorGateway>(
-  (ref) => FlutterImageCompressImageCompressorGateway(),
-);
+final imageCompressorGatewayProvider = Provider<ImageCompressorGateway>((ref) {
+  return FlutterImageCompressImageCompressorGateway();
+});
 
 /// Implémentation de [ImageCompressorGateway] utilisant `flutter_image_compress`.
 ///

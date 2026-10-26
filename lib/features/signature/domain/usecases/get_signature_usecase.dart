@@ -11,9 +11,9 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetSignatureUsecase].
-final getSignatureUsecaseProvider = Provider<GetSignatureUsecase>(
-  (ref) => GetSignatureUsecase(ref.read(signatureRepositoryProvider)),
-);
+final getSignatureUsecaseProvider = Provider<GetSignatureUsecase>((ref) {
+  return GetSignatureUsecase(ref.read(signatureRepositoryProvider));
+});
 
 /// Retrouve le profil à afficher pour l'auteur d'un contenu.
 ///

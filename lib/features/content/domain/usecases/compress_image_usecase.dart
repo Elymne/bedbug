@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:bedbug/features/content/domain/gateways/image_compressor_gateway.dart';
 import 'package:bedbug/features/content/domain/object_values/compressed_image.dart';
 import 'package:bedbug/features/content/infrastructure/gateways/flutter_image_compress_image_compressor_gateway.dart';
@@ -14,22 +16,32 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// les pixels supplémentaires ne font qu'alourdir le fichier.
 const int maxContentImageDimension = 2048;
 
-/// Poids maximal visé pour une image de contenu, en octets (500 Ko).
+/// Poids maximal visé pour l'image d'un contenu qui n'en contient qu'une, en octets (500 Ko).
+///
+/// Quand un contenu regroupe plusieurs images, ce budget est réduit pour
+/// chacune d'elles (voir [CompressImageUsecase]).
 const int maxContentImageSizeInBytes = 500 * 1024;
 
 /// Provider du [CompressImageUsecase].
-final compressImageUsecaseProvider = Provider<CompressImageUsecase>(
-  (ref) => CompressImageUsecase(ref.read(imageCompressorGatewayProvider)),
-);
+final compressImageUsecaseProvider = Provider<CompressImageUsecase>((ref) {
+  return CompressImageUsecase(ref.read(imageCompressorGatewayProvider));
+});
 
-/// Recompresse une image avant qu'elle ne devienne un contenu.
+/// Recompresse une image avant qu'elle ne devienne (une partie d') un contenu.
 ///
 /// Les photos prises par les smartphones récents pèsent plusieurs Mo pour une
 /// résolution très supérieure à ce que l'app affiche. Ces images sont ensuite
 /// stockées localement et transférées de pair à pair (BLE / Wi-Fi), où chaque
-/// octet compte : on les ramène donc à [maxContentImageDimension] et sous
-/// [maxContentImageSizeInBytes] dès leur import, une fois pour toutes, plutôt
-/// que de payer leur poids d'origine à chaque stockage et chaque transfert.
+/// octet compte : on les ramène donc à [maxContentImageDimension] et sous un
+/// poids maximal dès leur import, une fois pour toutes, plutôt que de payer
+/// leur poids d'origine à chaque stockage et chaque transfert.
+///
+/// Le poids maximal dépend du nombre d'images du contenu : il vaut
+/// [maxContentImageSizeInBytes] divisé par la racine carrée de ce nombre. Plus
+/// un contenu a d'images, plus chacune est compressée, sans que le poids total
+/// n'explose (≈ 1,6 Mo pour 10 images au lieu de 5 Mo) ni que chaque image ne
+/// devienne illisible, comme ce serait le cas avec un budget total fixe
+/// partagé à parts égales.
 class CompressImageUsecase extends Usecase<CompressImageParams, CompressImageFailure, CompressedImage> {
   /// Crée un [CompressImageUsecase].
   CompressImageUsecase(this._imageCompressorGateway);
@@ -39,10 +51,11 @@ class CompressImageUsecase extends Usecase<CompressImageParams, CompressImageFai
   @override
   Future<Either<CompressImageFailure, CompressedImage>> call(CompressImageParams params) async {
     try {
+      final imageCount = math.max(1, params.imageCount);
       final image = await _imageCompressorGateway.compress(
         params.sourcePath,
         maxDimension: maxContentImageDimension,
-        maxSizeInBytes: maxContentImageSizeInBytes,
+        maxSizeInBytes: (maxContentImageSizeInBytes / math.sqrt(imageCount)).round(),
       );
       return Right(image);
     } on ImageCompressionException catch (error, stackTrace) {
@@ -69,8 +82,13 @@ class CompressImageParams extends Params {
   /// Crée des [CompressImageParams].
   ///
   /// - [sourcePath] : chemin absolu de l'image d'origine à recompresser.
-  const CompressImageParams({required this.sourcePath});
+  /// - [imageCount] : nombre total d'images du contenu auquel appartient cette
+  ///   image, qui détermine son poids maximal.
+  const CompressImageParams({required this.sourcePath, required this.imageCount});
 
   /// Chemin absolu de l'image d'origine.
   final String sourcePath;
+
+  /// Nombre total d'images du contenu auquel appartient cette image.
+  final int imageCount;
 }

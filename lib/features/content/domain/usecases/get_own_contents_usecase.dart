@@ -11,9 +11,9 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetOwnContentsUsecase].
-final getOwnContentsUsecaseProvider = Provider<GetOwnContentsUsecase>(
-  (ref) => GetOwnContentsUsecase(ref.read(contentRepositoryProvider)),
-);
+final getOwnContentsUsecaseProvider = Provider<GetOwnContentsUsecase>((ref) {
+  return GetOwnContentsUsecase(ref.read(contentRepositoryProvider));
+});
 
 /// Récupère les contenus créés sur cet appareil par son utilisateur, anonymes compris.
 ///

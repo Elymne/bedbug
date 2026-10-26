@@ -1,19 +1,25 @@
 import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/object_values/content_image.dart';
 
-/// Contenu de type image, référençant un fichier stocké localement.
+/// Nombre maximal d'images regroupées dans un même [ImageContent].
 ///
-/// Le fichier est stocké dans le dossier images géré par l'application.
+/// Chaque image alourdit le contenu, qui est stocké localement puis transféré
+/// de pair à pair : au-delà d'une dizaine, le contenu deviendrait trop lourd à
+/// diffuser, même avec des images plus compressées.
+const int maxImagesPerContent = 10;
+
+/// Contenu de type image, regroupant une ou plusieurs images stockées localement.
+///
+/// Les fichiers sont stockés dans le dossier images géré par l'application.
 /// Le chemin absolu est reconstruit à l'exécution via `path_provider` —
-/// seul le nom de fichier est persisté.
+/// seuls les noms de fichier sont persistés.
 class ImageContent extends Content {
   /// Crée un [ImageContent].
   ///
-  /// - [fileName] : nom du fichier image dans le dossier géré par l'app
-  ///   (ex. `550e8400-e29b-41d4-a716-446655440000.jpg`).
-  /// - [imageWidth] : largeur native de l'image en pixels.
-  /// - [imageHeight] : hauteur native de l'image en pixels.
-  /// - [title] : titre optionnel accompagnant l'image.
-  /// - [body] : description optionnelle accompagnant l'image.
+  /// - [images] : images du contenu, dans l'ordre d'affichage (au moins une,
+  ///   au plus [maxImagesPerContent]).
+  /// - [title] : titre optionnel accompagnant les images.
+  /// - [body] : description optionnelle accompagnant les images.
   ImageContent({
     required super.id,
     required super.createdAt,
@@ -28,26 +34,18 @@ class ImageContent extends Content {
     required super.sizeInBytes,
     required super.flair,
     super.tags,
-    required this.fileName,
-    required this.imageWidth,
-    required this.imageHeight,
+    required this.images,
     required this.title,
     this.body,
   });
 
-  /// Nom du fichier image dans le dossier géré par l'application.
-  final String fileName;
+  /// Images du contenu, dans l'ordre d'affichage.
+  final List<ContentImage> images;
 
-  /// Largeur native de l'image en pixels.
-  final int imageWidth;
-
-  /// Hauteur native de l'image en pixels.
-  final int imageHeight;
-
-  /// Titre accompagnant l'image.
+  /// Titre accompagnant les images.
   final String title;
 
-  /// Description optionnelle accompagnant l'image.
+  /// Description optionnelle accompagnant les images.
   final String? body;
 
   /// Recrée cet [ImageContent] avec ses scores mis à jour, pour permettre au
@@ -69,9 +67,7 @@ class ImageContent extends Content {
       sizeInBytes: sizeInBytes,
       flair: flair,
       tags: tags,
-      fileName: fileName,
-      imageWidth: imageWidth,
-      imageHeight: imageHeight,
+      images: images,
       title: title,
       body: body,
     );
@@ -79,8 +75,8 @@ class ImageContent extends Content {
 
   /// Recrée cet [ImageContent] avec un [sizeInBytes] mis à jour, pour
   /// permettre au use case de sauvegarde de persister le poids réel (taille
-  /// du fichier sur disque) sans connaître le détail des champs propres à ce
-  /// sous-type.
+  /// cumulée des fichiers sur disque) sans connaître le détail des champs
+  /// propres à ce sous-type.
   @override
   ImageContent copyWithSizeInBytes(int sizeInBytes) {
     return ImageContent(
@@ -97,9 +93,7 @@ class ImageContent extends Content {
       sizeInBytes: sizeInBytes,
       flair: flair,
       tags: tags,
-      fileName: fileName,
-      imageWidth: imageWidth,
-      imageHeight: imageHeight,
+      images: images,
       title: title,
       body: body,
     );

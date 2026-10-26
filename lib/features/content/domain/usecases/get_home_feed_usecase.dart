@@ -10,9 +10,9 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetHomeFeedUsecase].
-final getHomeFeedUsecaseProvider = Provider<GetHomeFeedUsecase>(
-  (ref) => GetHomeFeedUsecase(ref.read(contentRepositoryProvider)),
-);
+final getHomeFeedUsecaseProvider = Provider<GetHomeFeedUsecase>((ref) {
+  return GetHomeFeedUsecase(ref.read(contentRepositoryProvider));
+});
 
 /// Récupère le flux de contenus de la page d'accueil, classé par les
 /// algorithmes de scoring de l'application.

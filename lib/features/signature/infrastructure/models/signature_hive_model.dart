@@ -19,6 +19,7 @@ class SignatureHiveModel extends HiveObject {
   /// - [colorArgb] : couleur de l'effet ghost en ARGB 32 bits, `null` pour la couleur par défaut.
   /// - [ghostSpeed] : vitesse de l'effet ghost.
   /// - [socialLinks] : identifiants par réseau, indexés par valeur de [SocialNetwork].
+  /// - [bio] : courte description de l'utilisateur, `null` s'il n'en a pas.
   SignatureHiveModel({
     required this.id,
     required this.createdAt,
@@ -28,6 +29,7 @@ class SignatureHiveModel extends HiveObject {
     this.colorArgb,
     required this.ghostSpeed,
     required this.socialLinks,
+    this.bio,
   });
 
   /// Crée un [SignatureHiveModel] depuis une entité [Signature].
@@ -41,6 +43,7 @@ class SignatureHiveModel extends HiveObject {
       colorArgb: entity.colorArgb,
       ghostSpeed: entity.ghostSpeed,
       socialLinks: {for (final entry in entity.socialLinks.entries) entry.key.value: entry.value},
+      bio: entity.bio,
     );
   }
 
@@ -88,6 +91,13 @@ class SignatureHiveModel extends HiveObject {
   @HiveField(7, defaultValue: <int, String>{})
   final Map<int, String> socialLinks;
 
+  /// Courte description de l'utilisateur, `null` s'il n'en a pas.
+  ///
+  /// Les utilisateurs persistés avant l'ajout de la description n'ont pas ce
+  /// champ : ils sont relus sans description.
+  @HiveField(10)
+  final String? bio;
+
   /// Convertit ce modèle en entité [Signature].
   Signature toEntity() {
     try {
@@ -105,6 +115,7 @@ class SignatureHiveModel extends HiveObject {
           for (final entry in socialLinks.entries)
             if (SocialNetwork.fromValue(entry.key) != null) SocialNetwork.fromValue(entry.key)!: entry.value,
         },
+        bio: bio,
       );
     } catch (error) {
       throw DataException('SignatureHiveModel', error);

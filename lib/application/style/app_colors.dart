@@ -7,8 +7,17 @@ class AppColors {
   /// Couleur primaire.
   static const Color primary = Color(0xFFFF7DA4);
 
-  /// Couleur de fond de l'application.
-  static const Color background = Color(0xFFFFF8F1);
+  /// Couleur secondaire, un bleu ciel.
+  static const Color secondary = Color(0xFF87CEEB);
+
+  /// Couleur de fond de l'application, un beige très clair.
+  static const Color background = Color(0xFFFFFAF5);
+
+  /// Variante encore plus claire de [background], pour distinguer deux zones d'une même page.
+  ///
+  /// Ex. sur la page de détail : le contenu sur [background], ses réactions
+  /// sur [backgroundLight].
+  static const Color backgroundLight = Color(0xFFFFFDFA);
 
   /// Couleur de fond des cards, des inputs, checkbox et j'en passe.
   static const Color surface = Color(0xFFFFFFFF);

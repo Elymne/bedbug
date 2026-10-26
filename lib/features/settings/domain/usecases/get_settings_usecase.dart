@@ -10,9 +10,9 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetSettingsUsecase].
-final getSettingsUsecaseProvider = Provider<GetSettingsUsecase>(
-  (ref) => GetSettingsUsecase(ref.read(settingsRepositoryProvider)),
-);
+final getSettingsUsecaseProvider = Provider<GetSettingsUsecase>((ref) {
+  return GetSettingsUsecase(ref.read(settingsRepositoryProvider));
+});
 
 /// Récupère les settings de l'utilisateur.
 ///
