@@ -1,6 +1,5 @@
 import 'package:bedbug/application/notifiers/content_author_notifier.dart';
 import 'package:bedbug/application/notifiers/delete_own_content_notifier.dart';
-import 'package:bedbug/application/screens/content_detail/widgets/content_comments_section.dart';
 import 'package:bedbug/application/screens/content_detail/widgets/content_reactions_section.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_prefixes.dart';
@@ -26,7 +25,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// juste en dessous et en gris, le temps écoulé depuis la création écrit en
 /// toutes lettres, puis les chips (bounces et tags du contenu), et enfin le
 /// corps spécifique au type de contenu ([contentBody] : texte, image, lien),
-/// suivi des réactions puis des commentaires.
+/// suivi des réactions.
 class ContentDetailSkeleton extends ConsumerWidget {
   /// Crée un [ContentDetailSkeleton].
   ///
@@ -168,8 +167,6 @@ class ContentDetailSkeleton extends ConsumerWidget {
                     contentBody,
                     const SizedBox(height: 24),
                     ContentReactionsSection(contentId: contentId),
-                    const SizedBox(height: 24),
-                    ContentCommentsSection(contentId: contentId),
                   ],
                 ),
               ),

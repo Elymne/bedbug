@@ -30,6 +30,15 @@ class HiveReactionRepository implements ReactionRepository {
   }
 
   @override
+  Future<void> addMany(List<Reaction> entities) async {
+    try {
+      await _box.putAll({for (final entity in entities) entity.id: ReactionHiveModel.fromEntity(entity)});
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveReactionRepository', error);
+    }
+  }
+
+  @override
   Future<List<Reaction>> getAllByContentId(String contentId) async {
     try {
       return _box.values.where((model) => model.contentId == contentId).map((model) => model.toEntity()).toList();

@@ -8,6 +8,9 @@ abstract class ReactionRepository {
   /// Persiste la réaction [entity].
   Future<void> addOne(Reaction entity);
 
+  /// Persiste les réactions [entities] en une seule opération.
+  Future<void> addMany(List<Reaction> entities);
+
   /// Retourne toutes les réactions rattachées au contenu [contentId], sans ordre garanti.
   Future<List<Reaction>> getAllByContentId(String contentId);
 

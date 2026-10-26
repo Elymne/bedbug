@@ -555,55 +555,5 @@
         "type": "int"
       }
     }
-  },
-  "contentCommentsTitle": "{count, plural, =0{Comments} other{Comments ({count})}}",
-  "@contentCommentsTitle": {
-    "description": "Title of the comments section on a content detail page, with their count",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "contentCommentsEmpty": "No comments yet.",
-  "@contentCommentsEmpty": {
-    "description": "Text shown when a content has no comments yet"
-  },
-  "contentCommentsLoadError": "Unable to load comments.",
-  "@contentCommentsLoadError": {
-    "description": "Message shown when the comments of a content cannot be read"
-  },
-  "contentCommentButton": "Comment",
-  "@contentCommentButton": {
-    "description": "Button opening the comment form on a content detail page"
-  },
-  "commentComposerTitle": "Your comment",
-  "@commentComposerTitle": {
-    "description": "Title of the comment form sheet"
-  },
-  "commentBodyLabel": "Comment",
-  "@commentBodyLabel": {
-    "description": "Label of the comment field"
-  },
-  "commentBodyError": "{max} characters max.",
-  "@commentBodyError": {
-    "description": "Error shown under the comment field when it is too long",
-    "placeholders": {
-      "max": {
-        "type": "int"
-      }
-    }
-  },
-  "commentSaveButton": "Post",
-  "@commentSaveButton": {
-    "description": "Save button of the comment form sheet"
-  },
-  "commentSaveError": "Unable to save the comment.",
-  "@commentSaveError": {
-    "description": "Snackbar error message shown when a comment cannot be saved"
-  },
-  "commentInvalidError": "This comment is not valid.",
-  "@commentInvalidError": {
-    "description": "Snackbar error message shown when the body of a comment is rejected"
   }
 }

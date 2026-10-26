@@ -555,55 +555,5 @@
         "type": "int"
       }
     }
-  },
-  "contentCommentsTitle": "{count, plural, =0{Commentaires} other{Commentaires ({count})}}",
-  "@contentCommentsTitle": {
-    "description": "Titre de la section des commentaires sur la page de détail d'un contenu, avec leur nombre",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "contentCommentsEmpty": "Aucun commentaire pour l'instant.",
-  "@contentCommentsEmpty": {
-    "description": "Texte affiché quand un contenu n'a encore aucun commentaire"
-  },
-  "contentCommentsLoadError": "Impossible de charger les commentaires.",
-  "@contentCommentsLoadError": {
-    "description": "Message affiché quand les commentaires d'un contenu ne peuvent pas être lus"
-  },
-  "contentCommentButton": "Commenter",
-  "@contentCommentButton": {
-    "description": "Bouton ouvrant la saisie d'un commentaire sur la page de détail d'un contenu"
-  },
-  "commentComposerTitle": "Ton commentaire",
-  "@commentComposerTitle": {
-    "description": "Titre de la feuille de saisie d'un commentaire"
-  },
-  "commentBodyLabel": "Commentaire",
-  "@commentBodyLabel": {
-    "description": "Label du champ de saisie d'un commentaire"
-  },
-  "commentBodyError": "{max} caractères maximum.",
-  "@commentBodyError": {
-    "description": "Erreur affichée sous le champ de commentaire quand il est trop long",
-    "placeholders": {
-      "max": {
-        "type": "int"
-      }
-    }
-  },
-  "commentSaveButton": "Publier",
-  "@commentSaveButton": {
-    "description": "Bouton d'enregistrement de la feuille de saisie d'un commentaire"
-  },
-  "commentSaveError": "Impossible d'enregistrer le commentaire.",
-  "@commentSaveError": {
-    "description": "Message snackbar d'erreur affiché quand un commentaire ne peut pas être enregistré"
-  },
-  "commentInvalidError": "Ce commentaire n'est pas valide.",
-  "@commentInvalidError": {
-    "description": "Message snackbar d'erreur affiché quand le corps d'un commentaire est refusé"
   }
 }

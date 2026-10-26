@@ -4,6 +4,7 @@ import 'package:bedbug/application/screens/content_detail/widgets/reaction_compo
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/widgets/reactions/app_reaction_bubble.dart';
+import 'package:bedbug/application/widgets/scatter/app_scatter.dart';
 import 'package:bedbug/application/widgets/texts/app_loading_text.dart';
 import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
@@ -12,17 +13,18 @@ import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Nombre de réactions animées, les premières de la liste.
+/// Espace minimal entre deux réactions dispersées.
 ///
-/// Chaque bedbug animé fait tourner quatre animations : au-delà, avec
-/// jusqu'à 200 réactions par contenu, la page saccaderait. Les suivantes
-/// restent affichées dans leur couleur, mais figées.
-const int _kAnimatedReactionCount = 12;
+/// Doit rester supérieur au tremblement de l'effet ghost (quelques pixels),
+/// pour que deux réactions voisines ne se touchent jamais en bougeant.
+const double _kReactionSpacing = 12;
 
 /// Section des réactions de la page de détail d'un contenu.
 ///
-/// Affiche les réactions (bedbug et bulle) dans un ordre aléatoire, alignées
-/// tour à tour à gauche et à droite, et un bouton pour réagir. Une signature n'ayant qu'une réaction par contenu,
+/// Affiche les réactions (bedbug et bulle) dispersées au hasard sur toute la
+/// largeur, sans chevauchement, et un bouton pour réagir. Toutes sont animées :
+/// celles qui sortent de l'écran se mettent en pause d'elles-mêmes (voir
+/// `AppGhostAnimation`). Une signature n'ayant qu'une réaction par contenu,
 /// le bouton propose de modifier la réaction de l'utilisateur s'il en a déjà
 /// laissé une.
 class ContentReactionsSection extends ConsumerWidget {
@@ -72,23 +74,20 @@ class ContentReactionsSection extends ConsumerWidget {
             if (state.reactions.isEmpty) {
               return Text(l10n.contentReactionsEmpty, style: const TextStyle(color: AppColors.disabled));
             }
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: 12,
+            return AppScatter(
+              // Graine propre au contenu : les réactions gardent leur place tant
+              // que la page reste ouverte, au lieu de sauter à chaque reconstruction.
+              seed: contentId.hashCode,
+              spacing: _kReactionSpacing,
               children: [
-                // Une réaction sur deux à droite, en miroir : la liste se lit comme
-                // une conversation plutôt que comme une pile alignée à gauche.
                 for (final (index, reaction) in state.reactions.indexed)
-                  Align(
-                    alignment: index.isEven ? Alignment.centerLeft : Alignment.centerRight,
-                    child: AppReactionBubble(
-                      avatarText: reaction.avatarText,
-                      bubbleText: reaction.bubbleText,
-                      ghostColor: reaction.colorArgb == null ? AppColors.primary : Color(reaction.colorArgb!),
-                      ghostSpeed: reaction.ghostSpeed,
-                      isAnimating: index < _kAnimatedReactionCount,
-                      isMirrored: index.isOdd,
-                    ),
+                  AppReactionBubble(
+                    avatarText: reaction.avatarText,
+                    bubbleText: reaction.bubbleText,
+                    ghostColor: reaction.colorArgb == null ? AppColors.primary : Color(reaction.colorArgb!),
+                    ghostSpeed: reaction.ghostSpeed,
+                    // Une bulle sur deux pincée à droite, pour varier les formes.
+                    isMirrored: index.isOdd,
                   ),
               ],
             );

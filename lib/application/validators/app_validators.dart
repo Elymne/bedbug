@@ -1,4 +1,3 @@
-import 'package:bedbug/features/content/domain/extensions/comment_text_extension.dart';
 import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
 import 'package:bedbug/features/content/domain/extensions/reaction_text_extension.dart';
 import 'package:bedbug/features/signature/domain/enums/social_network.dart';
@@ -72,12 +71,6 @@ class AppValidators {
   /// Applique la règle du domaine (`isValidReactionBubble`). Retourne `null`
   /// si vide : la bulle est optionnelle.
   static const reactionBubble = _ReactionBubbleValidator();
-
-  /// Vérifie que le corps d'un commentaire ne dépasse pas sa longueur maximale.
-  ///
-  /// Applique la règle du domaine (`isValidCommentBody`). Retourne `null` si
-  /// vide — déléguer la vérification à [required].
-  static const commentBody = _CommentBodyValidator();
 
   /// Validator de [FormGroup] vérifiant que l'identifiant saisi est valide sur le réseau choisi.
   ///
@@ -211,22 +204,6 @@ class _SignatureBioValidator extends Validator<dynamic> {
     }
     if (!value.trim().isValidSignatureBio) {
       return {'signatureBio': true};
-    }
-    return null;
-  }
-}
-
-class _CommentBodyValidator extends Validator<dynamic> {
-  const _CommentBodyValidator() : super();
-
-  @override
-  Map<String, dynamic>? validate(AbstractControl<dynamic> control) {
-    final value = control.value;
-    if (value is! String || value.trim().isEmpty) {
-      return null;
-    }
-    if (!value.trim().isValidCommentBody) {
-      return {'commentBody': true};
     }
     return null;
   }
