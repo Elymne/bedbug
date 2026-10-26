@@ -17,6 +17,7 @@ import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
+import 'package:bedbug/features/content/domain/object_values/content_image.dart';
 import 'package:bedbug/features/content/domain/usecases/clear_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
@@ -104,9 +105,7 @@ ImageContent _buildImageContent() {
     displayScore: 1,
     bounce: 0,
     sizeInBytes: 10,
-    fileName: 'inexistant.jpg',
-    imageWidth: 100,
-    imageHeight: 100,
+    images: const [ContentImage(fileName: 'inexistant.jpg', width: 100, height: 100)],
     title: 'Titre',
   );
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bedbug/application/providers/app_docs_dir_provider.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/widgets/images/app_file_image.dart';
+import 'package:bedbug/application/widgets/images/app_image_count_badge.dart';
 import 'package:bedbug/application/widgets/texts/app_loading_text.dart';
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/shared/config/content_image_storage.dart';
@@ -17,7 +18,8 @@ const double _imageMaxHeightFactor = 0.35;
 
 /// Affiche un [ImageContent] sous forme de tuile compacte.
 ///
-/// Affiche le titre (2 lignes max) puis l'image en dessous.
+/// Affiche le titre (2 lignes max) puis la première image en dessous. Quand le
+/// contenu en regroupe plusieurs, un badge indique leur nombre.
 class ImageContentWidget extends ConsumerWidget {
   /// Crée un [ImageContentWidget].
   ///
@@ -38,15 +40,22 @@ class ImageContentWidget extends ConsumerWidget {
       loading: () => const AppLoadingText(),
       error: (error, stack) => const Icon(Icons.broken_image_outlined),
       data: (dir) {
-        final file = File('${dir.path}/$contentImagesFolder/${content.fileName}');
-        final displayHeight = content.imageHeight.toDouble().clamp(minHeight, maxHeight);
+        final firstImage = content.images.first;
+        final file = File('${dir.path}/$contentImagesFolder/${firstImage.fileName}');
+        final displayHeight = firstImage.height.toDouble().clamp(minHeight, maxHeight);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 8,
           children: [
             Text(content.title, style: AppTextStyles.contentTitle, maxLines: 2, overflow: TextOverflow.ellipsis),
-            AppFileImage(file: file, width: double.infinity, height: displayHeight),
+            Stack(
+              children: [
+                AppFileImage(file: file, width: double.infinity, height: displayHeight),
+                if (content.images.length > 1)
+                  Positioned(top: 8, right: 8, child: AppImageCountBadge(label: '${content.images.length}')),
+              ],
+            ),
           ],
         );
       },

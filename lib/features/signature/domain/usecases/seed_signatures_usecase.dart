@@ -13,9 +13,9 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SeedSignaturesUsecase].
-final seedSignaturesUsecaseProvider = Provider<SeedSignaturesUsecase>(
-  (ref) => SeedSignaturesUsecase(ref.read(signatureRepositoryProvider)),
-);
+final seedSignaturesUsecaseProvider = Provider<SeedSignaturesUsecase>((ref) {
+  return SeedSignaturesUsecase(ref.read(signatureRepositoryProvider));
+});
 
 /// Pseudos factices, tous conformes à la règle des pseudos (lettres et tirets).
 const List<String> _pseudos = [

@@ -10,9 +10,9 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetFilteredContentsUsecase].
-final getFilteredContentsUsecaseProvider = Provider<GetFilteredContentsUsecase>(
-  (ref) => GetFilteredContentsUsecase(ref.read(contentRepositoryProvider)),
-);
+final getFilteredContentsUsecaseProvider = Provider<GetFilteredContentsUsecase>((ref) {
+  return GetFilteredContentsUsecase(ref.read(contentRepositoryProvider));
+});
 
 /// Récupère les contenus correspondant à une recherche libre de l'utilisateur.
 ///

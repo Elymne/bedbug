@@ -37,10 +37,12 @@ class ContentListView extends ConsumerWidget {
       controller: controller,
       itemCount: contents.length,
       separatorBuilder: (context, index) => const Divider(height: 1),
-      itemBuilder: (context, index) => InkWell(
-        onTap: () => context.push(contentDetailPath, extra: contents[index]),
-        child: ContentWidget(content: contents[index]),
-      ),
+      itemBuilder: (context, index) {
+        return InkWell(
+          onTap: () => context.push(contentDetailPath, extra: contents[index]),
+          child: ContentWidget(content: contents[index]),
+        );
+      },
     );
   }
 }

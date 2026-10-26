@@ -48,69 +48,73 @@ class SignatureScreen extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: NestedScrollView(
-          headerSliverBuilder: (context, _) => [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: IconButton(
-                        onPressed: context.pop,
-                        icon: const Icon(Icons.arrow_back, color: AppColors.onLight),
+          headerSliverBuilder: (context, _) {
+            return [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: IconButton(
+                          onPressed: context.pop,
+                          icon: const Icon(Icons.arrow_back, color: AppColors.onLight),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxHeight: _kMaxBedbugHeight),
-                      child: FittedBox(
-                        child: Padding(
-                          // Laisse la place au tremblement du ghost, qui
-                          // déborde légèrement du texte.
-                          padding: const EdgeInsets.all(4),
-                          child: AppSignatureAvatar(
-                            avatarText: signature.avatarText,
-                            ghostColor: ghostColor,
-                            ghostSpeed: signature.ghostSpeed,
+                      const SizedBox(height: 8),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxHeight: _kMaxBedbugHeight),
+                        child: FittedBox(
+                          child: Padding(
+                            // Laisse la place au tremblement du ghost, qui
+                            // déborde légèrement du texte.
+                            padding: const EdgeInsets.all(4),
+                            child: AppSignatureAvatar(
+                              avatarText: signature.avatarText,
+                              ghostColor: ghostColor,
+                              ghostSpeed: signature.ghostSpeed,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    AppPrefixedText(
-                      prefix: AppPrefixes.signature,
-                      text: signature.pseudo,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.onLight),
-                    ),
-                    if (signature.socialLinks.isNotEmpty) ...[
-                      const SizedBox(height: 12),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          for (final network in signature.socialLinks.keys)
-                            AppTag(label: network.displayName, color: ghostColor),
-                        ],
+                      const SizedBox(height: 16),
+                      AppPrefixedText(
+                        prefix: AppPrefixes.signature,
+                        text: signature.pseudo,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.onLight),
                       ),
+                      if (signature.socialLinks.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final network in signature.socialLinks.keys)
+                              AppTag(label: network.displayName, color: ghostColor),
+                          ],
+                        ),
+                      ],
+                      const SizedBox(height: 16),
+                      const Divider(height: 1),
                     ],
-                    const SizedBox(height: 16),
-                    const Divider(height: 1),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ];
+          },
           body: searchResultsNotifierWatcher.when(
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (_, _) => Center(child: Text(l10n.homeGetContentsUnknown)),
-            data: (state) => ContentListView(
-              contents: state.contents,
-              emptyChild: Center(child: Text(state.failureMessage ?? l10n.signatureContentsEmpty)),
-            ),
+            data: (state) {
+              return ContentListView(
+                contents: state.contents,
+                emptyChild: Center(child: Text(state.failureMessage ?? l10n.signatureContentsEmpty)),
+              );
+            },
           ),
         ),
       ),

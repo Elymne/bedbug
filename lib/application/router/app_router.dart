@@ -75,10 +75,12 @@ CustomTransitionPage<void> _fadePage(Widget child) {
   return CustomTransitionPage<void>(
     child: child,
     transitionDuration: _fadeDuration,
-    transitionsBuilder: (context, animation, _, child) => FadeTransition(
-      opacity: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
-      child: child,
-    ),
+    transitionsBuilder: (context, animation, _, child) {
+      return FadeTransition(
+        opacity: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+        child: child,
+      );
+    },
   );
 }
 

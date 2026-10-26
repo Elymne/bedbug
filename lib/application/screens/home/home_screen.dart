@@ -67,11 +67,13 @@ class _State extends ConsumerState<HomeScreen> {
               child: homeFeedNotifierWatcher.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, _) => const Center(child: CircularProgressIndicator()),
-                data: (state) => ContentListView(
-                  contents: state.contents,
-                  emptyChild: const HomeEmptyFeed(),
-                  controller: _scrollController,
-                ),
+                data: (state) {
+                  return ContentListView(
+                    contents: state.contents,
+                    emptyChild: const HomeEmptyFeed(),
+                    controller: _scrollController,
+                  );
+                },
               ),
             ),
           ],

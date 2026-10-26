@@ -13,9 +13,9 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [RecalculateDisplayScoresUsecase].
-final recalculateDisplayScoresUsecaseProvider = Provider<RecalculateDisplayScoresUsecase>(
-  (ref) => RecalculateDisplayScoresUsecase(ref.read(contentRepositoryProvider)),
-);
+final recalculateDisplayScoresUsecaseProvider = Provider<RecalculateDisplayScoresUsecase>((ref) {
+  return RecalculateDisplayScoresUsecase(ref.read(contentRepositoryProvider));
+});
 
 /// Nombre de rebonds au-delà duquel le bonus de `bounce` n'augmente plus.
 ///

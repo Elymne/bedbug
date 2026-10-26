@@ -11,9 +11,9 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetContentsByFlairUsecase].
-final getContentsByFlairUsecaseProvider = Provider<GetContentsByFlairUsecase>(
-  (ref) => GetContentsByFlairUsecase(ref.read(contentRepositoryProvider)),
-);
+final getContentsByFlairUsecaseProvider = Provider<GetContentsByFlairUsecase>((ref) {
+  return GetContentsByFlairUsecase(ref.read(contentRepositoryProvider));
+});
 
 /// Récupère tous les contenus rattachés à un flair précis.
 ///

@@ -303,6 +303,29 @@ Each repository:
   String format(String value) => value.trim().toLowerCase();
   ```
 
+- An arrow lambda is only allowed when it fits on a single line once formatted. As soon as the formatter has to break it — its body wraps over several lines, or the lambda is pushed onto its own line because it does not fit after the opening parenthesis of its call — use a block body with `{}` and `return`. This applies in particular to provider definitions:
+
+  ```dart
+  // ✅ OK — fits on one line
+  final ogMetadataServiceProvider = Provider<OgMetadataService>((ref) => OgMetadataService());
+
+  // ✅ OK — too long for one line → block body
+  final saveContentUsecaseProvider = Provider<SaveContentUsecase>((ref) {
+    return SaveContentUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider));
+  });
+
+  // ❌ Avoid — lambda pushed onto its own line
+  final saveContentUsecaseProvider = Provider<SaveContentUsecase>(
+    (ref) => SaveContentUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider)),
+  );
+
+  // ❌ Avoid — arrow body spread over several lines
+  data: (state) => ContentListView(
+    contents: state.contents,
+    emptyChild: const SizedBox.shrink(),
+  ),
+  ```
+
 - Follow `analysis_options.yaml` strictly (strict-casts, strict-inference, strict-raw-types, prefer*const*\*, avoid_dynamic_calls, etc.).
 - Document every **class**, **function**, and **function parameter** — **always in French**. Includes `@override` and private methods.
 - For non-trivial functions — and **always** for use cases — the doc comment must explain **why** the function exists, not just what it does. State the underlying need/intent driving it, not merely a paraphrase of the signature. This is especially critical for use cases: their doc comment must give the business justification for calling them (e.g. why the score needs periodic recalculation), so future readers understand the intent even without conversation context:
@@ -822,6 +845,8 @@ All shared widgets live in `shared/application/widgets/`. Always reuse them befo
 **`AppExpandableSection`** — rounded card with a tappable header (`title`, `icon`, optional `subtitle`) that expands to show `child`. Collapsed by default. Building block of the settings page: one section per setting.
 
 **`AppSignatureAvatar`** — the text icon of a signature (kaomoji, emoji, symbols…) rendered with `AppGhostText`, the ghost layer using the signature colour and speed. Accepts `avatarText`, `ghostColor`, optional `ghostSpeed` (1), `fontSize` (32) and `isAnimating` (`true`; pass `false` in lists).
+
+**`AppImageCountBadge`** — dark translucent pill (collections icon + `label`) overlaid on an image that belongs to a multi-image content. Used with the image count on content tiles and with the position (`2/4`) in the detail carousel.
 
 ---
 

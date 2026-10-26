@@ -12,9 +12,9 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveLocalSignatureUsecase].
-final saveLocalSignatureUsecaseProvider = Provider<SaveLocalSignatureUsecase>(
-  (ref) => SaveLocalSignatureUsecase(ref.read(signatureRepositoryProvider)),
-);
+final saveLocalSignatureUsecaseProvider = Provider<SaveLocalSignatureUsecase>((ref) {
+  return SaveLocalSignatureUsecase(ref.read(signatureRepositoryProvider));
+});
 
 /// Enregistre le profil de l'utilisateur du téléphone.
 ///

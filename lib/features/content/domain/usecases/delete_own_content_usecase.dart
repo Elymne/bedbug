@@ -16,9 +16,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// Provider du [DeleteOwnContentUsecase].
-final deleteOwnContentUsecaseProvider = Provider<DeleteOwnContentUsecase>(
-  (ref) => DeleteOwnContentUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider)),
-);
+final deleteOwnContentUsecaseProvider = Provider<DeleteOwnContentUsecase>((ref) {
+  return DeleteOwnContentUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider));
+});
 
 /// Supprime de l'appareil un contenu que son utilisateur a lui-même publié.
 ///
@@ -28,7 +28,7 @@ final deleteOwnContentUsecaseProvider = Provider<DeleteOwnContentUsecase>(
 /// selon les règles de nettoyage du stockage. La suppression est locale : les
 /// copies déjà transmises à d'autres appareils ne peuvent pas être rappelées.
 ///
-/// Le fichier image d'un [ImageContent] est supprimé avec lui, et le poids du
+/// Les fichiers images d'un [ImageContent] sont supprimés avec lui, et le poids du
 /// contenu est retiré du compteur de stockage.
 class DeleteOwnContentUsecase extends Usecase<DeleteOwnContentParams, DeleteOwnContentFailure, void> {
   /// Crée un [DeleteOwnContentUsecase].
@@ -53,9 +53,11 @@ class DeleteOwnContentUsecase extends Usecase<DeleteOwnContentParams, DeleteOwnC
 
       if (content is ImageContent) {
         final dir = await getApplicationDocumentsDirectory();
-        final file = File('${dir.path}/$contentImagesFolder/${content.fileName}');
-        if (file.existsSync()) {
-          await file.delete();
+        for (final image in content.images) {
+          final file = File('${dir.path}/$contentImagesFolder/${image.fileName}');
+          if (file.existsSync()) {
+            await file.delete();
+          }
         }
       }
       return const Right(null);

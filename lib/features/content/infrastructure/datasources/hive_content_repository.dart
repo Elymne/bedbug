@@ -10,9 +10,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
 /// Provider du [HiveContentRepository].
-final contentRepositoryProvider = Provider<ContentRepository>(
-  (ref) => HiveContentRepository(ref.read(hiveContentBoxProvider)),
-);
+final contentRepositoryProvider = Provider<ContentRepository>((ref) {
+  return HiveContentRepository(ref.read(hiveContentBoxProvider));
+});
 
 /// Provider de la [Box] Hive des contenus.
 final hiveContentBoxProvider = Provider<Box<ContentHiveModel>>((ref) => Hive.box<ContentHiveModel>('contents'));
@@ -95,12 +95,9 @@ class HiveContentRepository implements ContentRepository {
       // Les flairs sont stockés normalisés (sans `/`, en minuscules) : la
       // saisie l'est aussi pour que `/france` trouve le flair `france`.
       final flairQuery = query.toFlair() ?? lowerCaseQuery;
-      return _box.values
-          .map((model) => model.toEntity())
-          .where(
-            (content) => content.title.toLowerCase().contains(lowerCaseQuery) || content.flair.contains(flairQuery),
-          )
-          .toList();
+      return _box.values.map((model) => model.toEntity()).where((content) {
+        return content.title.toLowerCase().contains(lowerCaseQuery) || content.flair.contains(flairQuery);
+      }).toList();
     } on HiveError catch (error) {
       throw DatasourceException('HiveContentRepository', error);
     }

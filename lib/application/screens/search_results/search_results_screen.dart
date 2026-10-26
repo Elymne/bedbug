@@ -53,10 +53,12 @@ class SearchResultsScreen extends ConsumerWidget {
               child: searchResultsNotifierWatcher.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (_, _) => Center(child: Text(l10n.homeGetContentsUnknown)),
-                data: (state) => ContentListView(
-                  contents: state.contents,
-                  emptyChild: Center(child: Text(state.failureMessage ?? l10n.searchResultsEmpty)),
-                ),
+                data: (state) {
+                  return ContentListView(
+                    contents: state.contents,
+                    emptyChild: Center(child: Text(state.failureMessage ?? l10n.searchResultsEmpty)),
+                  );
+                },
               ),
             ),
           ],

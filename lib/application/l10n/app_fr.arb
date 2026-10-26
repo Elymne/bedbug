@@ -60,9 +60,30 @@
   "@createTextBodyLabel": {
     "description": "Label du champ corps dans le formulaire texte"
   },
-  "createImagePickLabel": "Choisir une image",
+  "createImagePickLabel": "Choisir des images",
   "@createImagePickLabel": {
     "description": "Label du bouton de sélection d'image dans le formulaire image"
+  },
+  "createImageCount": "{count}/{max} images",
+  "@createImageCount": {
+    "description": "Nombre d'images choisies sur le maximum autorisé, affiché dans le formulaire image",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "createImageLimitReached": "{max} images maximum : les images en trop ont été ignorées.",
+  "@createImageLimitReached": {
+    "description": "Message snackbar d'erreur affiché quand plus d'images que le maximum autorisé ont été choisies",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
   },
   "createRequiredFieldError": "Ce champ est obligatoire.",
   "@createRequiredFieldError": {
@@ -108,9 +129,9 @@
   "@createSaveError": {
     "description": "Message snackbar d'erreur affiché quand la sauvegarde échoue"
   },
-  "createImageCompressionError": "Impossible de traiter cette image.",
+  "createImageCompressionError": "Impossible de traiter l'une des images.",
   "@createImageCompressionError": {
-    "description": "Message snackbar d'erreur affiché quand l'image choisie ne peut pas être recompressée"
+    "description": "Message snackbar d'erreur affiché quand l'une des images choisies ne peut pas être recompressée"
   },
   "searchHint": "Rechercher…",
   "@searchHint": {

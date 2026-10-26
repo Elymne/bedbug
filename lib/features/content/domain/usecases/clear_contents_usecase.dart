@@ -11,9 +11,9 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [ClearContentsUsecase].
-final clearContentsUsecaseProvider = Provider<ClearContentsUsecase>(
-  (ref) => ClearContentsUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider)),
-);
+final clearContentsUsecaseProvider = Provider<ClearContentsUsecase>((ref) {
+  return ClearContentsUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider));
+});
 
 /// Supprime l'intégralité des contenus stockés localement.
 class ClearContentsUsecase extends Usecase<NoParams, ClearContentsFailure, void> {

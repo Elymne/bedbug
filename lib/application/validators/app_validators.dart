@@ -12,6 +12,8 @@ class AppValidators {
   AppValidators._();
 
   /// Vérifie que le champ n'est pas vide ou nul.
+  ///
+  /// Une liste vide (ex. aucune image choisie) est considérée comme vide.
   static const required = _RequiredValidator();
 
   /// Vérifie que la valeur correspond au format d'une adresse email.
@@ -81,6 +83,7 @@ class _RequiredValidator extends Validator<dynamic> {
     final value = control.value;
     if (value == null) return {'required': true};
     if (value is String && value.trim().isEmpty) return {'required': true};
+    if (value is Iterable<dynamic> && value.isEmpty) return {'required': true};
     return null;
   }
 }

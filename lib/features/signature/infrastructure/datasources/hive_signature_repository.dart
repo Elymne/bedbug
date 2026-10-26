@@ -9,9 +9,9 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 final hiveSignatureBoxProvider = Provider<Box<SignatureHiveModel>>((ref) => Hive.box<SignatureHiveModel>('signatures'));
 
 /// Provider du [HiveSignatureRepository].
-final signatureRepositoryProvider = Provider<SignatureRepository>(
-  (ref) => HiveSignatureRepository(ref.read(hiveSignatureBoxProvider)),
-);
+final signatureRepositoryProvider = Provider<SignatureRepository>((ref) {
+  return HiveSignatureRepository(ref.read(hiveSignatureBoxProvider));
+});
 
 /// Implémentation de [SignatureRepository] utilisant Hive comme stockage local.
 class HiveSignatureRepository implements SignatureRepository {

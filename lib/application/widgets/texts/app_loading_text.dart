@@ -48,12 +48,14 @@ class _AppLoadingTextState extends State<AppLoadingText> with SingleTickerProvid
 
     return AnimatedBuilder(
       animation: _controller,
-      builder: (context, _) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (int i = 0; i < text.length; i++) Opacity(opacity: _opacity(i, text.length), child: Text(text[i])),
-        ],
-      ),
+      builder: (context, _) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (int i = 0; i < text.length; i++) Opacity(opacity: _opacity(i, text.length), child: Text(text[i])),
+          ],
+        );
+      },
     );
   }
 }

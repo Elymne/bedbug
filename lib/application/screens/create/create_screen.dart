@@ -22,6 +22,8 @@ import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/enums/content_type.dart';
 import 'package:bedbug/features/content/domain/enums/tag.dart';
 import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
+import 'package:bedbug/features/content/domain/object_values/compressed_image.dart';
+import 'package:bedbug/features/content/domain/object_values/content_image.dart';
 import 'package:bedbug/features/content/domain/usecases/compress_image_usecase.dart';
 import 'package:bedbug/features/content/infrastructure/og_metadata_service.dart';
 import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
@@ -57,8 +59,8 @@ class _State extends ConsumerState<CreateScreen> {
   /// Formulaire pour [TextContent].
   late final FormGroup _textFormGroup = FormGroup({'title': _textTitleControl, 'body': _textBodyControl});
 
-  /// Contrôle de l'image choisie dans la galerie pour [ImageContent].
-  late final _imageFileControl = FormControl<XFile>(validators: [Validators.required]);
+  /// Contrôle des images choisies dans la galerie pour [ImageContent], dans l'ordre d'affichage.
+  late final _imageFilesControl = FormControl<List<XFile>>(value: const [], validators: [AppValidators.required]);
 
   /// Contrôle du titre pour [ImageContent].
   late final _imageTitleControl = FormControl<String>(validators: [Validators.required]);
@@ -68,7 +70,7 @@ class _State extends ConsumerState<CreateScreen> {
 
   /// Formulaire pour [ImageContent].
   late final FormGroup _imageFormGroup = FormGroup({
-    'image': _imageFileControl,
+    'images': _imageFilesControl,
     'title': _imageTitleControl,
     'body': _imageBodyControl,
   });
@@ -111,7 +113,7 @@ class _State extends ConsumerState<CreateScreen> {
     final type = ref.read(createNotifierProvider).requireValue.selectedType;
     return switch (type) {
       ContentType.text => _textTitleControl.value?.isNotEmpty == true || _textBodyControl.value?.isNotEmpty == true,
-      ContentType.image => _imageFileControl.value != null,
+      ContentType.image => _imageFilesControl.value?.isNotEmpty == true,
       ContentType.link => _linkUrlControl.value?.isNotEmpty == true,
     };
   }
@@ -167,6 +169,54 @@ class _State extends ConsumerState<CreateScreen> {
     return _isAnonymousControl.value == true ? anonymousSignatureId : localSignatureId;
   }
 
+  /// Sélectionne le type de contenu, et ouvre directement le sélecteur d'images pour le type image.
+  ///
+  /// Un contenu image n'a pas de sens sans image : plutôt que d'afficher un
+  /// formulaire vide qui obligerait à chercher le bouton de sélection, on
+  /// enchaîne sur la galerie dès que le type est choisi. Si des images sont
+  /// déjà choisies, le sélecteur ne se rouvre pas.
+  ///
+  /// - [type] : type de contenu choisi.
+  void _onTypeSelected(ContentType type) {
+    ref.read(createNotifierProvider.notifier).setType(type);
+    if (type == ContentType.image && _imageFilesControl.value?.isEmpty != false) {
+      _pickImages();
+    }
+  }
+
+  /// Ouvre la galerie pour ajouter des images à la suite de celles déjà choisies.
+  ///
+  /// Le nombre d'images est plafonné à [maxImagesPerContent] : la limite est
+  /// transmise au sélecteur, mais toutes les plateformes ne la respectent pas,
+  /// d'où la troncature (signalée à l'utilisateur) des images en trop. Une
+  /// annulation laisse les images déjà choisies en place.
+  Future<void> _pickImages() async {
+    final currentImages = _imageFilesControl.value ?? const <XFile>[];
+    final remainingCount = maxImagesPerContent - currentImages.length;
+    if (remainingCount <= 0) {
+      return;
+    }
+
+    // `pickMultiImage` refuse une limite inférieure à 2 : pour la dernière
+    // place disponible, on passe par le sélecteur d'image unique.
+    final picker = ImagePicker();
+    var pickedImages = <XFile>[];
+    if (remainingCount == 1) {
+      pickedImages = [?await picker.pickImage(source: ImageSource.gallery)];
+    }
+    if (remainingCount > 1) {
+      pickedImages = await picker.pickMultiImage(limit: remainingCount);
+    }
+    if (pickedImages.isEmpty) {
+      return;
+    }
+
+    _imageFilesControl.value = [...currentImages, ...pickedImages.take(remainingCount)];
+    if (pickedImages.length > remainingCount && mounted) {
+      AppSnackbar.showError(context, AppLocalizations.of(context)!.createImageLimitReached(maxImagesPerContent));
+    }
+  }
+
   /// Valide le formulaire actif et déclenche la sauvegarde.
   Future<void> _onSave() async {
     final type = ref.read(createNotifierProvider).requireValue.selectedType;
@@ -216,22 +266,38 @@ class _State extends ConsumerState<CreateScreen> {
           _imageFormGroup.markAllAsTouched();
           return;
         }
-        final compressResult = await _compressImageUsecase(
-          CompressImageParams(sourcePath: _imageFileControl.value!.path),
-        );
-        final compressedImage = compressResult.right;
-        if (compressedImage == null) {
-          if (!mounted) return;
-          AppSnackbar.showError(context, AppLocalizations.of(context)!.createImageCompressionError);
-          return;
+        // Toutes les images sont compressées avant d'écrire le moindre fichier :
+        // un échec sur l'une d'elles n'abandonne ainsi aucun fichier orphelin.
+        // Compression séquentielle pour ne pas décoder jusqu'à 10 photos en
+        // mémoire en même temps.
+        final sourceImages = _imageFilesControl.value!;
+        final compressedImages = <CompressedImage>[];
+        for (final sourceImage in sourceImages) {
+          final compressResult = await _compressImageUsecase(
+            CompressImageParams(sourcePath: sourceImage.path, imageCount: sourceImages.length),
+          );
+          final compressedImage = compressResult.right;
+          if (compressedImage == null) {
+            if (!mounted) {
+              return;
+            }
+            AppSnackbar.showError(context, AppLocalizations.of(context)!.createImageCompressionError);
+            return;
+          }
+          compressedImages.add(compressedImage);
         }
 
         final dir = await getApplicationDocumentsDirectory();
         final imagesDir = Directory('${dir.path}/$contentImagesFolder');
         await imagesDir.create(recursive: true);
-        final fileName = '${UuidX.generate()}.${compressedImage.fileExtension}';
-        final destPath = '${imagesDir.path}/$fileName';
-        await File(destPath).writeAsBytes(compressedImage.bytes);
+        final contentImages = <ContentImage>[];
+        for (final compressedImage in compressedImages) {
+          final fileName = '${UuidX.generate()}.${compressedImage.fileExtension}';
+          await File('${imagesDir.path}/$fileName').writeAsBytes(compressedImage.bytes);
+          contentImages.add(
+            ContentImage(fileName: fileName, width: compressedImage.width, height: compressedImage.height),
+          );
+        }
 
         await ref
             .read(createNotifierProvider.notifier)
@@ -248,11 +314,9 @@ class _State extends ConsumerState<CreateScreen> {
                 displayScore: 1,
                 bounce: 0,
                 // Placeholder : SaveContentUsecase détermine et corrige le poids réel
-                // (taille du fichier sur disque) avant persistance.
+                // (taille cumulée des fichiers sur disque) avant persistance.
                 sizeInBytes: 0,
-                fileName: fileName,
-                imageWidth: compressedImage.width,
-                imageHeight: compressedImage.height,
+                images: contentImages,
                 title: _imageTitleControl.value!,
                 body: _imageBodyControl.value?.isEmpty == true ? null : _imageBodyControl.value,
                 flair: flair,
@@ -353,7 +417,7 @@ class _State extends ConsumerState<CreateScreen> {
                   return ContentTypeSelector(
                     selectedType: createState.selectedType,
                     isLocked: _isTypeLocked,
-                    onTypeSelected: ref.read(createNotifierProvider.notifier).setType,
+                    onTypeSelected: _onTypeSelected,
                   );
                 },
               ),
@@ -395,9 +459,10 @@ class _State extends ConsumerState<CreateScreen> {
                 child: switch (createState.selectedType) {
                   ContentType.text => TextContentForm(titleControl: _textTitleControl, bodyControl: _textBodyControl),
                   ContentType.image => ImageContentForm(
-                    imageControl: _imageFileControl,
+                    imagesControl: _imageFilesControl,
                     titleControl: _imageTitleControl,
                     bodyControl: _imageBodyControl,
+                    onAddImages: _pickImages,
                   ),
                   ContentType.link => LinkContentForm(titleControl: _linkTitleControl, urlControl: _linkUrlControl),
                 },

@@ -60,9 +60,30 @@
   "@createTextBodyLabel": {
     "description": "Label for the body field in the text content form"
   },
-  "createImagePickLabel": "Pick an image",
+  "createImagePickLabel": "Pick images",
   "@createImagePickLabel": {
     "description": "Label for the image picker button in the image content form"
+  },
+  "createImageCount": "{count}/{max} images",
+  "@createImageCount": {
+    "description": "Number of picked images over the maximum allowed, shown in the image content form",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "createImageLimitReached": "{max} images maximum: the extra images were ignored.",
+  "@createImageLimitReached": {
+    "description": "Snackbar error message shown when more images than allowed were picked",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
   },
   "createRequiredFieldError": "This field is required.",
   "@createRequiredFieldError": {
@@ -108,9 +129,9 @@
   "@createSaveError": {
     "description": "Snackbar error message shown when saving content fails"
   },
-  "createImageCompressionError": "Unable to process this image.",
+  "createImageCompressionError": "Unable to process one of the images.",
   "@createImageCompressionError": {
-    "description": "Snackbar error message shown when the picked image cannot be recompressed"
+    "description": "Snackbar error message shown when one of the picked images cannot be recompressed"
   },
   "searchHint": "Search…",
   "@searchHint": {

@@ -1,32 +1,42 @@
 import 'dart:io';
 
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
+import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
-/// Champs de création d'un contenu image : choix de l'image, titre et description.
+/// Côté d'une miniature d'image choisie, en pixels logiques.
+const double _thumbnailSize = 96;
+
+/// Champs de création d'un contenu image : images choisies, titre et description.
 ///
 /// Les contrôles restent portés par la page de création, qui en a besoin pour
-/// valider et construire le contenu à l'enregistrement. L'image choisie est
-/// écrite dans [imageControl] : la page la lit et la valide comme n'importe
-/// quel autre champ, sans état parallèle à synchroniser.
+/// valider et construire le contenu à l'enregistrement. Les images choisies
+/// sont écrites dans [imagesControl] : la page les lit et les valide comme
+/// n'importe quel autre champ, sans état parallèle à synchroniser.
+///
+/// L'ouverture du sélecteur d'images est déléguée à la page ([onAddImages]),
+/// qui l'ouvre aussi d'elle-même dès que le type image est choisi.
 class ImageContentForm extends ConsumerWidget {
   /// Crée un [ImageContentForm].
   ///
-  /// - [imageControl] : contrôle portant l'image choisie dans la galerie.
+  /// - [imagesControl] : contrôle portant les images choisies dans la galerie.
   /// - [titleControl] : contrôle du titre du contenu.
   /// - [bodyControl] : contrôle de la description optionnelle.
+  /// - [onAddImages] : callback ouvrant le sélecteur pour ajouter des images.
   const ImageContentForm({
     super.key,
-    required this.imageControl,
+    required this.imagesControl,
     required this.titleControl,
     required this.bodyControl,
+    required this.onAddImages,
   });
 
-  /// Contrôle portant l'image choisie dans la galerie.
-  final FormControl<XFile> imageControl;
+  /// Contrôle portant les images choisies dans la galerie, dans l'ordre d'affichage.
+  final FormControl<List<XFile>> imagesControl;
 
   /// Contrôle du titre du contenu.
   final FormControl<String> titleControl;
@@ -34,31 +44,90 @@ class ImageContentForm extends ConsumerWidget {
   /// Contrôle de la description optionnelle.
   final FormControl<String> bodyControl;
 
+  /// Callback ouvrant le sélecteur pour ajouter des images.
+  final VoidCallback onAddImages;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 16,
       children: [
-        StreamBuilder<XFile?>(
-          stream: imageControl.valueChanges,
-          initialData: imageControl.value,
+        StreamBuilder<List<XFile>?>(
+          stream: imagesControl.valueChanges,
+          initialData: imagesControl.value,
           builder: (context, _) {
-            final image = imageControl.value;
-            if (image == null) {
-              return const SizedBox.shrink();
+            final images = imagesControl.value ?? const <XFile>[];
+            if (images.isEmpty) {
+              return Center(
+                child: ElevatedButton.icon(
+                  onPressed: onAddImages,
+                  icon: const Icon(Icons.add_photo_alternate_outlined),
+                  label: Text(l10n.createImagePickLabel),
+                ),
+              );
             }
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.file(File(image.path), width: double.infinity, fit: BoxFit.cover),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 8,
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    spacing: 8,
+                    children: [
+                      for (final (index, image) in images.indexed)
+                        Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.file(
+                                File(image.path),
+                                width: _thumbnailSize,
+                                height: _thumbnailSize,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              top: 4,
+                              right: 4,
+                              child: GestureDetector(
+                                onTap: () => imagesControl.value = [...images]..removeAt(index),
+                                child: Container(
+                                  padding: const EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.surfaceDark.withValues(alpha: 0.7),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.close, size: 16, color: AppColors.onDark),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      if (images.length < maxImagesPerContent)
+                        InkWell(
+                          onTap: onAddImages,
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            width: _thumbnailSize,
+                            height: _thumbnailSize,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: AppColors.border),
+                            ),
+                            child: const Icon(Icons.add_photo_alternate_outlined, color: AppColors.onLighter),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                Text(l10n.createImageCount(images.length, maxImagesPerContent)),
+              ],
             );
           },
-        ),
-        ElevatedButton.icon(
-          onPressed: _pickImage,
-          icon: const Icon(Icons.image_outlined),
-          label: Text(l10n.createImagePickLabel),
         ),
         ReactiveTextField<String>(
           formControl: titleControl,
@@ -72,17 +141,5 @@ class ImageContentForm extends ConsumerWidget {
         ),
       ],
     );
-  }
-
-  /// Ouvre le sélecteur d'image de la galerie et enregistre le choix dans [imageControl].
-  ///
-  /// Une annulation laisse l'image précédente en place plutôt que de vider le
-  /// champ, pour qu'un aller-retour dans la galerie ne fasse rien perdre.
-  Future<void> _pickImage() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (image == null) {
-      return;
-    }
-    imageControl.value = image;
   }
 }

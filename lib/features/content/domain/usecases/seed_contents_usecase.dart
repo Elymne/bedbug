@@ -5,6 +5,7 @@ import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
+import 'package:bedbug/features/content/domain/object_values/content_image.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
@@ -19,9 +20,9 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SeedContentsUsecase].
-final seedContentsUsecaseProvider = Provider<SeedContentsUsecase>(
-  (ref) => SeedContentsUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider)),
-);
+final seedContentsUsecaseProvider = Provider<SeedContentsUsecase>((ref) {
+  return SeedContentsUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider));
+});
 
 /// URLs de liens valides utilisées comme exemples réalistes.
 const List<String> _validUrls = [
@@ -243,8 +244,16 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
   ) {
     final isBroken = index % 4 == 0;
     final fileNames = isBroken ? _brokenImageFileNames : _validImageFileNames;
-    final fileName = fileNames[index % fileNames.length];
-    final dimensions = _imageDimensions[index % _imageDimensions.length];
+    // 1 à 4 images selon l'index, pour couvrir l'affichage mono et multi-images.
+    final imageCount = 1 + index % 4;
+    final images = [
+      for (var imageIndex = 0; imageIndex < imageCount; imageIndex++)
+        ContentImage(
+          fileName: fileNames[(index + imageIndex) % fileNames.length],
+          width: _imageDimensions[(index + imageIndex) % _imageDimensions.length].$1,
+          height: _imageDimensions[(index + imageIndex) % _imageDimensions.length].$2,
+        ),
+    ];
 
     final hasBody = index % 5 != 0;
 
@@ -259,11 +268,9 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       survivalScore: 1,
       displayScore: 1,
       bounce: bounce,
-      sizeInBytes: isBroken ? 0 : 204800,
+      sizeInBytes: isBroken ? 0 : 204800 * imageCount,
       flair: flair,
-      fileName: fileName,
-      imageWidth: dimensions.$1,
-      imageHeight: dimensions.$2,
+      images: images,
       title: 'Image #${index + 1}',
       body: hasBody ? _shortBodies[index % _shortBodies.length] : null,
     );
