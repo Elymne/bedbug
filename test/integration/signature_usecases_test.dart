@@ -75,4 +75,62 @@ void main() {
     expect(invalidPseudo.left, SaveLocalSignatureFailure.invalidProfile);
     expect(invalidAvatar.left, SaveLocalSignatureFailure.invalidProfile);
   });
+
+  test('save enregistre la description sans espaces en bordure, et une description vide comme absente', () async {
+    final saveUsecase = container.read(saveLocalSignatureUsecaseProvider);
+
+    final withBio = await saveUsecase(
+      const SaveLocalSignatureParams(
+        pseudo: 'bedbug',
+        avatarText: '(◕‿◕)',
+        colorArgb: null,
+        ghostSpeed: 1,
+        socialLinks: {},
+        bio: '  Je poste la nuit.  ',
+      ),
+    );
+    final withBlankBio = await saveUsecase(
+      const SaveLocalSignatureParams(
+        pseudo: 'bedbug',
+        avatarText: '(◕‿◕)',
+        colorArgb: null,
+        ghostSpeed: 1,
+        socialLinks: {},
+        bio: '   ',
+      ),
+    );
+
+    expect(withBio.right?.bio, 'Je poste la nuit.');
+    expect(withBlankBio.right?.bio, isNull);
+    final reread = await container.read(getLocalSignatureUsecaseProvider)(const NoParams());
+    expect(reread.right?.bio, isNull);
+  });
+
+  test('save refuse une description trop longue ou sur plusieurs lignes', () async {
+    final saveUsecase = container.read(saveLocalSignatureUsecaseProvider);
+
+    final tooLong = await saveUsecase(
+      SaveLocalSignatureParams(
+        pseudo: 'bedbug',
+        avatarText: '(◕‿◕)',
+        colorArgb: null,
+        ghostSpeed: 1,
+        socialLinks: const {},
+        bio: 'a' * (maxSignatureBioLength + 1),
+      ),
+    );
+    final multiline = await saveUsecase(
+      const SaveLocalSignatureParams(
+        pseudo: 'bedbug',
+        avatarText: '(◕‿◕)',
+        colorArgb: null,
+        ghostSpeed: 1,
+        socialLinks: {},
+        bio: 'ligne 1\nligne 2',
+      ),
+    );
+
+    expect(tooLong.left, SaveLocalSignatureFailure.invalidProfile);
+    expect(multiline.left, SaveLocalSignatureFailure.invalidProfile);
+  });
 }

@@ -1,6 +1,10 @@
+import 'package:bedbug/features/content/domain/repositories/comment_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
+import 'package:bedbug/features/content/domain/repositories/reaction_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
+import 'package:bedbug/features/content/infrastructure/datasources/hive_comment_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
+import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_storage_repository.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
@@ -12,21 +16,38 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [ClearContentsUsecase].
 final clearContentsUsecaseProvider = Provider<ClearContentsUsecase>((ref) {
-  return ClearContentsUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider));
+  return ClearContentsUsecase(
+    ref.read(contentRepositoryProvider),
+    ref.read(storageRepositoryProvider),
+    ref.read(reactionRepositoryProvider),
+    ref.read(commentRepositoryProvider),
+  );
 });
 
-/// Supprime l'intégralité des contenus stockés localement.
+/// Supprime l'intégralité des contenus stockés localement, ainsi que leurs réactions et commentaires.
+///
+/// Les réactions et les commentaires sont stockés à part : sans ce nettoyage, ils resteraient
+/// orphelins et continueraient d'occuper le stockage.
 class ClearContentsUsecase extends Usecase<NoParams, ClearContentsFailure, void> {
   /// Crée un [ClearContentsUsecase].
-  ClearContentsUsecase(this._contentRepository, this._storageRepository);
+  ClearContentsUsecase(
+    this._contentRepository,
+    this._storageRepository,
+    this._reactionRepository,
+    this._commentRepository,
+  );
 
   final ContentRepository _contentRepository;
   final StorageRepository _storageRepository;
+  final ReactionRepository _reactionRepository;
+  final CommentRepository _commentRepository;
 
   @override
   Future<Either<ClearContentsFailure, void>> call(NoParams params) async {
     try {
       await _contentRepository.deleteAll();
+      await _reactionRepository.deleteAll();
+      await _commentRepository.deleteAll();
       await _storageRepository.resetCurrentSizeInBytes();
       return const Right(null);
     } on DataException catch (error, stackTrace) {

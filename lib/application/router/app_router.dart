@@ -15,6 +15,7 @@ import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
+import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -36,6 +37,14 @@ const String settingsPath = '/settings';
 /// La page renvoie le kaomoji choisi via `context.pop`, à récupérer avec
 /// `context.push<String>(avatarPickerPath)`.
 const String avatarPickerPath = '/settings/avatar';
+
+/// Chemin vers la page de choix du bedbug d'une réaction.
+///
+/// Même page que [avatarPickerPath], mais déclarée au premier niveau : la
+/// pousser depuis le détail d'un contenu ne doit pas empiler la page des
+/// paramètres. Le kaomoji choisi est renvoyé via `context.pop`, à récupérer
+/// avec `context.push<String>(reactionPickerPath)`.
+const String reactionPickerPath = '/reaction-picker';
 
 /// Chemin vers la page de recherche dédiée.
 const String searchPath = '/search';
@@ -105,6 +114,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: settingsPath,
         pageBuilder: (context, state) => _fadePage(const SettingsScreen()),
         routes: [GoRoute(path: 'avatar', pageBuilder: (context, state) => _fadePage(const AvatarPickerScreen()))],
+      ),
+      GoRoute(
+        path: reactionPickerPath,
+        pageBuilder: (context, state) {
+          return _fadePage(AvatarPickerScreen(title: context.loc.reactionPickerTitle));
+        },
       ),
       GoRoute(
         path: searchPath,

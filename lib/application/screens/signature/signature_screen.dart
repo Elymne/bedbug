@@ -7,6 +7,7 @@ import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/style/social_network_x.dart';
 import 'package:bedbug/application/widgets/content_list/content_list_view.dart';
 import 'package:bedbug/application/widgets/signature/app_signature_avatar.dart';
+import 'package:bedbug/application/widgets/signature/app_signature_bio.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
 import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
@@ -86,6 +87,7 @@ class SignatureScreen extends ConsumerWidget {
                         textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.onLight),
                       ),
+                      if (signature.bio != null) ...[const SizedBox(height: 8), AppSignatureBio(bio: signature.bio!)],
                       if (signature.socialLinks.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         Wrap(

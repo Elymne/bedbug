@@ -476,5 +476,134 @@
   "close": "Close",
   "@close": {
     "description": "Generic label for a close action (e.g. tooltip of the snackbar close icon)"
+  },
+  "contentReactionsTitle": "{count, plural, =0{Reactions} other{Reactions ({count})}}",
+  "@contentReactionsTitle": {
+    "description": "Title of the reactions section on a content detail page, with their count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentReactionsEmpty": "No reactions yet.",
+  "@contentReactionsEmpty": {
+    "description": "Text shown when a content has no reactions yet"
+  },
+  "contentReactionsLoadError": "Unable to load reactions.",
+  "@contentReactionsLoadError": {
+    "description": "Message shown when the reactions of a content cannot be read"
+  },
+  "contentReactButton": "React",
+  "@contentReactButton": {
+    "description": "Button opening the reaction form on a content detail page"
+  },
+  "contentEditReactionButton": "Edit my reaction",
+  "@contentEditReactionButton": {
+    "description": "Button opening the reaction form when the user has already reacted to the content"
+  },
+  "reactionComposerTitle": "Your reaction",
+  "@reactionComposerTitle": {
+    "description": "Title of the reaction form sheet"
+  },
+  "reactionChangeBedbugButton": "Pick a bedbug",
+  "@reactionChangeBedbugButton": {
+    "description": "Button opening the bedbug catalogue from the reaction form sheet"
+  },
+  "reactionBubbleLabel": "Bubble (optional)",
+  "@reactionBubbleLabel": {
+    "description": "Label of the reaction text bubble field"
+  },
+  "reactionBubbleError": "{max} characters max, on a single line.",
+  "@reactionBubbleError": {
+    "description": "Error shown under the bubble field when it is too long or spans several lines",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "reactionSaveButton": "Post",
+  "@reactionSaveButton": {
+    "description": "Save button of the reaction form sheet"
+  },
+  "reactionSaveError": "Unable to save the reaction.",
+  "@reactionSaveError": {
+    "description": "Snackbar error message shown when a reaction cannot be saved"
+  },
+  "reactionInvalidError": "This reaction is not valid.",
+  "@reactionInvalidError": {
+    "description": "Snackbar error message shown when the bedbug or bubble of a reaction is rejected"
+  },
+  "reactionPickerTitle": "Pick a bedbug",
+  "@reactionPickerTitle": {
+    "description": "Title of the bedbug catalogue page opened for a reaction"
+  },
+  "settingsBioLabel": "Description (optional)",
+  "@settingsBioLabel": {
+    "description": "Label of the short signature description field in the settings"
+  },
+  "settingsBioHint": "One sentence to introduce yourself",
+  "@settingsBioHint": {
+    "description": "Hint of the short signature description field"
+  },
+  "settingsBioError": "{max} characters max, on a single line.",
+  "@settingsBioError": {
+    "description": "Error shown under the description field when it is too long or spans several lines",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "contentCommentsTitle": "{count, plural, =0{Comments} other{Comments ({count})}}",
+  "@contentCommentsTitle": {
+    "description": "Title of the comments section on a content detail page, with their count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentCommentsEmpty": "No comments yet.",
+  "@contentCommentsEmpty": {
+    "description": "Text shown when a content has no comments yet"
+  },
+  "contentCommentsLoadError": "Unable to load comments.",
+  "@contentCommentsLoadError": {
+    "description": "Message shown when the comments of a content cannot be read"
+  },
+  "contentCommentButton": "Comment",
+  "@contentCommentButton": {
+    "description": "Button opening the comment form on a content detail page"
+  },
+  "commentComposerTitle": "Your comment",
+  "@commentComposerTitle": {
+    "description": "Title of the comment form sheet"
+  },
+  "commentBodyLabel": "Comment",
+  "@commentBodyLabel": {
+    "description": "Label of the comment field"
+  },
+  "commentBodyError": "{max} characters max.",
+  "@commentBodyError": {
+    "description": "Error shown under the comment field when it is too long",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "commentSaveButton": "Post",
+  "@commentSaveButton": {
+    "description": "Save button of the comment form sheet"
+  },
+  "commentSaveError": "Unable to save the comment.",
+  "@commentSaveError": {
+    "description": "Snackbar error message shown when a comment cannot be saved"
+  },
+  "commentInvalidError": "This comment is not valid.",
+  "@commentInvalidError": {
+    "description": "Snackbar error message shown when the body of a comment is rejected"
   }
 }

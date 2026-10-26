@@ -846,6 +846,14 @@ All shared widgets live in `shared/application/widgets/`. Always reuse them befo
 
 **`AppSignatureAvatar`** — the text icon of a signature (kaomoji, emoji, symbols…) rendered with `AppGhostText`, the ghost layer using the signature colour and speed. Accepts `avatarText`, `ghostColor`, optional `ghostSpeed` (1), `fontSize` (32) and `isAnimating` (`true`; pass `false` in lists).
 
+**`AppReactionBubble`** — a reaction: a bedbug (`AppSignatureAvatar`) topped by its optional speech bubble (`bubbleText`). Accepts `avatarText`, `ghostColor`, optional `bubbleText`, `ghostSpeed` (1), `fontSize` (20), `isAnimating` (`true`; pass `false` in lists) and `isMirrored` (`false`; `true` for a right-aligned reaction: content aligned right, bubble pinched on the right). Used by the reactions list of the detail page and by the preview of the reaction form.
+
+**`AppGhostColorSelector`** — picker for the colour of a ghost effect: a few preset swatches plus one opening a free colour picker. Driven by a `FormControl<Color>` passed as `control`. Used for the signature colour and for the bedbug colour of a reaction.
+
+**`AppGhostSpeedSlider`** — reactive slider for the intensity of a ghost effect, between `minGhostSpeed` and `maxGhostSpeed` by steps of 0.25. Accepts a `FormControl<double>` as `formControl`. Always use it rather than a raw `ReactiveSlider`, so bounds and step stay the same everywhere.
+
+**`AppSignatureBio`** — the short description of a signature (`bio`), centred and italic under the pseudo. Used on the signature page and in the profile form preview.
+
 **`AppImageCountBadge`** — dark translucent pill (collections icon + `label`) overlaid on an image that belongs to a multi-image content. Used with the image count on content tiles and with the position (`2/4`) in the detail carousel.
 
 ---

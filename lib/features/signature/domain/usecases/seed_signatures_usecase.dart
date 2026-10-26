@@ -45,6 +45,15 @@ const List<String> _avatarTexts = [
   '(-.-)Zzz',
 ];
 
+/// Descriptions factices, toutes conformes à la règle des descriptions (une ligne, 80 caractères max).
+const List<String> _bios = [
+  'Je dors le jour, je poste la nuit.',
+  'Collectionneur de draps froids et de mauvaises idées.',
+  'Ici pour les memes, je reste pour les bedbugs.',
+  'Pas de bio, juste des vibes.',
+  '(╯°□°)╯ je cherche toujours le Wi-Fi',
+];
+
 /// Couleurs de ghost factices, en ARGB 32 bits.
 const List<int> _colorArgbs = [0xFFFF7DA4, 0xFF51C2FF, 0xFF9BDDB1, 0xFF9B59B6, 0xFFFF9D4D, 0xFFFFD166];
 
@@ -95,6 +104,8 @@ class SeedSignaturesUsecase extends Usecase<SeedSignaturesParams, SeedSignatures
             colorArgb: _colorArgbs[random.nextInt(_colorArgbs.length)],
             ghostSpeed: _randomGhostSpeed(random),
             socialLinks: _randomSocialLinks(random, pseudos[index]),
+            // Une signature sur trois n'a pas de description, pour tester l'affichage sans.
+            bio: index % 3 == 0 ? null : _bios[random.nextInt(_bios.length)],
           ),
       ];
 
