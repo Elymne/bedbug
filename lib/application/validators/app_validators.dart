@@ -1,4 +1,5 @@
 import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
+import 'package:bedbug/features/content/domain/extensions/reaction_text_extension.dart';
 import 'package:bedbug/features/signature/domain/enums/social_network.dart';
 import 'package:bedbug/features/signature/domain/extensions/signature_text_extension.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -12,6 +13,8 @@ class AppValidators {
   AppValidators._();
 
   /// Vérifie que le champ n'est pas vide ou nul.
+  ///
+  /// Une liste vide (ex. aucune image choisie) est considérée comme vide.
   static const required = _RequiredValidator();
 
   /// Vérifie que la valeur correspond au format d'une adresse email.
@@ -57,6 +60,18 @@ class AppValidators {
   /// vide — déléguer la vérification à [required].
   static const avatarText = _AvatarTextValidator();
 
+  /// Vérifie que la description d'une signature tient sur une ligne et ne dépasse pas sa longueur maximale.
+  ///
+  /// Applique la règle du domaine (`isValidSignatureBio`). Retourne `null`
+  /// si vide : la description est optionnelle.
+  static const signatureBio = _SignatureBioValidator();
+
+  /// Vérifie que la bulle d'une réaction tient sur une ligne et ne dépasse pas sa longueur maximale.
+  ///
+  /// Applique la règle du domaine (`isValidReactionBubble`). Retourne `null`
+  /// si vide — déléguer la vérification à [required].
+  static const reactionBubble = _ReactionBubbleValidator();
+
   /// Validator de [FormGroup] vérifiant que l'identifiant saisi est valide sur le réseau choisi.
   ///
   /// L'identifiant dépend du réseau (format Twitter, Twitch, GitHub…, URL
@@ -81,6 +96,7 @@ class _RequiredValidator extends Validator<dynamic> {
     final value = control.value;
     if (value == null) return {'required': true};
     if (value is String && value.trim().isEmpty) return {'required': true};
+    if (value is Iterable<dynamic> && value.isEmpty) return {'required': true};
     return null;
   }
 }
@@ -172,6 +188,38 @@ class _PseudoValidator extends Validator<dynamic> {
     }
     if (!value.trim().isValidPseudo) {
       return {'pseudo': true};
+    }
+    return null;
+  }
+}
+
+class _SignatureBioValidator extends Validator<dynamic> {
+  const _SignatureBioValidator() : super();
+
+  @override
+  Map<String, dynamic>? validate(AbstractControl<dynamic> control) {
+    final value = control.value;
+    if (value is! String || value.trim().isEmpty) {
+      return null;
+    }
+    if (!value.trim().isValidSignatureBio) {
+      return {'signatureBio': true};
+    }
+    return null;
+  }
+}
+
+class _ReactionBubbleValidator extends Validator<dynamic> {
+  const _ReactionBubbleValidator() : super();
+
+  @override
+  Map<String, dynamic>? validate(AbstractControl<dynamic> control) {
+    final value = control.value;
+    if (value is! String || value.trim().isEmpty) {
+      return null;
+    }
+    if (!value.trim().isValidReactionBubble) {
+      return {'reactionBubble': true};
     }
     return null;
   }

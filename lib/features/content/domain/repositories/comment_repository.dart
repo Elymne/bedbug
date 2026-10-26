@@ -1,6 +1,21 @@
-/// Contrat du repository gérant les commentaires.
+import 'package:bedbug/features/content/domain/entities/comment.dart';
+
+/// Contrat du repository gérant les [Comment].
 ///
-/// Aucun use case n'exploite encore les commentaires : l'interface reste
-/// vide et sera complétée avec les méthodes réellement nécessaires dès
-/// qu'un premier use case en aura besoin.
-abstract class CommentRepository {}
+/// Pas de mise à jour : un commentaire n'est pas modifiable une fois posté.
+abstract class CommentRepository {
+  /// Persiste le commentaire [entity].
+  Future<void> addOne(Comment entity);
+
+  /// Retourne tous les commentaires rattachés au contenu [contentId], sans ordre garanti.
+  Future<List<Comment>> getAllByContentId(String contentId);
+
+  /// Supprime les commentaires dont l'identifiant fait partie de [ids].
+  Future<void> deleteMany(List<String> ids);
+
+  /// Supprime tous les commentaires rattachés au contenu [contentId].
+  Future<void> deleteAllByContentId(String contentId);
+
+  /// Supprime l'intégralité des commentaires stockés.
+  Future<void> deleteAll();
+}

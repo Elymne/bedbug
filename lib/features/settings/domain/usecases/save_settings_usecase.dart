@@ -10,9 +10,9 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveSettingsUsecase].
-final saveSettingsUsecaseProvider = Provider<SaveSettingsUsecase>(
-  (ref) => SaveSettingsUsecase(ref.read(settingsRepositoryProvider)),
-);
+final saveSettingsUsecaseProvider = Provider<SaveSettingsUsecase>((ref) {
+  return SaveSettingsUsecase(ref.read(settingsRepositoryProvider));
+});
 
 /// Persiste les settings mis à jour.
 ///

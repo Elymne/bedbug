@@ -60,9 +60,30 @@
   "@createTextBodyLabel": {
     "description": "Label for the body field in the text content form"
   },
-  "createImagePickLabel": "Pick an image",
+  "createImagePickLabel": "Pick images",
   "@createImagePickLabel": {
     "description": "Label for the image picker button in the image content form"
+  },
+  "createImageCount": "{count}/{max} images",
+  "@createImageCount": {
+    "description": "Number of picked images over the maximum allowed, shown in the image content form",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "createImageLimitReached": "{max} images maximum: the extra images were ignored.",
+  "@createImageLimitReached": {
+    "description": "Snackbar error message shown when more images than allowed were picked",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
   },
   "createRequiredFieldError": "This field is required.",
   "@createRequiredFieldError": {
@@ -108,9 +129,9 @@
   "@createSaveError": {
     "description": "Snackbar error message shown when saving content fails"
   },
-  "createImageCompressionError": "Unable to process this image.",
+  "createImageCompressionError": "Unable to process one of the images.",
   "@createImageCompressionError": {
-    "description": "Snackbar error message shown when the picked image cannot be recompressed"
+    "description": "Snackbar error message shown when one of the picked images cannot be recompressed"
   },
   "searchHint": "Search…",
   "@searchHint": {
@@ -455,5 +476,126 @@
   "close": "Close",
   "@close": {
     "description": "Generic label for a close action (e.g. tooltip of the snackbar close icon)"
+  },
+  "contentReactionsTitle": "{count, plural, =0{Reactions} other{Reactions ({count})}}",
+  "@contentReactionsTitle": {
+    "description": "Title of the reactions section on a content detail page, with their count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentReactionsEmpty": "No reactions yet.",
+  "@contentReactionsEmpty": {
+    "description": "Text shown when a content has no reactions yet"
+  },
+  "contentReactionsLoadError": "Unable to load reactions.",
+  "@contentReactionsLoadError": {
+    "description": "Message shown when the reactions of a content cannot be read"
+  },
+  "contentReactButton": "React",
+  "@contentReactButton": {
+    "description": "Button opening the reaction form on a content detail page"
+  },
+  "contentEditReactionButton": "Edit my reaction",
+  "@contentEditReactionButton": {
+    "description": "Button opening the reaction form when the user has already reacted to the content"
+  },
+  "reactionComposerTitle": "Your reaction",
+  "@reactionComposerTitle": {
+    "description": "Title of the reaction form sheet"
+  },
+  "reactionChangeBedbugButton": "Pick a bedbug",
+  "@reactionChangeBedbugButton": {
+    "description": "Button opening the bedbug catalogue from the reaction form sheet"
+  },
+  "reactionBubbleLabel": "Bubble",
+  "@reactionBubbleLabel": {
+    "description": "Label of the reaction text bubble field"
+  },
+  "reactionBubbleError": "{max} characters max, on a single line.",
+  "@reactionBubbleError": {
+    "description": "Error shown under the bubble field when it is too long or spans several lines",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "reactionSaveButton": "Post",
+  "@reactionSaveButton": {
+    "description": "Save button of the reaction form sheet"
+  },
+  "reactionSaveError": "Unable to save the reaction.",
+  "@reactionSaveError": {
+    "description": "Snackbar error message shown when a reaction cannot be saved"
+  },
+  "reactionInvalidError": "This reaction is not valid.",
+  "@reactionInvalidError": {
+    "description": "Snackbar error message shown when the bedbug or bubble of a reaction is rejected"
+  },
+  "reactionPickerTitle": "Pick a bedbug",
+  "@reactionPickerTitle": {
+    "description": "Title of the bedbug catalogue page opened for a reaction"
+  },
+  "settingsBioLabel": "Description (optional)",
+  "@settingsBioLabel": {
+    "description": "Label of the short signature description field in the settings"
+  },
+  "settingsBioHint": "One sentence to introduce yourself",
+  "@settingsBioHint": {
+    "description": "Hint of the short signature description field"
+  },
+  "settingsBioError": "{max} characters max, on a single line.",
+  "@settingsBioError": {
+    "description": "Error shown under the description field when it is too long or spans several lines",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "contentBounceCountLabel": "{count, plural, =1{1 bounce} other{{count} bounces}}",
+  "@contentBounceCountLabel": {
+    "description": "Number of bounces of a content spelled out, read by screen readers instead of the icon and figure",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentReactionCountLabel": "{count, plural, =1{1 reaction} other{{count} reactions}}",
+  "@contentReactionCountLabel": {
+    "description": "Number of reactions of a content spelled out, read by screen readers instead of the icon and figure",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "imageViewerDownload": "Save to gallery",
+  "@imageViewerDownload": {
+    "description": "Tooltip of the image viewer button that saves the displayed image to the phone gallery"
+  },
+  "imageViewerSaveSuccess": "Image saved to your gallery.",
+  "@imageViewerSaveSuccess": {
+    "description": "Snackbar message shown after an image is saved to the gallery"
+  },
+  "imageViewerSaveError": "Unable to save the image.",
+  "@imageViewerSaveError": {
+    "description": "Snackbar error message shown when an image cannot be saved to the gallery"
+  },
+  "imageViewerAccessDenied": "Allow access to your gallery in the phone settings to save the image.",
+  "@imageViewerAccessDenied": {
+    "description": "Snackbar error message shown when the user denied access to their gallery"
+  },
+  "loadingDefaultText": "Loading…",
+  "@loadingDefaultText": {
+    "description": "Generic loading text, shown when no more specific text is provided"
+  },
+  "createPublishingText": "Publishing…",
+  "@createPublishingText": {
+    "description": "Text of the loading page shown while a content is being published"
   }
 }

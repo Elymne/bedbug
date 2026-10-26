@@ -2,13 +2,15 @@ import 'package:bedbug/application/formatters/avatar_text_input_formatter.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/settings/local_signature_notifier.dart';
 import 'package:bedbug/application/screens/settings/save_signature_notifier.dart';
-import 'package:bedbug/application/screens/settings/widgets/signature_color_selector.dart';
 import 'package:bedbug/application/screens/settings/widgets/social_links_editor.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
+import 'package:bedbug/application/widgets/signature/app_ghost_color_selector.dart';
+import 'package:bedbug/application/widgets/signature/app_ghost_speed_slider.dart';
 import 'package:bedbug/application/widgets/signature/app_signature_avatar.dart';
+import 'package:bedbug/application/widgets/signature/app_signature_bio.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
 import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
@@ -28,7 +30,8 @@ const int _kAvatarMaxLength = 16;
 /// Formulaire de configuration du profil de l'utilisateur du téléphone.
 ///
 /// Affiche en tête un aperçu en direct de l'icône (effet ghost dans la
-/// couleur choisie) et du pseudo, puis les champs : pseudo, icône texte
+/// couleur choisie), du pseudo et de la description, puis les champs : pseudo,
+/// description, icône texte
 /// (écrite à la main ou choisie dans le catalogue), couleur et liens vers les
 /// réseaux.
 class SignatureSection extends ConsumerStatefulWidget {
@@ -51,6 +54,9 @@ class _State extends ConsumerState<SignatureSection> {
     validators: [AppValidators.required, AppValidators.pseudo],
   );
 
+  /// Contrôle de la courte description.
+  late final _bioControl = FormControl<String>(value: widget.signature?.bio, validators: [AppValidators.signatureBio]);
+
   /// Contrôle de l'icône texte.
   late final _avatarTextControl = FormControl<String>(
     value: widget.signature?.avatarText ?? defaultSignatureAvatarText,
@@ -71,6 +77,7 @@ class _State extends ConsumerState<SignatureSection> {
   /// Formulaire du profil.
   late final FormGroup _form = FormGroup({
     'pseudo': _pseudoControl,
+    'bio': _bioControl,
     'avatarText': _avatarTextControl,
     'color': _colorControl,
     'ghostSpeed': _ghostSpeedControl,
@@ -113,6 +120,7 @@ class _State extends ConsumerState<SignatureSection> {
           builder: (context, _) {
             final avatarText = _avatarTextControl.value?.trim() ?? '';
             final pseudo = _pseudoControl.value?.trim() ?? '';
+            final bio = _bioControl.value?.trim() ?? '';
             return Column(
               spacing: 8,
               children: [
@@ -127,6 +135,7 @@ class _State extends ConsumerState<SignatureSection> {
                   text: pseudo.isEmpty ? anonymousSignature.pseudo : pseudo,
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.onLight),
                 ),
+                if (bio.isNotEmpty) AppSignatureBio(bio: bio),
               ],
             );
           },
@@ -138,12 +147,20 @@ class _State extends ConsumerState<SignatureSection> {
           decoration: InputDecoration(
             labelText: l10n.settingsPseudoLabel,
             prefixText: AppPrefixes.signature,
-            prefixStyle: const TextStyle(color: AppColors.primary),
+            prefixStyle: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800),
           ),
           validationMessages: {
             ValidationMessage.required: (_) => l10n.createRequiredFieldError,
             'pseudo': (_) => l10n.settingsPseudoError,
           },
+        ),
+        ReactiveTextField<String>(
+          formControl: _bioControl,
+          textCapitalization: TextCapitalization.sentences,
+          maxLength: maxSignatureBioLength,
+          maxLines: 1,
+          decoration: InputDecoration(labelText: l10n.settingsBioLabel, hintText: l10n.settingsBioHint),
+          validationMessages: {'signatureBio': (_) => l10n.settingsBioError(maxSignatureBioLength)},
         ),
         ReactiveTextField<String>(
           formControl: _avatarTextControl,
@@ -163,16 +180,9 @@ class _State extends ConsumerState<SignatureSection> {
           },
         ),
         Text(l10n.settingsColorLabel),
-        SignatureColorSelector(control: _colorControl),
+        AppGhostColorSelector(control: _colorControl),
         Text(l10n.settingsGhostSpeedLabel),
-        ReactiveSlider(
-          formControl: _ghostSpeedControl,
-          min: minGhostSpeed,
-          max: maxGhostSpeed,
-          // Pas de 0,25 entre les bornes.
-          divisions: ((maxGhostSpeed - minGhostSpeed) / 0.25).round(),
-          labelBuilder: (value) => '×${value.toStringAsFixed(2)}',
-        ),
+        AppGhostSpeedSlider(formControl: _ghostSpeedControl),
         Text(l10n.settingsSocialLabel),
         StreamBuilder<Color?>(
           stream: _colorControl.valueChanges,
@@ -231,6 +241,7 @@ class _State extends ConsumerState<SignatureSection> {
           colorArgb: (_colorControl.value ?? AppColors.primary).toARGB32(),
           ghostSpeed: _ghostSpeedControl.value ?? defaultGhostSpeed,
           socialLinks: _socialLinksControl.value ?? const {},
+          bio: _bioControl.value,
         );
   }
 }

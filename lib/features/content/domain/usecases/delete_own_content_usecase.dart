@@ -1,9 +1,13 @@
 import 'dart:io';
 
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
+import 'package:bedbug/features/content/domain/repositories/comment_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
+import 'package:bedbug/features/content/domain/repositories/reaction_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
+import 'package:bedbug/features/content/infrastructure/datasources/hive_comment_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
+import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_storage_repository.dart';
 import 'package:bedbug/shared/config/content_image_storage.dart';
 import 'package:bedbug/shared/domain/either.dart';
@@ -16,9 +20,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// Provider du [DeleteOwnContentUsecase].
-final deleteOwnContentUsecaseProvider = Provider<DeleteOwnContentUsecase>(
-  (ref) => DeleteOwnContentUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider)),
-);
+final deleteOwnContentUsecaseProvider = Provider<DeleteOwnContentUsecase>((ref) {
+  return DeleteOwnContentUsecase(
+    ref.read(contentRepositoryProvider),
+    ref.read(storageRepositoryProvider),
+    ref.read(reactionRepositoryProvider),
+    ref.read(commentRepositoryProvider),
+  );
+});
 
 /// Supprime de l'appareil un contenu que son utilisateur a lui-même publié.
 ///
@@ -28,14 +37,21 @@ final deleteOwnContentUsecaseProvider = Provider<DeleteOwnContentUsecase>(
 /// selon les règles de nettoyage du stockage. La suppression est locale : les
 /// copies déjà transmises à d'autres appareils ne peuvent pas être rappelées.
 ///
-/// Le fichier image d'un [ImageContent] est supprimé avec lui, et le poids du
-/// contenu est retiré du compteur de stockage.
+/// Les fichiers images d'un [ImageContent], les réactions et les commentaires du
+/// contenu sont supprimés avec lui, et le poids du contenu est retiré du compteur de stockage.
 class DeleteOwnContentUsecase extends Usecase<DeleteOwnContentParams, DeleteOwnContentFailure, void> {
   /// Crée un [DeleteOwnContentUsecase].
-  DeleteOwnContentUsecase(this._contentRepository, this._storageRepository);
+  DeleteOwnContentUsecase(
+    this._contentRepository,
+    this._storageRepository,
+    this._reactionRepository,
+    this._commentRepository,
+  );
 
   final ContentRepository _contentRepository;
   final StorageRepository _storageRepository;
+  final ReactionRepository _reactionRepository;
+  final CommentRepository _commentRepository;
 
   @override
   Future<Either<DeleteOwnContentFailure, void>> call(DeleteOwnContentParams params) async {
@@ -50,12 +66,16 @@ class DeleteOwnContentUsecase extends Usecase<DeleteOwnContentParams, DeleteOwnC
 
       await _contentRepository.deleteOne(content.id);
       await _storageRepository.adjustCurrentSizeInBytes(-content.sizeInBytes);
+      await _reactionRepository.deleteAllByContentId(content.id);
+      await _commentRepository.deleteAllByContentId(content.id);
 
       if (content is ImageContent) {
         final dir = await getApplicationDocumentsDirectory();
-        final file = File('${dir.path}/$contentImagesFolder/${content.fileName}');
-        if (file.existsSync()) {
-          await file.delete();
+        for (final image in content.images) {
+          final file = File('${dir.path}/$contentImagesFolder/${image.fileName}');
+          if (file.existsSync()) {
+            await file.delete();
+          }
         }
       }
       return const Right(null);

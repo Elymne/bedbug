@@ -4,6 +4,7 @@ import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/enums/tag.dart';
+import 'package:bedbug/features/content/domain/object_values/content_image.dart';
 import 'package:bedbug/shared/exceptions/data_exception.dart';
 import 'package:bedbug/shared/infrastructure/hive_type_ids.dart';
 import 'package:hive_ce/hive.dart';
@@ -43,6 +44,9 @@ class ContentHiveModel extends HiveObject {
     this.fileName,
     this.imageWidth,
     this.imageHeight,
+    this.imageFileNames = const [],
+    this.imageWidths = const [],
+    this.imageHeights = const [],
     required this.flair,
     required this.sizeInBytes,
     this.ogImageUrl,
@@ -110,9 +114,9 @@ class ContentHiveModel extends HiveObject {
         displayScore: entity.displayScore,
         bounce: entity.bounce,
         senderId: entity.senderId,
-        fileName: entity.fileName,
-        imageWidth: entity.imageWidth,
-        imageHeight: entity.imageHeight,
+        imageFileNames: entity.images.map((image) => image.fileName).toList(),
+        imageWidths: entity.images.map((image) => image.width).toList(),
+        imageHeights: entity.images.map((image) => image.height).toList(),
         title: entity.title,
         body: entity.body,
         flair: entity.flair,
@@ -167,18 +171,37 @@ class ContentHiveModel extends HiveObject {
   @HiveField(10)
   final String? url;
 
-  /// Nom du fichier image dans le dossier géré par l'app.
-  /// Renseigné pour [ImageContent] uniquement.
+  /// Ancien nom du fichier de l'unique image d'un [ImageContent].
+  ///
+  /// N'est plus écrit depuis qu'un contenu image peut porter plusieurs images
+  /// ([imageFileNames]) : conservé en lecture seule pour relire les contenus
+  /// persistés avant ce changement.
   @HiveField(11)
   final String? fileName;
 
-  /// Largeur native de l'image en pixels. Renseigné pour [ImageContent] uniquement.
+  /// Ancienne largeur de l'unique image. Lecture seule, voir [fileName].
   @HiveField(17)
   final int? imageWidth;
 
-  /// Hauteur native de l'image en pixels. Renseigné pour [ImageContent] uniquement.
+  /// Ancienne hauteur de l'unique image. Lecture seule, voir [fileName].
   @HiveField(18)
   final int? imageHeight;
+
+  /// Noms des fichiers images dans le dossier géré par l'app, dans l'ordre
+  /// d'affichage. Renseigné pour [ImageContent] uniquement.
+  ///
+  /// Stocké en listes parallèles ([imageWidths], [imageHeights]) plutôt qu'en
+  /// liste d'objets, pour ne pas avoir à déclarer un adaptateur Hive dédié.
+  @HiveField(24, defaultValue: <String>[])
+  final List<String> imageFileNames;
+
+  /// Largeurs des images en pixels, alignées sur [imageFileNames].
+  @HiveField(25, defaultValue: <int>[])
+  final List<int> imageWidths;
+
+  /// Hauteurs des images en pixels, alignées sur [imageFileNames].
+  @HiveField(26, defaultValue: <int>[])
+  final List<int> imageHeights;
 
   /// Flair libre du contenu, sans le `/` initial.
   ///
@@ -287,9 +310,7 @@ class ContentHiveModel extends HiveObject {
         displayScore: displayScore,
         bounce: bounce,
         senderId: senderId,
-        fileName: fileName!,
-        imageWidth: imageWidth!,
-        imageHeight: imageHeight!,
+        images: _toContentImages(),
         title: title!,
         body: body,
         flair: flair,
@@ -298,5 +319,20 @@ class ContentHiveModel extends HiveObject {
       );
     }
     throw UnimplementedError('ContentHiveModel._toEntity : type "$type" non supporté.');
+  }
+
+  /// Reconstruit les images d'un [ImageContent] depuis les listes parallèles.
+  ///
+  /// Un contenu persisté avant le passage aux images multiples n'a que les
+  /// anciens champs ([fileName], [imageWidth], [imageHeight]) : il est relu
+  /// comme un contenu à une seule image.
+  List<ContentImage> _toContentImages() {
+    if (imageFileNames.isEmpty) {
+      return [ContentImage(fileName: fileName!, width: imageWidth!, height: imageHeight!)];
+    }
+    return [
+      for (var index = 0; index < imageFileNames.length; index++)
+        ContentImage(fileName: imageFileNames[index], width: imageWidths[index], height: imageHeights[index]),
+    ];
   }
 }

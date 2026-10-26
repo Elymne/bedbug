@@ -13,9 +13,9 @@ const String _storageKey = 'storage_config';
 final hiveStorageBoxProvider = Provider<Box<StorageHiveModel>>((ref) => Hive.box<StorageHiveModel>('storage'));
 
 /// Provider du [HiveStorageRepository].
-final storageRepositoryProvider = Provider<StorageRepository>(
-  (ref) => HiveStorageRepository(ref.read(hiveStorageBoxProvider)),
-);
+final storageRepositoryProvider = Provider<StorageRepository>((ref) {
+  return HiveStorageRepository(ref.read(hiveStorageBoxProvider));
+});
 
 /// Implémentation de [StorageRepository] utilisant Hive comme stockage local.
 class HiveStorageRepository implements StorageRepository {

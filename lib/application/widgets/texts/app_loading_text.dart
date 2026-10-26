@@ -1,3 +1,4 @@
+import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 
 /// Widget de chargement affichant un texte dont les lettres apparaissent
@@ -44,16 +45,18 @@ class _AppLoadingTextState extends State<AppLoadingText> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    final text = widget.text ?? 'AppLocalizations.of(context)!.loadingDefaultText';
+    final text = widget.text ?? context.loc.loadingDefaultText;
 
     return AnimatedBuilder(
       animation: _controller,
-      builder: (context, _) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (int i = 0; i < text.length; i++) Opacity(opacity: _opacity(i, text.length), child: Text(text[i])),
-        ],
-      ),
+      builder: (context, _) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (int i = 0; i < text.length; i++) Opacity(opacity: _opacity(i, text.length), child: Text(text[i])),
+          ],
+        );
+      },
     );
   }
 }

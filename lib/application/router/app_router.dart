@@ -5,6 +5,7 @@ import 'package:bedbug/application/screens/content_detail/link_content_detail_sc
 import 'package:bedbug/application/screens/content_detail/text_content_detail_screen.dart';
 import 'package:bedbug/application/screens/create/create_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
+import 'package:bedbug/application/screens/image_viewer/image_viewer_screen.dart';
 import 'package:bedbug/application/screens/search/search_screen.dart';
 import 'package:bedbug/application/screens/search_results/search_criteria.dart';
 import 'package:bedbug/application/screens/search_results/search_results_screen.dart';
@@ -15,6 +16,7 @@ import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
+import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -36,6 +38,14 @@ const String settingsPath = '/settings';
 /// La page renvoie le kaomoji choisi via `context.pop`, à récupérer avec
 /// `context.push<String>(avatarPickerPath)`.
 const String avatarPickerPath = '/settings/avatar';
+
+/// Chemin vers la page de choix du bedbug d'une réaction.
+///
+/// Même page que [avatarPickerPath], mais déclarée au premier niveau : la
+/// pousser depuis le détail d'un contenu ne doit pas empiler la page des
+/// paramètres. Le kaomoji choisi est renvoyé via `context.pop`, à récupérer
+/// avec `context.push<String>(reactionPickerPath)`.
+const String reactionPickerPath = '/reaction-picker';
 
 /// Chemin vers la page de recherche dédiée.
 const String searchPath = '/search';
@@ -62,6 +72,12 @@ const String signaturesPath = '/signatures';
 /// Chemin de la page d'une signature, identifiant en paramètre de chemin.
 const String signaturePath = '$signaturesPath/:id';
 
+/// Chemin vers la visionneuse plein écran des images d'un contenu.
+///
+/// Les images et la position de départ sont transmises via `extra`
+/// (`ImageViewerParams`).
+const String imageViewerPath = '/image-viewer';
+
 /// Chemin vers la page de détail d'un contenu.
 ///
 /// Le contenu est transmis via `extra` (pas de fetch par id pour l'instant).
@@ -75,10 +91,12 @@ CustomTransitionPage<void> _fadePage(Widget child) {
   return CustomTransitionPage<void>(
     child: child,
     transitionDuration: _fadeDuration,
-    transitionsBuilder: (context, animation, _, child) => FadeTransition(
-      opacity: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
-      child: child,
-    ),
+    transitionsBuilder: (context, animation, _, child) {
+      return FadeTransition(
+        opacity: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+        child: child,
+      );
+    },
   );
 }
 
@@ -105,6 +123,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         routes: [GoRoute(path: 'avatar', pageBuilder: (context, state) => _fadePage(const AvatarPickerScreen()))],
       ),
       GoRoute(
+        path: reactionPickerPath,
+        pageBuilder: (context, state) {
+          return _fadePage(AvatarPickerScreen(title: context.loc.reactionPickerTitle));
+        },
+      ),
+      GoRoute(
         path: searchPath,
         pageBuilder: (context, state) => _fadePage(const SearchScreen()),
         routes: [
@@ -117,6 +141,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: signaturePath,
         pageBuilder: (context, state) => _fadePage(SignatureScreen(signatureId: state.pathParameters['id']!)),
+      ),
+      GoRoute(
+        path: imageViewerPath,
+        pageBuilder: (context, state) => _fadePage(ImageViewerScreen(params: state.extra! as ImageViewerParams)),
       ),
       GoRoute(
         path: contentDetailPath,

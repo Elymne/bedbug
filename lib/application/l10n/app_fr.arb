@@ -60,9 +60,30 @@
   "@createTextBodyLabel": {
     "description": "Label du champ corps dans le formulaire texte"
   },
-  "createImagePickLabel": "Choisir une image",
+  "createImagePickLabel": "Choisir des images",
   "@createImagePickLabel": {
     "description": "Label du bouton de sélection d'image dans le formulaire image"
+  },
+  "createImageCount": "{count}/{max} images",
+  "@createImageCount": {
+    "description": "Nombre d'images choisies sur le maximum autorisé, affiché dans le formulaire image",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "createImageLimitReached": "{max} images maximum : les images en trop ont été ignorées.",
+  "@createImageLimitReached": {
+    "description": "Message snackbar d'erreur affiché quand plus d'images que le maximum autorisé ont été choisies",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
   },
   "createRequiredFieldError": "Ce champ est obligatoire.",
   "@createRequiredFieldError": {
@@ -108,9 +129,9 @@
   "@createSaveError": {
     "description": "Message snackbar d'erreur affiché quand la sauvegarde échoue"
   },
-  "createImageCompressionError": "Impossible de traiter cette image.",
+  "createImageCompressionError": "Impossible de traiter l'une des images.",
   "@createImageCompressionError": {
-    "description": "Message snackbar d'erreur affiché quand l'image choisie ne peut pas être recompressée"
+    "description": "Message snackbar d'erreur affiché quand l'une des images choisies ne peut pas être recompressée"
   },
   "searchHint": "Rechercher…",
   "@searchHint": {
@@ -455,5 +476,126 @@
   "close": "Fermer",
   "@close": {
     "description": "Libellé générique d'une action de fermeture (ex. infobulle de la croix des snackbars)"
+  },
+  "contentReactionsTitle": "{count, plural, =0{Réactions} other{Réactions ({count})}}",
+  "@contentReactionsTitle": {
+    "description": "Titre de la section des réactions sur la page de détail d'un contenu, avec leur nombre",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentReactionsEmpty": "Aucune réaction pour l'instant.",
+  "@contentReactionsEmpty": {
+    "description": "Texte affiché quand un contenu n'a encore aucune réaction"
+  },
+  "contentReactionsLoadError": "Impossible de charger les réactions.",
+  "@contentReactionsLoadError": {
+    "description": "Message affiché quand les réactions d'un contenu ne peuvent pas être lues"
+  },
+  "contentReactButton": "Réagir",
+  "@contentReactButton": {
+    "description": "Bouton ouvrant la saisie d'une réaction sur la page de détail d'un contenu"
+  },
+  "contentEditReactionButton": "Modifier ma réaction",
+  "@contentEditReactionButton": {
+    "description": "Bouton ouvrant la saisie d'une réaction quand l'utilisateur a déjà réagi au contenu"
+  },
+  "reactionComposerTitle": "Ta réaction",
+  "@reactionComposerTitle": {
+    "description": "Titre de la feuille de saisie d'une réaction"
+  },
+  "reactionChangeBedbugButton": "Choisir un bedbug",
+  "@reactionChangeBedbugButton": {
+    "description": "Bouton ouvrant le catalogue des bedbugs depuis la feuille de saisie d'une réaction"
+  },
+  "reactionBubbleLabel": "Bulle",
+  "@reactionBubbleLabel": {
+    "description": "Label du champ de la bulle de texte d'une réaction"
+  },
+  "reactionBubbleError": "{max} caractères maximum, sur une seule ligne.",
+  "@reactionBubbleError": {
+    "description": "Erreur affichée sous le champ de la bulle quand elle est trop longue ou sur plusieurs lignes",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "reactionSaveButton": "Publier",
+  "@reactionSaveButton": {
+    "description": "Bouton d'enregistrement de la feuille de saisie d'une réaction"
+  },
+  "reactionSaveError": "Impossible d'enregistrer la réaction.",
+  "@reactionSaveError": {
+    "description": "Message snackbar d'erreur affiché quand une réaction ne peut pas être enregistrée"
+  },
+  "reactionInvalidError": "Cette réaction n'est pas valide.",
+  "@reactionInvalidError": {
+    "description": "Message snackbar d'erreur affiché quand le bedbug ou la bulle d'une réaction est refusé"
+  },
+  "reactionPickerTitle": "Choisir un bedbug",
+  "@reactionPickerTitle": {
+    "description": "Titre de la page du catalogue des bedbugs ouverte pour une réaction"
+  },
+  "settingsBioLabel": "Description (optionnelle)",
+  "@settingsBioLabel": {
+    "description": "Label du champ de la courte description de la signature dans les paramètres"
+  },
+  "settingsBioHint": "Une phrase pour te présenter",
+  "@settingsBioHint": {
+    "description": "Texte indicatif du champ de la courte description de la signature"
+  },
+  "settingsBioError": "{max} caractères maximum, sur une seule ligne.",
+  "@settingsBioError": {
+    "description": "Erreur affichée sous le champ de la description quand elle est trop longue ou sur plusieurs lignes",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "contentBounceCountLabel": "{count, plural, =1{1 rebond} other{{count} rebonds}}",
+  "@contentBounceCountLabel": {
+    "description": "Nombre de rebonds d'un contenu en toutes lettres, lu par les lecteurs d'écran à la place de l'icône et du chiffre",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentReactionCountLabel": "{count, plural, =1{1 réaction} other{{count} réactions}}",
+  "@contentReactionCountLabel": {
+    "description": "Nombre de réactions d'un contenu en toutes lettres, lu par les lecteurs d'écran à la place de l'icône et du chiffre",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "imageViewerDownload": "Enregistrer dans la galerie",
+  "@imageViewerDownload": {
+    "description": "Infobulle du bouton de la visionneuse qui enregistre l'image affichée dans la galerie du téléphone"
+  },
+  "imageViewerSaveSuccess": "Image enregistrée dans ta galerie.",
+  "@imageViewerSaveSuccess": {
+    "description": "Message snackbar affiché après l'enregistrement d'une image dans la galerie"
+  },
+  "imageViewerSaveError": "Impossible d'enregistrer l'image.",
+  "@imageViewerSaveError": {
+    "description": "Message snackbar d'erreur affiché quand une image ne peut pas être enregistrée dans la galerie"
+  },
+  "imageViewerAccessDenied": "Autorise l'accès à ta galerie dans les réglages du téléphone pour enregistrer l'image.",
+  "@imageViewerAccessDenied": {
+    "description": "Message snackbar d'erreur affiché quand l'utilisateur a refusé l'accès à sa galerie"
+  },
+  "loadingDefaultText": "Chargement…",
+  "@loadingDefaultText": {
+    "description": "Texte de chargement générique, affiché quand aucun texte plus précis n'est fourni"
+  },
+  "createPublishingText": "Publication en cours…",
+  "@createPublishingText": {
+    "description": "Texte de la page de chargement affichée pendant la publication d'un contenu"
   }
 }

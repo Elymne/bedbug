@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:bedbug/application/providers/app_docs_dir_provider.dart';
 import 'package:bedbug/application/screens/content_detail/content_detail_skeleton.dart';
+import 'package:bedbug/application/screens/content_detail/widgets/content_images_view.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
-import 'package:bedbug/application/widgets/images/app_file_image.dart';
 import 'package:bedbug/application/widgets/texts/app_loading_text.dart';
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/shared/config/content_image_storage.dart';
@@ -37,7 +37,10 @@ class ImageContentDetailScreen extends ConsumerWidget {
     );
   }
 
-  /// Retourne l'image du contenu suivie de sa description optionnelle.
+  /// Retourne les images du contenu suivies de sa description optionnelle.
+  ///
+  /// Les images sont affichées en entier, sans recadrage, et s'ouvrent en
+  /// plein écran au tap (voir [ContentImagesView]).
   Widget _buildContentBody(WidgetRef ref) {
     final appDocsDirWatcher = ref.watch(appDocsDirProvider);
 
@@ -49,8 +52,10 @@ class ImageContentDetailScreen extends ConsumerWidget {
           loading: () => const AppLoadingText(),
           error: (error, stack) => const Icon(Icons.broken_image_outlined),
           data: (dir) {
-            final file = File('${dir.path}/$contentImagesFolder/${content.fileName}');
-            return AppFileImage(file: file, width: double.infinity, height: 250);
+            final files = [
+              for (final image in content.images) File('${dir.path}/$contentImagesFolder/${image.fileName}'),
+            ];
+            return ContentImagesView(images: content.images, files: files);
           },
         ),
         if (content.body != null) Text(content.body!, style: AppTextStyles.contentPreview),

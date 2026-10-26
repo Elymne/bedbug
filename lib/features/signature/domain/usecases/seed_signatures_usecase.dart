@@ -13,9 +13,9 @@ import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SeedSignaturesUsecase].
-final seedSignaturesUsecaseProvider = Provider<SeedSignaturesUsecase>(
-  (ref) => SeedSignaturesUsecase(ref.read(signatureRepositoryProvider)),
-);
+final seedSignaturesUsecaseProvider = Provider<SeedSignaturesUsecase>((ref) {
+  return SeedSignaturesUsecase(ref.read(signatureRepositoryProvider));
+});
 
 /// Pseudos factices, tous conformes à la règle des pseudos (lettres et tirets).
 const List<String> _pseudos = [
@@ -43,6 +43,15 @@ const List<String> _avatarTexts = [
   '(ง •̀_•́)ง',
   '(づ｡◕‿‿◕｡)づ',
   '(-.-)Zzz',
+];
+
+/// Descriptions factices, toutes conformes à la règle des descriptions (une ligne, 80 caractères max).
+const List<String> _bios = [
+  'Je dors le jour, je poste la nuit.',
+  'Collectionneur de draps froids et de mauvaises idées.',
+  'Ici pour les memes, je reste pour les bedbugs.',
+  'Pas de bio, juste des vibes.',
+  '(╯°□°)╯ je cherche toujours le Wi-Fi',
 ];
 
 /// Couleurs de ghost factices, en ARGB 32 bits.
@@ -95,6 +104,8 @@ class SeedSignaturesUsecase extends Usecase<SeedSignaturesParams, SeedSignatures
             colorArgb: _colorArgbs[random.nextInt(_colorArgbs.length)],
             ghostSpeed: _randomGhostSpeed(random),
             socialLinks: _randomSocialLinks(random, pseudos[index]),
+            // Une signature sur trois n'a pas de description, pour tester l'affichage sans.
+            bio: index % 3 == 0 ? null : _bios[random.nextInt(_bios.length)],
           ),
       ];
 
