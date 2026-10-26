@@ -5,6 +5,7 @@ import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
+import 'package:bedbug/features/content/domain/enums/tag.dart';
 import 'package:bedbug/features/content/domain/object_values/content_image.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
@@ -123,7 +124,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
         final flair = _flairs[index % _flairs.length];
 
         final authorId = _pickAuthorId(params, random, index);
-        final content = _buildContent(index, createdAt, origin, bounce, flair, authorId);
+        final content = _buildContent(index, createdAt, origin, bounce, flair, authorId, _pickTags(random));
         totalSizeInBytes += content.sizeInBytes;
         batch.add(content);
 
@@ -171,6 +172,18 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     return params.authorIds[random.nextInt(params.authorIds.length)];
   }
 
+  /// Tire au hasard de 0 à 2 tags distincts pour un contenu factice.
+  ///
+  /// Environ 30 % des contenus n'ont aucun tag, 50 % en ont un et 20 % en ont
+  /// deux : les tuiles du fil montrent ainsi des contenus avec et sans tag.
+  ///
+  /// - [random] : générateur partagé par tout le seed.
+  List<Tag> _pickTags(Random random) {
+    final roll = random.nextDouble();
+    final count = roll < 0.3 ? 0 : (roll < 0.8 ? 1 : 2);
+    return ([...Tag.values]..shuffle(random)).take(count).toList();
+  }
+
   /// Construit un contenu factice selon le modulo de [index] pour distribuer les types.
   ///
   /// - index % 10 in [0..3] → [TextContent] (40 %)
@@ -183,18 +196,19 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     int bounce,
     String flair,
     String authorId,
+    List<Tag> tags,
   ) {
     final bucket = index % 10;
 
     if (bucket <= 3) {
-      return _buildTextContent(index, createdAt, origin, bounce, flair, authorId);
+      return _buildTextContent(index, createdAt, origin, bounce, flair, authorId, tags);
     }
 
     if (bucket <= 6) {
-      return _buildImageContent(index, createdAt, origin, bounce, flair, authorId);
+      return _buildImageContent(index, createdAt, origin, bounce, flair, authorId, tags);
     }
 
-    return _buildLinkContent(index, createdAt, origin, bounce, flair, authorId);
+    return _buildLinkContent(index, createdAt, origin, bounce, flair, authorId, tags);
   }
 
   /// Construit un [TextContent] avec titre court, long, ou corps vide selon l'index.
@@ -205,6 +219,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     int bounce,
     String flair,
     String authorId,
+    List<Tag> tags,
   ) {
     final isLongTitle = index % 7 == 0;
     final isLongBody = index % 5 == 0;
@@ -228,6 +243,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       bounce: bounce,
       sizeInBytes: body.length,
       flair: flair,
+      tags: tags,
       title: title,
       body: body,
     );
@@ -241,6 +257,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     int bounce,
     String flair,
     String authorId,
+    List<Tag> tags,
   ) {
     final isBroken = index % 4 == 0;
     final fileNames = isBroken ? _brokenImageFileNames : _validImageFileNames;
@@ -270,6 +287,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       bounce: bounce,
       sizeInBytes: isBroken ? 0 : 204800 * imageCount,
       flair: flair,
+      tags: tags,
       images: images,
       title: 'Image #${index + 1}',
       body: hasBody ? _shortBodies[index % _shortBodies.length] : null,
@@ -284,6 +302,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     int bounce,
     String flair,
     String authorId,
+    List<Tag> tags,
   ) {
     final isBroken = index % 3 == 0;
     final urls = isBroken ? _brokenUrls : _validUrls;
@@ -302,6 +321,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       bounce: bounce,
       sizeInBytes: 0,
       flair: flair,
+      tags: tags,
       title: 'Lien #${index + 1}',
       url: url,
       ogImageUrl: isBroken ? null : 'https://www.leoxa.fr/wp-content/uploads/2023/02/flutter.png',

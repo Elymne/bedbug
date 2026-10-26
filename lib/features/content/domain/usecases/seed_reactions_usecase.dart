@@ -49,9 +49,6 @@ const List<String> _bubbleTexts = [
   'quarante caractères pile pour tester ok',
 ];
 
-/// Part des réactions factices qui ont une bulle de texte.
-const double _kBubbleRatio = 0.8;
-
 /// Couleurs de ghost factices, en ARGB 32 bits.
 const List<int> _colorArgbs = [0xFFFF7DA4, 0xFF51C2FF, 0xFF9BDDB1, 0xFF9B59B6, 0xFFFF9D4D, 0xFFFFD166];
 
@@ -62,7 +59,7 @@ const List<int> _colorArgbs = [0xFFFF7DA4, 0xFF51C2FF, 0xFF9BDDB1, 0xFF9B59B6, 0
 /// que l'on ouvre en premier en testant. Chaque contenu reçoit
 /// [SeedReactionsParams.reactionsPerContent] réactions d'auteurs factices tous
 /// différents (une réaction par signature et par contenu), avec un bedbug,
-/// une couleur, une intensité et une bulle (huit fois sur dix) tirés au
+/// une couleur, une intensité et une bulle tirés au
 /// hasard. Écrites directement dans le repository, par lots, comme les
 /// contenus factices : passer par le use case d'enregistrement, réaction par
 /// réaction, rendrait le seed beaucoup trop lent.
@@ -116,7 +113,7 @@ class SeedReactionsUsecase extends Usecase<SeedReactionsParams, SeedReactionsFai
       contentId: contentId,
       authorId: authorId,
       avatarText: _avatarTexts[random.nextInt(_avatarTexts.length)],
-      bubbleText: random.nextDouble() < _kBubbleRatio ? _bubbleTexts[random.nextInt(_bubbleTexts.length)] : null,
+      bubbleText: _bubbleTexts[random.nextInt(_bubbleTexts.length)],
       colorArgb: _colorArgbs[random.nextInt(_colorArgbs.length)],
       ghostSpeed: minGhostSpeed + random.nextInt(steps + 1) * 0.25,
     );

@@ -1,3 +1,4 @@
+import 'package:bedbug/application/widgets/scroll/scroll_visibility.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -215,17 +216,15 @@ class _State extends ConsumerState<AppGhostAnimation> with TickerProviderStateMi
   /// que celles qu'on voit, pour rien. Appelée à chaque mouvement du
   /// défilement ; ne relance ou ne met en pause que si la visibilité change.
   void _updateVisibility() {
-    if (!mounted) {
+    final scrollable = _scrollable;
+    if (!mounted || scrollable == null) {
       return;
     }
-    final box = context.findRenderObject();
-    final viewport = _scrollable?.context.findRenderObject();
-    if (box is! RenderBox || viewport is! RenderBox || !box.hasSize || !viewport.hasSize) {
+    final visibility = scrollVisibilityOf(context, scrollable, margin: _kVisibilityMargin);
+    if (visibility == null) {
       return;
     }
-    final rect = box.localToGlobal(Offset.zero) & box.size;
-    final viewportRect = viewport.localToGlobal(Offset.zero) & viewport.size;
-    final isOnScreen = rect.overlaps(viewportRect.inflate(_kVisibilityMargin));
+    final isOnScreen = visibility != ScrollVisibility.hidden;
     if (isOnScreen == _isOnScreen) {
       return;
     }

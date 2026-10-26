@@ -22,8 +22,8 @@ final saveReactionUsecaseProvider = Provider<SaveReactionUsecase>((ref) {
 /// Les réactions circulent de pair à pair sans identité vérifiable : ce use
 /// case est le seul point d'entrée, qu'elles viennent de l'utilisateur ou,
 /// plus tard, d'un pair. Il garantit ainsi partout que :
-/// - le bedbug ne contient pas de mot et la bulle respecte sa longueur
-///   maximale (une réaction reçue ne passe par aucun formulaire) ;
+/// - le bedbug ne contient pas de mot et la bulle n'est pas vide et respecte
+///   sa longueur maximale (une réaction reçue ne passe par aucun formulaire) ;
 /// - l'intensité du ghost reste dans ses bornes, pour qu'une valeur
 ///   extrême reçue d'un pair ne fige ni ne fasse planter l'animation ;
 /// - une signature n'a qu'une réaction par contenu : la nouvelle remplace
@@ -43,7 +43,7 @@ class SaveReactionUsecase extends Usecase<SaveReactionParams, SaveReactionFailur
   Future<Either<SaveReactionFailure, Reaction>> call(SaveReactionParams params) async {
     try {
       final avatarText = params.reaction.avatarText.trim();
-      final bubbleText = params.reaction.bubbleText?.trim() ?? '';
+      final bubbleText = params.reaction.bubbleText.trim();
       if (!avatarText.isValidAvatarText || !bubbleText.isValidReactionBubble) {
         return const Left(SaveReactionFailure.invalidReaction);
       }
@@ -55,7 +55,7 @@ class SaveReactionUsecase extends Usecase<SaveReactionParams, SaveReactionFailur
         contentId: params.reaction.contentId,
         authorId: params.reaction.authorId,
         avatarText: avatarText,
-        bubbleText: bubbleText.isEmpty ? null : bubbleText,
+        bubbleText: bubbleText,
         colorArgb: params.reaction.colorArgb,
         ghostSpeed: params.reaction.ghostSpeed.clamp(minGhostSpeed, maxGhostSpeed),
       );
@@ -94,7 +94,7 @@ class SaveReactionUsecase extends Usecase<SaveReactionParams, SaveReactionFailur
 
 /// Échecs possibles du [SaveReactionUsecase].
 enum SaveReactionFailure {
-  /// Le bedbug contient un mot, ou la bulle est trop longue ou sur plusieurs lignes.
+  /// Le bedbug contient un mot, ou la bulle est vide, trop longue ou sur plusieurs lignes.
   invalidReaction,
 
   /// Erreur de la couche de stockage locale.

@@ -61,7 +61,7 @@ class ReactionHiveModel extends HiveObject {
   @HiveField(5)
   final String avatarText;
 
-  /// Bulle de texte optionnelle.
+  /// Bulle de texte, `null` pour les réactions stockées avant qu'elle soit obligatoire.
   @HiveField(6)
   final String? bubbleText;
 
@@ -86,7 +86,8 @@ class ReactionHiveModel extends HiveObject {
         contentId: contentId,
         authorId: authorId,
         avatarText: avatarText,
-        bubbleText: bubbleText,
+        // Les réactions stockées avant que la bulle soit obligatoire n'en ont pas.
+        bubbleText: bubbleText ?? '',
         colorArgb: colorArgb,
         // Bornée à la relecture : une valeur hors bornes figerait ou ferait
         // planter l'animation.

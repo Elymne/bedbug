@@ -147,7 +147,7 @@ class _State extends ConsumerState<SignatureSection> {
           decoration: InputDecoration(
             labelText: l10n.settingsPseudoLabel,
             prefixText: AppPrefixes.signature,
-            prefixStyle: const TextStyle(color: AppColors.primary),
+            prefixStyle: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800),
           ),
           validationMessages: {
             ValidationMessage.required: (_) => l10n.createRequiredFieldError,
@@ -156,6 +156,7 @@ class _State extends ConsumerState<SignatureSection> {
         ),
         ReactiveTextField<String>(
           formControl: _bioControl,
+          textCapitalization: TextCapitalization.sentences,
           maxLength: maxSignatureBioLength,
           maxLines: 1,
           decoration: InputDecoration(labelText: l10n.settingsBioLabel, hintText: l10n.settingsBioHint),

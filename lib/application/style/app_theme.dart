@@ -10,7 +10,11 @@ class AppTheme {
       fontFamily: 'Quicksand',
 
       /// * Colors.
-      colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary, primary: AppColors.primary),
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: AppColors.primary,
+        primary: AppColors.primary,
+        secondary: AppColors.secondary,
+      ),
       scaffoldBackgroundColor: AppColors.background,
       disabledColor: AppColors.disabled,
 

@@ -71,10 +71,10 @@ class _State extends ConsumerState<ReactionComposerSheet> {
     validators: [AppValidators.required, AppValidators.avatarText],
   );
 
-  /// Contrôle de la bulle de texte optionnelle.
+  /// Contrôle de la bulle de texte, obligatoire.
   late final _bubbleTextControl = FormControl<String>(
     value: widget.ownReaction?.bubbleText,
-    validators: [AppValidators.reactionBubble],
+    validators: [AppValidators.required, AppValidators.reactionBubble],
   );
 
   /// Contrôle de la couleur du ghost, par défaut celle de la réaction actuelle ou de la signature de l'utilisateur.
@@ -136,7 +136,11 @@ class _State extends ConsumerState<ReactionComposerSheet> {
               ),
               OutlinedButton.icon(
                 onPressed: _pickBedbug,
-                icon: const Icon(Icons.grid_view_rounded, color: AppColors.primary),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.onLight,
+                  side: const BorderSide(color: AppColors.onLight),
+                ),
+                icon: const Icon(Icons.grid_view_rounded, color: AppColors.onLight),
                 label: Text(l10n.reactionChangeBedbugButton),
               ),
               Text(l10n.settingsColorLabel),
@@ -145,11 +149,15 @@ class _State extends ConsumerState<ReactionComposerSheet> {
               AppGhostSpeedSlider(formControl: _ghostSpeedControl),
               ReactiveTextField<String>(
                 formControl: _bubbleTextControl,
+                textCapitalization: TextCapitalization.sentences,
                 maxLength: maxReactionBubbleLength,
                 maxLines: 1,
                 textInputAction: TextInputAction.done,
                 decoration: InputDecoration(labelText: l10n.reactionBubbleLabel),
-                validationMessages: {'reactionBubble': (_) => l10n.reactionBubbleError(maxReactionBubbleLength)},
+                validationMessages: {
+                  ValidationMessage.required: (_) => l10n.createRequiredFieldError,
+                  'reactionBubble': (_) => l10n.reactionBubbleError(maxReactionBubbleLength),
+                },
               ),
               Align(
                 alignment: Alignment.centerRight,
@@ -200,7 +208,7 @@ class _State extends ConsumerState<ReactionComposerSheet> {
         .save(
           contentId: widget.contentId,
           avatarText: _avatarTextControl.value!,
-          bubbleText: _bubbleTextControl.value,
+          bubbleText: _bubbleTextControl.value!,
           colorArgb: (_colorControl.value ?? AppColors.primary).toARGB32(),
           ghostSpeed: _ghostSpeedControl.value ?? defaultGhostSpeed,
           previousReaction: widget.ownReaction,

@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
+import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/create/create_notifier.dart';
+import 'package:bedbug/application/screens/create/publish_content_notifier.dart';
 import 'package:bedbug/application/screens/create/widgets/content_type_selector.dart';
 import 'package:bedbug/application/screens/create/widgets/image_content_form.dart';
 import 'package:bedbug/application/screens/create/widgets/link_content_form.dart';
@@ -15,6 +16,7 @@ import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:bedbug/application/widgets/buttons/app_close_button.dart';
 import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
+import 'package:bedbug/application/widgets/texts/app_loading_text.dart';
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
@@ -22,19 +24,15 @@ import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/enums/content_type.dart';
 import 'package:bedbug/features/content/domain/enums/tag.dart';
 import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
-import 'package:bedbug/features/content/domain/object_values/compressed_image.dart';
 import 'package:bedbug/features/content/domain/object_values/content_image.dart';
-import 'package:bedbug/features/content/domain/usecases/compress_image_usecase.dart';
 import 'package:bedbug/features/content/infrastructure/og_metadata_service.dart';
 import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
 import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
-import 'package:bedbug/shared/config/content_image_storage.dart';
 import 'package:bedbug/shared/extensions/string_uuid_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Page de création de contenu.
@@ -47,9 +45,6 @@ class CreateScreen extends ConsumerStatefulWidget {
 }
 
 class _State extends ConsumerState<CreateScreen> {
-  /// Cas d'usage de recompression de l'image choisie avant enregistrement.
-  late final _compressImageUsecase = ref.read(compressImageUsecaseProvider);
-
   /// Contrôle du titre pour [TextContent].
   late final _textTitleControl = FormControl<String>(validators: [Validators.required]);
 
@@ -217,7 +212,11 @@ class _State extends ConsumerState<CreateScreen> {
     }
   }
 
-  /// Valide le formulaire actif et déclenche la sauvegarde.
+  /// Valide le formulaire actif, publie le contenu, puis ouvre son détail ou affiche l'erreur.
+  ///
+  /// La préparation (compression des images, aperçu d'un lien) et
+  /// l'enregistrement sont confiés à [PublishContentNotifier] : la page
+  /// affiche son écran de chargement pendant tout ce temps.
   Future<void> _onSave() async {
     final type = ref.read(createNotifierProvider).requireValue.selectedType;
 
@@ -229,167 +228,153 @@ class _State extends ConsumerState<CreateScreen> {
       _activeFormGroup.markAllAsTouched();
       return;
     }
+    if (!_activeFormGroup.valid) {
+      _activeFormGroup.markAllAsTouched();
+      return;
+    }
     final flair = _flairControl.value!.toFlair()!;
 
-    switch (type) {
-      case ContentType.text:
-        if (!_textFormGroup.valid) {
-          _textFormGroup.markAllAsTouched();
-          return;
-        }
-        await ref
-            .read(createNotifierProvider.notifier)
-            .save(
-              TextContent(
-                id: UuidX.generate(),
-                createdAt: DateTime.now(),
-                updatedAt: DateTime.now(),
-                authorId: _authorId,
-                senderId: 'local',
-                origin: ContentOrigin.owned,
-                broadcastScore: 1,
-                survivalScore: 1,
-                displayScore: 1,
-                bounce: 0,
-                // Placeholder : SaveContentUsecase détermine et corrige le poids réel
-                // avant persistance.
-                sizeInBytes: 0,
-                title: _textTitleControl.value!,
-                body: _textBodyControl.value!,
-                flair: flair,
-                tags: _tagsControl.value ?? const [],
-              ),
-            );
-
-      case ContentType.image:
-        if (!_imageFormGroup.valid) {
-          _imageFormGroup.markAllAsTouched();
-          return;
-        }
-        // Toutes les images sont compressées avant d'écrire le moindre fichier :
-        // un échec sur l'une d'elles n'abandonne ainsi aucun fichier orphelin.
-        // Compression séquentielle pour ne pas décoder jusqu'à 10 photos en
-        // mémoire en même temps.
-        final sourceImages = _imageFilesControl.value!;
-        final compressedImages = <CompressedImage>[];
-        for (final sourceImage in sourceImages) {
-          final compressResult = await _compressImageUsecase(
-            CompressImageParams(sourcePath: sourceImage.path, imageCount: sourceImages.length),
-          );
-          final compressedImage = compressResult.right;
-          if (compressedImage == null) {
-            if (!mounted) {
-              return;
-            }
-            AppSnackbar.showError(context, AppLocalizations.of(context)!.createImageCompressionError);
-            return;
-          }
-          compressedImages.add(compressedImage);
-        }
-
-        final dir = await getApplicationDocumentsDirectory();
-        final imagesDir = Directory('${dir.path}/$contentImagesFolder');
-        await imagesDir.create(recursive: true);
-        final contentImages = <ContentImage>[];
-        for (final compressedImage in compressedImages) {
-          final fileName = '${UuidX.generate()}.${compressedImage.fileExtension}';
-          await File('${imagesDir.path}/$fileName').writeAsBytes(compressedImage.bytes);
-          contentImages.add(
-            ContentImage(fileName: fileName, width: compressedImage.width, height: compressedImage.height),
-          );
-        }
-
-        await ref
-            .read(createNotifierProvider.notifier)
-            .save(
-              ImageContent(
-                id: UuidX.generate(),
-                createdAt: DateTime.now(),
-                updatedAt: DateTime.now(),
-                authorId: _authorId,
-                senderId: 'local',
-                origin: ContentOrigin.owned,
-                broadcastScore: 1,
-                survivalScore: 1,
-                displayScore: 1,
-                bounce: 0,
-                // Placeholder : SaveContentUsecase détermine et corrige le poids réel
-                // (taille cumulée des fichiers sur disque) avant persistance.
-                sizeInBytes: 0,
-                images: contentImages,
-                title: _imageTitleControl.value!,
-                body: _imageBodyControl.value?.isEmpty == true ? null : _imageBodyControl.value,
-                flair: flair,
-                tags: _tagsControl.value ?? const [],
-              ),
-            );
-
-      case ContentType.link:
-        if (!_linkFormGroup.valid) {
-          _linkFormGroup.markAllAsTouched();
-          return;
-        }
-        final url = _linkUrlControl.value!;
-        final og = await ref.read(ogMetadataServiceProvider).fetch(url);
-        await ref
-            .read(createNotifierProvider.notifier)
-            .save(
-              LinkContent(
-                id: UuidX.generate(),
-                createdAt: DateTime.now(),
-                updatedAt: DateTime.now(),
-                authorId: _authorId,
-                senderId: 'local',
-                origin: ContentOrigin.owned,
-                broadcastScore: 1,
-                survivalScore: 1,
-                displayScore: 1,
-                bounce: 0,
-                sizeInBytes: 0,
-                title: _linkTitleControl.value!,
-                url: url,
-                ogImageUrl: og.imageUrl,
-                ogTitle: og.title,
-                ogDescription: og.description,
-                flair: flair,
-                tags: _tagsControl.value ?? const [],
-              ),
-            );
+    final result = await switch (type) {
+      ContentType.text => ref.read(publishContentNotifierProvider.notifier).publish(_buildTextContent(flair)),
+      ContentType.image =>
+        ref
+            .read(publishContentNotifierProvider.notifier)
+            .publishImages(
+              sourcePaths: [for (final image in _imageFilesControl.value!) image.path],
+              buildContent: (images) => _buildImageContent(flair, images),
+            ),
+      ContentType.link =>
+        ref
+            .read(publishContentNotifierProvider.notifier)
+            .publishLink(
+              url: _linkUrlControl.value!,
+              buildContent: (ogMetadata) => _buildLinkContent(flair, ogMetadata),
+            ),
+    };
+    if (!mounted) {
+      return;
     }
+    final savedContent = result.right;
+    if (savedContent == null) {
+      AppSnackbar.showError(context, result.left!);
+      return;
+    }
+    AppSnackbar.showSuccess(context, AppLocalizations.of(context)!.createSuccessMessage);
+    // Remplace la page de création par le détail du contenu créé : un retour
+    // ramène alors directement à la page d'où la création a été lancée.
+    context.pushReplacement(contentDetailPath, extra: savedContent);
+  }
+
+  /// Construit le contenu texte saisi.
+  ///
+  /// - [flair] : flair normalisé du contenu.
+  TextContent _buildTextContent(String flair) {
+    return TextContent(
+      id: UuidX.generate(),
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      authorId: _authorId,
+      senderId: 'local',
+      origin: ContentOrigin.owned,
+      broadcastScore: 1,
+      survivalScore: 1,
+      displayScore: 1,
+      bounce: 0,
+      // Placeholder : SaveContentUsecase détermine et corrige le poids réel
+      // avant persistance.
+      sizeInBytes: 0,
+      title: _textTitleControl.value!,
+      body: _textBodyControl.value!,
+      flair: flair,
+      tags: _tagsControl.value ?? const [],
+    );
+  }
+
+  /// Construit le contenu image saisi, à partir de ses images déjà préparées.
+  ///
+  /// - [flair] : flair normalisé du contenu.
+  /// - [images] : images recompressées et copiées dans le dossier de l'app.
+  ImageContent _buildImageContent(String flair, List<ContentImage> images) {
+    return ImageContent(
+      id: UuidX.generate(),
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      authorId: _authorId,
+      senderId: 'local',
+      origin: ContentOrigin.owned,
+      broadcastScore: 1,
+      survivalScore: 1,
+      displayScore: 1,
+      bounce: 0,
+      // Placeholder : SaveContentUsecase détermine et corrige le poids réel
+      // (taille cumulée des fichiers sur disque) avant persistance.
+      sizeInBytes: 0,
+      images: images,
+      title: _imageTitleControl.value!,
+      body: _imageBodyControl.value?.isEmpty == true ? null : _imageBodyControl.value,
+      flair: flair,
+      tags: _tagsControl.value ?? const [],
+    );
+  }
+
+  /// Construit le contenu lien saisi, enrichi de l'aperçu lu sur le réseau.
+  ///
+  /// - [flair] : flair normalisé du contenu.
+  /// - [ogMetadata] : aperçu (Open Graph) du lien.
+  LinkContent _buildLinkContent(String flair, OgMetadata ogMetadata) {
+    return LinkContent(
+      id: UuidX.generate(),
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      authorId: _authorId,
+      senderId: 'local',
+      origin: ContentOrigin.owned,
+      broadcastScore: 1,
+      survivalScore: 1,
+      displayScore: 1,
+      bounce: 0,
+      sizeInBytes: 0,
+      title: _linkTitleControl.value!,
+      url: _linkUrlControl.value!,
+      ogImageUrl: ogMetadata.imageUrl,
+      ogTitle: ogMetadata.title,
+      ogDescription: ogMetadata.description,
+      flair: flair,
+      tags: _tagsControl.value ?? const [],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final createWatcher = ref.watch(createNotifierProvider);
-
-    ref.listen(createNotifierProvider, (previous, next) {
-      if (!context.mounted) return;
-      if (next.isLoading) return;
-      if (next.hasError) {
-        AppSnackbar.showError(context, l10n.createSaveError);
-        return;
-      }
-      final createState = next.value!;
-      if (createState.isSuccess) {
-        AppSnackbar.showSuccess(context, l10n.createSuccessMessage);
-        context.pop();
-        return;
-      }
-      if (createState.failureMessage != null) {
-        AppSnackbar.showError(context, createState.failureMessage!);
-      }
-    });
+    final publishContentNotifierWatcher = ref.watch(publishContentNotifierProvider);
 
     return createWatcher.when(
       loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (_, _) => const Scaffold(body: Center(child: CircularProgressIndicator())),
-      data: (createState) => _buildContent(context, l10n, createState),
+      data: (createState) {
+        return Stack(
+          children: [
+            _buildContent(context, l10n, createState, isPublishing: publishContentNotifierWatcher.isLoading),
+            // Page de chargement par-dessus le formulaire, qui reste intact
+            // derrière pour être retrouvé tel quel en cas d'échec.
+            if (publishContentNotifierWatcher.isLoading) Positioned.fill(child: _buildPublishingPage(l10n)),
+          ],
+        );
+      },
     );
   }
 
   /// Construit le contenu principal de la page.
-  Widget _buildContent(BuildContext context, AppLocalizations l10n, CreateState createState) {
+  ///
+  /// - [isPublishing] : `true` pendant la publication, pour désactiver le bouton de publication.
+  Widget _buildContent(
+    BuildContext context,
+    AppLocalizations l10n,
+    CreateState createState, {
+    required bool isPublishing,
+  }) {
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -401,11 +386,7 @@ class _State extends ConsumerState<CreateScreen> {
                 children: [
                   const AppCloseButton(),
                   const Spacer(),
-                  AppGradientButton(
-                    isLoading: ref.watch(createNotifierProvider).isLoading,
-                    onTap: _onSave,
-                    child: Text(l10n.createSaveButton),
-                  ),
+                  AppGradientButton(isLoading: isPublishing, onTap: _onSave, child: Text(l10n.createSaveButton)),
                 ],
               ),
             ),
@@ -437,7 +418,7 @@ class _State extends ConsumerState<CreateScreen> {
                       labelText: l10n.createFlairLabel,
                       hintText: l10n.createFlairHint,
                       prefixText: AppPrefixes.flair,
-                      prefixStyle: const TextStyle(color: AppColors.primary),
+                      prefixStyle: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800),
                     ),
                   ),
                   Text(l10n.createTagsLabel),
@@ -466,6 +447,37 @@ class _State extends ConsumerState<CreateScreen> {
                   ),
                   ContentType.link => LinkContentForm(titleControl: _linkTitleControl, urlControl: _linkUrlControl),
                 },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Page de chargement affichée pendant la publication, qui peut durer plusieurs secondes avec des images.
+  ///
+  /// - [l10n] : traductions de la page.
+  Widget _buildPublishingPage(AppLocalizations l10n) {
+    // Un Material plutôt qu'une simple couleur de fond : posée par-dessus le
+    // Scaffold, la page n'hériterait sinon d'aucun style de texte (texte
+    // souligné en jaune, couleur par défaut).
+    return Material(
+      color: AppColors.background,
+      textStyle: const TextStyle(fontSize: 16, color: AppColors.onLight),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 16,
+          children: [
+            const CircularProgressIndicator(),
+            // Le texte animé tient sur une ligne : réduit plutôt que de déborder
+            // si la place manque (petit écran, police agrandie).
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: AppLoadingText(text: l10n.createPublishingText),
               ),
             ),
           ],

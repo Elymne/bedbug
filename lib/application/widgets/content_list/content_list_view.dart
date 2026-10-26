@@ -1,4 +1,5 @@
 import 'package:bedbug/application/router/app_router.dart';
+import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/content_tile/content_widget.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,10 @@ class ContentListView extends ConsumerWidget {
     return ListView.separated(
       controller: controller,
       itemCount: contents.length,
-      separatorBuilder: (context, index) => const Divider(height: 1),
+      // Séparateurs en retrait des bords, comme ceux de la page de détail.
+      separatorBuilder: (context, index) {
+        return const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16, color: AppColors.border);
+      },
       itemBuilder: (context, index) {
         return InkWell(
           onTap: () => context.push(contentDetailPath, extra: contents[index]),

@@ -5,6 +5,7 @@ import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/widgets/reactions/app_reaction_bubble.dart';
 import 'package:bedbug/application/widgets/scatter/app_scatter.dart';
+import 'package:bedbug/application/widgets/scroll/app_scroll_reveal.dart';
 import 'package:bedbug/application/widgets/texts/app_loading_text.dart';
 import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
@@ -22,7 +23,9 @@ const double _kReactionSpacing = 12;
 /// Section des réactions de la page de détail d'un contenu.
 ///
 /// Affiche les réactions (bedbug et bulle) dispersées au hasard sur toute la
-/// largeur, sans chevauchement, et un bouton pour réagir. Toutes sont animées :
+/// largeur, sans chevauchement, et un bouton pour réagir. Chacune apparaît avec un
+/// rebond quand elle entre entièrement à l'écran, et s'efface dès qu'elle
+/// commence à en sortir (voir `AppScrollReveal`). Toutes sont animées :
 /// celles qui sortent de l'écran se mettent en pause d'elles-mêmes (voir
 /// `AppGhostAnimation`). Une signature n'ayant qu'une réaction par contenu,
 /// le bouton propose de modifier la réaction de l'utilisateur s'il en a déjà
@@ -81,13 +84,15 @@ class ContentReactionsSection extends ConsumerWidget {
               spacing: _kReactionSpacing,
               children: [
                 for (final (index, reaction) in state.reactions.indexed)
-                  AppReactionBubble(
-                    avatarText: reaction.avatarText,
-                    bubbleText: reaction.bubbleText,
-                    ghostColor: reaction.colorArgb == null ? AppColors.primary : Color(reaction.colorArgb!),
-                    ghostSpeed: reaction.ghostSpeed,
-                    // Une bulle sur deux pincée à droite, pour varier les formes.
-                    isMirrored: index.isOdd,
+                  AppScrollReveal(
+                    child: AppReactionBubble(
+                      avatarText: reaction.avatarText,
+                      bubbleText: reaction.bubbleText,
+                      ghostColor: reaction.colorArgb == null ? AppColors.primary : Color(reaction.colorArgb!),
+                      ghostSpeed: reaction.ghostSpeed,
+                      // Une bulle sur deux pincée à droite, pour varier les formes.
+                      isMirrored: index.isOdd,
+                    ),
                   ),
               ],
             );

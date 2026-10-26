@@ -830,13 +830,13 @@ All shared widgets live in `shared/application/widgets/`. Always reuse them befo
 
 **`AppPageHeader`** — standard page title row with an optional back `IconButton`. Accepts `title`, an optional `onBack` callback and an optional `titlePrefix` (shown in primary colour, see `AppPrefixedText`).
 
-**`AppPrefixedText`** — a name preceded by its prefix (`AppPrefixes.flair` = `f/`, `AppPrefixes.signature` = `s/`), the prefix in primary colour. Accepts `prefix`, `text`, optional `style`, `overflow`, `textAlign`. Always use it to display a flair or a signature pseudo; `AppExpandableSection` also takes a `subtitlePrefix`.
+**`AppPrefixedText`** — a name preceded by its prefix (`AppPrefixes.flair` = `f/`, `AppPrefixes.signature` = `s/`), the prefix in bold primary colour. Accepts `prefix`, `text`, optional `style`, `overflow`, `textAlign`. Always use it to display a flair or a signature pseudo; `AppExpandableSection` also takes a `subtitlePrefix`.
 
-**`AppSnackbar`** — static utility for snackbars. Never instantiated directly.
+**`AppSnackbar`** — static utility for snackbars. Never instantiated directly. Dark background (`onLight`), white text, over a row of animated bedbugs (`SnackbarBedbugBackground`), inside a border whose width pulses with a bounce (`SnackbarPulseBorder`); their colour carries the tone of the message.
 
-- `AppSnackbar.showError(context, message)` — red background, light text.
-- `AppSnackbar.showSuccess(context, message)` — pastel green background, dark text.
-  Snackbars are compact and floating, auto-dismiss after 3 seconds, and always show a close icon.
+- `AppSnackbar.showError(context, message, {intensity})` — red ghost, angry bedbugs, maximum intensity by default.
+- `AppSnackbar.showSuccess(context, message, {intensity})` — green ghost, happy bedbugs, low intensity by default.
+  `intensity` (0 to 1) only drives the speed of the background and border animations; their amplitude stays soft. Snackbars are compact and floating, auto-dismiss after 3 seconds, and always show a close icon.
 
 **`AppTag`** — small coloured pill label for statuses, permissions, or categories. Accepts `label` and `color`; the background is derived automatically at reduced opacity.
 
@@ -852,6 +852,8 @@ All shared widgets live in `shared/application/widgets/`. Always reuse them befo
 
 **`AppGhostAnimation`** — the ghost animation engine alone: it draws nothing and calls `builder(context, offsets)` with the current `GhostOffsets` (`ghost`, `main`), or `null` when not animating. Use it to stack layers your own way; `AppGhostEffect` is its default two-layer composition. Built for long lists: each animation sits in its own `RepaintBoundary` and pauses itself when it leaves the visible area of its nearest `Scrollable`, so there is no need to limit how many ghost effects are animated.
 
+**`AppScrollReveal`** — makes its `child` appear with a bounce (fade + elastic zoom) when it becomes fully visible in its nearest `Scrollable`, and fade out with a slight shrink as soon as it starts leaving. Layout is never affected, only rendering. Outside a scrollable, the child is shown as is. Used on each reaction of the detail page. Visibility comes from `scrollVisibilityOf` (`widgets/scroll/scroll_visibility.dart`), shared with `AppGhostAnimation`.
+
 **`AppScatter`** — scatters its `children` randomly over the available width, at their natural size, without any overlap (minimum `spacing`, default 12), and takes the height they occupy. Positions come from `seed` and stay stable across rebuilds. Needs a bounded width. Used for the reactions of the detail page.
 
 **`AppGhostColorSelector`** — picker for the colour of a ghost effect: a few preset swatches plus one opening a free colour picker. Driven by a `FormControl<Color>` passed as `control`. Used for the signature colour and for the bedbug colour of a reaction.
@@ -859,6 +861,14 @@ All shared widgets live in `shared/application/widgets/`. Always reuse them befo
 **`AppGhostSpeedSlider`** — reactive slider for the intensity of a ghost effect, between `minGhostSpeed` and `maxGhostSpeed` by steps of 0.25. Accepts a `FormControl<double>` as `formControl`. Always use it rather than a raw `ReactiveSlider`, so bounds and step stay the same everywhere.
 
 **`AppSignatureBio`** — the short description of a signature (`bio`), centred and italic under the pseudo. Used on the signature page and in the profile form preview.
+
+**`AppStat`** — compact statistic: an `icon` followed by a number (`label`) in the same `color`, read by screen readers as `semanticsLabel` (e.g. « 12 rebonds »). Use it instead of a tag when only a figure matters.
+
+**`ContentStats`** — the statistics of a content: bounces (`AppBounceIcon` + `+12`, primary colour) then reactions (`AppBurstIcon` + count, secondary colour), the latter shown once loaded. Accepts `contentId` and `bounce`. Placed before the tags on tiles (followed by the first tag only) and on the detail page (followed by all tags).
+
+**`AppBounceIcon`** — hand-drawn icon (`CustomPainter`) of a bounce: a ball bouncing on the ground. Accepts `color` and an optional `size` (16).
+
+**`AppBurstIcon`** — hand-drawn icon (`CustomPainter`) of a reaction: the outline of a comic-book explosion with irregular spikes and three exclamation marks, all in `color`. Accepts `color` and an optional `size` (16).
 
 **`AppImageCountBadge`** — dark translucent pill (collections icon + `label`) overlaid on an image that belongs to a multi-image content. Used with the image count on content tiles and with the position (`2/4`) in the detail carousel.
 

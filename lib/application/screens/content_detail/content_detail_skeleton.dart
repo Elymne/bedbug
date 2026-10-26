@@ -1,5 +1,6 @@
 import 'package:bedbug/application/notifiers/content_author_notifier.dart';
 import 'package:bedbug/application/notifiers/delete_own_content_notifier.dart';
+import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/content_detail/widgets/content_reactions_section.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_prefixes.dart';
@@ -9,6 +10,7 @@ import 'package:bedbug/application/widgets/buttons/app_close_button.dart';
 import 'package:bedbug/application/widgets/dialogs/delete_content_dialog.dart';
 import 'package:bedbug/application/widgets/signature/app_signature_avatar.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
+import 'package:bedbug/application/widgets/stats/content_stats.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
 import 'package:bedbug/features/content/domain/enums/tag.dart';
@@ -17,15 +19,17 @@ import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:bedbug/shared/extensions/datetime_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Squelette commun à toutes les pages de détail de contenu.
 ///
 /// Affiche le flair (`f/flair`), puis la signature de l'auteur (`s/pseudo`
 /// suivi de son bedbug), préfixes en couleur primaire, puis le titre avec,
 /// juste en dessous et en gris, le temps écoulé depuis la création écrit en
-/// toutes lettres, puis les chips (bounces et tags du contenu), et enfin le
+/// toutes lettres, puis les statistiques (rebonds, réactions) suivies des tags du contenu, et enfin le
 /// corps spécifique au type de contenu ([contentBody] : texte, image, lien),
-/// suivi des réactions.
+/// suivi des réactions. Un trait gris sépare la signature du contenu ; les
+/// réactions se distinguent du contenu par une surface plus claire.
 class ContentDetailSkeleton extends ConsumerWidget {
   /// Crée un [ContentDetailSkeleton].
   ///
@@ -34,8 +38,8 @@ class ContentDetailSkeleton extends ConsumerWidget {
   /// - [authorId] : identifiant de l'auteur du contenu, dont le profil est affiché.
   /// - [contentBody] : widget spécifique au type de contenu.
   /// - [createdAt] : date de création du contenu, utilisée pour le temps écoulé.
-  /// - [bounce] : nombre de rebonds du contenu, affiché dans un chip.
-  /// - [tags] : tags du contenu, affichés en chips à la suite des bounces.
+  /// - [bounce] : nombre de rebonds du contenu, affiché dans les statistiques.
+  /// - [tags] : tags du contenu, affichés en chips à la suite des statistiques.
   /// - [onClose] : callback déclenché lors du tap sur le bouton de fermeture.
   /// - [contentId] : identifiant du contenu, utilisé pour sa suppression.
   /// - [isOwned] : `true` si le contenu a été publié par l'utilisateur, qui peut alors le supprimer.
@@ -74,10 +78,10 @@ class ContentDetailSkeleton extends ConsumerWidget {
   /// Date de création du contenu, utilisée pour le temps écoulé.
   final DateTime createdAt;
 
-  /// Nombre de rebonds du contenu, affiché dans un chip.
+  /// Nombre de rebonds du contenu, affiché dans les statistiques.
   final int bounce;
 
-  /// Tags du contenu, affichés en chips à la suite des bounces.
+  /// Tags du contenu, affichés en chips à la suite des statistiques.
   final List<Tag> tags;
 
   /// Callback déclenché lors du tap sur le bouton de fermeture.
@@ -96,85 +100,127 @@ class ContentDetailSkeleton extends ConsumerWidget {
     final VoidCallback? onDelete = deleteOwnContentNotifierWatcher.isLoading ? null : () => _onDelete(context, ref);
 
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                AppCloseButton(onTap: onClose),
-                const Spacer(),
-                if (isOwned)
-                  IconButton(
-                    onPressed: onDelete,
-                    tooltip: context.loc.deleteContentButton,
-                    icon: const Icon(Icons.delete_outline_rounded, color: AppColors.failure),
-                  ),
-              ],
+      // Fond des réactions, en bas de page : il s'étend jusqu'en bas de l'écran
+      // même quand les réactions sont peu nombreuses. Le contenu, au-dessus,
+      // est posé sur la surface beige.
+      backgroundColor: AppColors.backgroundLight,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ColoredBox(
+            color: AppColors.background,
+            child: SafeArea(
+              bottom: false,
+              child: Row(
+                children: [
+                  AppCloseButton(onTap: onClose),
+                  const Spacer(),
+                  if (isOwned)
+                    IconButton(
+                      onPressed: onDelete,
+                      tooltip: context.loc.deleteContentButton,
+                      icon: const Icon(Icons.delete_outline_rounded, color: AppColors.failure),
+                    ),
+                ],
+              ),
             ),
-            Expanded(
+          ),
+          Expanded(
+            child: SafeArea(
+              top: false,
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.signal_wifi_connected_no_internet_4),
-                        const SizedBox(width: 10),
-                        Column(
-                          crossAxisAlignment: .start,
+                    ColoredBox(
+                      color: AppColors.background,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            AppPrefixedText(prefix: AppPrefixes.flair, text: flair, style: AppTextStyles.contentMeta),
                             Row(
-                              spacing: 8,
                               children: [
-                                AppPrefixedText(
-                                  prefix: AppPrefixes.signature,
-                                  text: author.pseudo,
-                                  style: AppTextStyles.contentMeta,
-                                ),
-                                // Le bedbug de l'auteur, à droite de son pseudo.
-                                AppSignatureAvatar(
-                                  avatarText: author.avatarText,
-                                  ghostColor: authorColor,
-                                  ghostSpeed: author.ghostSpeed,
-                                  fontSize: 14,
+                                const Icon(Icons.signal_wifi_connected_no_internet_4),
+                                const SizedBox(width: 10),
+                                Column(
+                                  crossAxisAlignment: .start,
+                                  children: [
+                                    AppPrefixedText(
+                                      prefix: AppPrefixes.flair,
+                                      text: flair,
+                                      style: AppTextStyles.contentMeta,
+                                    ),
+                                    // Le pseudo et le bedbug ouvrent la page de la signature,
+                                    // sauf pour l'anonyme, commun à tous les auteurs anonymes.
+                                    GestureDetector(
+                                      onTap: authorId == anonymousSignatureId ? null : () => _openSignature(context),
+                                      behavior: HitTestBehavior.opaque,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        spacing: 8,
+                                        children: [
+                                          AppPrefixedText(
+                                            prefix: AppPrefixes.signature,
+                                            text: author.pseudo,
+                                            style: AppTextStyles.contentMeta,
+                                          ),
+                                          // Le bedbug de l'auteur, à droite de son pseudo.
+                                          AppSignatureAvatar(
+                                            avatarText: author.avatarText,
+                                            ghostColor: authorColor,
+                                            ghostSpeed: author.ghostSpeed,
+                                            fontSize: 14,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
+                            const Divider(height: 32, thickness: 1, color: AppColors.border),
+                            Text(title, style: AppTextStyles.contentTitle.copyWith(fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 4),
+                            Text(
+                              createdAt.timeAgoLong(context.loc),
+                              style: AppTextStyles.contentMeta.copyWith(color: AppColors.disabled),
+                            ),
+                            const SizedBox(height: 10),
+                            Wrap(
+                              spacing: 12,
+                              runSpacing: 8,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                ContentStats(contentId: contentId, bounce: bounce),
+                                for (final tag in tags) AppTag(label: tag.text, color: tag.color.flutterColor),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            contentBody,
                           ],
                         ),
-                      ],
+                      ),
                     ),
-                    const SizedBox(height: 20),
-                    Text(title, style: AppTextStyles.contentTitle.copyWith(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 4),
-                    Text(
-                      createdAt.timeAgoLong(context.loc),
-                      style: AppTextStyles.contentMeta.copyWith(color: AppColors.disabled),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: ContentReactionsSection(contentId: contentId),
                     ),
-                    const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        AppTag(label: '$bounce bounces', color: AppColors.primary),
-                        for (final tag in tags) AppTag(label: tag.text, color: tag.color.flutterColor),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    contentBody,
-                    const SizedBox(height: 24),
-                    ContentReactionsSection(contentId: contentId),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
+
+  /// Ouvre la page de la signature de l'auteur : son profil et les autres contenus qu'elle a signés.
+  ///
+  /// - [context] : contexte depuis lequel naviguer.
+  void _openSignature(BuildContext context) {
+    context.push('$signaturesPath/${Uri.encodeComponent(authorId)}');
   }
 
   /// Demande confirmation, supprime le contenu puis ferme la page de détail.

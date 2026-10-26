@@ -45,7 +45,8 @@ class AppPrefixedText extends ConsumerWidget {
         children: [
           TextSpan(
             text: prefix,
-            style: const TextStyle(color: AppColors.primary),
+            // En gras pour que le préfixe se repère d'un coup d'œil.
+            style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800),
           ),
           TextSpan(text: text),
         ],

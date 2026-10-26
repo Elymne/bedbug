@@ -510,7 +510,7 @@
   "@reactionChangeBedbugButton": {
     "description": "Bouton ouvrant le catalogue des bedbugs depuis la feuille de saisie d'une réaction"
   },
-  "reactionBubbleLabel": "Bulle (optionnelle)",
+  "reactionBubbleLabel": "Bulle",
   "@reactionBubbleLabel": {
     "description": "Label du champ de la bulle de texte d'une réaction"
   },
@@ -555,5 +555,47 @@
         "type": "int"
       }
     }
+  },
+  "contentBounceCountLabel": "{count, plural, =1{1 rebond} other{{count} rebonds}}",
+  "@contentBounceCountLabel": {
+    "description": "Nombre de rebonds d'un contenu en toutes lettres, lu par les lecteurs d'écran à la place de l'icône et du chiffre",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentReactionCountLabel": "{count, plural, =1{1 réaction} other{{count} réactions}}",
+  "@contentReactionCountLabel": {
+    "description": "Nombre de réactions d'un contenu en toutes lettres, lu par les lecteurs d'écran à la place de l'icône et du chiffre",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "imageViewerDownload": "Enregistrer dans la galerie",
+  "@imageViewerDownload": {
+    "description": "Infobulle du bouton de la visionneuse qui enregistre l'image affichée dans la galerie du téléphone"
+  },
+  "imageViewerSaveSuccess": "Image enregistrée dans ta galerie.",
+  "@imageViewerSaveSuccess": {
+    "description": "Message snackbar affiché après l'enregistrement d'une image dans la galerie"
+  },
+  "imageViewerSaveError": "Impossible d'enregistrer l'image.",
+  "@imageViewerSaveError": {
+    "description": "Message snackbar d'erreur affiché quand une image ne peut pas être enregistrée dans la galerie"
+  },
+  "imageViewerAccessDenied": "Autorise l'accès à ta galerie dans les réglages du téléphone pour enregistrer l'image.",
+  "@imageViewerAccessDenied": {
+    "description": "Message snackbar d'erreur affiché quand l'utilisateur a refusé l'accès à sa galerie"
+  },
+  "loadingDefaultText": "Chargement…",
+  "@loadingDefaultText": {
+    "description": "Texte de chargement générique, affiché quand aucun texte plus précis n'est fourni"
+  },
+  "createPublishingText": "Publication en cours…",
+  "@createPublishingText": {
+    "description": "Texte de la page de chargement affichée pendant la publication d'un contenu"
   }
 }

@@ -510,7 +510,7 @@
   "@reactionChangeBedbugButton": {
     "description": "Button opening the bedbug catalogue from the reaction form sheet"
   },
-  "reactionBubbleLabel": "Bubble (optional)",
+  "reactionBubbleLabel": "Bubble",
   "@reactionBubbleLabel": {
     "description": "Label of the reaction text bubble field"
   },
@@ -555,5 +555,47 @@
         "type": "int"
       }
     }
+  },
+  "contentBounceCountLabel": "{count, plural, =1{1 bounce} other{{count} bounces}}",
+  "@contentBounceCountLabel": {
+    "description": "Number of bounces of a content spelled out, read by screen readers instead of the icon and figure",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contentReactionCountLabel": "{count, plural, =1{1 reaction} other{{count} reactions}}",
+  "@contentReactionCountLabel": {
+    "description": "Number of reactions of a content spelled out, read by screen readers instead of the icon and figure",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "imageViewerDownload": "Save to gallery",
+  "@imageViewerDownload": {
+    "description": "Tooltip of the image viewer button that saves the displayed image to the phone gallery"
+  },
+  "imageViewerSaveSuccess": "Image saved to your gallery.",
+  "@imageViewerSaveSuccess": {
+    "description": "Snackbar message shown after an image is saved to the gallery"
+  },
+  "imageViewerSaveError": "Unable to save the image.",
+  "@imageViewerSaveError": {
+    "description": "Snackbar error message shown when an image cannot be saved to the gallery"
+  },
+  "imageViewerAccessDenied": "Allow access to your gallery in the phone settings to save the image.",
+  "@imageViewerAccessDenied": {
+    "description": "Snackbar error message shown when the user denied access to their gallery"
+  },
+  "loadingDefaultText": "Loading…",
+  "@loadingDefaultText": {
+    "description": "Generic loading text, shown when no more specific text is provided"
+  },
+  "createPublishingText": "Publishing…",
+  "@createPublishingText": {
+    "description": "Text of the loading page shown while a content is being published"
   }
 }

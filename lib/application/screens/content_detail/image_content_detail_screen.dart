@@ -2,9 +2,8 @@ import 'dart:io';
 
 import 'package:bedbug/application/providers/app_docs_dir_provider.dart';
 import 'package:bedbug/application/screens/content_detail/content_detail_skeleton.dart';
+import 'package:bedbug/application/screens/content_detail/widgets/content_images_view.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
-import 'package:bedbug/application/widgets/images/app_file_image.dart';
-import 'package:bedbug/application/widgets/images/app_image_count_badge.dart';
 import 'package:bedbug/application/widgets/texts/app_loading_text.dart';
 import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/shared/config/content_image_storage.dart';
@@ -40,9 +39,8 @@ class ImageContentDetailScreen extends ConsumerWidget {
 
   /// Retourne les images du contenu suivies de sa description optionnelle.
   ///
-  /// Plusieurs images sont présentées dans un carrousel horizontal, chacune
-  /// portant sa position dans la série, pour garder la description visible
-  /// sans avoir à faire défiler toutes les images.
+  /// Les images sont affichées en entier, sans recadrage, et s'ouvrent en
+  /// plein écran au tap (voir [ContentImagesView]).
   Widget _buildContentBody(WidgetRef ref) {
     final appDocsDirWatcher = ref.watch(appDocsDirProvider);
 
@@ -57,30 +55,7 @@ class ImageContentDetailScreen extends ConsumerWidget {
             final files = [
               for (final image in content.images) File('${dir.path}/$contentImagesFolder/${image.fileName}'),
             ];
-            if (files.length == 1) {
-              return AppFileImage(file: files.single, width: double.infinity, height: 250);
-            }
-            return SizedBox(
-              height: 250,
-              child: PageView(
-                children: [
-                  for (final (index, file) in files.indexed)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Stack(
-                        children: [
-                          AppFileImage(file: file, width: double.infinity, height: 250),
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: AppImageCountBadge(label: '${index + 1}/${files.length}'),
-                          ),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
-            );
+            return ContentImagesView(images: content.images, files: files);
           },
         ),
         if (content.body != null) Text(content.body!, style: AppTextStyles.contentPreview),

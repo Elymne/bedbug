@@ -1,4 +1,5 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
+import 'package:bedbug/application/notifiers/content_reaction_count_notifier.dart';
 import 'package:bedbug/application/notifiers/content_reactions_notifier.dart';
 import 'package:bedbug/features/content/domain/entities/reaction.dart';
 import 'package:bedbug/features/content/domain/usecases/save_reaction_usecase.dart';
@@ -30,11 +31,11 @@ class SaveReactionNotifier extends AsyncNotifier<void> {
   /// anonyme : toutes les réactions anonymes partageraient le même auteur et
   /// se remplaceraient entre elles. Elle remplace la précédente réaction de
   /// l'utilisateur, dont la date de création est conservée. En cas de succès,
-  /// les réactions du contenu sont rechargées.
+  /// les réactions du contenu et leur nombre sont rechargés.
   ///
   /// - [contentId] : identifiant du contenu auquel réagir.
   /// - [avatarText] : bedbug choisi.
-  /// - [bubbleText] : bulle de texte optionnelle.
+  /// - [bubbleText] : bulle de texte.
   /// - [colorArgb] : couleur de l'effet ghost du bedbug en ARGB 32 bits.
   /// - [ghostSpeed] : intensité de l'effet ghost du bedbug.
   /// - [previousReaction] : réaction actuelle de l'utilisateur sur ce contenu, `null` s'il n'a pas encore réagi.
@@ -43,7 +44,7 @@ class SaveReactionNotifier extends AsyncNotifier<void> {
     required String avatarText,
     required int colorArgb,
     required double ghostSpeed,
-    String? bubbleText,
+    required String bubbleText,
     Reaction? previousReaction,
   }) async {
     state = const AsyncLoading();
@@ -75,6 +76,7 @@ class SaveReactionNotifier extends AsyncNotifier<void> {
       },
       onSuccess: (_) {
         ref.invalidate(contentReactionsNotifierProvider(contentId));
+        ref.invalidate(contentReactionCountNotifierProvider(contentId));
         return null;
       },
     );

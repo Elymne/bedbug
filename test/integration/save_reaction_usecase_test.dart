@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bedbug/features/content/domain/entities/reaction.dart';
+import 'package:bedbug/features/content/domain/usecases/count_content_reactions_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/save_reaction_usecase.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
@@ -15,13 +16,13 @@ import '../helpers/hive_test_helper.dart';
 /// - [authorId] : signature qui réagit.
 /// - [updatedAt] : date de mise à jour, qui départage deux réactions d'un même auteur.
 /// - [avatarText] : bedbug de la réaction.
-/// - [bubbleText] : bulle de texte optionnelle.
+/// - [bubbleText] : bulle de texte.
 Reaction _reaction({
   required String id,
   required String authorId,
   required DateTime updatedAt,
   String avatarText = '(◕‿◕)',
-  String? bubbleText,
+  String bubbleText = 'mdr',
 }) {
   return Reaction(
     id: id,
@@ -113,7 +114,7 @@ void main() {
     expect(await repository.getAllByContentId('content'), isEmpty);
   });
 
-  test('une bulle vide ou faite d\'espaces est enregistrée comme absente', () async {
+  test('refuse une bulle vide ou faite d\'espaces', () async {
     final saveUsecase = container.read(saveReactionUsecaseProvider);
 
     final result = await saveUsecase(
@@ -122,7 +123,7 @@ void main() {
       ),
     );
 
-    expect(result.right?.bubbleText, isNull);
+    expect(result.left, SaveReactionFailure.invalidReaction);
   });
 
   test('ne garde que les réactions les plus récentes au-delà du plafond par contenu', () async {
@@ -159,6 +160,7 @@ void main() {
           contentId: 'content',
           authorId: 'alice',
           avatarText: '(◕‿◕)',
+          bubbleText: 'ok',
           colorArgb: 0xFF51C2FF,
           ghostSpeed: 99,
         ),
@@ -168,5 +170,35 @@ void main() {
     final saved = (await repository.getAllByContentId('content')).single;
     expect(saved.ghostSpeed, maxGhostSpeed);
     expect(saved.colorArgb, 0xFF51C2FF);
+  });
+
+  test('compte les réactions d\'un contenu sans compter celles des autres contenus', () async {
+    final saveUsecase = container.read(saveReactionUsecaseProvider);
+    for (var index = 0; index < 3; index++) {
+      await saveUsecase(
+        SaveReactionParams(
+          reaction: _reaction(id: 'reaction-$index', authorId: 'author-$index', updatedAt: DateTime(2026)),
+        ),
+      );
+    }
+    await container
+        .read(reactionRepositoryProvider)
+        .addOne(
+          Reaction(
+            id: 'other',
+            createdAt: DateTime(2026),
+            updatedAt: DateTime(2026),
+            contentId: 'other-content',
+            authorId: 'alice',
+            avatarText: '(◕‿◕)',
+            bubbleText: 'ok',
+          ),
+        );
+
+    final result = await container.read(countContentReactionsUsecaseProvider)(
+      const CountContentReactionsParams(contentId: 'content'),
+    );
+
+    expect(result.right, 3);
   });
 }

@@ -5,6 +5,7 @@ import 'package:bedbug/application/screens/content_detail/link_content_detail_sc
 import 'package:bedbug/application/screens/content_detail/text_content_detail_screen.dart';
 import 'package:bedbug/application/screens/create/create_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
+import 'package:bedbug/application/screens/image_viewer/image_viewer_screen.dart';
 import 'package:bedbug/application/screens/search/search_screen.dart';
 import 'package:bedbug/application/screens/search_results/search_criteria.dart';
 import 'package:bedbug/application/screens/search_results/search_results_screen.dart';
@@ -71,6 +72,12 @@ const String signaturesPath = '/signatures';
 /// Chemin de la page d'une signature, identifiant en paramètre de chemin.
 const String signaturePath = '$signaturesPath/:id';
 
+/// Chemin vers la visionneuse plein écran des images d'un contenu.
+///
+/// Les images et la position de départ sont transmises via `extra`
+/// (`ImageViewerParams`).
+const String imageViewerPath = '/image-viewer';
+
 /// Chemin vers la page de détail d'un contenu.
 ///
 /// Le contenu est transmis via `extra` (pas de fetch par id pour l'instant).
@@ -134,6 +141,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: signaturePath,
         pageBuilder: (context, state) => _fadePage(SignatureScreen(signatureId: state.pathParameters['id']!)),
+      ),
+      GoRoute(
+        path: imageViewerPath,
+        pageBuilder: (context, state) => _fadePage(ImageViewerScreen(params: state.extra! as ImageViewerParams)),
       ),
       GoRoute(
         path: contentDetailPath,

@@ -38,7 +38,7 @@ void main() {
       final reactions = await reactionRepository.getAllByContentId(content.id);
       expect(reactions.length, index < 3 ? 10 : 0, reason: 'contenu $index du fil');
       expect(reactions.map((reaction) => reaction.authorId).toSet().length, reactions.length);
-      expect(reactions.every((reaction) => (reaction.bubbleText ?? '').isValidReactionBubble), isTrue);
+      expect(reactions.every((reaction) => reaction.bubbleText.isValidReactionBubble), isTrue);
     }
   });
 

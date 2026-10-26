@@ -14,6 +14,9 @@ abstract class ReactionRepository {
   /// Retourne toutes les réactions rattachées au contenu [contentId], sans ordre garanti.
   Future<List<Reaction>> getAllByContentId(String contentId);
 
+  /// Retourne le nombre de réactions rattachées au contenu [contentId].
+  Future<int> countByContentId(String contentId);
+
   /// Supprime les réactions dont l'identifiant fait partie de [ids].
   Future<void> deleteMany(List<String> ids);
 

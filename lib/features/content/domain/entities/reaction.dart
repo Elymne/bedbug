@@ -18,7 +18,7 @@ const int maxReactionBubbleLength = 40;
 const int maxReactionsPerContent = 200;
 
 /// Réaction laissée sur un [Content] : un bedbug animé d'un effet ghost (couleur et intensité choisies),
-/// accompagné d'une petite bulle de texte optionnelle.
+/// accompagné d'une petite bulle de texte.
 ///
 /// Entité à part du contenu : une réaction voyage seule entre pairs, sans
 /// obliger à renvoyer le contenu (et ses images) à chaque nouvelle réaction.
@@ -30,7 +30,7 @@ class Reaction extends Entity {
   /// - [contentId] : identifiant du contenu auquel la réaction est rattachée.
   /// - [authorId] : identifiant de la signature qui a réagi.
   /// - [avatarText] : bedbug choisi, issu du catalogue des signatures.
-  /// - [bubbleText] : bulle de texte optionnelle, au plus [maxReactionBubbleLength] caractères.
+  /// - [bubbleText] : bulle de texte, non vide et au plus [maxReactionBubbleLength] caractères.
   /// - [colorArgb] : couleur de l'effet ghost du bedbug, `null` pour la couleur par défaut de l'app.
   /// - [ghostSpeed] : intensité de l'effet ghost, entre [minGhostSpeed] et [maxGhostSpeed].
   Reaction({
@@ -40,7 +40,7 @@ class Reaction extends Entity {
     required this.contentId,
     required this.authorId,
     required this.avatarText,
-    this.bubbleText,
+    required this.bubbleText,
     this.colorArgb,
     this.ghostSpeed = defaultGhostSpeed,
   });
@@ -57,8 +57,11 @@ class Reaction extends Entity {
   /// reste lisible par un pair dont le catalogue est d'une autre version.
   final String avatarText;
 
-  /// Bulle de texte optionnelle affichée au-dessus du bedbug.
-  final String? bubbleText;
+  /// Bulle de texte affichée au-dessus du bedbug.
+  ///
+  /// Obligatoire : une réaction est un bedbug qui dit quelque chose. Seules
+  /// des réactions stockées avant cette règle peuvent l'avoir vide.
+  final String bubbleText;
 
   /// Couleur de l'effet ghost du bedbug, encodée en ARGB 32 bits. `null` pour la couleur par défaut de l'app.
   ///

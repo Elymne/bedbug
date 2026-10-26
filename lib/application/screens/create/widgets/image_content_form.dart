@@ -131,12 +131,17 @@ class ImageContentForm extends ConsumerWidget {
         ),
         ReactiveTextField<String>(
           formControl: titleControl,
+          textCapitalization: TextCapitalization.sentences,
           validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
           decoration: InputDecoration(labelText: l10n.createTextTitleLabel),
         ),
         ReactiveTextField<String>(
           formControl: bodyControl,
-          maxLines: 3,
+          textCapitalization: TextCapitalization.sentences,
+          // Démarre sur une ligne et grandit avec le texte : la barre du bas
+          // descend à chaque nouvelle ligne (c'est la page qui défile).
+          minLines: 1,
+          maxLines: null,
           decoration: InputDecoration(labelText: l10n.createImageBodyLabel),
         ),
       ],

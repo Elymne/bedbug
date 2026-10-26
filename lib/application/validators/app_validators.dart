@@ -69,7 +69,7 @@ class AppValidators {
   /// Vérifie que la bulle d'une réaction tient sur une ligne et ne dépasse pas sa longueur maximale.
   ///
   /// Applique la règle du domaine (`isValidReactionBubble`). Retourne `null`
-  /// si vide : la bulle est optionnelle.
+  /// si vide — déléguer la vérification à [required].
   static const reactionBubble = _ReactionBubbleValidator();
 
   /// Validator de [FormGroup] vérifiant que l'identifiant saisi est valide sur le réseau choisi.
