@@ -597,5 +597,13 @@
   "createPublishingText": "Publishing…",
   "@createPublishingText": {
     "description": "Text of the loading page shown while a content is being published"
+  },
+  "textFontLabel": "Font",
+  "@textFontLabel": {
+    "description": "Label of the font selector of a text (reaction bubble, signature description)"
+  },
+  "textFontStandard": "Standard",
+  "@textFontStandard": {
+    "description": "Name of the default app font, in the font selector"
   }
 }

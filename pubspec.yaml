@@ -109,3 +109,45 @@ flutter:
           weight: 600
         - asset: assets/fonts/Quicksand/Quicksand-Bold.ttf
           weight: 700
+
+    # Polices au choix de l'auteur pour les textes courts (bulle de réaction,
+    # description de signature). Voir `TextFont` et `TextFontX`.
+    - family: SnowburstOne
+      fonts:
+        - asset: assets/fonts/SnowburstOne/SnowburstOne-Regular.ttf
+
+    - family: CraftyGirls
+      fonts:
+        - asset: assets/fonts/CraftyGirls/CraftyGirls-Regular.ttf
+
+    - family: Molle
+      fonts:
+        - asset: assets/fonts/Molle/Molle-Regular.ttf
+
+    - family: Audiowide
+      fonts:
+        - asset: assets/fonts/Audiowide/Audiowide-Regular.ttf
+
+    - family: Silkscreen
+      fonts:
+        - asset: assets/fonts/Silkscreen/Silkscreen-Regular.ttf
+
+    - family: Gugi
+      fonts:
+        - asset: assets/fonts/Gugi/Gugi-Regular.ttf
+
+    - family: Eater
+      fonts:
+        - asset: assets/fonts/Eater/Eater-Regular.ttf
+
+    - family: Kablammo
+      fonts:
+        - asset: assets/fonts/Kablammo/Kablammo-Variable.ttf
+
+    - family: RockSalt
+      fonts:
+        - asset: assets/fonts/RockSalt/RockSalt-Regular.ttf
+
+    - family: LakkiReddy
+      fonts:
+        - asset: assets/fonts/LakkiReddy/LakkiReddy-Regular.ttf

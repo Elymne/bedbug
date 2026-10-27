@@ -58,6 +58,7 @@ class SaveReactionUsecase extends Usecase<SaveReactionParams, SaveReactionFailur
         bubbleText: bubbleText,
         colorArgb: params.reaction.colorArgb,
         ghostSpeed: params.reaction.ghostSpeed.clamp(minGhostSpeed, maxGhostSpeed),
+        bubbleFont: params.reaction.bubbleFont,
       );
 
       final existingReactions = await _reactionRepository.getAllByContentId(reaction.contentId);

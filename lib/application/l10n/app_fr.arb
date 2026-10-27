@@ -597,5 +597,13 @@
   "createPublishingText": "Publication en cours…",
   "@createPublishingText": {
     "description": "Texte de la page de chargement affichée pendant la publication d'un contenu"
+  },
+  "textFontLabel": "Police",
+  "@textFontLabel": {
+    "description": "Libellé du sélecteur de police d'un texte (bulle de réaction, description de signature)"
+  },
+  "textFontStandard": "Standard",
+  "@textFontStandard": {
+    "description": "Nom de la police par défaut de l'application, dans le sélecteur de police"
   }
 }

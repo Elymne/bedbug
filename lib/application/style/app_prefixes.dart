@@ -1,6 +1,6 @@
 /// Préfixes d'affichage des noms de l'app, à la manière de Reddit (`r/`, `u/`).
 ///
-/// Toujours affichés en couleur primaire devant le nom, via `AppPrefixedText`.
+/// Toujours affichés devant le nom via `AppPrefixedText`, en gras avec un léger effet ghost.
 class AppPrefixes {
   AppPrefixes._();
 

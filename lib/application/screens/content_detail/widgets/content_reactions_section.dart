@@ -88,6 +88,7 @@ class ContentReactionsSection extends ConsumerWidget {
                     child: AppReactionBubble(
                       avatarText: reaction.avatarText,
                       bubbleText: reaction.bubbleText,
+                      bubbleFont: reaction.bubbleFont,
                       ghostColor: reaction.colorArgb == null ? AppColors.primary : Color(reaction.colorArgb!),
                       ghostSpeed: reaction.ghostSpeed,
                       // Une bulle sur deux pincée à droite, pour varier les formes.

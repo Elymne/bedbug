@@ -13,9 +13,11 @@ import 'package:bedbug/application/widgets/signature/app_signature_avatar.dart';
 import 'package:bedbug/application/widgets/signature/app_signature_bio.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
+import 'package:bedbug/application/widgets/texts/app_text_font_selector.dart';
 import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/enums/social_network.dart';
+import 'package:bedbug/features/signature/domain/enums/text_font.dart';
 import 'package:bedbug/features/signature/domain/extensions/signature_text_extension.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +59,9 @@ class _State extends ConsumerState<SignatureSection> {
   /// Contrôle de la courte description.
   late final _bioControl = FormControl<String>(value: widget.signature?.bio, validators: [AppValidators.signatureBio]);
 
+  /// Contrôle de la police de la description.
+  late final _bioFontControl = FormControl<TextFont>(value: widget.signature?.bioFont ?? TextFont.standard);
+
   /// Contrôle de l'icône texte.
   late final _avatarTextControl = FormControl<String>(
     value: widget.signature?.avatarText ?? defaultSignatureAvatarText,
@@ -78,6 +83,7 @@ class _State extends ConsumerState<SignatureSection> {
   late final FormGroup _form = FormGroup({
     'pseudo': _pseudoControl,
     'bio': _bioControl,
+    'bioFont': _bioFontControl,
     'avatarText': _avatarTextControl,
     'color': _colorControl,
     'ghostSpeed': _ghostSpeedControl,
@@ -135,7 +141,7 @@ class _State extends ConsumerState<SignatureSection> {
                   text: pseudo.isEmpty ? anonymousSignature.pseudo : pseudo,
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.onLight),
                 ),
-                if (bio.isNotEmpty) AppSignatureBio(bio: bio),
+                if (bio.isNotEmpty) AppSignatureBio(bio: bio, font: _bioFontControl.value ?? TextFont.standard),
               ],
             );
           },
@@ -162,6 +168,8 @@ class _State extends ConsumerState<SignatureSection> {
           decoration: InputDecoration(labelText: l10n.settingsBioLabel, hintText: l10n.settingsBioHint),
           validationMessages: {'signatureBio': (_) => l10n.settingsBioError(maxSignatureBioLength)},
         ),
+        Text(l10n.textFontLabel),
+        AppTextFontSelector(control: _bioFontControl),
         ReactiveTextField<String>(
           formControl: _avatarTextControl,
           maxLength: _kAvatarMaxLength,
@@ -242,6 +250,7 @@ class _State extends ConsumerState<SignatureSection> {
           ghostSpeed: _ghostSpeedControl.value ?? defaultGhostSpeed,
           socialLinks: _socialLinksControl.value ?? const {},
           bio: _bioControl.value,
+          bioFont: _bioFontControl.value ?? TextFont.standard,
         );
   }
 }

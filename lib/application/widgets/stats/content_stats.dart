@@ -36,16 +36,16 @@ class ContentStats extends ConsumerWidget {
       spacing: 12,
       children: [
         AppStat(
-          icon: const AppBounceIcon(color: AppColors.primary),
+          icon: const AppBounceIcon(color: AppColors.onLight),
           label: '+$bounce',
-          color: AppColors.primary,
+          ghostColor: AppColors.primary,
           semanticsLabel: l10n.contentBounceCountLabel(bounce),
         ),
         if (reactionCount != null)
           AppStat(
-            icon: const AppBurstIcon(color: AppColors.secondary),
+            icon: const AppBurstIcon(color: AppColors.onLight),
             label: '$reactionCount',
-            color: AppColors.secondary,
+            ghostColor: AppColors.secondary,
             semanticsLabel: l10n.contentReactionCountLabel(reactionCount),
           ),
       ],

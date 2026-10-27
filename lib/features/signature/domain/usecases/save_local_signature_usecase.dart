@@ -1,5 +1,6 @@
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/enums/social_network.dart';
+import 'package:bedbug/features/signature/domain/enums/text_font.dart';
 import 'package:bedbug/features/signature/domain/extensions/signature_text_extension.dart';
 import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
 import 'package:bedbug/features/signature/infrastructure/datasources/hive_signature_repository.dart';
@@ -64,6 +65,7 @@ class SaveLocalSignatureUsecase extends Usecase<SaveLocalSignatureParams, SaveLo
           ghostSpeed: params.ghostSpeed.clamp(minGhostSpeed, maxGhostSpeed),
           socialLinks: socialLinks,
           bio: bio.isEmpty ? null : bio,
+          bioFont: params.bioFont,
         ),
       );
       return Right(signature);
@@ -102,6 +104,7 @@ class SaveLocalSignatureParams extends Params {
   /// - [ghostSpeed] : vitesse de l'effet ghost (ramenée dans ses bornes par le use case).
   /// - [socialLinks] : identifiants saisis par réseau, bruts (normalisés par le use case).
   /// - [bio] : description saisie, `null` ou vide pour ne pas en avoir.
+  /// - [bioFont] : police choisie pour la description (défaut [TextFont.standard]).
   const SaveLocalSignatureParams({
     required this.pseudo,
     required this.avatarText,
@@ -109,6 +112,7 @@ class SaveLocalSignatureParams extends Params {
     required this.ghostSpeed,
     required this.socialLinks,
     this.bio,
+    this.bioFont = TextFont.standard,
   });
 
   /// Pseudo saisi.
@@ -128,4 +132,7 @@ class SaveLocalSignatureParams extends Params {
 
   /// Description saisie, `null` ou vide pour ne pas en avoir.
   final String? bio;
+
+  /// Police choisie pour la description.
+  final TextFont bioFont;
 }

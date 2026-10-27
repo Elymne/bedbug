@@ -88,7 +88,10 @@ class SignatureScreen extends ConsumerWidget {
                         textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.onLight),
                       ),
-                      if (signature.bio != null) ...[const SizedBox(height: 8), AppSignatureBio(bio: signature.bio!)],
+                      if (signature.bio != null) ...[
+                        const SizedBox(height: 8),
+                        AppSignatureBio(bio: signature.bio!, font: signature.bioFont),
+                      ],
                       if (signature.socialLinks.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         Wrap(

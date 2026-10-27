@@ -8,8 +8,10 @@ import 'package:bedbug/application/widgets/reactions/app_reaction_bubble.dart';
 import 'package:bedbug/application/widgets/signature/app_ghost_color_selector.dart';
 import 'package:bedbug/application/widgets/signature/app_ghost_speed_slider.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
+import 'package:bedbug/application/widgets/texts/app_text_font_selector.dart';
 import 'package:bedbug/features/content/domain/entities/reaction.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
+import 'package:bedbug/features/signature/domain/enums/text_font.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,10 +87,14 @@ class _State extends ConsumerState<ReactionComposerSheet> {
     value: widget.ownReaction?.ghostSpeed ?? widget.localSignature.ghostSpeed,
   );
 
+  /// Contrôle de la police de la bulle, par défaut celle de la réaction actuelle.
+  late final _bubbleFontControl = FormControl<TextFont>(value: widget.ownReaction?.bubbleFont ?? TextFont.standard);
+
   /// Formulaire de la réaction.
   late final FormGroup _form = FormGroup({
     'avatarText': _avatarTextControl,
     'bubbleText': _bubbleTextControl,
+    'bubbleFont': _bubbleFontControl,
     'color': _colorControl,
     'ghostSpeed': _ghostSpeedControl,
   });
@@ -127,6 +133,7 @@ class _State extends ConsumerState<ReactionComposerSheet> {
                     child: AppReactionBubble(
                       avatarText: _avatarTextControl.value ?? widget.localSignature.avatarText,
                       bubbleText: _bubbleTextControl.value,
+                      bubbleFont: _bubbleFontControl.value ?? TextFont.standard,
                       ghostColor: _colorControl.value ?? AppColors.primary,
                       ghostSpeed: _ghostSpeedControl.value ?? defaultGhostSpeed,
                       fontSize: 32,
@@ -159,6 +166,8 @@ class _State extends ConsumerState<ReactionComposerSheet> {
                   'reactionBubble': (_) => l10n.reactionBubbleError(maxReactionBubbleLength),
                 },
               ),
+              Text(l10n.textFontLabel),
+              AppTextFontSelector(control: _bubbleFontControl),
               Align(
                 alignment: Alignment.centerRight,
                 child: AppGradientButton(
@@ -211,6 +220,7 @@ class _State extends ConsumerState<ReactionComposerSheet> {
           bubbleText: _bubbleTextControl.value!,
           colorArgb: (_colorControl.value ?? AppColors.primary).toARGB32(),
           ghostSpeed: _ghostSpeedControl.value ?? defaultGhostSpeed,
+          bubbleFont: _bubbleFontControl.value ?? TextFont.standard,
           previousReaction: widget.ownReaction,
         );
     if (!mounted) {
