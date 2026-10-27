@@ -90,9 +90,9 @@ class ImageContentForm extends ConsumerWidget {
                                 fit: BoxFit.cover,
                               ),
                             ),
-                            Positioned(
+                            PositionedDirectional(
                               top: 4,
-                              right: 4,
+                              end: 4,
                               child: GestureDetector(
                                 onTap: () => imagesControl.value = [...images]..removeAt(index),
                                 child: Container(

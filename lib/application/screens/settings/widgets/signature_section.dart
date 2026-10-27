@@ -203,7 +203,7 @@ class _State extends ConsumerState<SignatureSection> {
           },
         ),
         Align(
-          alignment: Alignment.centerRight,
+          alignment: AlignmentDirectional.centerEnd,
           child: AppGradientButton(
             isLoading: saveProfileNotifierWatcher.isLoading,
             onTap: _onSave,

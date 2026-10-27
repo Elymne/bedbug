@@ -88,9 +88,9 @@ class ContentImagesView extends ConsumerWidget {
                               height: double.infinity,
                               fit: BoxFit.contain,
                             ),
-                            Positioned(
+                            PositionedDirectional(
                               top: 8,
-                              right: 8,
+                              end: 8,
                               child: AppImageCountBadge(label: '${index + 1}/${files.length}'),
                             ),
                           ],

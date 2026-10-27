@@ -169,7 +169,7 @@ class _State extends ConsumerState<ReactionComposerSheet> {
               Text(l10n.textFontLabel),
               AppTextFontSelector(control: _bubbleFontControl),
               Align(
-                alignment: Alignment.centerRight,
+                alignment: AlignmentDirectional.centerEnd,
                 child: AppGradientButton(
                   isLoading: saveReactionNotifierWatcher.isLoading,
                   onTap: _onSave,

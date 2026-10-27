@@ -605,5 +605,9 @@
   "textFontStandard": "Standard",
   "@textFontStandard": {
     "description": "Nom de la police par défaut de l'application, dans le sélecteur de police"
+  },
+  "settingsLanguageTitle": "Langue",
+  "@settingsLanguageTitle": {
+    "description": "Titre de la section des paramètres permettant de choisir la langue de l'application"
   }
 }

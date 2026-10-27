@@ -53,7 +53,7 @@ class ImageContentWidget extends ConsumerWidget {
               children: [
                 AppFileImage(file: file, width: double.infinity, height: displayHeight),
                 if (content.images.length > 1)
-                  Positioned(top: 8, right: 8, child: AppImageCountBadge(label: '${content.images.length}')),
+                  PositionedDirectional(top: 8, end: 8, child: AppImageCountBadge(label: '${content.images.length}')),
               ],
             ),
           ],

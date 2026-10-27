@@ -81,11 +81,13 @@ class ReactionBubbleLayer extends ConsumerWidget {
               // Toujours une bordure, transparente si masquée : sa largeur fait partie de la mise en page.
               border: Border.all(color: hasBorder ? AppColors.onLight : Colors.transparent),
               // Coin inférieur pincé du côté du bedbug : la bulle « sort » de lui.
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(12),
-                topRight: const Radius.circular(12),
-                bottomRight: Radius.circular(isMirrored ? 2 : 12),
-                bottomLeft: Radius.circular(isMirrored ? 12 : 2),
+              // Directionnel : le bedbug est calé au début de la ligne, à
+              // droite dans une langue écrite de droite à gauche.
+              borderRadius: BorderRadiusDirectional.only(
+                topStart: const Radius.circular(12),
+                topEnd: const Radius.circular(12),
+                bottomEnd: Radius.circular(isMirrored ? 2 : 12),
+                bottomStart: Radius.circular(isMirrored ? 12 : 2),
               ),
             ),
             child: Text(bubbleText, style: bubbleFont.apply(TextStyle(fontSize: 12, color: textColor))),

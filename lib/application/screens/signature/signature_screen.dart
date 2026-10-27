@@ -59,7 +59,7 @@ class SignatureScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Align(
-                        alignment: Alignment.centerLeft,
+                        alignment: AlignmentDirectional.centerStart,
                         child: IconButton(
                           onPressed: context.pop,
                           icon: const Icon(Icons.arrow_back, color: AppColors.onLight),
