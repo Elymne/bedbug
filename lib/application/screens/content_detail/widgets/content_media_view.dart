@@ -1,8 +1,10 @@
+import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
-import 'package:bedbug/application/screens/image_viewer/image_viewer_screen.dart';
+import 'package:bedbug/application/screens/media_viewer/media_viewer_screen.dart';
 import 'package:bedbug/application/widgets/images/app_image_count_badge.dart';
 import 'package:bedbug/application/widgets/media/app_remote_media.dart';
 import 'package:bedbug/features/content/domain/object_values/content_media.dart';
+import 'package:bedbug/features/trust/domain/object_values/url_trust_policy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -19,8 +21,9 @@ const double _kRadius = 8;
 /// Médias d'un contenu sur sa page de détail, en entier, sans recadrage.
 ///
 /// Plusieurs médias sont présentés dans un carrousel horizontal, avec leur
-/// position. Une vidéo se lit sur place ; un tap sur une image ou un gif
-/// ouvre la visionneuse plein écran sur les images du contenu.
+/// position. Un tap ouvre la visionneuse plein écran, seul endroit où un
+/// média de la greylist est défloué. Seule exception : une vidéo d'un
+/// domaine de confiance se lit sur place, sans passer par la visionneuse.
 class ContentMediaView extends ConsumerWidget {
   /// Crée un [ContentMediaView].
   ///
@@ -32,6 +35,9 @@ class ContentMediaView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final trustSettingsNotifierWatcher = ref.watch(trustSettingsNotifierProvider);
+    final mediaPolicy = trustSettingsNotifierWatcher.value?.mediaPolicy;
+
     return SizedBox(
       height: MediaQuery.sizeOf(context).height * _kHeightFactor,
       child: PageView(
@@ -45,7 +51,7 @@ class ContentMediaView extends ConsumerWidget {
                   fit: StackFit.expand,
                   children: [
                     GestureDetector(
-                      onTap: item.kind == MediaKind.video ? null : () => _openViewer(context, item),
+                      onTap: _isPlayedInline(item, mediaPolicy) ? null : () => _openViewer(context, index),
                       child: AppRemoteMedia(media: item, fit: BoxFit.contain, isPlayable: true),
                     ),
                     if (media.length > 1)
@@ -63,18 +69,32 @@ class ContentMediaView extends ConsumerWidget {
     );
   }
 
-  /// Ouvre la visionneuse plein écran sur les images du contenu, à partir de [touched].
+  /// Indique si [item] se lit sur place : une vidéo dont le domaine n'est pas en greylist.
+  ///
+  /// Une vidéo en greylist n'est qu'une vignette floutée : elle se lit dans
+  /// la visionneuse. Celle d'un domaine inconnu gère elle-même son tap
+  /// (confirmation), puis se lit sur place une fois dévoilée.
+  ///
+  /// - [item] : média touché.
+  /// - [mediaPolicy] : politique de confiance des médias, `null` tant qu'elle n'est pas chargée.
+  bool _isPlayedInline(ContentMedia item, UrlTrustPolicy? mediaPolicy) {
+    if (item.kind != MediaKind.video) {
+      return false;
+    }
+    if (mediaPolicy == null) {
+      return true;
+    }
+    return mediaPolicy.evaluate(item.url) != UrlTrust.grey;
+  }
+
+  /// Ouvre la visionneuse plein écran sur les médias du contenu, à partir de celui en position [index].
   ///
   /// - [context] : contexte depuis lequel naviguer.
-  /// - [touched] : média touché.
-  void _openViewer(BuildContext context, ContentMedia touched) {
-    final images = [
-      for (final item in media)
-        if (item.kind != MediaKind.video) item,
-    ];
+  /// - [index] : position du média touché.
+  void _openViewer(BuildContext context, int index) {
     context.push(
-      imageViewerPath,
-      extra: ImageViewerParams(media: images, initialIndex: images.indexOf(touched)),
+      mediaViewerPath,
+      extra: MediaViewerParams(media: media, initialIndex: index),
     );
   }
 }

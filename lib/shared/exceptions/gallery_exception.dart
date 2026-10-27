@@ -1,4 +1,4 @@
-/// Exception levée lorsqu'une image ne peut pas être enregistrée dans la galerie du téléphone.
+/// Exception levée lorsqu'un média ne peut pas être enregistré dans la galerie du téléphone.
 ///
 /// Levée dans les gateways de galerie. [isAccessDenied] distingue un refus
 /// d'accès de l'utilisateur, qu'on lui explique, d'une autre erreur

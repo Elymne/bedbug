@@ -599,6 +599,30 @@
       }
     }
   },
+  "mediaViewerDownload": "Enregistrer dans la galerie",
+  "@mediaViewerDownload": {
+    "description": "Infobulle du bouton de la visionneuse qui enregistre le média affiché dans la galerie du téléphone"
+  },
+  "mediaViewerSaveSuccess": "Média enregistré dans ta galerie.",
+  "@mediaViewerSaveSuccess": {
+    "description": "Message snackbar affiché après l'enregistrement d'un média dans la galerie"
+  },
+  "mediaViewerSaveError": "Impossible d'enregistrer le média.",
+  "@mediaViewerSaveError": {
+    "description": "Message snackbar d'erreur affiché quand un média ne peut pas être écrit dans la galerie"
+  },
+  "mediaViewerAccessDenied": "Autorise l'accès à ta galerie dans les réglages du téléphone pour enregistrer le média.",
+  "@mediaViewerAccessDenied": {
+    "description": "Message snackbar d'erreur affiché quand l'utilisateur a refusé l'accès à sa galerie"
+  },
+  "mediaViewerTooLarge": "Ce média est trop lourd pour être enregistré.",
+  "@mediaViewerTooLarge": {
+    "description": "Message snackbar d'erreur affiché quand un média est trop lourd pour être enregistré"
+  },
+  "mediaViewerUnsupportedFormat": "Ce fichier n'est pas une image ou une vidéo reconnue : il n'a pas été enregistré.",
+  "@mediaViewerUnsupportedFormat": {
+    "description": "Message snackbar d'erreur affiché quand le fichier téléchargé n'est pas une image ou une vidéo d'un format accepté"
+  },
   "linkOpenTitle": "Ouvrir ce lien ?",
   "@linkOpenTitle": {
     "description": "Titre de la popup demandant confirmation avant d'ouvrir un lien d'un domaine qui n'est pas de confiance"
