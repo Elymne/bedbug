@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/features/trust/domain/object_values/safe_url.dart';
+import 'package:bedbug/features/content/domain/object_values/safe_url.dart';
 
 /// Requêtes HTTP vers un média distant, une requête à la fois, sans jamais suivre de redirection.
 ///

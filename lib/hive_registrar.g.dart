@@ -10,7 +10,7 @@ import 'package:bedbug/features/content/infrastructure/models/storage_hive_model
 import 'package:bedbug/features/discovery/infrastructure/models/keychain_hive_model.dart';
 import 'package:bedbug/features/settings/infrastructure/models/settings_hive_model.dart';
 import 'package:bedbug/features/signature/infrastructure/models/signature_hive_model.dart';
-import 'package:bedbug/features/trust/infrastructure/models/trust_settings_hive_model.dart';
+import 'package:bedbug/features/content/infrastructure/models/trust_settings_hive_model.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {

@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bedbug/features/trust/domain/gateways/media_gallery_gateway.dart';
-import 'package:bedbug/features/trust/domain/object_values/media_file_format.dart';
+import 'package:bedbug/features/content/domain/gateways/media_gallery_gateway.dart';
+import 'package:bedbug/features/content/domain/object_values/media_file_format.dart';
 import 'package:bedbug/shared/exceptions/gallery_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gal/gal.dart';

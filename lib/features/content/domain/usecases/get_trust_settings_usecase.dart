@@ -1,7 +1,6 @@
-import 'package:bedbug/features/trust/domain/object_values/default_trust_settings.dart';
-import 'package:bedbug/features/trust/domain/object_values/trust_settings.dart';
-import 'package:bedbug/features/trust/domain/repositories/trust_settings_repository.dart';
-import 'package:bedbug/features/trust/infrastructure/datasources/hive_trust_settings_repository.dart';
+import 'package:bedbug/features/content/domain/object_values/trust_settings.dart';
+import 'package:bedbug/features/content/domain/repositories/trust_settings_repository.dart';
+import 'package:bedbug/features/content/infrastructure/datasources/hive_trust_settings_repository.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/domain/usecase.dart';

@@ -24,7 +24,7 @@ import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/enums/content_type.dart';
 import 'package:bedbug/features/content/domain/enums/tag.dart';
 import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
-import 'package:bedbug/features/content/domain/object_values/content_media.dart';
+import 'package:bedbug/features/content/domain/services/media_kind_service.dart';
 import 'package:bedbug/features/content/infrastructure/og_metadata_service.dart';
 import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
 import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
@@ -260,7 +260,7 @@ class _State extends ConsumerState<CreateScreen> {
       // Placeholder : SaveContentUsecase détermine et corrige le poids réel
       // avant persistance.
       sizeInBytes: 0,
-      media: [for (final url in _mediaUrlsControl.value!) ContentMedia.fromUrl(url)],
+      media: [for (final url in _mediaUrlsControl.value!) ref.read(mediaKindServiceProvider).mediaOf(url)],
       title: _mediaTitleControl.value!,
       body: _mediaBodyControl.value?.isEmpty == true ? null : _mediaBodyControl.value,
       flair: flair,

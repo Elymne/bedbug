@@ -1,10 +1,10 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
-import 'package:bedbug/features/trust/domain/object_values/default_trust_settings.dart';
-import 'package:bedbug/features/trust/domain/object_values/domain_rule.dart';
-import 'package:bedbug/features/trust/domain/object_values/trust_settings.dart';
-import 'package:bedbug/features/trust/domain/usecases/get_trust_settings_usecase.dart';
-import 'package:bedbug/features/trust/domain/usecases/parse_domain_rule_usecase.dart';
-import 'package:bedbug/features/trust/domain/usecases/save_trust_settings_usecase.dart';
+import 'package:bedbug/features/content/domain/object_values/domain_rule.dart';
+import 'package:bedbug/features/content/domain/object_values/trust_settings.dart';
+import 'package:bedbug/features/content/domain/services/trust_rules_service.dart';
+import 'package:bedbug/features/content/domain/usecases/get_trust_settings_usecase.dart';
+import 'package:bedbug/features/content/domain/usecases/parse_domain_rule_usecase.dart';
+import 'package:bedbug/features/content/domain/usecases/save_trust_settings_usecase.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -29,6 +29,9 @@ class TrustSettingsNotifier extends AsyncNotifier<TrustSettings> {
   /// Cas d'usage de vérification d'une règle saisie.
   late final _parseDomainRuleUsecase = ref.read(parseDomainRuleUsecaseProvider);
 
+  /// Service de rangement des règles dans les listes.
+  late final _trustRulesService = ref.read(trustRulesServiceProvider);
+
   @override
   Future<TrustSettings> build() async {
     final result = await _getTrustSettingsUsecase(const NoParams());
@@ -52,7 +55,7 @@ class TrustSettingsNotifier extends AsyncNotifier<TrustSettings> {
         ParseDomainRuleFailure.unknown => ref.l10n.settingsSaveError,
       };
     }
-    return _save(_current.withRule(family, level, rule));
+    return _save(_trustRulesService.withRule(_current, family, level, rule));
   }
 
   /// Fait passer [rule] dans la liste [level] de [family].
@@ -61,7 +64,7 @@ class TrustSettingsNotifier extends AsyncNotifier<TrustSettings> {
   /// - [rule] : règle à déplacer.
   /// - [level] : liste de destination.
   Future<String?> moveRule({required UrlFamily family, required DomainRule rule, required TrustLevel level}) {
-    return _save(_current.withRule(family, level, rule));
+    return _save(_trustRulesService.withRule(_current, family, level, rule));
   }
 
   /// Retire [rule] des listes de [family].
@@ -69,14 +72,14 @@ class TrustSettingsNotifier extends AsyncNotifier<TrustSettings> {
   /// - [family] : famille d'URLs concernée.
   /// - [rule] : règle à retirer.
   Future<String?> removeRule({required UrlFamily family, required DomainRule rule}) {
-    return _save(_current.withoutRule(family, rule));
+    return _save(_trustRulesService.withoutRule(_current, family, rule));
   }
 
   /// Change le sort des contenus qui pointent vers un domaine inconnu.
   ///
   /// - [behavior] : nouveau comportement.
   Future<String?> setUnknownDomainBehavior(UnknownDomainBehavior behavior) {
-    return _save(_current.withUnknownDomainBehavior(behavior));
+    return _save(_current.copyWith(unknownDomainBehavior: behavior));
   }
 
   /// Revient aux listes et au comportement par défaut.

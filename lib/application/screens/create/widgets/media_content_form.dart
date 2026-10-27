@@ -3,8 +3,8 @@ import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:bedbug/application/widgets/media/app_remote_media.dart';
 import 'package:bedbug/features/content/domain/entities/media_content.dart';
-import 'package:bedbug/features/content/domain/object_values/content_media.dart';
-import 'package:bedbug/features/trust/domain/object_values/safe_url.dart';
+import 'package:bedbug/features/content/domain/services/media_kind_service.dart';
+import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -109,12 +109,12 @@ class _State extends ConsumerState<MediaContentForm> {
                         borderRadius: BorderRadius.circular(8),
                         child: SizedBox.square(
                           dimension: _kThumbnailSize,
-                          child: AppRemoteMedia(media: ContentMedia.fromUrl(url)),
+                          child: AppRemoteMedia(media: ref.read(mediaKindServiceProvider).mediaOf(url)),
                         ),
                       ),
                       Expanded(
                         child: Text(
-                          SafeUrl.tryParse(url)?.host ?? url,
+                          ref.read(urlSafetyServiceProvider).parse(url)?.host ?? url,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(color: AppColors.onLight),

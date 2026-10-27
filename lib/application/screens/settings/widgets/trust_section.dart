@@ -2,7 +2,7 @@ import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/screens/settings/widgets/trust_policy_editor.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
-import 'package:bedbug/features/trust/domain/object_values/trust_settings.dart';
+import 'package:bedbug/features/content/domain/object_values/trust_settings.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

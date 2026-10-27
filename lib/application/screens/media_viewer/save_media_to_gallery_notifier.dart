@@ -1,7 +1,7 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/notifiers/revealed_urls_notifier.dart';
 import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
-import 'package:bedbug/features/trust/domain/usecases/save_media_to_gallery_usecase.dart';
+import 'package:bedbug/features/content/domain/usecases/save_media_to_gallery_usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveMediaToGalleryNotifier].

@@ -1,4 +1,4 @@
-import 'package:bedbug/features/trust/domain/gateways/public_suffix_gateway.dart';
+import 'package:bedbug/features/content/domain/gateways/public_suffix_gateway.dart';
 import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

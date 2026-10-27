@@ -42,6 +42,7 @@ features/<feature_name>/
     repositories/      repository interfaces
     gateways/          gateway interfaces
     usecases/
+    services/          small pure logic bricks shared by use cases
     extensions/        feature-specific extensions
     enums/             only enums shared across the feature
   infrastructure/
@@ -83,7 +84,7 @@ Purely technical code: no business rule, no domain knowledge, no UI or widget.
 
 ```
 shared/
-  domain/          base classes (Usecase, Params, Entity, ValueObject, Either)
+  domain/          base classes (Usecase, Service, Params, Entity, ValueObject, Either)
   infrastructure/  technical setup (Hive initialisation, type ids)
   exceptions/
   extensions/      cross-cutting extensions
@@ -96,12 +97,25 @@ shared/
 - Extend `Usecase<P extends Params, F, V>` and implement `call(params)`, returning `Future<Either<F, V>>`.
 - Never throw: failures are explicit and typed (failure enum).
 - Use `NoParams` when no input is required.
+- Logic needed by a single use case stays a private method of that use case.
+
+### Services
+
+- Extend `Service`. A service holds small pure logic bricks reused by several use cases or by the application
+  (parsing an address, matching a domain rule, detecting a file format).
+- Synchronous, no data access (no repository, no gateway): a service may only depend on other services. Anything
+  that needs more is a use case.
+- Never throw, and never return an `Either`: a failure is expressed by `null` or by an enum value. No `try/catch`
+  either: use the non-throwing APIs (`Uri.tryParse`, `int.tryParse`) and guard indexes and lengths.
+- Provided through a provider, like everything else.
 
 ### Entities and value objects
 
 - `Entity`: persisted object with `id`, `createdAt`, `updatedAt`.
 - `ValueObject`: computed data, composite structure or concept without identity.
 - Both are immutable (`final` fields, `const` constructor) with value-based equality.
+- Both are dumb data: fields, equality, `toString` and `copyWith` only. No parsing, validation, matching or business
+  rule inside them: that logic belongs in a service or in a use case.
 
 ### Enums
 

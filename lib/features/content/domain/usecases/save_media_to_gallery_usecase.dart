@@ -1,8 +1,8 @@
-import 'package:bedbug/features/trust/domain/gateways/media_gallery_gateway.dart';
-import 'package:bedbug/features/trust/domain/object_values/media_file_format.dart';
-import 'package:bedbug/features/trust/domain/object_values/url_trust_policy.dart';
-import 'package:bedbug/features/trust/domain/usecases/fetch_media_usecase.dart';
-import 'package:bedbug/features/trust/infrastructure/gateways/gal_media_gallery_gateway.dart';
+import 'package:bedbug/features/content/domain/gateways/media_gallery_gateway.dart';
+import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
+import 'package:bedbug/features/content/domain/services/media_format_service.dart';
+import 'package:bedbug/features/content/domain/usecases/fetch_media_usecase.dart';
+import 'package:bedbug/features/content/infrastructure/gateways/gal_media_gallery_gateway.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/domain/usecase.dart';
@@ -19,7 +19,11 @@ const int maxGalleryMediaBytes = 50 * 1024 * 1024;
 
 /// Provider du [SaveMediaToGalleryUsecase].
 final saveMediaToGalleryUsecaseProvider = Provider<SaveMediaToGalleryUsecase>((ref) {
-  return SaveMediaToGalleryUsecase(ref.read(fetchMediaUsecaseProvider), ref.read(mediaGalleryGatewayProvider));
+  return SaveMediaToGalleryUsecase(
+    ref.read(fetchMediaUsecaseProvider),
+    ref.read(mediaGalleryGatewayProvider),
+    ref.read(mediaFormatServiceProvider),
+  );
 });
 
 /// Télécharge un média distant et l'enregistre dans la galerie du téléphone.
@@ -32,11 +36,13 @@ final saveMediaToGalleryUsecaseProvider = Provider<SaveMediaToGalleryUsecase>((r
 /// jamais recevoir une page web ou un exécutable déguisé.
 class SaveMediaToGalleryUsecase extends Usecase<SaveMediaToGalleryParams, SaveMediaToGalleryFailure, void> {
   /// Crée un [SaveMediaToGalleryUsecase].
-  SaveMediaToGalleryUsecase(this._fetchMediaUsecase, this._mediaGalleryGateway);
+  SaveMediaToGalleryUsecase(this._fetchMediaUsecase, this._mediaGalleryGateway, this._mediaFormatService);
 
   final FetchMediaUsecase _fetchMediaUsecase;
 
   final MediaGalleryGateway _mediaGalleryGateway;
+
+  final MediaFormatService _mediaFormatService;
 
   @override
   Future<Either<SaveMediaToGalleryFailure, void>> call(SaveMediaToGalleryParams params) async {
@@ -57,7 +63,7 @@ class SaveMediaToGalleryUsecase extends Usecase<SaveMediaToGalleryParams, SaveMe
         });
       }
 
-      final format = MediaFileFormat.fromBytes(fetchedMedia.bytes);
+      final format = _mediaFormatService.detect(fetchedMedia.bytes);
       if (format == null) {
         return const Left(SaveMediaToGalleryFailure.unsupportedFormat);
       }

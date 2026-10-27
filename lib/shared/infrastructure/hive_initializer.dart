@@ -1,14 +1,14 @@
 import 'dart:io';
 
+import 'package:bedbug/features/content/infrastructure/datasources/hive_trust_settings_repository.dart';
 import 'package:bedbug/features/content/infrastructure/models/comment_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/reaction_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/storage_hive_model.dart';
+import 'package:bedbug/features/content/infrastructure/models/trust_settings_hive_model.dart';
 import 'package:bedbug/features/discovery/infrastructure/models/keychain_hive_model.dart';
 import 'package:bedbug/features/settings/infrastructure/models/settings_hive_model.dart';
 import 'package:bedbug/features/signature/infrastructure/models/signature_hive_model.dart';
-import 'package:bedbug/features/trust/infrastructure/datasources/hive_trust_settings_repository.dart';
-import 'package:bedbug/features/trust/infrastructure/models/trust_settings_hive_model.dart';
 import 'package:bedbug/hive_registrar.g.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';

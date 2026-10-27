@@ -1,5 +1,4 @@
-import 'package:bedbug/features/trust/domain/object_values/domain_rule.dart';
-import 'package:bedbug/features/trust/domain/object_values/safe_url.dart';
+import 'package:bedbug/features/content/domain/object_values/domain_rule.dart';
 import 'package:bedbug/shared/domain/value_object.dart';
 
 /// Politique de confiance appliquée à une famille d'URLs (médias ou liens) : une whitelist et une greylist.
@@ -20,31 +19,9 @@ class UrlTrustPolicy extends ValueObject {
 
   /// Domaines acceptés, mais seulement après une action de l'utilisateur.
   final List<DomainRule> greyRules;
-
-  /// Retourne le niveau de confiance de [rawUrl].
-  ///
-  /// Une URL refusée par [SafeUrl.tryParse] est [UrlTrust.invalid], quelle
-  /// que soit la liste : elle ne doit jamais être chargée. Un domaine
-  /// présent dans les deux listes est traité comme [UrlTrust.grey] : en cas
-  /// de doute, la règle la plus prudente l'emporte.
-  ///
-  /// - [rawUrl] : URL telle que reçue, non vérifiée.
-  UrlTrust evaluate(String rawUrl) {
-    final url = SafeUrl.tryParse(rawUrl);
-    if (url == null) {
-      return UrlTrust.invalid;
-    }
-    if (greyRules.any((rule) => rule.matches(url))) {
-      return UrlTrust.grey;
-    }
-    if (trustedRules.any((rule) => rule.matches(url))) {
-      return UrlTrust.trusted;
-    }
-    return UrlTrust.unknown;
-  }
 }
 
-/// Niveau de confiance d'une URL selon une [UrlTrustPolicy].
+/// Niveau de confiance d'une URL selon une [UrlTrustPolicy] (voir `UrlTrustService.evaluate`).
 enum UrlTrust {
   /// URL piégée ou mal formée : à ne jamais charger ni ouvrir.
   invalid,

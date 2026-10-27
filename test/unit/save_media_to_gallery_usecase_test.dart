@@ -1,13 +1,17 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/features/trust/domain/gateways/media_gallery_gateway.dart';
-import 'package:bedbug/features/trust/domain/gateways/media_http_gateway.dart';
-import 'package:bedbug/features/trust/domain/object_values/domain_rule.dart';
-import 'package:bedbug/features/trust/domain/object_values/media_file_format.dart';
-import 'package:bedbug/features/trust/domain/object_values/safe_url.dart';
-import 'package:bedbug/features/trust/domain/object_values/url_trust_policy.dart';
-import 'package:bedbug/features/trust/domain/usecases/fetch_media_usecase.dart';
-import 'package:bedbug/features/trust/domain/usecases/save_media_to_gallery_usecase.dart';
+import 'package:bedbug/features/content/domain/gateways/media_gallery_gateway.dart';
+import 'package:bedbug/features/content/domain/gateways/media_http_gateway.dart';
+import 'package:bedbug/features/content/domain/object_values/domain_rule.dart';
+import 'package:bedbug/features/content/domain/object_values/media_file_format.dart';
+import 'package:bedbug/features/content/domain/object_values/safe_url.dart';
+import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
+import 'package:bedbug/features/content/domain/services/domain_rule_service.dart';
+import 'package:bedbug/features/content/domain/services/media_format_service.dart';
+import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
+import 'package:bedbug/features/content/domain/services/url_trust_service.dart';
+import 'package:bedbug/features/content/domain/usecases/fetch_media_usecase.dart';
+import 'package:bedbug/features/content/domain/usecases/save_media_to_gallery_usecase.dart';
 import 'package:bedbug/shared/exceptions/gallery_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -58,6 +62,11 @@ Uint8List _bytes(List<int> prefix) {
 }
 
 void main() {
+  const urlSafetyService = UrlSafetyService();
+  const domainRuleService = DomainRuleService(urlSafetyService);
+  const urlTrustService = UrlTrustService(urlSafetyService, domainRuleService);
+  const mediaFormatService = MediaFormatService();
+
   const policy = UrlTrustPolicy(
     trustedRules: [DomainRule(host: 'cdn.trusted.com', isIncludingSubdomains: false)],
     greyRules: [DomainRule(host: 'grey.com', isIncludingSubdomains: false)],
@@ -71,24 +80,28 @@ void main() {
     String rawUrl, {
     bool isConfirmed = false,
   }) async {
-    final usecase = SaveMediaToGalleryUsecase(FetchMediaUsecase(http), gallery);
+    final usecase = SaveMediaToGalleryUsecase(
+      FetchMediaUsecase(http, urlSafetyService, urlTrustService),
+      gallery,
+      mediaFormatService,
+    );
     final result = await usecase(SaveMediaToGalleryParams(rawUrl: rawUrl, policy: policy, isConfirmed: isConfirmed));
     return result.left;
   }
 
   group('reconnaissance du format', () {
     test('reconnaît les images et vidéos courantes à leurs premiers octets', () {
-      expect(MediaFileFormat.fromBytes(_bytes([0xFF, 0xD8, 0xFF, 0xE0])), MediaFileFormat.jpeg);
-      expect(MediaFileFormat.fromBytes(png), MediaFileFormat.png);
-      expect(MediaFileFormat.fromBytes(_bytes('GIF89a'.codeUnits)), MediaFileFormat.gif);
-      expect(MediaFileFormat.fromBytes(_bytes('GIF87a'.codeUnits)), MediaFileFormat.gif);
+      expect(mediaFormatService.detect(_bytes([0xFF, 0xD8, 0xFF, 0xE0])), MediaFileFormat.jpeg);
+      expect(mediaFormatService.detect(png), MediaFileFormat.png);
+      expect(mediaFormatService.detect(_bytes('GIF89a'.codeUnits)), MediaFileFormat.gif);
+      expect(mediaFormatService.detect(_bytes('GIF87a'.codeUnits)), MediaFileFormat.gif);
       expect(
-        MediaFileFormat.fromBytes(_bytes([...'RIFF'.codeUnits, 1, 2, 3, 4, ...'WEBP'.codeUnits])),
+        mediaFormatService.detect(_bytes([...'RIFF'.codeUnits, 1, 2, 3, 4, ...'WEBP'.codeUnits])),
         MediaFileFormat.webp,
       );
-      expect(MediaFileFormat.fromBytes(_bytes([0x1A, 0x45, 0xDF, 0xA3])), MediaFileFormat.webm);
-      expect(MediaFileFormat.fromBytes(_bytes([0, 0, 0, 0x20, ...'ftypisom'.codeUnits])), MediaFileFormat.mp4);
-      expect(MediaFileFormat.fromBytes(_bytes([0, 0, 0, 0x14, ...'ftypqt  '.codeUnits])), MediaFileFormat.quickTime);
+      expect(mediaFormatService.detect(_bytes([0x1A, 0x45, 0xDF, 0xA3])), MediaFileFormat.webm);
+      expect(mediaFormatService.detect(_bytes([0, 0, 0, 0x20, ...'ftypisom'.codeUnits])), MediaFileFormat.mp4);
+      expect(mediaFormatService.detect(_bytes([0, 0, 0, 0x14, ...'ftypqt  '.codeUnits])), MediaFileFormat.quickTime);
     });
 
     test("refuse tout ce qui n'est pas une image ou une vidéo acceptée, même déguisé", () {
@@ -104,12 +117,12 @@ void main() {
         'texte commençant par des espaces puis un png': [0x20, 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A],
       };
       for (final MapEntry(:key, :value) in rejected.entries) {
-        expect(MediaFileFormat.fromBytes(_bytes(value)), isNull, reason: key);
+        expect(mediaFormatService.detect(_bytes(value)), isNull, reason: key);
       }
-      expect(MediaFileFormat.fromBytes(Uint8List(0)), isNull, reason: 'fichier vide');
-      expect(MediaFileFormat.fromBytes(Uint8List.fromList([0xFF, 0xD8])), isNull, reason: 'jpeg tronqué');
+      expect(mediaFormatService.detect(Uint8List(0)), isNull, reason: 'fichier vide');
+      expect(mediaFormatService.detect(Uint8List.fromList([0xFF, 0xD8])), isNull, reason: 'jpeg tronqué');
       expect(
-        MediaFileFormat.fromBytes(Uint8List.fromList([0, 0, 0, 0, ...'ftyp'.codeUnits])),
+        mediaFormatService.detect(Uint8List.fromList([0, 0, 0, 0, ...'ftyp'.codeUnits])),
         isNull,
         reason: 'ftyp sans marque',
       );

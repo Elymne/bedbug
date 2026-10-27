@@ -1,14 +1,18 @@
 import 'dart:io';
 
-import 'package:bedbug/features/trust/domain/object_values/domain_rule.dart';
-import 'package:bedbug/features/trust/domain/usecases/parse_domain_rule_usecase.dart';
-import 'package:bedbug/features/trust/infrastructure/gateways/public_suffix_package_public_suffix_gateway.dart';
+import 'package:bedbug/features/content/domain/object_values/domain_rule.dart';
+import 'package:bedbug/features/content/domain/services/domain_rule_service.dart';
+import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
+import 'package:bedbug/features/content/domain/usecases/parse_domain_rule_usecase.dart';
+import 'package:bedbug/features/content/infrastructure/gateways/public_suffix_package_public_suffix_gateway.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   // La vraie liste embarquée, lue depuis le disque : c'est elle que l'app utilise.
   final gateway = PublicSuffixPackagePublicSuffixGateway(() => File(publicSuffixListAssetPath).readAsString());
-  final usecase = ParseDomainRuleUsecase(gateway);
+  const urlSafetyService = UrlSafetyService();
+  const domainRuleService = DomainRuleService(urlSafetyService);
+  final usecase = ParseDomainRuleUsecase(gateway, urlSafetyService, domainRuleService);
 
   /// Analyse [input] avec le use case.
   Future<(ParseDomainRuleFailure?, DomainRule?)> parse(String input) async {
@@ -22,6 +26,18 @@ void main() {
       expect(failure, isNull, reason: input);
       expect(rule, isNotNull, reason: input);
     }
+  });
+
+  test('nettoie les espaces autour et met en minuscules', () async {
+    expect((await parse('  I.Imgur.COM \n')).$2, const DomainRule(host: 'i.imgur.com', isIncludingSubdomains: false));
+  });
+
+  test("d'une URL collée, ne garde que le domaine exact", () async {
+    expect(
+      (await parse('https://media.giphy.com/media/xyz/giphy.gif')).$2,
+      const DomainRule(host: 'media.giphy.com', isIncludingSubdomains: false),
+    );
+    expect((await parse('http://media.giphy.com/x.gif')).$1, ParseDomainRuleFailure.invalidFormat);
   });
 
   test('refuse les suffixes publics officiels et privés', () async {
@@ -61,7 +77,9 @@ void main() {
 
   test('une liste illisible fait refuser la règle plutôt que de laisser passer', () async {
     final brokenGateway = PublicSuffixPackagePublicSuffixGateway(() => Future<String>.error(Exception('illisible')));
-    final result = await ParseDomainRuleUsecase(brokenGateway)(const ParseDomainRuleParams(input: 'imgur.com'));
+    final result = await ParseDomainRuleUsecase(brokenGateway, urlSafetyService, domainRuleService)(
+      const ParseDomainRuleParams(input: 'imgur.com'),
+    );
     expect(result.left, ParseDomainRuleFailure.publicSuffix);
   });
 }

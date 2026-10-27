@@ -1,9 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/features/trust/domain/gateways/media_http_gateway.dart';
-import 'package:bedbug/features/trust/domain/object_values/safe_url.dart';
-import 'package:bedbug/features/trust/domain/object_values/url_trust_policy.dart';
-import 'package:bedbug/features/trust/infrastructure/gateways/dio_media_http_gateway.dart';
+import 'package:bedbug/features/content/domain/gateways/media_http_gateway.dart';
+import 'package:bedbug/features/content/domain/object_values/safe_url.dart';
+import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
+import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
+import 'package:bedbug/features/content/domain/services/url_trust_service.dart';
+import 'package:bedbug/features/content/infrastructure/gateways/dio_media_http_gateway.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/domain/usecase.dart';
@@ -23,7 +25,11 @@ const int maxImageBytes = 15 * 1024 * 1024;
 
 /// Provider du [FetchMediaUsecase].
 final fetchMediaUsecaseProvider = Provider<FetchMediaUsecase>((ref) {
-  return FetchMediaUsecase(ref.read(mediaHttpGatewayProvider));
+  return FetchMediaUsecase(
+    ref.read(mediaHttpGatewayProvider),
+    ref.read(urlSafetyServiceProvider),
+    ref.read(urlTrustServiceProvider),
+  );
 });
 
 /// Télécharge un média distant, en revérifiant chaque redirection contre la politique de confiance.
@@ -39,14 +45,18 @@ final fetchMediaUsecaseProvider = Provider<FetchMediaUsecase>((ref) {
 /// demandé, le contenu du média.
 class FetchMediaUsecase extends Usecase<FetchMediaParams, FetchMediaFailure, FetchedMedia> {
   /// Crée un [FetchMediaUsecase].
-  FetchMediaUsecase(this._mediaHttpGateway);
+  FetchMediaUsecase(this._mediaHttpGateway, this._urlSafetyService, this._urlTrustService);
 
   final MediaHttpGateway _mediaHttpGateway;
+
+  final UrlSafetyService _urlSafetyService;
+
+  final UrlTrustService _urlTrustService;
 
   @override
   Future<Either<FetchMediaFailure, FetchedMedia>> call(FetchMediaParams params) async {
     try {
-      var url = SafeUrl.tryParse(params.rawUrl);
+      var url = _urlSafetyService.parse(params.rawUrl);
       if (url == null) {
         return const Left(FetchMediaFailure.invalidUrl);
       }
@@ -88,7 +98,7 @@ class FetchMediaUsecase extends Usecase<FetchMediaParams, FetchMediaFailure, Fet
   /// média, et seulement pour le domaine qu'il a confirmé : une redirection
   /// vers un autre domaine inconnu reste refusée.
   bool _isAllowed(SafeUrl url, FetchMediaParams params, String initialHost) {
-    return switch (params.policy.evaluate(url.url)) {
+    return switch (_urlTrustService.evaluate(params.policy, url.url)) {
       UrlTrust.trusted || UrlTrust.grey => true,
       UrlTrust.unknown => params.isConfirmed && url.host == initialHost,
       UrlTrust.invalid => false,
@@ -97,15 +107,15 @@ class FetchMediaUsecase extends Usecase<FetchMediaParams, FetchMediaFailure, Fet
 
   /// Retourne l'adresse vérifiée vers laquelle redirige [location], relative à [from], ou `null` si elle est refusée.
   ///
-  /// L'adresse résolue repasse par [SafeUrl.tryParse] : une redirection
+  /// L'adresse résolue repasse par [UrlSafetyService.parse] : une redirection
   /// vers `http`, une IP ou une adresse piégée est refusée comme le serait
   /// l'adresse d'origine.
   SafeUrl? _resolveRedirect(SafeUrl from, String location) {
-    try {
-      return SafeUrl.tryParse(Uri.parse(from.url).resolve(location).toString());
-    } on FormatException {
+    final resolved = Uri.tryParse(from.url)?.resolve(location);
+    if (resolved == null) {
       return null;
     }
+    return _urlSafetyService.parse(resolved.toString());
   }
 }
 

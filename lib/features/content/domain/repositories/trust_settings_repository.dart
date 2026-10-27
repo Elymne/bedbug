@@ -1,4 +1,4 @@
-import 'package:bedbug/features/trust/domain/object_values/trust_settings.dart';
+import 'package:bedbug/features/content/domain/object_values/trust_settings.dart';
 
 /// Stockage des réglages de confiance de l'utilisateur, un seul jeu par appareil.
 abstract class TrustSettingsRepository {

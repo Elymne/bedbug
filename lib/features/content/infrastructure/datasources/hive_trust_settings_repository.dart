@@ -1,6 +1,7 @@
-import 'package:bedbug/features/trust/domain/object_values/trust_settings.dart';
-import 'package:bedbug/features/trust/domain/repositories/trust_settings_repository.dart';
-import 'package:bedbug/features/trust/infrastructure/models/trust_settings_hive_model.dart';
+import 'package:bedbug/features/content/domain/object_values/trust_settings.dart';
+import 'package:bedbug/features/content/domain/repositories/trust_settings_repository.dart';
+import 'package:bedbug/features/content/domain/services/domain_rule_service.dart';
+import 'package:bedbug/features/content/infrastructure/models/trust_settings_hive_model.dart';
 import 'package:bedbug/shared/exceptions/datasource_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -18,20 +19,22 @@ final hiveTrustSettingsBoxProvider = Provider<Box<TrustSettingsHiveModel>>((ref)
 
 /// Provider du [TrustSettingsRepository].
 final trustSettingsRepositoryProvider = Provider<TrustSettingsRepository>((ref) {
-  return HiveTrustSettingsRepository(ref.read(hiveTrustSettingsBoxProvider));
+  return HiveTrustSettingsRepository(ref.read(hiveTrustSettingsBoxProvider), ref.read(domainRuleServiceProvider));
 });
 
 /// Implémentation de [TrustSettingsRepository] utilisant Hive comme stockage local.
 class HiveTrustSettingsRepository implements TrustSettingsRepository {
   /// Crée un [HiveTrustSettingsRepository].
-  HiveTrustSettingsRepository(this._box);
+  HiveTrustSettingsRepository(this._box, this._domainRuleService);
 
   final Box<TrustSettingsHiveModel> _box;
+
+  final DomainRuleService _domainRuleService;
 
   @override
   Future<TrustSettings?> get() async {
     try {
-      return _box.get(_settingsKey)?.toEntity();
+      return _box.get(_settingsKey)?.toEntity(_domainRuleService);
     } on HiveError catch (error) {
       throw DatasourceException('HiveTrustSettingsRepository', error);
     }
@@ -40,7 +43,7 @@ class HiveTrustSettingsRepository implements TrustSettingsRepository {
   @override
   Future<void> save(TrustSettings settings) async {
     try {
-      await _box.put(_settingsKey, TrustSettingsHiveModel.fromEntity(settings));
+      await _box.put(_settingsKey, TrustSettingsHiveModel.fromEntity(settings, _domainRuleService));
     } on HiveError catch (error) {
       throw DatasourceException('HiveTrustSettingsRepository', error);
     }

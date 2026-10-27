@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/features/trust/domain/gateways/media_http_gateway.dart';
-import 'package:bedbug/features/trust/domain/object_values/safe_url.dart';
+import 'package:bedbug/features/content/domain/gateways/media_http_gateway.dart';
+import 'package:bedbug/features/content/domain/object_values/safe_url.dart';
 import 'package:bedbug/shared/config/http_config.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

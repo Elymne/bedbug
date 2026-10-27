@@ -14,13 +14,6 @@ class ContentMedia extends ValueObject {
   /// - [kind] : nature du média, qui décide de la façon de l'afficher.
   const ContentMedia({required this.url, required this.kind});
 
-  /// Crée un [ContentMedia] dont la nature est déduite de l'extension de [url] (voir [MediaKind.fromUrl]).
-  ///
-  /// - [url] : adresse du média.
-  factory ContentMedia.fromUrl(String url) {
-    return ContentMedia(url: url, kind: MediaKind.fromUrl(url));
-  }
-
   /// Adresse du média, telle que saisie par l'auteur.
   final String url;
 
@@ -53,26 +46,6 @@ enum MediaKind {
 
   /// Valeur entière persistée. Stable indépendamment de l'ordre de déclaration.
   final int value;
-
-  /// Extensions de fichier reconnues comme des vidéos.
-  static const List<String> _videoExtensions = ['.mp4', '.webm', '.mov', '.m4v'];
-
-  /// Retourne la nature d'un média d'après l'extension de son adresse, [image] par défaut.
-  ///
-  /// Les hébergeurs servent leurs fichiers sous leur vraie extension
-  /// (`.gif`, `.mp4`) : c'est ce qui décide du lecteur à utiliser.
-  ///
-  /// - [url] : adresse du média.
-  static MediaKind fromUrl(String url) {
-    final path = (Uri.tryParse(url)?.path ?? '').toLowerCase();
-    if (_videoExtensions.any(path.endsWith)) {
-      return video;
-    }
-    if (path.endsWith('.gif')) {
-      return gif;
-    }
-    return image;
-  }
 
   /// Retourne la nature correspondant à [value], ou [image] si elle est inconnue.
   ///

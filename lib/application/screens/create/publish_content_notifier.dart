@@ -4,10 +4,11 @@ import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/screens/home/home_feed_notifier.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
+import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
+import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
+import 'package:bedbug/features/content/domain/services/url_trust_service.dart';
 import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
 import 'package:bedbug/features/content/infrastructure/og_metadata_service.dart';
-import 'package:bedbug/features/trust/domain/object_values/safe_url.dart';
-import 'package:bedbug/features/trust/domain/object_values/url_trust_policy.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,6 +32,12 @@ class PublishContentNotifier extends AsyncNotifier<void> {
 
   /// Service de lecture de l'aperçu (Open Graph) d'un lien.
   late final _ogMetadataService = ref.read(ogMetadataServiceProvider);
+
+  /// Service de vérification des URLs.
+  late final _urlSafetyService = ref.read(urlSafetyServiceProvider);
+
+  /// Service d'évaluation des URLs selon les listes de l'utilisateur.
+  late final _urlTrustService = ref.read(urlTrustServiceProvider);
 
   @override
   Future<void> build() async {}
@@ -60,8 +67,8 @@ class PublishContentNotifier extends AsyncNotifier<void> {
     state = const AsyncLoading();
     final trustSettings = await ref.read(trustSettingsNotifierProvider.future);
     var ogMetadata = const OgMetadata();
-    final safeUrl = SafeUrl.tryParse(url);
-    if (safeUrl != null && trustSettings.linkPolicy.evaluate(safeUrl.url) == UrlTrust.trusted) {
+    final safeUrl = _urlSafetyService.parse(url);
+    if (safeUrl != null && _urlTrustService.evaluate(trustSettings.linkPolicy, safeUrl.url) == UrlTrust.trusted) {
       ogMetadata = await _ogMetadataService.fetch(safeUrl.url);
     }
     final result = await _save(buildContent(ogMetadata));

@@ -1,7 +1,8 @@
 import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/widgets/media/app_remote_media.dart';
 import 'package:bedbug/features/content/domain/object_values/content_media.dart';
-import 'package:bedbug/features/trust/domain/object_values/url_trust_policy.dart';
+import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
+import 'package:bedbug/features/content/domain/services/url_trust_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -35,8 +36,12 @@ class AppLinkPreviewImage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final trustSettingsNotifierWatcher = ref.watch(trustSettingsNotifierProvider);
     final previewUrl = url;
-    final trust = trustSettingsNotifierWatcher.value?.mediaPolicy.evaluate(previewUrl ?? '');
-    if (previewUrl == null || (trust != UrlTrust.trusted && trust != UrlTrust.grey)) {
+    final mediaPolicy = trustSettingsNotifierWatcher.value?.mediaPolicy;
+    if (previewUrl == null || mediaPolicy == null) {
+      return const SizedBox.shrink();
+    }
+    final trust = ref.read(urlTrustServiceProvider).evaluate(mediaPolicy, previewUrl);
+    if (trust != UrlTrust.trusted && trust != UrlTrust.grey) {
       return const SizedBox.shrink();
     }
 

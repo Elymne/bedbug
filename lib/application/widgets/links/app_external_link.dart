@@ -2,9 +2,11 @@ import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/dialogs/trust_confirm_dialog.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
-import 'package:bedbug/features/trust/domain/object_values/default_trust_settings.dart';
-import 'package:bedbug/features/trust/domain/object_values/safe_url.dart';
-import 'package:bedbug/features/trust/domain/object_values/url_trust_policy.dart';
+import 'package:bedbug/features/content/domain/object_values/safe_url.dart';
+import 'package:bedbug/features/content/domain/object_values/trust_settings.dart';
+import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
+import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
+import 'package:bedbug/features/content/domain/services/url_trust_service.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,7 +34,7 @@ class AppExternalLink extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final safeUrl = SafeUrl.tryParse(url);
+    final safeUrl = ref.read(urlSafetyServiceProvider).parse(url);
     if (safeUrl == null) {
       return Text(url, style: style);
     }
@@ -53,7 +55,7 @@ class AppExternalLink extends ConsumerWidget {
   Future<void> _open(BuildContext context, WidgetRef ref, SafeUrl safeUrl) async {
     final l10n = context.loc;
     final trustSettings = ref.read(trustSettingsNotifierProvider).value ?? defaultTrustSettings;
-    final trust = trustSettings.linkPolicy.evaluate(safeUrl.url);
+    final trust = ref.read(urlTrustServiceProvider).evaluate(trustSettings.linkPolicy, safeUrl.url);
     if (trust == UrlTrust.invalid) {
       return;
     }

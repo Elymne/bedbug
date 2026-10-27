@@ -4,7 +4,8 @@ import 'package:bedbug/application/screens/media_viewer/media_viewer_screen.dart
 import 'package:bedbug/application/widgets/images/app_image_count_badge.dart';
 import 'package:bedbug/application/widgets/media/app_remote_media.dart';
 import 'package:bedbug/features/content/domain/object_values/content_media.dart';
-import 'package:bedbug/features/trust/domain/object_values/url_trust_policy.dart';
+import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
+import 'package:bedbug/features/content/domain/services/url_trust_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -51,7 +52,7 @@ class ContentMediaView extends ConsumerWidget {
                   fit: StackFit.expand,
                   children: [
                     GestureDetector(
-                      onTap: _isPlayedInline(item, mediaPolicy) ? null : () => _openViewer(context, index),
+                      onTap: _isPlayedInline(ref, item, mediaPolicy) ? null : () => _openViewer(context, index),
                       child: AppRemoteMedia(media: item, fit: BoxFit.contain, isPlayable: true),
                     ),
                     if (media.length > 1)
@@ -75,16 +76,17 @@ class ContentMediaView extends ConsumerWidget {
   /// la visionneuse. Celle d'un domaine inconnu gère elle-même son tap
   /// (confirmation), puis se lit sur place une fois dévoilée.
   ///
+  /// - [ref] : accès au service de confiance.
   /// - [item] : média touché.
   /// - [mediaPolicy] : politique de confiance des médias, `null` tant qu'elle n'est pas chargée.
-  bool _isPlayedInline(ContentMedia item, UrlTrustPolicy? mediaPolicy) {
+  bool _isPlayedInline(WidgetRef ref, ContentMedia item, UrlTrustPolicy? mediaPolicy) {
     if (item.kind != MediaKind.video) {
       return false;
     }
     if (mediaPolicy == null) {
       return true;
     }
-    return mediaPolicy.evaluate(item.url) != UrlTrust.grey;
+    return ref.read(urlTrustServiceProvider).evaluate(mediaPolicy, item.url) != UrlTrust.grey;
   }
 
   /// Ouvre la visionneuse plein écran sur les médias du contenu, à partir de celui en position [index].

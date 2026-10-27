@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/features/trust/domain/object_values/media_file_format.dart';
+import 'package:bedbug/features/content/domain/object_values/media_file_format.dart';
 
 /// Contrat du service d'enregistrement d'un média dans la galerie du téléphone.
 ///

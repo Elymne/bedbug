@@ -1,10 +1,13 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/features/trust/domain/gateways/media_http_gateway.dart';
-import 'package:bedbug/features/trust/domain/object_values/domain_rule.dart';
-import 'package:bedbug/features/trust/domain/object_values/safe_url.dart';
-import 'package:bedbug/features/trust/domain/object_values/url_trust_policy.dart';
-import 'package:bedbug/features/trust/domain/usecases/fetch_media_usecase.dart';
+import 'package:bedbug/features/content/domain/gateways/media_http_gateway.dart';
+import 'package:bedbug/features/content/domain/object_values/domain_rule.dart';
+import 'package:bedbug/features/content/domain/object_values/safe_url.dart';
+import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
+import 'package:bedbug/features/content/domain/services/domain_rule_service.dart';
+import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
+import 'package:bedbug/features/content/domain/services/url_trust_service.dart';
+import 'package:bedbug/features/content/domain/usecases/fetch_media_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Faux serveur : une réponse par adresse, et le journal des adresses contactées.
@@ -25,6 +28,10 @@ class _FakeMediaHttpGateway implements MediaHttpGateway {
 }
 
 void main() {
+  const urlSafetyService = UrlSafetyService();
+  const domainRuleService = DomainRuleService(urlSafetyService);
+  const urlTrustService = UrlTrustService(urlSafetyService, domainRuleService);
+
   const policy = UrlTrustPolicy(
     trustedRules: [
       DomainRule(host: 'picsum.photos', isIncludingSubdomains: true),
@@ -40,7 +47,7 @@ void main() {
     String rawUrl, {
     bool isConfirmed = false,
   }) async {
-    final result = await FetchMediaUsecase(gateway)(
+    final result = await FetchMediaUsecase(gateway, urlSafetyService, urlTrustService)(
       FetchMediaParams(rawUrl: rawUrl, policy: policy, isConfirmed: isConfirmed),
     );
     return (result.left, result.right);
