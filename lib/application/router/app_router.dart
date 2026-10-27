@@ -1,7 +1,7 @@
 import 'package:bedbug/application/router/error_route_page.dart';
 import 'package:bedbug/application/screens/avatar_picker/avatar_picker_screen.dart';
-import 'package:bedbug/application/screens/content_detail/image_content_detail_screen.dart';
 import 'package:bedbug/application/screens/content_detail/link_content_detail_screen.dart';
+import 'package:bedbug/application/screens/content_detail/media_content_detail_screen.dart';
 import 'package:bedbug/application/screens/content_detail/text_content_detail_screen.dart';
 import 'package:bedbug/application/screens/create/create_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
@@ -13,8 +13,8 @@ import 'package:bedbug/application/screens/settings/settings_screen.dart';
 import 'package:bedbug/application/screens/signature/signature_screen.dart';
 import 'package:bedbug/application/screens/splash/splash_screen.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
+import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
@@ -72,7 +72,7 @@ const String signaturesPath = '/signatures';
 /// Chemin de la page d'une signature, identifiant en paramètre de chemin.
 const String signaturePath = '$signaturesPath/:id';
 
-/// Chemin vers la visionneuse plein écran des images d'un contenu.
+/// Chemin vers la visionneuse plein écran des images et gifs d'un contenu.
 ///
 /// Les images et la position de départ sont transmises via `extra`
 /// (`ImageViewerParams`).
@@ -180,6 +180,6 @@ Widget _searchResultsScreenFor(Map<String, String> queryParameters) {
 Widget _contentDetailScreenFor(Content content) {
   if (content is TextContent) return TextContentDetailScreen(content: content);
   if (content is LinkContent) return LinkContentDetailScreen(content: content);
-  if (content is ImageContent) return ImageContentDetailScreen(content: content);
+  if (content is MediaContent) return MediaContentDetailScreen(content: content);
   return const ErrorRoutePage(message: 'Unknown content type');
 }

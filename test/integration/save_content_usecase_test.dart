@@ -1,13 +1,12 @@
 import 'dart:io';
 
-import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
+import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/object_values/content_image.dart';
+import 'package:bedbug/features/content/domain/object_values/content_media.dart';
 import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
-import 'package:bedbug/shared/config/content_image_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -106,68 +105,40 @@ void main() {
     },
   );
 
-  test('ignore le sizeInBytes fourni par l\'appelant pour un ImageContent et additionne la vraie taille de ses fichiers sur disque', () async {
-    final saveUsecase = container.read(saveContentUsecaseProvider);
-    final repository = container.read(contentRepositoryProvider);
+  test(
+    "ignore le sizeInBytes fourni par l'appelant pour un MediaContent et ne compte que ses textes et ses adresses",
+    () async {
+      final saveUsecase = container.read(saveContentUsecaseProvider);
+      final repository = container.read(contentRepositoryProvider);
 
-    final imagesDir = Directory('${tempDir.path}/$contentImagesFolder');
-    await imagesDir.create(recursive: true);
-    final file = File('${imagesDir.path}/photo.jpg');
-    await file.writeAsBytes(List.filled(1234, 0));
-    await File('${imagesDir.path}/photo2.jpg').writeAsBytes(List.filled(766, 0));
+      final now = DateTime.now();
+      final content = MediaContent(
+        id: 'a',
+        createdAt: now,
+        updatedAt: now,
+        authorId: 'author',
+        senderId: 'sender',
+        flair: 'test',
+        origin: ContentOrigin.owned,
+        broadcastScore: 1,
+        survivalScore: 1,
+        displayScore: 1,
+        bounce: 0,
+        sizeInBytes: 999999,
+        media: const [
+          ContentMedia(url: 'https://a.io/1.png', kind: MediaKind.image),
+          ContentMedia(url: 'https://a.io/2.mp4', kind: MediaKind.video),
+        ],
+        title: 'Titre',
+        body: 'é',
+      );
 
-    final now = DateTime.now();
-    final content = ImageContent(
-      id: 'a',
-      createdAt: now,
-      updatedAt: now,
-      authorId: 'author',
-      senderId: 'sender',
-      flair: 'test',
-      origin: ContentOrigin.owned,
-      broadcastScore: 1,
-      survivalScore: 1,
-      displayScore: 1,
-      bounce: 0,
-      sizeInBytes: 1,
-      images: const [
-        ContentImage(fileName: 'photo.jpg', width: 100, height: 100),
-        ContentImage(fileName: 'photo2.jpg', width: 100, height: 100),
-      ],
-      title: 'Titre',
-    );
+      await saveUsecase(SaveContentParams(content: content));
 
-    await saveUsecase(SaveContentParams(content: content));
-
-    final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a');
-    expect(saved.sizeInBytes, 2000);
-  });
-
-  test('retourne un poids de 0 pour un ImageContent dont le fichier est introuvable sur disque', () async {
-    final saveUsecase = container.read(saveContentUsecaseProvider);
-    final repository = container.read(contentRepositoryProvider);
-
-    final now = DateTime.now();
-    final content = ImageContent(
-      id: 'a',
-      createdAt: now,
-      updatedAt: now,
-      authorId: 'author',
-      senderId: 'sender',
-      flair: 'test',
-      origin: ContentOrigin.owned,
-      broadcastScore: 1,
-      survivalScore: 1,
-      displayScore: 1,
-      bounce: 0,
-      sizeInBytes: 999999,
-      images: const [ContentImage(fileName: 'missing.jpg', width: 100, height: 100)],
-      title: 'Titre',
-    );
-
-    await saveUsecase(SaveContentParams(content: content));
-
-    final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a');
-    expect(saved.sizeInBytes, 0);
-  });
+      final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a') as MediaContent;
+      // « Titre » (5) + « é » (2 octets en UTF-8) + deux adresses de 18 caractères.
+      expect(saved.sizeInBytes, 5 + 2 + 18 + 18);
+      expect(saved.media.map((media) => media.kind), [MediaKind.image, MediaKind.video]);
+    },
+  );
 }

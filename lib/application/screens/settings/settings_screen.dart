@@ -5,6 +5,7 @@ import 'package:bedbug/application/screens/settings/widgets/language_section.dar
 import 'package:bedbug/application/screens/settings/widgets/own_contents_section.dart';
 import 'package:bedbug/application/screens/settings/widgets/publishing_section.dart';
 import 'package:bedbug/application/screens/settings/widgets/signature_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/trust_section.dart';
 import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/widgets/headers/app_page_header.dart';
@@ -66,6 +67,13 @@ class SettingsScreen extends ConsumerWidget {
                     title: l10n.settingsPublishingTitle,
                     icon: Icons.edit_note_outlined,
                     child: const PublishingSection(),
+                  ),
+                  const SizedBox(height: 12),
+                  AppExpandableSection(
+                    title: l10n.trustSettingsTitle,
+                    subtitle: l10n.trustSettingsSubtitle,
+                    icon: Icons.shield_outlined,
+                    child: const TrustSection(),
                   ),
                   const SizedBox(height: 12),
                   AppExpandableSection(

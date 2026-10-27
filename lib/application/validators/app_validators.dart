@@ -2,6 +2,7 @@ import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
 import 'package:bedbug/features/content/domain/extensions/reaction_text_extension.dart';
 import 'package:bedbug/features/signature/domain/enums/social_network.dart';
 import 'package:bedbug/features/signature/domain/extensions/signature_text_extension.dart';
+import 'package:bedbug/features/trust/domain/object_values/safe_url.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Validators personnalisés compatibles avec [ReactiveForm].
@@ -71,6 +72,12 @@ class AppValidators {
   /// Applique la règle du domaine (`isValidReactionBubble`). Retourne `null`
   /// si vide — déléguer la vérification à [required].
   static const reactionBubble = _ReactionBubbleValidator();
+
+  /// Vérifie que l'adresse est une URL https sans piège (voir `SafeUrl.tryParse`).
+  ///
+  /// Les espaces autour sont ignorés : ils viennent souvent d'un copier-coller.
+  /// Retourne `null` si vide — déléguer la vérification à [required].
+  static const safeUrl = _SafeUrlValidator();
 
   /// Validator de [FormGroup] vérifiant que l'identifiant saisi est valide sur le réseau choisi.
   ///
@@ -267,6 +274,22 @@ class _SocialHandleValidator extends Validator<dynamic> {
       return error;
     }
     handleControl.removeError('socialHandle');
+    return null;
+  }
+}
+
+class _SafeUrlValidator extends Validator<dynamic> {
+  const _SafeUrlValidator() : super();
+
+  @override
+  Map<String, dynamic>? validate(AbstractControl<dynamic> control) {
+    final value = control.value;
+    if (value is! String || value.trim().isEmpty) {
+      return null;
+    }
+    if (SafeUrl.tryParse(value.trim()) == null) {
+      return {'safeUrl': true};
+    }
     return null;
   }
 }

@@ -1,22 +1,19 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
+import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_storage_repository.dart';
-import 'package:bedbug/shared/config/content_image_storage.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/domain/usecase.dart';
 import 'package:bedbug/shared/exceptions/datasource_exception.dart';
 import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 
 /// Provider du [SaveContentUsecase].
 final saveContentUsecaseProvider = Provider<SaveContentUsecase>((ref) {
@@ -57,11 +54,10 @@ class SaveContentUsecase extends Usecase<SaveContentParams, SaveContentFailure, 
 
   /// Détermine le poids réel de [content], selon son type concret.
   ///
-  /// - [TextContent]/[LinkContent] : somme des octets UTF-8 de leurs champs
-  ///   texte, calculable directement depuis les données du domaine.
-  /// - [ImageContent] : taille cumulée de ses fichiers images sur disque, seule
-  ///   mesure fidèle au poids effectivement occupé sur l'appareil. Un fichier
-  ///   manquant compte pour `0`.
+  /// Somme des octets UTF-8 de ses champs texte, calculable directement
+  /// depuis les données du domaine. Un [MediaContent] ne stocke que les
+  /// adresses de ses médias, jamais les fichiers : son poids est celui de
+  /// ces adresses.
   Future<int> _computeSizeInBytes(Content content) async {
     if (content is TextContent) {
       return utf8.encode(content.title).length + utf8.encode(content.body).length;
@@ -79,16 +75,9 @@ class SaveContentUsecase extends Usecase<SaveContentParams, SaveContentFailure, 
       return fields.whereType<String>().fold<int>(0, (total, field) => total + utf8.encode(field).length);
     }
 
-    if (content is ImageContent) {
-      final dir = await getApplicationDocumentsDirectory();
-      var totalSizeInBytes = 0;
-      for (final image in content.images) {
-        final file = File('${dir.path}/$contentImagesFolder/${image.fileName}');
-        if (file.existsSync()) {
-          totalSizeInBytes += file.lengthSync();
-        }
-      }
-      return totalSizeInBytes;
+    if (content is MediaContent) {
+      final fields = [content.title, content.body, for (final media in content.media) media.url];
+      return fields.whereType<String>().fold<int>(0, (total, field) => total + utf8.encode(field).length);
     }
 
     return content.sizeInBytes;

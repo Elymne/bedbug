@@ -44,10 +44,6 @@
   "@createTypeText": {
     "description": "Label du bouton toggle pour le type texte"
   },
-  "createTypeImage": "Image",
-  "@createTypeImage": {
-    "description": "Label du bouton toggle pour le type image"
-  },
   "createTypeLink": "Lien",
   "@createTypeLink": {
     "description": "Label du bouton toggle pour le type lien"
@@ -59,31 +55,6 @@
   "createTextBodyLabel": "Corps",
   "@createTextBodyLabel": {
     "description": "Label du champ corps dans le formulaire texte"
-  },
-  "createImagePickLabel": "Choisir des images",
-  "@createImagePickLabel": {
-    "description": "Label du bouton de sélection d'image dans le formulaire image"
-  },
-  "createImageCount": "{count}/{max} images",
-  "@createImageCount": {
-    "description": "Nombre d'images choisies sur le maximum autorisé, affiché dans le formulaire image",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      },
-      "max": {
-        "type": "int"
-      }
-    }
-  },
-  "createImageLimitReached": "{max} images maximum : les images en trop ont été ignorées.",
-  "@createImageLimitReached": {
-    "description": "Message snackbar d'erreur affiché quand plus d'images que le maximum autorisé ont été choisies",
-    "placeholders": {
-      "max": {
-        "type": "int"
-      }
-    }
   },
   "createRequiredFieldError": "Ce champ est obligatoire.",
   "@createRequiredFieldError": {
@@ -128,10 +99,6 @@
   "createSaveError": "Échec de l'enregistrement du contenu.",
   "@createSaveError": {
     "description": "Message snackbar d'erreur affiché quand la sauvegarde échoue"
-  },
-  "createImageCompressionError": "Impossible de traiter l'une des images.",
-  "@createImageCompressionError": {
-    "description": "Message snackbar d'erreur affiché quand l'une des images choisies ne peut pas être recompressée"
   },
   "searchHint": "Rechercher…",
   "@searchHint": {
@@ -574,22 +541,6 @@
       }
     }
   },
-  "imageViewerDownload": "Enregistrer dans la galerie",
-  "@imageViewerDownload": {
-    "description": "Infobulle du bouton de la visionneuse qui enregistre l'image affichée dans la galerie du téléphone"
-  },
-  "imageViewerSaveSuccess": "Image enregistrée dans ta galerie.",
-  "@imageViewerSaveSuccess": {
-    "description": "Message snackbar affiché après l'enregistrement d'une image dans la galerie"
-  },
-  "imageViewerSaveError": "Impossible d'enregistrer l'image.",
-  "@imageViewerSaveError": {
-    "description": "Message snackbar d'erreur affiché quand une image ne peut pas être enregistrée dans la galerie"
-  },
-  "imageViewerAccessDenied": "Autorise l'accès à ta galerie dans les réglages du téléphone pour enregistrer l'image.",
-  "@imageViewerAccessDenied": {
-    "description": "Message snackbar d'erreur affiché quand l'utilisateur a refusé l'accès à sa galerie"
-  },
   "loadingDefaultText": "Chargement…",
   "@loadingDefaultText": {
     "description": "Texte de chargement générique, affiché quand aucun texte plus précis n'est fourni"
@@ -609,5 +560,168 @@
   "settingsLanguageTitle": "Langue",
   "@settingsLanguageTitle": {
     "description": "Titre de la section des paramètres permettant de choisir la langue de l'application"
+  },
+  "cancel": "Annuler",
+  "@cancel": {
+    "description": "Libellé générique d'une action d'annulation dans une popup"
+  },
+  "mediaUnavailable": "Média indisponible",
+  "@mediaUnavailable": {
+    "description": "Texte affiché à la place d'un média qui n'a pas pu être chargé (introuvable, refusé, réseau)"
+  },
+  "videoPlayLabel": "Lire la vidéo",
+  "@videoPlayLabel": {
+    "description": "Libellé lu par les lecteurs d'écran sur la vignette d'une vidéo à lancer"
+  },
+  "mediaRevealTitle": "Afficher ce média ?",
+  "@mediaRevealTitle": {
+    "description": "Titre de la popup demandant confirmation avant d'afficher un média flouté ou masqué"
+  },
+  "mediaRevealBody": "{host} n'est pas dans tes domaines de confiance. L'afficher fera contacter ce site par ton téléphone.",
+  "@mediaRevealBody": {
+    "description": "Texte de la popup de confirmation d'affichage d'un média, citant le domaine qui sera contacté",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaRevealConfirm": "Afficher",
+  "@mediaRevealConfirm": {
+    "description": "Bouton de confirmation de la popup d'affichage d'un média"
+  },
+  "mediaHiddenLabel": "Média masqué · {host}",
+  "@mediaHiddenLabel": {
+    "description": "Texte affiché à la place d'un média d'un domaine inconnu, non chargé, citant ce domaine",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "linkOpenTitle": "Ouvrir ce lien ?",
+  "@linkOpenTitle": {
+    "description": "Titre de la popup demandant confirmation avant d'ouvrir un lien d'un domaine qui n'est pas de confiance"
+  },
+  "linkOpenBody": "{host} n'est pas dans tes domaines de confiance.",
+  "@linkOpenBody": {
+    "description": "Texte de la popup de confirmation d'ouverture d'un lien, citant son domaine",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "linkOpenConfirm": "Ouvrir",
+  "@linkOpenConfirm": {
+    "description": "Bouton de confirmation de la popup d'ouverture d'un lien"
+  },
+  "linkOpenError": "Impossible d'ouvrir le lien.",
+  "@linkOpenError": {
+    "description": "Message snackbar d'erreur quand aucun navigateur ne peut ouvrir le lien"
+  },
+  "urlInvalidError": "Adresse invalide : seules les adresses https sont acceptées.",
+  "@urlInvalidError": {
+    "description": "Erreur affichée sous un champ d'adresse refusée (pas en https, adresse piégée ou mal formée)"
+  },
+  "createTypeMedia": "Média",
+  "@createTypeMedia": {
+    "description": "Label du bouton toggle pour le type média (images, gifs, vidéos)"
+  },
+  "createMediaUrlLabel": "Adresse d'une image, d'un gif ou d'une vidéo",
+  "@createMediaUrlLabel": {
+    "description": "Label du champ d'adresse d'un média dans le formulaire média"
+  },
+  "createMediaCount": "{count}/{max} médias",
+  "@createMediaCount": {
+    "description": "Nombre de médias ajoutés sur le maximum autorisé, sous le champ d'adresse du formulaire média",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "createMediaAddButton": "Ajouter",
+  "@createMediaAddButton": {
+    "description": "Infobulle du bouton d'ajout d'une adresse de média"
+  },
+  "createMediaRequiredError": "Ajoute au moins un média.",
+  "@createMediaRequiredError": {
+    "description": "Erreur affichée quand on publie un contenu média sans aucun média"
+  },
+  "trustSettingsTitle": "Domaines autorisés",
+  "@trustSettingsTitle": {
+    "description": "Titre de la section des paramètres listant les domaines autorisés"
+  },
+  "trustSettingsSubtitle": "Ce que ton téléphone peut charger et ouvrir",
+  "@trustSettingsSubtitle": {
+    "description": "Sous-titre de la section des domaines autorisés"
+  },
+  "trustUnknownLabel": "Domaines inconnus",
+  "@trustUnknownLabel": {
+    "description": "Titre du choix du sort des contenus pointant vers un domaine inconnu"
+  },
+  "trustUnknownHidden": "Masquer le contenu",
+  "@trustUnknownHidden": {
+    "description": "Option : masquer les contenus pointant vers un domaine inconnu"
+  },
+  "trustUnknownBlurred": "Afficher sur confirmation",
+  "@trustUnknownBlurred": {
+    "description": "Option : garder les contenus d'un domaine inconnu, média affiché sur confirmation"
+  },
+  "trustMediaTitle": "Médias (images, gifs, vidéos)",
+  "@trustMediaTitle": {
+    "description": "Titre des listes de domaines des médias"
+  },
+  "trustLinksTitle": "Liens",
+  "@trustLinksTitle": {
+    "description": "Titre des listes de domaines des liens"
+  },
+  "trustTrustedLabel": "Confiance : affichés directement",
+  "@trustTrustedLabel": {
+    "description": "Titre de la whitelist d'une famille de domaines"
+  },
+  "trustGreyLabel": "Greylist : floutés, affichés sur confirmation",
+  "@trustGreyLabel": {
+    "description": "Titre de la greylist d'une famille de domaines"
+  },
+  "trustEmptyList": "Aucun domaine.",
+  "@trustEmptyList": {
+    "description": "Texte affiché quand une liste de domaines est vide"
+  },
+  "trustAddRuleHint": "domaine.com, *.domaine.com ou une adresse",
+  "@trustAddRuleHint": {
+    "description": "Texte indicatif du champ d'ajout d'un domaine à une liste"
+  },
+  "trustAddToTrusted": "Ajouter en confiance",
+  "@trustAddToTrusted": {
+    "description": "Infobulle du bouton ajoutant le domaine saisi à la whitelist"
+  },
+  "trustAddToGrey": "Ajouter en greylist",
+  "@trustAddToGrey": {
+    "description": "Infobulle du bouton ajoutant le domaine saisi à la greylist"
+  },
+  "trustMoveToGrey": "Passer en greylist",
+  "@trustMoveToGrey": {
+    "description": "Infobulle du bouton faisant passer un domaine de la whitelist à la greylist"
+  },
+  "trustMoveToTrusted": "Passer en confiance",
+  "@trustMoveToTrusted": {
+    "description": "Infobulle du bouton faisant passer un domaine de la greylist à la whitelist"
+  },
+  "trustRuleInvalidError": "Domaine invalide.",
+  "@trustRuleInvalidError": {
+    "description": "Message snackbar d'erreur quand le domaine saisi est mal formé ou piégé"
+  },
+  "trustRulePublicSuffixError": "Trop large : ce domaine autoriserait des milliers de sites inconnus.",
+  "@trustRulePublicSuffixError": {
+    "description": "Message snackbar d'erreur quand le domaine saisi est un suffixe public trop large (co.uk, github.io)"
+  },
+  "trustResetButton": "Rétablir les listes par défaut",
+  "@trustResetButton": {
+    "description": "Bouton rétablissant les listes de domaines par défaut"
   }
 }

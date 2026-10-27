@@ -5,8 +5,8 @@ import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/create/create_notifier.dart';
 import 'package:bedbug/application/screens/create/publish_content_notifier.dart';
 import 'package:bedbug/application/screens/create/widgets/content_type_selector.dart';
-import 'package:bedbug/application/screens/create/widgets/image_content_form.dart';
 import 'package:bedbug/application/screens/create/widgets/link_content_form.dart';
+import 'package:bedbug/application/screens/create/widgets/media_content_form.dart';
 import 'package:bedbug/application/screens/create/widgets/tag_selector.dart';
 import 'package:bedbug/application/screens/create/widgets/text_content_form.dart';
 import 'package:bedbug/application/style/app_colors.dart';
@@ -17,14 +17,14 @@ import 'package:bedbug/application/widgets/buttons/app_close_button.dart';
 import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/texts/app_loading_text.dart';
-import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
+import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/enums/content_type.dart';
 import 'package:bedbug/features/content/domain/enums/tag.dart';
 import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
-import 'package:bedbug/features/content/domain/object_values/content_image.dart';
+import 'package:bedbug/features/content/domain/object_values/content_media.dart';
 import 'package:bedbug/features/content/infrastructure/og_metadata_service.dart';
 import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
 import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
@@ -32,7 +32,6 @@ import 'package:bedbug/shared/extensions/string_uuid_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Page de création de contenu.
@@ -54,27 +53,27 @@ class _State extends ConsumerState<CreateScreen> {
   /// Formulaire pour [TextContent].
   late final FormGroup _textFormGroup = FormGroup({'title': _textTitleControl, 'body': _textBodyControl});
 
-  /// Contrôle des images choisies dans la galerie pour [ImageContent], dans l'ordre d'affichage.
-  late final _imageFilesControl = FormControl<List<XFile>>(value: const [], validators: [AppValidators.required]);
+  /// Contrôle des adresses des médias pour [MediaContent], dans l'ordre d'affichage.
+  late final _mediaUrlsControl = FormControl<List<String>>(value: const [], validators: [AppValidators.required]);
 
-  /// Contrôle du titre pour [ImageContent].
-  late final _imageTitleControl = FormControl<String>(validators: [Validators.required]);
+  /// Contrôle du titre pour [MediaContent].
+  late final _mediaTitleControl = FormControl<String>(validators: [Validators.required]);
 
-  /// Contrôle de la description optionnelle pour [ImageContent].
-  late final _imageBodyControl = FormControl<String>();
+  /// Contrôle de la description optionnelle pour [MediaContent].
+  late final _mediaBodyControl = FormControl<String>();
 
-  /// Formulaire pour [ImageContent].
-  late final FormGroup _imageFormGroup = FormGroup({
-    'images': _imageFilesControl,
-    'title': _imageTitleControl,
-    'body': _imageBodyControl,
+  /// Formulaire pour [MediaContent].
+  late final FormGroup _mediaFormGroup = FormGroup({
+    'media': _mediaUrlsControl,
+    'title': _mediaTitleControl,
+    'body': _mediaBodyControl,
   });
 
   /// Contrôle du titre pour [LinkContent].
   late final _linkTitleControl = FormControl<String>(validators: [Validators.required]);
 
   /// Contrôle de l'URL pour [LinkContent].
-  late final _linkUrlControl = FormControl<String>(validators: [Validators.required]);
+  late final _linkUrlControl = FormControl<String>(validators: [Validators.required, AppValidators.safeUrl]);
 
   /// Formulaire pour [LinkContent].
   late final FormGroup _linkFormGroup = FormGroup({'title': _linkTitleControl, 'url': _linkUrlControl});
@@ -108,7 +107,7 @@ class _State extends ConsumerState<CreateScreen> {
     final type = ref.read(createNotifierProvider).requireValue.selectedType;
     return switch (type) {
       ContentType.text => _textTitleControl.value?.isNotEmpty == true || _textBodyControl.value?.isNotEmpty == true,
-      ContentType.image => _imageFilesControl.value?.isNotEmpty == true,
+      ContentType.media => _mediaUrlsControl.value?.isNotEmpty == true,
       ContentType.link => _linkUrlControl.value?.isNotEmpty == true,
     };
   }
@@ -118,7 +117,7 @@ class _State extends ConsumerState<CreateScreen> {
     final type = ref.read(createNotifierProvider).requireValue.selectedType;
     return switch (type) {
       ContentType.text => _textFormGroup,
-      ContentType.image => _imageFormGroup,
+      ContentType.media => _mediaFormGroup,
       ContentType.link => _linkFormGroup,
     };
   }
@@ -128,7 +127,7 @@ class _State extends ConsumerState<CreateScreen> {
     super.initState();
     _formSubscriptions = [
       _textFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
-      _imageFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
+      _mediaFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
       _linkFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
     ];
     ref.listenManual(createNotifierProvider, (previous, next) {
@@ -146,7 +145,7 @@ class _State extends ConsumerState<CreateScreen> {
     }
     _formChangeTicker.dispose();
     _textFormGroup.dispose();
-    _imageFormGroup.dispose();
+    _mediaFormGroup.dispose();
     _linkFormGroup.dispose();
     _tagsControl.dispose();
     _flairControl.dispose();
@@ -164,57 +163,16 @@ class _State extends ConsumerState<CreateScreen> {
     return _isAnonymousControl.value == true ? anonymousSignatureId : localSignatureId;
   }
 
-  /// Sélectionne le type de contenu, et ouvre directement le sélecteur d'images pour le type image.
-  ///
-  /// Un contenu image n'a pas de sens sans image : plutôt que d'afficher un
-  /// formulaire vide qui obligerait à chercher le bouton de sélection, on
-  /// enchaîne sur la galerie dès que le type est choisi. Si des images sont
-  /// déjà choisies, le sélecteur ne se rouvre pas.
+  /// Sélectionne le type de contenu.
   ///
   /// - [type] : type de contenu choisi.
   void _onTypeSelected(ContentType type) {
     ref.read(createNotifierProvider.notifier).setType(type);
-    if (type == ContentType.image && _imageFilesControl.value?.isEmpty != false) {
-      _pickImages();
-    }
-  }
-
-  /// Ouvre la galerie pour ajouter des images à la suite de celles déjà choisies.
-  ///
-  /// Le nombre d'images est plafonné à [maxImagesPerContent] : la limite est
-  /// transmise au sélecteur, mais toutes les plateformes ne la respectent pas,
-  /// d'où la troncature (signalée à l'utilisateur) des images en trop. Une
-  /// annulation laisse les images déjà choisies en place.
-  Future<void> _pickImages() async {
-    final currentImages = _imageFilesControl.value ?? const <XFile>[];
-    final remainingCount = maxImagesPerContent - currentImages.length;
-    if (remainingCount <= 0) {
-      return;
-    }
-
-    // `pickMultiImage` refuse une limite inférieure à 2 : pour la dernière
-    // place disponible, on passe par le sélecteur d'image unique.
-    final picker = ImagePicker();
-    var pickedImages = <XFile>[];
-    if (remainingCount == 1) {
-      pickedImages = [?await picker.pickImage(source: ImageSource.gallery)];
-    }
-    if (remainingCount > 1) {
-      pickedImages = await picker.pickMultiImage(limit: remainingCount);
-    }
-    if (pickedImages.isEmpty) {
-      return;
-    }
-
-    _imageFilesControl.value = [...currentImages, ...pickedImages.take(remainingCount)];
-    if (pickedImages.length > remainingCount && mounted) {
-      AppSnackbar.showError(context, AppLocalizations.of(context)!.createImageLimitReached(maxImagesPerContent));
-    }
   }
 
   /// Valide le formulaire actif, publie le contenu, puis ouvre son détail ou affiche l'erreur.
   ///
-  /// La préparation (compression des images, aperçu d'un lien) et
+  /// La préparation (aperçu d'un lien) et
   /// l'enregistrement sont confiés à [PublishContentNotifier] : la page
   /// affiche son écran de chargement pendant tout ce temps.
   Future<void> _onSave() async {
@@ -236,18 +194,12 @@ class _State extends ConsumerState<CreateScreen> {
 
     final result = await switch (type) {
       ContentType.text => ref.read(publishContentNotifierProvider.notifier).publish(_buildTextContent(flair)),
-      ContentType.image =>
-        ref
-            .read(publishContentNotifierProvider.notifier)
-            .publishImages(
-              sourcePaths: [for (final image in _imageFilesControl.value!) image.path],
-              buildContent: (images) => _buildImageContent(flair, images),
-            ),
+      ContentType.media => ref.read(publishContentNotifierProvider.notifier).publish(_buildMediaContent(flair)),
       ContentType.link =>
         ref
             .read(publishContentNotifierProvider.notifier)
             .publishLink(
-              url: _linkUrlControl.value!,
+              url: _linkUrlControl.value!.trim(),
               buildContent: (ogMetadata) => _buildLinkContent(flair, ogMetadata),
             ),
     };
@@ -290,12 +242,11 @@ class _State extends ConsumerState<CreateScreen> {
     );
   }
 
-  /// Construit le contenu image saisi, à partir de ses images déjà préparées.
+  /// Construit le contenu média saisi.
   ///
   /// - [flair] : flair normalisé du contenu.
-  /// - [images] : images recompressées et copiées dans le dossier de l'app.
-  ImageContent _buildImageContent(String flair, List<ContentImage> images) {
-    return ImageContent(
+  MediaContent _buildMediaContent(String flair) {
+    return MediaContent(
       id: UuidX.generate(),
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
@@ -307,11 +258,11 @@ class _State extends ConsumerState<CreateScreen> {
       displayScore: 1,
       bounce: 0,
       // Placeholder : SaveContentUsecase détermine et corrige le poids réel
-      // (taille cumulée des fichiers sur disque) avant persistance.
+      // avant persistance.
       sizeInBytes: 0,
-      images: images,
-      title: _imageTitleControl.value!,
-      body: _imageBodyControl.value?.isEmpty == true ? null : _imageBodyControl.value,
+      media: [for (final url in _mediaUrlsControl.value!) ContentMedia.fromUrl(url)],
+      title: _mediaTitleControl.value!,
+      body: _mediaBodyControl.value?.isEmpty == true ? null : _mediaBodyControl.value,
       flair: flair,
       tags: _tagsControl.value ?? const [],
     );
@@ -335,7 +286,7 @@ class _State extends ConsumerState<CreateScreen> {
       bounce: 0,
       sizeInBytes: 0,
       title: _linkTitleControl.value!,
-      url: _linkUrlControl.value!,
+      url: _linkUrlControl.value!.trim(),
       ogImageUrl: ogMetadata.imageUrl,
       ogTitle: ogMetadata.title,
       ogDescription: ogMetadata.description,
@@ -439,11 +390,10 @@ class _State extends ConsumerState<CreateScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin),
                 child: switch (createState.selectedType) {
                   ContentType.text => TextContentForm(titleControl: _textTitleControl, bodyControl: _textBodyControl),
-                  ContentType.image => ImageContentForm(
-                    imagesControl: _imageFilesControl,
-                    titleControl: _imageTitleControl,
-                    bodyControl: _imageBodyControl,
-                    onAddImages: _pickImages,
+                  ContentType.media => MediaContentForm(
+                    mediaUrlsControl: _mediaUrlsControl,
+                    titleControl: _mediaTitleControl,
+                    bodyControl: _mediaBodyControl,
                   ),
                   ContentType.link => LinkContentForm(titleControl: _linkTitleControl, urlControl: _linkUrlControl),
                 },
@@ -455,7 +405,7 @@ class _State extends ConsumerState<CreateScreen> {
     );
   }
 
-  /// Page de chargement affichée pendant la publication, qui peut durer plusieurs secondes avec des images.
+  /// Page de chargement affichée pendant la publication, qui peut durer quelques secondes le temps de lire l'aperçu d'un lien.
   ///
   /// - [l10n] : traductions de la page.
   Widget _buildPublishingPage(AppLocalizations l10n) {

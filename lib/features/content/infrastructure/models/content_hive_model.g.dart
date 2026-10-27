@@ -29,12 +29,8 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       title: fields[5] as String?,
       body: fields[6] as String?,
       url: fields[10] as String?,
-      fileName: fields[11] as String?,
-      imageWidth: (fields[17] as num?)?.toInt(),
-      imageHeight: (fields[18] as num?)?.toInt(),
-      imageFileNames: fields[24] == null ? [] : (fields[24] as List).cast<String>(),
-      imageWidths: fields[25] == null ? [] : (fields[25] as List).cast<int>(),
-      imageHeights: fields[26] == null ? [] : (fields[26] as List).cast<int>(),
+      mediaUrls: fields[27] == null ? [] : (fields[27] as List).cast<String>(),
+      mediaKinds: fields[28] == null ? [] : (fields[28] as List).cast<int>(),
       flair: fields[23] == null ? 'public' : fields[23] as String,
       sizeInBytes: (fields[13] as num).toInt(),
       ogImageUrl: fields[14] as String?,
@@ -47,7 +43,7 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
   @override
   void write(BinaryWriter writer, ContentHiveModel obj) {
     writer
-      ..writeByte(26)
+      ..writeByte(22)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -70,8 +66,6 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       ..write(obj.senderId)
       ..writeByte(10)
       ..write(obj.url)
-      ..writeByte(11)
-      ..write(obj.fileName)
       ..writeByte(13)
       ..write(obj.sizeInBytes)
       ..writeByte(14)
@@ -80,10 +74,6 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       ..write(obj.ogTitle)
       ..writeByte(16)
       ..write(obj.ogDescription)
-      ..writeByte(17)
-      ..write(obj.imageWidth)
-      ..writeByte(18)
-      ..write(obj.imageHeight)
       ..writeByte(19)
       ..write(obj.broadcastScore)
       ..writeByte(20)
@@ -94,12 +84,10 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       ..write(obj.tagValues)
       ..writeByte(23)
       ..write(obj.flair)
-      ..writeByte(24)
-      ..write(obj.imageFileNames)
-      ..writeByte(25)
-      ..write(obj.imageWidths)
-      ..writeByte(26)
-      ..write(obj.imageHeights);
+      ..writeByte(27)
+      ..write(obj.mediaUrls)
+      ..writeByte(28)
+      ..write(obj.mediaKinds);
   }
 
   @override

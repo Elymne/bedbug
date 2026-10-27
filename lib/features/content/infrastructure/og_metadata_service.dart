@@ -1,3 +1,4 @@
+import 'package:bedbug/shared/config/http_config.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -27,33 +28,47 @@ class OgMetadata {
 ///
 /// Effectue un GET HTTP sur l'URL cible et extrait les balises `og:image`,
 /// `og:title` et `og:description` depuis le HTML de la réponse.
+///
+/// Ne suit aucune redirection : l'appelant n'a vérifié que le domaine de
+/// l'URL donnée, une redirection pourrait mener n'importe où. Un lien qui
+/// redirige est simplement publié sans aperçu.
 class OgMetadataService {
   /// Crée un [OgMetadataService].
   OgMetadataService();
 
-  final _dio = Dio();
+  /// Client HTTP qui ne suit pas les redirections et abandonne vite une page trop lente.
+  final _dio = Dio(
+    BaseOptions(
+      followRedirects: false,
+      maxRedirects: 0,
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 15),
+      headers: {'User-Agent': appUserAgent},
+    ),
+  );
 
   /// Retourne les métadonnées OG de [url].
   ///
   /// Retourne un [OgMetadata] avec tous les champs à `null` en cas d'erreur.
   Future<OgMetadata> fetch(String url) async {
     try {
-      final response = await _dio.get<String>(
-        url,
-        options: Options(headers: {'Signature-Agent': 'Mozilla/5.0'}, responseType: ResponseType.plain),
-      );
+      final response = await _dio.get<String>(url, options: Options(responseType: ResponseType.plain));
       final html = response.data;
       if (html == null) return const OgMetadata();
-      return _extractMetadata(html);
+      return _extractMetadata(html, url);
     } catch (_) {
       return const OgMetadata();
     }
   }
 
-  /// Extrait les métadonnées OG depuis le [html] brut.
-  OgMetadata _extractMetadata(String html) {
+  /// Extrait les métadonnées OG depuis le [html] brut de la page [pageUrl].
+  ///
+  /// L'image d'aperçu peut être donnée relativement à la page : elle est
+  /// alors résolue en adresse complète, vérifiée plus tard à l'affichage.
+  OgMetadata _extractMetadata(String html, String pageUrl) {
+    final imageUrl = _extractProperty(html, 'og:image');
     return OgMetadata(
-      imageUrl: _extractProperty(html, 'og:image'),
+      imageUrl: imageUrl == null ? null : Uri.tryParse(pageUrl)?.resolve(imageUrl).toString(),
       title: _extractProperty(html, 'og:title'),
       description: _extractProperty(html, 'og:description'),
     );
