@@ -383,66 +383,74 @@ class _State extends ConsumerState<CreateScreen> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin),
-              child: ListenableBuilder(
-                listenable: _formChangeTicker,
-                builder: (context, _) {
-                  return ContentTypeSelector(
-                    selectedType: createState.selectedType,
-                    isLocked: _isTypeLocked,
-                    onTypeSelected: _onTypeSelected,
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 8,
-                children: [
-                  ReactiveTextField<String>(
-                    formControl: _flairControl,
-                    maxLength: 32,
-                    validationMessages: {'required': (_) => l10n.createFlairRequiredError},
-                    decoration: InputDecoration(
-                      labelText: l10n.createFlairLabel,
-                      hintText: l10n.createFlairHint,
-                      prefixText: AppPrefixes.flair,
-                      prefixStyle: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800),
-                    ),
-                  ),
-                  Text(l10n.createTagsLabel),
-                  TagSelector(control: _tagsControl),
-                  ReactiveCheckboxListTile(
-                    formControl: _isAnonymousControl,
-                    contentPadding: EdgeInsets.zero,
-                    controlAffinity: ListTileControlAffinity.leading,
-                    title: Text(l10n.createAnonymousLabel),
-                    subtitle: Text(l10n.createAnonymousDescription),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
+            // Tout le formulaire défile sous la barre du haut, qui garde fermer et publier à portée de main.
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin),
-                child: switch (createState.selectedType) {
-                  ContentType.text => TextContentForm(titleControl: _textTitleControl, bodyControl: _textBodyControl),
-                  ContentType.media => MediaContentForm(
-                    mediaUrlsControl: _mediaUrlsControl,
-                    titleControl: _mediaTitleControl,
-                    bodyControl: _mediaBodyControl,
-                  ),
-                  ContentType.link => LinkContentForm(titleControl: _linkTitleControl, urlControl: _linkUrlControl),
-                  ContentType.drawing => DrawingContentForm(
-                    drawingControl: _drawingControl,
-                    titleControl: _drawingTitleControl,
-                  ),
-                },
+                padding: const EdgeInsets.fromLTRB(
+                  AppValues.baseMargin,
+                  0,
+                  AppValues.baseMargin,
+                  AppValues.baseMargin * 2,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ListenableBuilder(
+                      listenable: _formChangeTicker,
+                      builder: (context, _) {
+                        return ContentTypeSelector(
+                          selectedType: createState.selectedType,
+                          isLocked: _isTypeLocked,
+                          onTypeSelected: _onTypeSelected,
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 8,
+                      children: [
+                        ReactiveTextField<String>(
+                          formControl: _flairControl,
+                          maxLength: 32,
+                          validationMessages: {'required': (_) => l10n.createFlairRequiredError},
+                          decoration: InputDecoration(
+                            labelText: l10n.createFlairLabel,
+                            hintText: l10n.createFlairHint,
+                            prefixText: AppPrefixes.flair,
+                            prefixStyle: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                        Text(l10n.createTagsLabel),
+                        TagSelector(control: _tagsControl),
+                        ReactiveCheckboxListTile(
+                          formControl: _isAnonymousControl,
+                          contentPadding: EdgeInsets.zero,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          title: Text(l10n.createAnonymousLabel),
+                          subtitle: Text(l10n.createAnonymousDescription),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    switch (createState.selectedType) {
+                      ContentType.text => TextContentForm(
+                        titleControl: _textTitleControl,
+                        bodyControl: _textBodyControl,
+                      ),
+                      ContentType.media => MediaContentForm(
+                        mediaUrlsControl: _mediaUrlsControl,
+                        titleControl: _mediaTitleControl,
+                        bodyControl: _mediaBodyControl,
+                      ),
+                      ContentType.link => LinkContentForm(titleControl: _linkTitleControl, urlControl: _linkUrlControl),
+                      ContentType.drawing => DrawingContentForm(
+                        drawingControl: _drawingControl,
+                        titleControl: _drawingTitleControl,
+                      ),
+                    },
+                  ],
+                ),
               ),
             ),
           ],

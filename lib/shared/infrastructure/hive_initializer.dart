@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:bedbug/features/content/infrastructure/datasources/hive_drawing_draft_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_trust_settings_repository.dart';
 import 'package:bedbug/features/content/infrastructure/models/comment_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
@@ -31,6 +33,7 @@ Future<void> initHive() async {
     Hive.openBox<KeychainHiveModel>('keychains'),
     Hive.openBox<StorageHiveModel>('storage'),
     Hive.openBox<SettingsHiveModel>('settings'),
+    Hive.openBox<Uint8List>(drawingDraftBoxName),
     Hive.openBox<TrustSettingsHiveModel>(trustSettingsBoxName),
   ]);
   await _purgeLegacyImageContents();

@@ -753,6 +753,26 @@
   "@drawingZoomReset": {
     "description": "Bouton de l'éditeur de dessin qui ramène la surface entière à l'écran"
   },
+  "drawingMenu": "Outils et couleurs",
+  "@drawingMenu": {
+    "description": "Bouton de l'éditeur de dessin qui ouvre le menu des outils, couleurs et actions"
+  },
+  "drawingFormatTitle": "Choisis ta surface",
+  "@drawingFormatTitle": {
+    "description": "Titre de la page de choix de la surface, avant l'éditeur de dessin"
+  },
+  "drawingFormatSizeLabel": "Taille",
+  "@drawingFormatSizeLabel": {
+    "description": "Libellé du choix de la taille de la surface, sur la page de choix de la surface"
+  },
+  "drawingFormatOrientationLabel": "Orientation",
+  "@drawingFormatOrientationLabel": {
+    "description": "Libellé du choix de l'orientation de la surface, sur la page de choix de la surface"
+  },
+  "drawingFormatStart": "Commencer",
+  "@drawingFormatStart": {
+    "description": "Bouton de la page de choix de la surface qui ouvre l'éditeur de dessin"
+  },
   "linkOpenTitle": "Ouvrir ce lien ?",
   "@linkOpenTitle": {
     "description": "Titre de la popup demandant confirmation avant d'ouvrir un lien d'un domaine qui n'est pas de confiance"

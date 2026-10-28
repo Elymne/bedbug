@@ -2,6 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// Zoom minimal de la surface de dessin : un quart de sa taille ajustée à l'écran.
+const double _minZoom = 0.25;
+
 /// Zoom maximal de la surface de dessin.
 const double _maxZoom = 6;
 
@@ -12,18 +15,19 @@ final drawingCanvasZoomNotifierProvider = NotifierProvider.autoDispose<DrawingCa
 
 /// Notifier portant le zoom de la surface de dessin, et le mode zoom qui le pilote.
 ///
-/// La surface tient dans l'espace que lui laisse l'écran, quelle que soit sa
-/// taille : sur un petit téléphone, sur une grande surface, ou pour un
-/// détail, on zoome plutôt que de réduire le dessin. Les doigts ne peuvent
-/// pas à la fois dessiner et déplacer : un bouton fait passer en mode zoom,
-/// où un doigt déplace et deux doigts zooment, puis revient au dessin en
-/// gardant le zoom. Séparé du dessin : il change au rythme des doigts, et ne
+/// L'écran entier sert de fenêtre, et la surface y est posée à sa taille
+/// zoomée, comme dans un logiciel de dessin : dézoomée, elle rétrécit au
+/// milieu de l'écran, ce qui montre d'un coup d'œil où en est le zoom ;
+/// zoomée, elle déborde et remplit tout l'écran. Les doigts ne peuvent pas à
+/// la fois dessiner et déplacer : un bouton fait passer en mode zoom, où un
+/// doigt déplace et deux doigts zooment, puis revient au dessin en gardant
+/// le zoom. Séparé du dessin : il change au rythme des doigts, et ne
 /// reconstruit que la surface.
 class DrawingCanvasZoomNotifier extends Notifier<DrawingCanvasZoom> {
   /// Zoom au début du geste en cours, `null` hors d'un geste en mode zoom.
   DrawingCanvasZoom? _gestureStart;
 
-  /// Point sous les doigts au début du geste en cours, dans le repère de la surface affichée.
+  /// Point sous les doigts au début du geste en cours, dans le repère de l'écran.
   Offset _gestureFocalPoint = Offset.zero;
 
   @override
@@ -39,7 +43,7 @@ class DrawingCanvasZoomNotifier extends Notifier<DrawingCanvasZoom> {
 
   /// Commence un geste au point [focalPoint], suivi seulement en mode zoom.
   ///
-  /// - [focalPoint] : point sous les doigts, dans le repère de la surface affichée.
+  /// - [focalPoint] : point sous les doigts, dans le repère de l'écran.
   void startGesture(Offset focalPoint) {
     if (!state.isZoomMode) {
       _gestureStart = null;
@@ -51,30 +55,29 @@ class DrawingCanvasZoomNotifier extends Notifier<DrawingCanvasZoom> {
 
   /// Applique le geste en cours : le point du dessin pris sous les doigts au départ reste sous eux.
   ///
-  /// Le zoom ne descend pas sous 1 et le dessin couvre toujours toute la
-  /// surface : on ne peut pas le perdre hors de l'écran.
+  /// La position obtenue est aussitôt ramenée dans les limites (voir
+  /// [DrawingCanvasZoom.originIn]) : la surface ne peut pas être perdue hors
+  /// de l'écran.
   ///
-  /// - [focalPoint] : point sous les doigts, dans le repère de la surface affichée.
+  /// - [focalPoint] : point sous les doigts, dans le repère de l'écran.
   /// - [scale] : facteur de zoom depuis le début du geste (1 pour un simple déplacement).
-  /// - [viewport] : taille de la surface affichée.
-  void updateGesture(Offset focalPoint, double scale, Size viewport) {
+  /// - [viewport] : taille de l'écran qui montre la surface.
+  /// - [fitSize] : taille de la surface ajustée à l'écran, celle du zoom 1.
+  void updateGesture(Offset focalPoint, double scale, Size viewport, Size fitSize) {
     final start = _gestureStart;
     if (start == null) {
       return;
     }
-    final zoom = (start.scale * scale).clamp(1.0, _maxZoom);
-    final anchor = (_gestureFocalPoint - start.offset) / start.scale;
-    final offset = focalPoint - anchor * zoom;
-    state = state.copyWith(
-      scale: zoom,
-      offset: Offset(offset.dx.clamp(viewport.width * (1 - zoom), 0), offset.dy.clamp(viewport.height * (1 - zoom), 0)),
-    );
+    final zoom = (start.scale * scale).clamp(_minZoom, _maxZoom);
+    final anchor = (_gestureFocalPoint - start.originIn(viewport, fitSize)) / start.scale;
+    final requested = DrawingCanvasZoom(scale: zoom, origin: focalPoint - anchor * zoom);
+    state = state.copyWith(scale: zoom, origin: requested.originIn(viewport, fitSize));
   }
 
-  /// Dézoome entièrement : la surface redevient visible en entier, sans quitter le mode en cours.
+  /// Revient au zoom 1 : la surface entière, ajustée à l'écran, sans quitter le mode en cours.
   void reset() {
     _gestureStart = null;
-    state = state.copyWith(scale: 1, offset: Offset.zero);
+    state = state.copyWith(scale: 1, origin: Offset.zero);
   }
 }
 
@@ -82,30 +85,60 @@ class DrawingCanvasZoomNotifier extends Notifier<DrawingCanvasZoom> {
 class DrawingCanvasZoom {
   /// Crée un [DrawingCanvasZoom].
   ///
-  /// - [scale] : facteur de zoom, 1 pour la surface entière.
-  /// - [offset] : décalage du dessin zoomé, en pixels de la surface affichée.
+  /// - [scale] : facteur de zoom, 1 pour la surface ajustée à l'écran.
+  /// - [origin] : position demandée du coin haut gauche de la surface, dans le repère de l'écran.
   /// - [isZoomMode] : `true` quand les doigts zooment et déplacent au lieu de dessiner.
-  const DrawingCanvasZoom({this.scale = 1, this.offset = Offset.zero, this.isZoomMode = false});
+  const DrawingCanvasZoom({this.scale = 1, this.origin = Offset.zero, this.isZoomMode = false});
 
-  /// Facteur de zoom, 1 pour la surface entière.
+  /// Facteur de zoom, 1 pour la surface ajustée à l'écran.
   final double scale;
 
-  /// Décalage du dessin zoomé, en pixels de la surface affichée.
-  final Offset offset;
+  /// Position demandée du coin haut gauche de la surface, dans le repère de l'écran.
+  ///
+  /// Demandée seulement : la position affichée est celle de [originIn],
+  /// qui la ramène dans les limites de l'écran.
+  final Offset origin;
 
   /// Indique si les doigts zooment et déplacent au lieu de dessiner.
   final bool isZoomMode;
 
+  /// Retourne la position affichée du coin haut gauche de la surface, dans le repère de l'écran.
+  ///
+  /// Sur chaque axe, une surface plus petite que l'écran est centrée ; une
+  /// surface plus grande le couvre toujours entièrement, sans laisser de
+  /// vide sur un bord.
+  ///
+  /// - [viewport] : taille de l'écran qui montre la surface.
+  /// - [fitSize] : taille de la surface ajustée à l'écran, celle du zoom 1.
+  Offset originIn(Size viewport, Size fitSize) {
+    return Offset(
+      _axisOrigin(origin.dx, fitSize.width * scale, viewport.width),
+      _axisOrigin(origin.dy, fitSize.height * scale, viewport.height),
+    );
+  }
+
   /// Retourne une copie de ce zoom avec les champs fournis modifiés.
   ///
   /// - [scale] : nouveau facteur de zoom.
-  /// - [offset] : nouveau décalage.
+  /// - [origin] : nouvelle position demandée.
   /// - [isZoomMode] : nouveau mode.
-  DrawingCanvasZoom copyWith({double? scale, Offset? offset, bool? isZoomMode}) {
+  DrawingCanvasZoom copyWith({double? scale, Offset? origin, bool? isZoomMode}) {
     return DrawingCanvasZoom(
       scale: scale ?? this.scale,
-      offset: offset ?? this.offset,
+      origin: origin ?? this.origin,
       isZoomMode: isZoomMode ?? this.isZoomMode,
     );
   }
+}
+
+/// Retourne la position affichée de la surface sur un axe.
+///
+/// - [requested] : position demandée.
+/// - [length] : longueur de la surface zoomée sur cet axe.
+/// - [viewportLength] : longueur de l'écran sur cet axe.
+double _axisOrigin(double requested, double length, double viewportLength) {
+  if (length <= viewportLength) {
+    return (viewportLength - length) / 2;
+  }
+  return requested.clamp(viewportLength - length, 0);
 }

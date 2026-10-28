@@ -6,6 +6,7 @@ import 'package:bedbug/application/screens/content_detail/media_content_detail_s
 import 'package:bedbug/application/screens/content_detail/text_content_detail_screen.dart';
 import 'package:bedbug/application/screens/create/create_screen.dart';
 import 'package:bedbug/application/screens/drawing_editor/drawing_editor_screen.dart';
+import 'package:bedbug/application/screens/drawing_format/drawing_format_screen.dart';
 import 'package:bedbug/application/screens/drawing_viewer/drawing_viewer_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/screens/media_viewer/media_viewer_screen.dart';
@@ -89,6 +90,11 @@ const String mediaViewerPath = '/media-viewer';
 /// validé est retourné au `pop`.
 const String drawingEditorPath = '/drawing-editor';
 
+/// Chemin vers le choix de la surface d'un nouveau dessin, avant l'éditeur.
+///
+/// Le dessin vide à la surface choisie est retourné au `pop`.
+const String drawingFormatPath = '/drawing-format';
+
 /// Chemin vers la visionneuse plein écran d'un dessin.
 ///
 /// Le dessin est transmis via `extra` (`DrawingViewerParams`).
@@ -168,6 +174,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           return _fadePage(DrawingEditorScreen(initialDrawing: state.extra as Drawing? ?? const Drawing.empty()));
         },
       ),
+      GoRoute(path: drawingFormatPath, pageBuilder: (context, state) => _fadePage(const DrawingFormatScreen())),
       GoRoute(
         path: drawingViewerPath,
         pageBuilder: (context, state) => _fadePage(DrawingViewerScreen(params: state.extra! as DrawingViewerParams)),

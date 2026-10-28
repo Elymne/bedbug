@@ -20,12 +20,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Générateur des graines des traits : leur seule exigence est de varier d'un trait à l'autre.
 final Random _seedRandom = Random();
 
-/// Surface de dessin de l'éditeur, aux proportions du dessin, aussi grande que son parent le permet.
+/// Marge autour de la surface au zoom 1, en pixels.
+const double _kFitMargin = 16;
+
+/// Surface de dessin de l'éditeur, posée sur tout l'écran à sa taille zoomée.
 ///
-/// Affiche l'image du dessin, et par-dessus le trait en cours de tracé. Un
-/// seul doigt dessine à la fois : les autres sont ignorés. En mode zoom, les
-/// doigts ne dessinent plus : ils déplacent et zooment la surface. Un trait
-/// qui ferait dépasser une limite du dessin est refusé, avec un message.
+/// L'écran entier sert de fenêtre : au zoom 1, la surface y tient tout
+/// juste ; dézoomée, elle rétrécit au milieu ; zoomée, elle déborde et
+/// remplit l'écran. Elle affiche l'image du dessin, et par-dessus le trait
+/// en cours de tracé. Un seul doigt dessine à la fois : les autres sont
+/// ignorés, comme un doigt posé hors de la surface. En mode zoom, les doigts
+/// ne dessinent plus : ils déplacent et zooment la surface. Un trait qui
+/// ferait dépasser une limite du dessin est refusé, avec un message.
 class DrawingCanvas extends ConsumerWidget {
   /// Crée un [DrawingCanvas].
   ///
@@ -40,95 +46,106 @@ class DrawingCanvas extends ConsumerWidget {
     final dimensions = ref.watch(
       drawingEditorNotifierProvider(args).select((state) => (width: state.drawing.width, height: state.drawing.height)),
     );
-    // Une autre surface change le repère : l'ancien zoom n'y a plus de sens.
-    ref.listen(
-      drawingEditorNotifierProvider(args).select((state) => (width: state.drawing.width, height: state.drawing.height)),
-      (previous, next) => ref.read(drawingCanvasZoomNotifierProvider.notifier).reset(),
-    );
+    // Au zoom 1, la surface évite les encoches et la barre d'état, avec une marge pour voir ses bords.
+    final safePadding = MediaQuery.paddingOf(context) + const EdgeInsets.all(_kFitMargin);
 
-    return AspectRatio(
-      aspectRatio: dimensions.width / dimensions.height,
-      child: DecoratedBox(
-        decoration: BoxDecoration(border: Border.all(color: AppColors.border, width: 2)),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final size = constraints.biggest;
-            return Listener(
-              onPointerDown: (event) {
-                _onPointerDown(context, ref, event.pointer, _toPoint(ref, event.localPosition, size, dimensions));
-              },
-              onPointerMove: (event) {
-                ref
-                    .read(drawingLiveStrokeNotifierProvider.notifier)
-                    .extend(event.pointer, _toPoint(ref, event.localPosition, size, dimensions));
-              },
-              onPointerUp: (event) => _onPointerUp(context, ref, event.pointer),
-              onPointerCancel: (event) => ref.read(drawingLiveStrokeNotifierProvider.notifier).cancel(),
-              child: GestureDetector(
-                onScaleStart: (details) {
-                  ref.read(drawingCanvasZoomNotifierProvider.notifier).startGesture(details.localFocalPoint);
-                },
-                onScaleUpdate: (details) {
-                  ref
-                      .read(drawingCanvasZoomNotifierProvider.notifier)
-                      .updateGesture(details.localFocalPoint, details.scale, size);
-                },
-                child: ClipRect(
-                  // Seul le zoom se reconstruit au rythme des doigts : le dessin lui est passé tel quel.
-                  child: Consumer(
-                    builder: (context, ref, child) {
-                      final zoom = ref.watch(drawingCanvasZoomNotifierProvider);
-                      return Transform(
-                        transform: Matrix4.identity()
-                          ..translateByDouble(zoom.offset.dx, zoom.offset.dy, 0, 1)
-                          ..scaleByDouble(zoom.scale, zoom.scale, 1, 1),
-                        child: child,
-                      );
-                    },
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Consumer(
-                          builder: (context, ref, _) {
-                            final image = ref.watch(drawingEditorImageNotifierProvider(args)).value?.image;
-                            if (image == null) {
-                              return const ColoredBox(color: AppColors.surface);
-                            }
-                            return RawImage(image: image, fit: BoxFit.fill, filterQuality: FilterQuality.none);
-                          },
-                        ),
-                        // Seul le trait en cours se redessine au rythme du doigt.
-                        Consumer(
-                          builder: (context, ref, _) {
-                            final liveStroke = ref.watch(drawingLiveStrokeNotifierProvider);
-                            final imageRevision =
-                                ref.watch(drawingEditorImageNotifierProvider(args)).value?.revision ?? -1;
-                            final committedRevision = liveStroke?.committedRevision;
-                            if (liveStroke == null ||
-                                (committedRevision != null && imageRevision >= committedRevision)) {
-                              return const SizedBox.shrink();
-                            }
-                            final tool = ref.watch(drawingToolNotifierProvider);
-                            return CustomPaint(
-                              painter: _LiveStrokePainter(
-                                rasterizer: ref.read(drawingRasterizerProvider),
-                                stroke: _buildStroke(tool, liveStroke.points, liveStroke.seed),
-                                palette: ref.watch(drawingEditorNotifierProvider(args)).drawing.palette,
-                                drawingWidth: dimensions.width,
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final viewport = constraints.biggest;
+        final fitSize = _fitSize(safePadding.deflateSize(viewport), dimensions);
+        return Listener(
+          onPointerDown: (event) {
+            final point = _toPoint(ref, event.localPosition, viewport, fitSize, dimensions, isClamped: false);
+            if (point != null) {
+              _onPointerDown(context, ref, event.pointer, point);
+            }
+          },
+          onPointerMove: (event) {
+            final point = _toPoint(ref, event.localPosition, viewport, fitSize, dimensions, isClamped: true)!;
+            ref.read(drawingLiveStrokeNotifierProvider.notifier).extend(event.pointer, point);
+          },
+          onPointerUp: (event) => _onPointerUp(context, ref, event.pointer),
+          onPointerCancel: (event) => ref.read(drawingLiveStrokeNotifierProvider.notifier).cancel(),
+          child: GestureDetector(
+            // Le fond autour de la surface déplace et zoome aussi, en mode zoom.
+            behavior: HitTestBehavior.opaque,
+            onScaleStart: (details) {
+              ref.read(drawingCanvasZoomNotifierProvider.notifier).startGesture(details.localFocalPoint);
+            },
+            onScaleUpdate: (details) {
+              ref
+                  .read(drawingCanvasZoomNotifierProvider.notifier)
+                  .updateGesture(details.localFocalPoint, details.scale, viewport, fitSize);
+            },
+            // Seul le placement de la surface se reconstruit au rythme des doigts : le dessin lui est passé tel quel.
+            child: Consumer(
+              builder: (context, ref, child) {
+                final zoom = ref.watch(drawingCanvasZoomNotifierProvider);
+                final origin = zoom.originIn(viewport, fitSize);
+                return Stack(
+                  children: [
+                    Positioned(
+                      left: origin.dx,
+                      top: origin.dy,
+                      width: fitSize.width * zoom.scale,
+                      height: fitSize.height * zoom.scale,
+                      child: child!,
                     ),
-                  ),
+                  ],
+                );
+              },
+              child: DecoratedBox(
+                position: DecorationPosition.foreground,
+                decoration: BoxDecoration(border: Border.all(color: AppColors.disabled)),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Consumer(
+                      builder: (context, ref, _) {
+                        final image = ref.watch(drawingEditorImageNotifierProvider(args)).value?.image;
+                        if (image == null) {
+                          return const ColoredBox(color: AppColors.surface);
+                        }
+                        return RawImage(image: image, fit: BoxFit.fill, filterQuality: FilterQuality.none);
+                      },
+                    ),
+                    // Seul le trait en cours se redessine au rythme du doigt.
+                    Consumer(
+                      builder: (context, ref, _) {
+                        final liveStroke = ref.watch(drawingLiveStrokeNotifierProvider);
+                        final imageRevision = ref.watch(drawingEditorImageNotifierProvider(args)).value?.revision ?? -1;
+                        final committedRevision = liveStroke?.committedRevision;
+                        if (liveStroke == null || (committedRevision != null && imageRevision >= committedRevision)) {
+                          return const SizedBox.shrink();
+                        }
+                        final tool = ref.watch(drawingToolNotifierProvider);
+                        return CustomPaint(
+                          painter: _LiveStrokePainter(
+                            rasterizer: ref.read(drawingRasterizerProvider),
+                            stroke: _buildStroke(tool, liveStroke.points, liveStroke.seed),
+                            palette: ref.watch(drawingEditorNotifierProvider(args)).drawing.palette,
+                            drawingWidth: dimensions.width,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
-            );
-          },
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
+  }
+
+  /// Retourne la taille de la surface ajustée à [available], aux proportions du dessin : celle du zoom 1.
+  ///
+  /// - [available] : place disponible, hors encoches et marges.
+  /// - [dimensions] : largeur et hauteur du repère du dessin, en points.
+  Size _fitSize(Size available, ({int width, int height}) dimensions) {
+    final ratio = min(available.width / dimensions.width, available.height / dimensions.height);
+    return Size(dimensions.width * ratio, dimensions.height * ratio);
   }
 
   /// Commence un trait, ou applique le pot de peinture, au point touché, sauf en mode zoom.
@@ -177,18 +194,35 @@ class DrawingCanvas extends ConsumerWidget {
     ref.read(drawingLiveStrokeNotifierProvider.notifier).commit(ref.read(drawingEditorNotifierProvider(args)).revision);
   }
 
-  /// Retourne le point du dessin sous [position], zoom compris, ramené dans le repère du dessin.
+  /// Retourne le point du dessin sous [position], zoom compris, dans le repère du dessin.
+  ///
+  /// Hors de la surface, le point est ramené sur son bord si [isClamped]
+  /// (un trait qui déborde longe le bord), et vaut `null` sinon (un doigt
+  /// posé à côté ne commence rien).
   ///
   /// - [ref] : accès au zoom de la surface.
-  /// - [position] : position du doigt dans la surface affichée.
-  /// - [size] : taille de la surface affichée.
+  /// - [position] : position du doigt dans l'écran.
+  /// - [viewport] : taille de l'écran qui montre la surface.
+  /// - [fitSize] : taille de la surface ajustée à l'écran, celle du zoom 1.
   /// - [dimensions] : largeur et hauteur du repère du dessin, en points.
-  DrawingPoint _toPoint(WidgetRef ref, Offset position, Size size, ({int width, int height}) dimensions) {
+  /// - [isClamped] : `true` pour ramener sur le bord un point hors de la surface.
+  DrawingPoint? _toPoint(
+    WidgetRef ref,
+    Offset position,
+    Size viewport,
+    Size fitSize,
+    ({int width, int height}) dimensions, {
+    required bool isClamped,
+  }) {
     final zoom = ref.read(drawingCanvasZoomNotifierProvider);
-    final unzoomed = (position - zoom.offset) / zoom.scale;
-    final x = (unzoomed.dx / size.width * dimensions.width).round().clamp(0, dimensions.width - 1);
-    final y = (unzoomed.dy / size.height * dimensions.height).round().clamp(0, dimensions.height - 1);
-    return DrawingPoint(x, y);
+    final local = position - zoom.originIn(viewport, fitSize);
+    final x = (local.dx / (fitSize.width * zoom.scale) * dimensions.width).round();
+    final y = (local.dy / (fitSize.height * zoom.scale) * dimensions.height).round();
+    final isInside = x >= 0 && x < dimensions.width && y >= 0 && y < dimensions.height;
+    if (!isInside && !isClamped) {
+      return null;
+    }
+    return DrawingPoint(x.clamp(0, dimensions.width - 1), y.clamp(0, dimensions.height - 1));
   }
 
   /// Retourne le trait passant par [points] avec l'outil [tool].
