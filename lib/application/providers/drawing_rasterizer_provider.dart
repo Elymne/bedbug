@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/features/content/domain/extensions/drawing_dimensions_extension.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing_point.dart';
@@ -12,18 +13,12 @@ import 'package:flutter/painting.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:perfect_freehand/perfect_freehand.dart';
 
-/// Largeur, en pixels, de l'image d'un dessin.
+/// Rapport entre l'image d'un dessin et son repère : un pixel pour deux points.
 ///
 /// Fixe, quel que soit l'écran : un remplissage se calcule sur cette image,
 /// et doit donner la même zone sur tous les téléphones. Affichée sans
 /// lissage, elle donne aussi aux dessins leur rendu « pixel » assumé.
-const int drawingRasterWidth = 512;
-
-/// Hauteur, en pixels, de l'image d'un dessin.
-const int drawingRasterHeight = 384;
-
-/// Rapport entre l'image d'un dessin et son repère.
-const double _rasterScale = drawingRasterWidth / drawingWidth;
+const double drawingRasterScale = 0.5;
 
 /// Écart maximal entre deux points confiés à `perfect_freehand`, en points du repère.
 ///
@@ -75,7 +70,7 @@ class DrawingRasterizer {
         if (pendingStrokes[layer].isEmpty) {
           continue;
         }
-        layers[layer] = _drawStrokes(layers[layer], pendingStrokes[layer], drawing.palette);
+        layers[layer] = _drawStrokes(layers[layer], pendingStrokes[layer], drawing);
         pendingStrokes[layer].clear();
       }
     }
@@ -86,11 +81,25 @@ class DrawingRasterizer {
           pendingStrokes[operation.layer].add(operation);
         case DrawingFill():
           flushStrokes();
-          layers[operation.layer] = await _fill(layers, operation, drawing.palette);
+          layers[operation.layer] = await _fill(layers, operation, drawing);
       }
     }
     flushStrokes();
-    return _compose(layers);
+    return _compose(layers, drawing);
+  }
+
+  /// Retourne la largeur, en pixels, de l'image de [drawing].
+  ///
+  /// - [drawing] : dessin.
+  int rasterWidth(Drawing drawing) {
+    return (drawing.width * drawingRasterScale).round();
+  }
+
+  /// Retourne la hauteur, en pixels, de l'image de [drawing].
+  ///
+  /// - [drawing] : dessin.
+  int rasterHeight(Drawing drawing) {
+    return (drawing.height * drawingRasterScale).round();
   }
 
   /// Dessine [stroke] sur [canvas], dont le repère est celui du dessin.
@@ -132,18 +141,18 @@ class DrawingRasterizer {
   ///
   /// - [base] : image du calque, `null` s'il est encore vide.
   /// - [strokes] : traits à dessiner, dans l'ordre.
-  /// - [palette] : palette du dessin.
-  ui.Image _drawStrokes(ui.Image? base, List<DrawingStroke> strokes, List<int> palette) {
+  /// - [drawing] : dessin, qui donne la palette et la taille de l'image.
+  ui.Image _drawStrokes(ui.Image? base, List<DrawingStroke> strokes, Drawing drawing) {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
     if (base != null) {
       canvas.drawImage(base, Offset.zero, Paint());
     }
-    canvas.scale(_rasterScale);
+    canvas.scale(drawingRasterScale);
     for (final stroke in strokes) {
-      paintStroke(canvas, stroke, palette);
+      paintStroke(canvas, stroke, drawing.palette);
     }
-    return recorder.endRecording().toImageSync(drawingRasterWidth, drawingRasterHeight);
+    return recorder.endRecording().toImageSync(rasterWidth(drawing), rasterHeight(drawing));
   }
 
   /// Retourne le calque de [fill] avec la zone de son point de départ remplie.
@@ -153,22 +162,22 @@ class DrawingRasterizer {
   ///
   /// - [layers] : images actuelles des calques.
   /// - [fill] : remplissage à appliquer.
-  /// - [palette] : palette du dessin.
-  Future<ui.Image> _fill(List<ui.Image?> layers, DrawingFill fill, List<int> palette) async {
-    final composite = _compose(layers);
+  /// - [drawing] : dessin, qui donne la palette et la taille de l'image.
+  Future<ui.Image> _fill(List<ui.Image?> layers, DrawingFill fill, Drawing drawing) async {
+    final composite = _compose(layers, drawing);
     final pixels = await composite.toByteData(format: ui.ImageByteFormat.rawStraightRgba);
     final base = layers[fill.layer];
     if (pixels == null) {
-      return base ?? _blank();
+      return base ?? _blank(drawing);
     }
     final mask = _floodFillService.fillMask(
       pixels.buffer.asUint8List(),
-      drawingRasterWidth,
-      drawingRasterHeight,
-      (fill.point.x * _rasterScale).floor(),
-      (fill.point.y * _rasterScale).floor(),
+      rasterWidth(drawing),
+      rasterHeight(drawing),
+      (fill.point.x * drawingRasterScale).floor(),
+      (fill.point.y * drawingRasterScale).floor(),
     );
-    final fillImage = await _maskImage(mask, Color(palette[fill.colorIndex]));
+    final fillImage = await _maskImage(mask, Color(drawing.palette[fill.colorIndex]), drawing);
 
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
@@ -176,37 +185,40 @@ class DrawingRasterizer {
       canvas.drawImage(base, Offset.zero, Paint());
     }
     canvas.drawImage(fillImage, Offset.zero, Paint());
-    return recorder.endRecording().toImageSync(drawingRasterWidth, drawingRasterHeight);
+    return recorder.endRecording().toImageSync(rasterWidth(drawing), rasterHeight(drawing));
   }
 
   /// Retourne les calques superposés sur un fond blanc.
   ///
   /// - [layers] : images des calques, du fond vers le dessus.
-  ui.Image _compose(List<ui.Image?> layers) {
+  /// - [drawing] : dessin, dont le repère fixe la taille de l'image.
+  ui.Image _compose(List<ui.Image?> layers, Drawing drawing) {
+    final width = rasterWidth(drawing);
+    final height = rasterHeight(drawing);
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder)
-      ..drawRect(
-        const Rect.fromLTWH(0, 0, drawingRasterWidth * 1.0, drawingRasterHeight * 1.0),
-        Paint()..color = AppColors.surface,
-      );
+      ..drawRect(Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()), Paint()..color = AppColors.surface);
     for (final layer in layers) {
       if (layer != null) {
         canvas.drawImage(layer, Offset.zero, Paint());
       }
     }
-    return recorder.endRecording().toImageSync(drawingRasterWidth, drawingRasterHeight);
+    return recorder.endRecording().toImageSync(width, height);
   }
 
-  /// Retourne une image transparente, à la taille d'un dessin.
-  ui.Image _blank() {
-    return ui.PictureRecorder().endRecording().toImageSync(drawingRasterWidth, drawingRasterHeight);
+  /// Retourne une image transparente, à la taille de [drawing].
+  ///
+  /// - [drawing] : dessin.
+  ui.Image _blank(Drawing drawing) {
+    return ui.PictureRecorder().endRecording().toImageSync(rasterWidth(drawing), rasterHeight(drawing));
   }
 
   /// Retourne l'image de [mask], peinte en [color] là où il vaut 255, transparente ailleurs.
   ///
   /// - [mask] : masque d'un remplissage, un octet par pixel.
   /// - [color] : couleur du remplissage.
-  Future<ui.Image> _maskImage(Uint8List mask, Color color) {
+  /// - [drawing] : dessin, dont le repère fixe la taille de l'image.
+  Future<ui.Image> _maskImage(Uint8List mask, Color color, Drawing drawing) {
     final rgba = Uint8List(mask.length * 4);
     final red = (color.r * 255).round();
     final green = (color.g * 255).round();
@@ -223,8 +235,8 @@ class DrawingRasterizer {
     final completer = Completer<ui.Image>();
     ui.decodeImageFromPixels(
       rgba,
-      drawingRasterWidth,
-      drawingRasterHeight,
+      rasterWidth(drawing),
+      rasterHeight(drawing),
       ui.PixelFormat.rgba8888,
       completer.complete,
     );

@@ -4,8 +4,14 @@ import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing_point.dart';
 
-/// Signature en tête d'un dessin encodé : « BBD » puis la version du format.
-const List<int> _header = [0x42, 0x42, 0x44, 0x01];
+/// Signature en tête d'un dessin encodé (« BBD »), suivie de la version du format.
+const List<int> _signature = [0x42, 0x42, 0x44];
+
+/// Version du format encodée par [DrawingBinaryCodec.encode] : elle ajoute la taille et l'orientation de la surface.
+const int _version = 0x02;
+
+/// Première version du format, sans taille ni orientation : ces dessins sont tous moyens, en paysage.
+const int _legacyVersion = 0x01;
 
 /// Marqueur d'un trait dans le flux encodé.
 const int _strokeTag = 0;
@@ -36,7 +42,10 @@ class DrawingBinaryCodec {
   /// - [drawing] : dessin à encoder, déjà vérifié.
   Uint8List encode(Drawing drawing) {
     final writer = _ByteWriter()
-      ..addBytes(_header)
+      ..addBytes(_signature)
+      ..addByte(_version)
+      ..addByte(drawing.size.value)
+      ..addByte(drawing.orientation.value)
       ..addByte(drawing.palette.length);
     for (final color in drawing.palette) {
       writer.addUint32(color);
@@ -79,10 +88,26 @@ class DrawingBinaryCodec {
   /// - [bytes] : dessin encodé, reçu ou stocké.
   Drawing decode(Uint8List bytes) {
     final reader = _ByteReader(bytes);
-    for (final expected in _header) {
+    for (final expected in _signature) {
       if (reader.readByte() != expected) {
         throw const FormatException('Signature de dessin inconnue');
       }
+    }
+    final version = reader.readByte();
+    if (version != _version && version != _legacyVersion) {
+      throw const FormatException('Version de dessin inconnue');
+    }
+    // La première version n'avait qu'une surface : moyenne, en paysage.
+    var size = DrawingSize.medium;
+    var orientation = DrawingOrientation.landscape;
+    if (version == _version) {
+      final encodedSize = DrawingSize.fromValue(reader.readByte());
+      final encodedOrientation = DrawingOrientation.fromValue(reader.readByte());
+      if (encodedSize == null || encodedOrientation == null) {
+        throw const FormatException('Surface de dessin inconnue');
+      }
+      size = encodedSize;
+      orientation = encodedOrientation;
     }
 
     final paletteLength = reader.readByte();
@@ -141,7 +166,7 @@ class DrawingBinaryCodec {
     if (!reader.isAtEnd) {
       throw const FormatException('Octets en trop après le dessin');
     }
-    return Drawing(palette: palette, operations: operations);
+    return Drawing(size: size, orientation: orientation, palette: palette, operations: operations);
   }
 }
 

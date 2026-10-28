@@ -725,6 +725,34 @@
   "@drawingPaletteHint": {
     "description": "Aide affichée sous la palette de l'éditeur de dessin"
   },
+  "drawingSurfaceSmall": "Petit",
+  "@drawingSurfaceSmall": {
+    "description": "Petite surface de dessin, dans le choix de la taille de l'éditeur"
+  },
+  "drawingSurfaceMedium": "Moyen",
+  "@drawingSurfaceMedium": {
+    "description": "Surface de dessin moyenne, dans le choix de la taille de l'éditeur"
+  },
+  "drawingSurfaceLarge": "Grand",
+  "@drawingSurfaceLarge": {
+    "description": "Grande surface de dessin, dans le choix de la taille de l'éditeur"
+  },
+  "drawingOrientationLandscape": "Paysage",
+  "@drawingOrientationLandscape": {
+    "description": "Orientation paysage de la surface, dans le choix de l'orientation de l'éditeur"
+  },
+  "drawingOrientationPortrait": "Portrait",
+  "@drawingOrientationPortrait": {
+    "description": "Orientation portrait de la surface, dans le choix de l'orientation de l'éditeur"
+  },
+  "drawingZoomMode": "Mode zoom",
+  "@drawingZoomMode": {
+    "description": "Bouton de l'éditeur de dessin qui fait zoomer et déplacer la surface au lieu de dessiner"
+  },
+  "drawingZoomReset": "Dézoomer",
+  "@drawingZoomReset": {
+    "description": "Bouton de l'éditeur de dessin qui ramène la surface entière à l'écran"
+  },
   "linkOpenTitle": "Ouvrir ce lien ?",
   "@linkOpenTitle": {
     "description": "Titre de la popup demandant confirmation avant d'ouvrir un lien d'un domaine qui n'est pas de confiance"

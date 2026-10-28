@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
+import 'package:bedbug/features/content/domain/extensions/drawing_dimensions_extension.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing_point.dart';
@@ -32,7 +33,7 @@ Drawing _drawing(List<DrawingOperation> operations) {
 
 /// Retourne une ligne horizontale de [count] points.
 List<DrawingPoint> _line(int count) {
-  return [for (var index = 0; index < count; index++) DrawingPoint(index % drawingWidth, 10)];
+  return [for (var index = 0; index < count; index++) DrawingPoint(index % 1024, 10)];
 }
 
 void main() {
@@ -97,12 +98,36 @@ void main() {
       );
     });
 
+    test('vérifie les points dans le repère de la surface du dessin', () {
+      // En portrait, un point au-delà de 768 en largeur sort du repère, et un point à 1000 en hauteur y entre.
+      Drawing portrait(DrawingPoint point) {
+        return Drawing(
+          orientation: DrawingOrientation.portrait,
+          palette: defaultDrawingPalette,
+          operations: [
+            _stroke([const DrawingPoint(5, 5), point]),
+          ],
+        );
+      }
+
+      expect(validation.isValid(portrait(const DrawingPoint(700, 1000))), isTrue);
+      expect(validation.isValid(portrait(const DrawingPoint(800, 10))), isFalse);
+      expect(
+        validation.isValid(
+          _drawing([
+            _stroke(const [DrawingPoint(5, 1000)]),
+          ]),
+        ),
+        isFalse,
+      );
+    });
+
     test('refuse un point hors du repère, pour un trait comme pour un remplissage', () {
-      for (final point in const [
-        DrawingPoint(-1, 0),
-        DrawingPoint(0, -1),
-        DrawingPoint(drawingWidth, 0),
-        DrawingPoint(0, drawingHeight),
+      for (final point in [
+        const DrawingPoint(-1, 0),
+        const DrawingPoint(0, -1),
+        const DrawingPoint(1024, 0),
+        const DrawingPoint(0, 768),
       ]) {
         expect(
           validation.isValid(
@@ -226,6 +251,61 @@ void main() {
         _stroke([for (var index = 0; index < 1000; index++) DrawingPoint(500 + (index % 40), 300 + (index % 25))]),
       ]);
       expect(codec.encode(dense).length, lessThan(2200));
+    });
+
+    test('garde la taille et l\'orientation du dessin, jusqu\'au coin opposé de sa surface', () {
+      for (final size in DrawingSize.values) {
+        for (final orientation in DrawingOrientation.values) {
+          final surface = Drawing(
+            size: size,
+            orientation: orientation,
+            palette: defaultDrawingPalette,
+            operations: const [],
+          );
+          final drawing = surface.copyWith(
+            operations: [
+              _stroke([const DrawingPoint(0, 0), DrawingPoint(surface.width - 1, surface.height - 1)]),
+            ],
+          );
+          expect(validation.isValid(drawing), isTrue, reason: '$size $orientation');
+          expect(codec.decode(codec.encode(drawing)), drawing, reason: '$size $orientation');
+        }
+      }
+    });
+
+    test('lit un dessin de la première version, sans surface, comme un dessin moyen en paysage', () {
+      final legacy = [
+        0x42,
+        0x42,
+        0x44,
+        0x01,
+        drawingPaletteSize,
+        for (final color in defaultDrawingPalette) ...[
+          (color >> 24) & 0xFF,
+          (color >> 16) & 0xFF,
+          (color >> 8) & 0xFF,
+          color & 0xFF,
+        ],
+        0,
+      ];
+      expect(codec.decode(Uint8List.fromList(legacy)), const Drawing.empty());
+    });
+
+    test('refuse une version, une taille ou une orientation inconnues', () {
+      final bytes = codec.encode(const Drawing.empty());
+      // Octet 3 : version ; octet 4 : taille ; octet 5 : orientation.
+      expect(
+        () => codec.decode(Uint8List.fromList([...bytes.sublist(0, 3), 0x09, ...bytes.sublist(4)])),
+        throwsFormatException,
+      );
+      expect(
+        () => codec.decode(Uint8List.fromList([...bytes.sublist(0, 4), 0x09, ...bytes.sublist(5)])),
+        throwsFormatException,
+      );
+      expect(
+        () => codec.decode(Uint8List.fromList([...bytes.sublist(0, 5), 0x09, ...bytes.sublist(6)])),
+        throwsFormatException,
+      );
     });
 
     test('refuse une signature inconnue, un flux tronqué à n\'importe quel endroit, ou des octets en trop', () {

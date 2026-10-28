@@ -23,7 +23,7 @@ const double defaultGhostSpeed = 1;
 ///
 /// La description est une phrase pour se présenter, pas une biographie : elle
 /// voyage avec la signature de pair à pair et doit rester légère.
-const int maxSignatureBioLength = 80;
+const int maxSignatureBioLength = 250;
 
 /// Signature apposée sur un contenu : un pseudo, une icône texte animée d'un effet ghost, une courte description et des réseaux.
 ///

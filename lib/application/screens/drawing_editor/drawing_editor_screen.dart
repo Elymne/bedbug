@@ -1,7 +1,10 @@
+import 'package:bedbug/application/screens/drawing_editor/drawing_canvas_zoom_notifier.dart';
 import 'package:bedbug/application/screens/drawing_editor/drawing_editor_notifier.dart';
 import 'package:bedbug/application/screens/drawing_editor/widgets/drawing_canvas.dart';
 import 'package:bedbug/application/screens/drawing_editor/widgets/drawing_palette.dart';
+import 'package:bedbug/application/screens/drawing_editor/widgets/drawing_surface_selector.dart';
 import 'package:bedbug/application/screens/drawing_editor/widgets/drawing_toolbar.dart';
+import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/widgets/buttons/app_close_button.dart';
 import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
@@ -49,6 +52,33 @@ class _State extends ConsumerState<DrawingEditorScreen> {
                 children: [
                   const AppCloseButton(),
                   const Spacer(),
+                  // Le zoom change au rythme des doigts : seuls ses boutons se reconstruisent.
+                  Consumer(
+                    builder: (context, ref, _) {
+                      final zoom = ref.watch(drawingCanvasZoomNotifierProvider);
+                      final zoomNotifier = drawingCanvasZoomNotifierProvider.notifier;
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            onPressed: () => ref.read(zoomNotifier).toggleZoomMode(),
+                            tooltip: l10n.drawingZoomMode,
+                            isSelected: zoom.isZoomMode,
+                            style: IconButton.styleFrom(
+                              backgroundColor: zoom.isZoomMode ? AppColors.primary : Colors.transparent,
+                              foregroundColor: zoom.isZoomMode ? AppColors.onDark : AppColors.onLight,
+                            ),
+                            icon: const Icon(Icons.zoom_in),
+                          ),
+                          IconButton(
+                            onPressed: zoom.scale == 1 ? null : () => ref.read(zoomNotifier).reset(),
+                            tooltip: l10n.drawingZoomReset,
+                            icon: const Icon(Icons.fit_screen),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                   IconButton(
                     onPressed: editorState.past.isEmpty ? null : () => ref.read(editorNotifier).undo(),
                     tooltip: l10n.drawingUndo,
@@ -72,20 +102,22 @@ class _State extends ConsumerState<DrawingEditorScreen> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(AppValues.baseMargin),
-              child: DrawingCanvas(args: _args),
-            ),
+            // La surface prend la place que laissent les outils, quelle que soit la taille de l'écran : le zoom fait le reste.
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin),
-                child: Column(
-                  spacing: 16,
-                  children: [
-                    const DrawingToolbar(),
-                    DrawingPalette(args: _args),
-                  ],
-                ),
+              child: Padding(
+                padding: const EdgeInsets.all(AppValues.baseMargin),
+                child: Center(child: DrawingCanvas(args: _args)),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppValues.baseMargin, 0, AppValues.baseMargin, AppValues.baseMargin),
+              child: Column(
+                spacing: 16,
+                children: [
+                  DrawingSurfaceSelector(args: _args),
+                  const DrawingToolbar(),
+                  DrawingPalette(args: _args),
+                ],
               ),
             ),
           ],

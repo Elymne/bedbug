@@ -55,6 +55,31 @@ class DrawingEditorNotifier extends Notifier<DrawingEditorState> {
     _apply(state.drawing.copyWith(palette: palette));
   }
 
+  /// Change la taille de la surface, tant que rien n'a été dessiné. S'annule comme le reste.
+  ///
+  /// Un dessin commencé garde sa surface : ses points, placés dans l'ancien
+  /// repère, sortiraient du nouveau ou s'y retrouveraient décalés.
+  ///
+  /// - [size] : nouvelle taille.
+  void setSize(DrawingSize size) {
+    if (state.drawing.operations.isNotEmpty || state.drawing.size == size) {
+      return;
+    }
+    _apply(state.drawing.copyWith(size: size));
+  }
+
+  /// Change l'orientation de la surface, tant que rien n'a été dessiné. S'annule comme le reste.
+  ///
+  /// Même raison que pour [setSize] : un dessin commencé garde son repère.
+  ///
+  /// - [orientation] : nouvelle orientation.
+  void setOrientation(DrawingOrientation orientation) {
+    if (state.drawing.operations.isNotEmpty || state.drawing.orientation == orientation) {
+      return;
+    }
+    _apply(state.drawing.copyWith(orientation: orientation));
+  }
+
   /// Efface tout le dessin, en gardant sa palette. S'annule comme le reste.
   void clear() {
     if (state.drawing.operations.isEmpty) {
