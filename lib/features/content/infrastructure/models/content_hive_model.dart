@@ -1,10 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/enums/tag.dart';
 import 'package:bedbug/features/content/domain/object_values/content_media.dart';
+import 'package:bedbug/features/content/infrastructure/models/drawing_binary_codec.dart';
 import 'package:bedbug/shared/exceptions/data_exception.dart';
 import 'package:bedbug/shared/infrastructure/hive_type_ids.dart';
 import 'package:hive_ce/hive.dart';
@@ -15,6 +19,7 @@ part 'content_hive_model.g.dart';
 const _typeTextContent = 'text_content';
 const _typeLinkContent = 'link_content';
 const _typeMediaContent = 'media_content';
+const _typeDrawingContent = 'drawing_content';
 
 /// Discriminant des anciens contenus image, dont les fichiers étaient stockés localement.
 ///
@@ -53,6 +58,7 @@ class ContentHiveModel extends HiveObject {
     this.url,
     this.mediaUrls = const [],
     this.mediaKinds = const [],
+    this.drawingData,
     required this.flair,
     required this.sizeInBytes,
     this.ogImageUrl,
@@ -129,6 +135,26 @@ class ContentHiveModel extends HiveObject {
         tagValues: entity.tags.map((tag) => tag.value).toList(),
       );
     }
+    if (entity is DrawingContent) {
+      return ContentHiveModel(
+        id: entity.id,
+        createdAt: entity.createdAt.millisecondsSinceEpoch,
+        updatedAt: entity.updatedAt.millisecondsSinceEpoch,
+        authorId: entity.authorId,
+        type: _typeDrawingContent,
+        origin: entity.origin.value,
+        broadcastScore: entity.broadcastScore,
+        survivalScore: entity.survivalScore,
+        displayScore: entity.displayScore,
+        bounce: entity.bounce,
+        senderId: entity.senderId,
+        drawingData: const DrawingBinaryCodec().encode(entity.drawing),
+        title: entity.title,
+        flair: entity.flair,
+        sizeInBytes: entity.sizeInBytes,
+        tagValues: entity.tags.map((tag) => tag.value).toList(),
+      );
+    }
     throw UnimplementedError('ContentHiveModel.fromEntity : type ${entity.runtimeType} non supporté.');
   }
 
@@ -186,6 +212,10 @@ class ContentHiveModel extends HiveObject {
   /// Natures des médias (valeurs de [MediaKind]), alignées sur [mediaUrls].
   @HiveField(28, defaultValue: <int>[])
   final List<int> mediaKinds;
+
+  /// Dessin encodé par [DrawingBinaryCodec]. Renseigné pour [DrawingContent] uniquement.
+  @HiveField(29)
+  final Uint8List? drawingData;
 
   /// Flair libre du contenu, sans le `/` initial.
   ///
@@ -306,6 +336,25 @@ class ContentHiveModel extends HiveObject {
         ],
         title: title!,
         body: body,
+        flair: flair,
+        sizeInBytes: sizeInBytes,
+        tags: tags,
+      );
+    }
+    if (type == _typeDrawingContent) {
+      return DrawingContent(
+        id: id,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
+        updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
+        authorId: authorId,
+        origin: ContentOrigin.values.firstWhere((value) => value.value == origin),
+        broadcastScore: broadcastScore,
+        survivalScore: survivalScore,
+        displayScore: displayScore,
+        bounce: bounce,
+        senderId: senderId,
+        drawing: const DrawingBinaryCodec().decode(drawingData!),
+        title: title!,
         flair: flair,
         sizeInBytes: sizeInBytes,
         tags: tags,

@@ -9,7 +9,10 @@ enum ContentType {
   media(1),
 
   /// Contenu lien avec métadonnées Open Graph optionnelles.
-  link(2);
+  link(2),
+
+  /// Dessin fait dans l'app, au pinceau, avec un titre.
+  drawing(3);
 
   const ContentType(this.value);
 

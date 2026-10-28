@@ -45,6 +45,7 @@ dependencies:
   video_player: ^2.14.1
   url_launcher: ^6.3.3
   gal: ^2.3.3
+  perfect_freehand: ^2.5.2+1
 
 dev_dependencies:
   flutter_test:

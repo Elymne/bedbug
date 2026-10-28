@@ -1,4 +1,5 @@
 import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
@@ -7,7 +8,7 @@ import 'package:bedbug/features/content/domain/entities/text_content.dart';
 ///
 /// Le titre n'existe pas sur [Content] lui-même (certains sous-types futurs
 /// pourraient ne pas en avoir), mais tous les sous-types actuels
-/// ([TextContent], [LinkContent], [MediaContent]) en portent un. Cette
+/// ([TextContent], [LinkContent], [MediaContent], [DrawingContent]) en portent un. Cette
 /// extension centralise leur lecture, notamment pour le filtrage par titre
 /// (recherche), sans forcer ce champ sur l'entité de base.
 extension ContentTitleExtension on Content {
@@ -21,6 +22,9 @@ extension ContentTitleExtension on Content {
     }
     if (this is MediaContent) {
       return (this as MediaContent).title;
+    }
+    if (this is DrawingContent) {
+      return (this as DrawingContent).title;
     }
     throw UnsupportedError('Sous-type de Content non géré par ContentTitleExtension: $runtimeType');
   }

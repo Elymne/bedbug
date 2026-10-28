@@ -1,6 +1,7 @@
 import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/style/tag_color_x.dart';
+import 'package:bedbug/application/widgets/content_tile/drawing_content_widget.dart';
 import 'package:bedbug/application/widgets/content_tile/link_content_widget.dart';
 import 'package:bedbug/application/widgets/content_tile/media_content_widget.dart';
 import 'package:bedbug/application/widgets/content_tile/text_content_widget.dart';
@@ -9,6 +10,7 @@ import 'package:bedbug/application/widgets/stats/content_stats.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
@@ -75,6 +77,7 @@ class ContentWidget extends ConsumerWidget {
     if (content is TextContent) return TextContentWidget(content: content as TextContent);
     if (content is LinkContent) return LinkContentWidget(content: content as LinkContent);
     if (content is MediaContent) return MediaContentWidget(content: content as MediaContent);
+    if (content is DrawingContent) return DrawingContentWidget(content: content as DrawingContent);
     return const SizedBox.shrink();
   }
 }

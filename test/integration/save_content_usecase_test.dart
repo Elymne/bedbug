@@ -1,10 +1,14 @@
 import 'dart:io';
 
+import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/object_values/content_media.dart';
+import 'package:bedbug/features/content/domain/object_values/drawing.dart';
+import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
+import 'package:bedbug/features/content/domain/object_values/drawing_point.dart';
 import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
 import 'package:flutter/services.dart';
@@ -141,4 +145,55 @@ void main() {
       expect(saved.media.map((media) => media.kind), [MediaKind.image, MediaKind.video]);
     },
   );
+
+  /// Retourne un contenu dessiné composé de [drawing].
+  DrawingContent drawingContent(Drawing drawing) {
+    final now = DateTime.now();
+    return DrawingContent(
+      id: 'd',
+      createdAt: now,
+      updatedAt: now,
+      authorId: 'author',
+      senderId: 'sender',
+      flair: 'test',
+      origin: ContentOrigin.owned,
+      broadcastScore: 1,
+      survivalScore: 1,
+      displayScore: 1,
+      bounce: 0,
+      sizeInBytes: 0,
+      drawing: drawing,
+      title: 'Titre',
+    );
+  }
+
+  test('enregistre un dessin dans les limites, et compte son titre et une borne de ses opérations', () async {
+    final saveUsecase = container.read(saveContentUsecaseProvider);
+    const stroke = DrawingStroke(
+      layer: 1,
+      colorIndex: 0,
+      brush: DrawingBrush.pen,
+      size: 1,
+      seed: 1,
+      points: [DrawingPoint(1, 1), DrawingPoint(2, 2)],
+    );
+    const drawing = Drawing(palette: defaultDrawingPalette, operations: [stroke]);
+
+    final result = await saveUsecase(SaveContentParams(content: drawingContent(drawing)));
+
+    // « Titre » (5) + 16 couleurs × 4 + 1 opération × 12 + 2 points × 4.
+    expect(result.right!.sizeInBytes, 5 + 64 + 12 + 8);
+    final saved = (await container.read(contentRepositoryProvider).getAll()).single as DrawingContent;
+    expect(saved.drawing, drawing);
+  });
+
+  test("refuse d'enregistrer un dessin hors limites", () async {
+    final saveUsecase = container.read(saveContentUsecaseProvider);
+    final tooManyColors = const Drawing(palette: [...defaultDrawingPalette, 0xFF123456], operations: []);
+
+    final result = await saveUsecase(SaveContentParams(content: drawingContent(tooManyColors)));
+
+    expect(result.left, SaveContentFailure.invalidContent);
+    expect(await container.read(contentRepositoryProvider).getAll(), isEmpty);
+  });
 }

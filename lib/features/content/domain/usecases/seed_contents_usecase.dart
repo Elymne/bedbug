@@ -1,11 +1,15 @@
 import 'dart:math';
 
 import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/enums/tag.dart';
+import 'package:bedbug/features/content/domain/object_values/drawing.dart';
+import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
+import 'package:bedbug/features/content/domain/object_values/drawing_point.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
 import 'package:bedbug/features/content/domain/services/media_kind_service.dart';
@@ -201,7 +205,8 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
   ///
   /// - index % 10 in [0..3] → [TextContent] (40 %)
   /// - index % 10 in [4..6] → [MediaContent] (30 %)
-  /// - index % 10 in [7..9] → [LinkContent] (30 %)
+  /// - index % 10 in [7..8] → [LinkContent] (20 %)
+  /// - index % 10 == 9 → [DrawingContent] (10 %)
   Content _buildContent(
     int index,
     DateTime createdAt,
@@ -221,7 +226,11 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       return _buildMediaContent(index, createdAt, origin, bounce, flair, authorId, tags);
     }
 
-    return _buildLinkContent(index, createdAt, origin, bounce, flair, authorId, tags);
+    if (bucket <= 8) {
+      return _buildLinkContent(index, createdAt, origin, bounce, flair, authorId, tags);
+    }
+
+    return _buildDrawingContent(index, createdAt, origin, bounce, flair, authorId, tags);
   }
 
   /// Construit un [TextContent] avec titre court, long, ou corps vide selon l'index.
@@ -328,6 +337,159 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       ogTitle: hasPreview ? 'OG Title #${index + 1}' : null,
       ogDescription: hasPreview ? 'Description Open Graph du lien #${index + 1}.' : null,
     );
+  }
+
+  /// Construit un [DrawingContent] à partir de l'un des dessins factices, choisi selon l'index.
+  DrawingContent _buildDrawingContent(
+    int index,
+    DateTime createdAt,
+    ContentOrigin origin,
+    int bounce,
+    String flair,
+    String authorId,
+    List<Tag> tags,
+  ) {
+    final drawings = [_seedSmiley(), _seedHouse(), _seedSun()];
+
+    return DrawingContent(
+      id: UuidX.generate(),
+      createdAt: createdAt,
+      updatedAt: createdAt,
+      authorId: authorId,
+      senderId: 'seed-sender',
+      origin: origin,
+      broadcastScore: 1,
+      survivalScore: 1,
+      displayScore: 1,
+      bounce: bounce,
+      sizeInBytes: 0,
+      flair: flair,
+      tags: tags,
+      title: 'Dessin #${index + 1}',
+      drawing: drawings[(index ~/ 10) % drawings.length],
+    );
+  }
+
+  /// Bonhomme sourire : un rond rempli de jaune, deux yeux et une bouche, sur deux calques.
+  Drawing _seedSmiley() {
+    return Drawing(
+      palette: defaultDrawingPalette,
+      operations: [
+        _seedStroke(layer: 1, colorIndex: 0, brush: DrawingBrush.pen, size: 2, points: _arc(512, 384, 260, 0, 2 * pi)),
+        const DrawingFill(layer: 0, colorIndex: 6, point: DrawingPoint(512, 384)),
+        _seedStroke(layer: 1, colorIndex: 0, brush: DrawingBrush.pen, size: 3, points: _arc(420, 300, 12, 0, 2 * pi)),
+        _seedStroke(layer: 1, colorIndex: 0, brush: DrawingBrush.pen, size: 3, points: _arc(604, 300, 12, 0, 2 * pi)),
+        _seedStroke(
+          layer: 1,
+          colorIndex: 4,
+          brush: DrawingBrush.marker,
+          size: 2,
+          points: _arc(512, 400, 150, 0.2 * pi, 0.8 * pi),
+        ),
+      ],
+    );
+  }
+
+  /// Maison : murs et toit au stylo, murs remplis, porte au crayon, herbe à la bombe.
+  Drawing _seedHouse() {
+    const walls = [
+      DrawingPoint(312, 640),
+      DrawingPoint(312, 380),
+      DrawingPoint(712, 380),
+      DrawingPoint(712, 640),
+      DrawingPoint(312, 640),
+    ];
+    const roof = [DrawingPoint(282, 390), DrawingPoint(512, 180), DrawingPoint(742, 390)];
+    return Drawing(
+      palette: defaultDrawingPalette,
+      operations: [
+        _seedStroke(layer: 1, colorIndex: 0, brush: DrawingBrush.pen, size: 2, points: walls),
+        _seedStroke(layer: 1, colorIndex: 14, brush: DrawingBrush.pen, size: 3, points: roof),
+        const DrawingFill(layer: 0, colorIndex: 15, point: DrawingPoint(400, 500)),
+        _seedStroke(
+          layer: 2,
+          colorIndex: 14,
+          brush: DrawingBrush.pencil,
+          size: 1,
+          points: const [
+            DrawingPoint(470, 640),
+            DrawingPoint(470, 520),
+            DrawingPoint(554, 520),
+            DrawingPoint(554, 640),
+          ],
+        ),
+        _seedStroke(
+          layer: 2,
+          colorIndex: 7,
+          brush: DrawingBrush.spray,
+          size: 3,
+          points: [for (var x = 40; x < 1000; x += 40) DrawingPoint(x, 700)],
+        ),
+      ],
+    );
+  }
+
+  /// Soleil : un disque orange au feutre, des rayons au stylo, un ciel rempli de bleu, et un bout gommé.
+  Drawing _seedSun() {
+    return Drawing(
+      palette: defaultDrawingPalette,
+      operations: [
+        const DrawingFill(layer: 0, colorIndex: 9, point: DrawingPoint(10, 10)),
+        _seedStroke(
+          layer: 1,
+          colorIndex: 5,
+          brush: DrawingBrush.marker,
+          size: 3,
+          points: _arc(512, 384, 60, 0, 2 * pi),
+        ),
+        for (var ray = 0; ray < 12; ray++)
+          _seedStroke(
+            layer: 1,
+            colorIndex: 6,
+            brush: DrawingBrush.pen,
+            size: 1,
+            points: [_polar(512, 384, 160, ray * pi / 6), _polar(512, 384, 280, ray * pi / 6)],
+          ),
+        _seedStroke(
+          layer: 1,
+          colorIndex: 0,
+          brush: DrawingBrush.eraser,
+          size: 3,
+          points: _arc(512, 384, 220, 0, pi / 3),
+        ),
+      ],
+    );
+  }
+
+  /// Retourne un trait factice, sa graine tirée de sa position dans la liste.
+  DrawingStroke _seedStroke({
+    required int layer,
+    required int colorIndex,
+    required DrawingBrush brush,
+    required int size,
+    required List<DrawingPoint> points,
+  }) {
+    return DrawingStroke(
+      layer: layer,
+      colorIndex: colorIndex,
+      brush: brush,
+      size: size,
+      seed: points.length * 7919 + layer,
+      points: points,
+    );
+  }
+
+  /// Retourne les points d'un arc de cercle de centre ([centerX], [centerY]) et de rayon [radius].
+  List<DrawingPoint> _arc(int centerX, int centerY, int radius, double from, double to) {
+    const steps = 48;
+    return [
+      for (var step = 0; step <= steps; step++) _polar(centerX, centerY, radius, from + (to - from) * step / steps),
+    ];
+  }
+
+  /// Retourne le point à [radius] du centre ([centerX], [centerY]), dans la direction [angle].
+  DrawingPoint _polar(int centerX, int centerY, int radius, double angle) {
+    return DrawingPoint((centerX + radius * cos(angle)).round(), (centerY + radius * sin(angle)).round());
   }
 }
 

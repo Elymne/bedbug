@@ -623,6 +623,108 @@
   "@mediaViewerUnsupportedFormat": {
     "description": "Message snackbar d'erreur affiché quand le fichier téléchargé n'est pas une image ou une vidéo d'un format accepté"
   },
+  "createInvalidContentError": "Ce contenu dépasse les limites autorisées.",
+  "@createInvalidContentError": {
+    "description": "Message snackbar d'erreur affiché quand un contenu dépasse ses limites (dessin trop riche) et n'est pas enregistré"
+  },
+  "createDrawingButton": "Dessiner",
+  "@createDrawingButton": {
+    "description": "Bouton du formulaire de création qui ouvre l'éditeur pour un nouveau dessin"
+  },
+  "createDrawingEditButton": "Modifier le dessin",
+  "@createDrawingEditButton": {
+    "description": "Bouton du formulaire de création qui rouvre l'éditeur sur le dessin en cours"
+  },
+  "createDrawingRequiredError": "Fais un dessin avant de publier.",
+  "@createDrawingRequiredError": {
+    "description": "Erreur affichée sous le formulaire quand l'utilisateur publie sans avoir dessiné"
+  },
+  "drawingSemanticsLabel": "Dessin",
+  "@drawingSemanticsLabel": {
+    "description": "Libellé d'accessibilité de l'image d'un dessin"
+  },
+  "drawingToolPen": "Stylo",
+  "@drawingToolPen": {
+    "description": "Infobulle de l'outil stylo de l'éditeur de dessin"
+  },
+  "drawingToolMarker": "Feutre",
+  "@drawingToolMarker": {
+    "description": "Infobulle de l'outil feutre de l'éditeur de dessin"
+  },
+  "drawingToolPencil": "Crayon",
+  "@drawingToolPencil": {
+    "description": "Infobulle de l'outil crayon de l'éditeur de dessin"
+  },
+  "drawingToolSpray": "Bombe",
+  "@drawingToolSpray": {
+    "description": "Infobulle de l'outil bombe de peinture de l'éditeur de dessin"
+  },
+  "drawingToolEraser": "Gomme",
+  "@drawingToolEraser": {
+    "description": "Infobulle de l'outil gomme de l'éditeur de dessin"
+  },
+  "drawingToolFill": "Pot de peinture",
+  "@drawingToolFill": {
+    "description": "Infobulle de l'outil pot de peinture de l'éditeur de dessin"
+  },
+  "drawingSizeLabel": "Taille {size}",
+  "@drawingSizeLabel": {
+    "description": "Libellé d'accessibilité d'une taille de pinceau, numérotée de la plus fine à la plus épaisse",
+    "placeholders": {
+      "size": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "drawingLayerLabel": "Calque {layer}",
+  "@drawingLayerLabel": {
+    "description": "Libellé d'un calque de l'éditeur de dessin, numéroté depuis le fond",
+    "placeholders": {
+      "layer": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "drawingColorLabel": "Couleur {index}",
+  "@drawingColorLabel": {
+    "description": "Libellé d'accessibilité d'une couleur de la palette, numérotée",
+    "placeholders": {
+      "index": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "drawingUndo": "Annuler",
+  "@drawingUndo": {
+    "description": "Infobulle du bouton qui annule la dernière modification du dessin"
+  },
+  "drawingRedo": "Rétablir",
+  "@drawingRedo": {
+    "description": "Infobulle du bouton qui rétablit la dernière modification annulée du dessin"
+  },
+  "drawingClear": "Tout effacer",
+  "@drawingClear": {
+    "description": "Infobulle du bouton qui efface tout le dessin"
+  },
+  "drawingDone": "Valider",
+  "@drawingDone": {
+    "description": "Bouton qui valide le dessin et revient au formulaire de création"
+  },
+  "drawingLimitReached": "Ton dessin a atteint sa limite : annule ou efface un peu pour continuer.",
+  "@drawingLimitReached": {
+    "description": "Message snackbar affiché quand un trait ou un remplissage ferait dépasser les limites du dessin"
+  },
+  "drawingColorEditTitle": "Changer la couleur",
+  "@drawingColorEditTitle": {
+    "description": "Titre du sélecteur qui change une couleur de la palette du dessin"
+  },
+  "drawingPaletteHint": "Appui long sur une couleur pour la changer.",
+  "@drawingPaletteHint": {
+    "description": "Aide affichée sous la palette de l'éditeur de dessin"
+  },
   "linkOpenTitle": "Ouvrir ce lien ?",
   "@linkOpenTitle": {
     "description": "Titre de la popup demandant confirmation avant d'ouvrir un lien d'un domaine qui n'est pas de confiance"

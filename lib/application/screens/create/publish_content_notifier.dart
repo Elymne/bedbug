@@ -86,6 +86,7 @@ class PublishContentNotifier extends AsyncNotifier<void> {
         final message = switch (failure) {
           SaveContentFailure.storageError => ref.l10n.homeGetContentsStorageError,
           SaveContentFailure.unknown => ref.l10n.createSaveError,
+          SaveContentFailure.invalidContent => ref.l10n.createInvalidContentError,
         };
         return Left(message);
       },

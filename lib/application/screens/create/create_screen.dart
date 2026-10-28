@@ -5,6 +5,7 @@ import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/create/create_notifier.dart';
 import 'package:bedbug/application/screens/create/publish_content_notifier.dart';
 import 'package:bedbug/application/screens/create/widgets/content_type_selector.dart';
+import 'package:bedbug/application/screens/create/widgets/drawing_content_form.dart';
 import 'package:bedbug/application/screens/create/widgets/link_content_form.dart';
 import 'package:bedbug/application/screens/create/widgets/media_content_form.dart';
 import 'package:bedbug/application/screens/create/widgets/tag_selector.dart';
@@ -17,6 +18,7 @@ import 'package:bedbug/application/widgets/buttons/app_close_button.dart';
 import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/texts/app_loading_text.dart';
+import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
@@ -24,6 +26,7 @@ import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/enums/content_type.dart';
 import 'package:bedbug/features/content/domain/enums/tag.dart';
 import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
+import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:bedbug/features/content/domain/services/media_kind_service.dart';
 import 'package:bedbug/features/content/infrastructure/og_metadata_service.dart';
 import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
@@ -69,6 +72,15 @@ class _State extends ConsumerState<CreateScreen> {
     'body': _mediaBodyControl,
   });
 
+  /// Contrôle du dessin pour [DrawingContent], `null` tant que rien n'a été dessiné.
+  late final _drawingControl = FormControl<Drawing>(validators: [AppValidators.required]);
+
+  /// Contrôle du titre pour [DrawingContent].
+  late final _drawingTitleControl = FormControl<String>(validators: [Validators.required]);
+
+  /// Formulaire pour [DrawingContent].
+  late final FormGroup _drawingFormGroup = FormGroup({'drawing': _drawingControl, 'title': _drawingTitleControl});
+
   /// Contrôle du titre pour [LinkContent].
   late final _linkTitleControl = FormControl<String>(validators: [Validators.required]);
 
@@ -109,6 +121,7 @@ class _State extends ConsumerState<CreateScreen> {
       ContentType.text => _textTitleControl.value?.isNotEmpty == true || _textBodyControl.value?.isNotEmpty == true,
       ContentType.media => _mediaUrlsControl.value?.isNotEmpty == true,
       ContentType.link => _linkUrlControl.value?.isNotEmpty == true,
+      ContentType.drawing => _drawingControl.value != null,
     };
   }
 
@@ -119,6 +132,7 @@ class _State extends ConsumerState<CreateScreen> {
       ContentType.text => _textFormGroup,
       ContentType.media => _mediaFormGroup,
       ContentType.link => _linkFormGroup,
+      ContentType.drawing => _drawingFormGroup,
     };
   }
 
@@ -129,6 +143,7 @@ class _State extends ConsumerState<CreateScreen> {
       _textFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
       _mediaFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
       _linkFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
+      _drawingFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
     ];
     ref.listenManual(createNotifierProvider, (previous, next) {
       final createState = next.value;
@@ -147,6 +162,7 @@ class _State extends ConsumerState<CreateScreen> {
     _textFormGroup.dispose();
     _mediaFormGroup.dispose();
     _linkFormGroup.dispose();
+    _drawingFormGroup.dispose();
     _tagsControl.dispose();
     _flairControl.dispose();
     _isAnonymousControl.dispose();
@@ -195,6 +211,7 @@ class _State extends ConsumerState<CreateScreen> {
     final result = await switch (type) {
       ContentType.text => ref.read(publishContentNotifierProvider.notifier).publish(_buildTextContent(flair)),
       ContentType.media => ref.read(publishContentNotifierProvider.notifier).publish(_buildMediaContent(flair)),
+      ContentType.drawing => ref.read(publishContentNotifierProvider.notifier).publish(_buildDrawingContent(flair)),
       ContentType.link =>
         ref
             .read(publishContentNotifierProvider.notifier)
@@ -263,6 +280,31 @@ class _State extends ConsumerState<CreateScreen> {
       media: [for (final url in _mediaUrlsControl.value!) ref.read(mediaKindServiceProvider).mediaOf(url)],
       title: _mediaTitleControl.value!,
       body: _mediaBodyControl.value?.isEmpty == true ? null : _mediaBodyControl.value,
+      flair: flair,
+      tags: _tagsControl.value ?? const [],
+    );
+  }
+
+  /// Construit le contenu dessiné.
+  ///
+  /// - [flair] : flair normalisé du contenu.
+  DrawingContent _buildDrawingContent(String flair) {
+    return DrawingContent(
+      id: UuidX.generate(),
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      authorId: _authorId,
+      senderId: 'local',
+      origin: ContentOrigin.owned,
+      broadcastScore: 1,
+      survivalScore: 1,
+      displayScore: 1,
+      bounce: 0,
+      // Placeholder : SaveContentUsecase détermine et corrige le poids réel
+      // avant persistance.
+      sizeInBytes: 0,
+      drawing: _drawingControl.value!,
+      title: _drawingTitleControl.value!,
       flair: flair,
       tags: _tagsControl.value ?? const [],
     );
@@ -396,6 +438,10 @@ class _State extends ConsumerState<CreateScreen> {
                     bodyControl: _mediaBodyControl,
                   ),
                   ContentType.link => LinkContentForm(titleControl: _linkTitleControl, urlControl: _linkUrlControl),
+                  ContentType.drawing => DrawingContentForm(
+                    drawingControl: _drawingControl,
+                    titleControl: _drawingTitleControl,
+                  ),
                 },
               ),
             ),
