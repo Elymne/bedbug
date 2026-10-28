@@ -1,4 +1,5 @@
 import 'package:bedbug/features/signature/domain/enums/social_network.dart';
+import 'package:bedbug/features/signature/domain/enums/text_font.dart';
 import 'package:bedbug/shared/domain/entity.dart';
 
 /// Icône texte d'une signature dont l'auteur n'en a pas encore choisi.
@@ -38,6 +39,7 @@ class Signature extends Entity {
   /// - [colorArgb] : couleur de l'effet ghost appliqué à [avatarText], `null` pour la couleur par défaut de l'app.
   /// - [ghostSpeed] : vitesse de l'effet ghost, entre [minGhostSpeed] et [maxGhostSpeed].
   /// - [bio] : courte description de l'auteur, au plus [maxSignatureBioLength] caractères, `null` s'il n'en a pas.
+  /// - [bioFont] : police de [bio] (défaut [TextFont.standard]).
   /// - [socialLinks] : identifiant de l'auteur sur chaque réseau renseigné.
   Signature({
     required super.id,
@@ -48,6 +50,7 @@ class Signature extends Entity {
     this.colorArgb,
     this.ghostSpeed = defaultGhostSpeed,
     this.bio,
+    this.bioFont = TextFont.standard,
     this.socialLinks = const {},
   });
 
@@ -73,6 +76,9 @@ class Signature extends Entity {
 
   /// Courte description que l'auteur donne de lui-même, sur une seule ligne. `null` s'il n'en a pas.
   final String? bio;
+
+  /// Police dans laquelle [bio] est affichée, pour donner le ton de la présentation.
+  final TextFont bioFont;
 
   /// Identifiant de l'auteur sur chaque réseau renseigné, au plus un par réseau.
   final Map<SocialNetwork, String> socialLinks;

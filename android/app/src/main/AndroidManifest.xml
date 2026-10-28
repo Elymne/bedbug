@@ -36,14 +36,19 @@
          https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
 
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
-    <!-- Enregistrement des images des contenus dans la galerie (package gal), nécessaire jusqu'à Android 10. -->
+    <!-- Chargement des médias et des aperçus de liens hébergés en ligne. Sans elle, rien ne se charge en release. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Enregistrement des médias dans la galerie (package gal), nécessaire jusqu'à Android 10. -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29"/>
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- Ouverture des liens dans le navigateur (url_launcher), visible depuis Android 11. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
         </intent>
     </queries>
 </manifest>

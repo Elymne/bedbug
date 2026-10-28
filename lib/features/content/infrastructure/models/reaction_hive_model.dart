@@ -1,5 +1,6 @@
 import 'package:bedbug/features/content/domain/entities/reaction.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
+import 'package:bedbug/features/signature/domain/enums/text_font.dart';
 import 'package:bedbug/shared/exceptions/data_exception.dart';
 import 'package:bedbug/shared/infrastructure/hive_type_ids.dart';
 import 'package:hive_ce/hive.dart';
@@ -20,6 +21,7 @@ class ReactionHiveModel extends HiveObject {
     this.bubbleText,
     this.colorArgb,
     this.ghostSpeed = defaultGhostSpeed,
+    this.bubbleFont = 0,
   });
 
   /// Crée un [ReactionHiveModel] depuis une entité [Reaction].
@@ -34,6 +36,7 @@ class ReactionHiveModel extends HiveObject {
       bubbleText: entity.bubbleText,
       colorArgb: entity.colorArgb,
       ghostSpeed: entity.ghostSpeed,
+      bubbleFont: entity.bubbleFont.value,
     );
   }
 
@@ -76,6 +79,13 @@ class ReactionHiveModel extends HiveObject {
   @HiveField(8, defaultValue: defaultGhostSpeed)
   final double ghostSpeed;
 
+  /// Police de la bulle de texte, sous forme de valeur de [TextFont].
+  ///
+  /// Les réactions persistées avant l'ajout de ce réglage n'ont pas ce
+  /// champ : elles sont relues dans la police par défaut.
+  @HiveField(9, defaultValue: 0)
+  final int bubbleFont;
+
   /// Convertit ce modèle en entité [Reaction].
   Reaction toEntity() {
     try {
@@ -92,6 +102,7 @@ class ReactionHiveModel extends HiveObject {
         // Bornée à la relecture : une valeur hors bornes figerait ou ferait
         // planter l'animation.
         ghostSpeed: ghostSpeed.clamp(minGhostSpeed, maxGhostSpeed),
+        bubbleFont: TextFont.fromValue(bubbleFont),
       );
     } catch (error) {
       throw DataException('ReactionHiveModel', error);

@@ -1,13 +1,16 @@
 import 'dart:io';
 
-import 'package:bedbug/features/content/domain/entities/image_content.dart';
+import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
+import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/object_values/content_image.dart';
+import 'package:bedbug/features/content/domain/object_values/content_media.dart';
+import 'package:bedbug/features/content/domain/object_values/drawing.dart';
+import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
+import 'package:bedbug/features/content/domain/object_values/drawing_point.dart';
 import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
-import 'package:bedbug/shared/config/content_image_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -106,19 +109,48 @@ void main() {
     },
   );
 
-  test('ignore le sizeInBytes fourni par l\'appelant pour un ImageContent et additionne la vraie taille de ses fichiers sur disque', () async {
-    final saveUsecase = container.read(saveContentUsecaseProvider);
-    final repository = container.read(contentRepositoryProvider);
+  test(
+    "ignore le sizeInBytes fourni par l'appelant pour un MediaContent et ne compte que ses textes et ses adresses",
+    () async {
+      final saveUsecase = container.read(saveContentUsecaseProvider);
+      final repository = container.read(contentRepositoryProvider);
 
-    final imagesDir = Directory('${tempDir.path}/$contentImagesFolder');
-    await imagesDir.create(recursive: true);
-    final file = File('${imagesDir.path}/photo.jpg');
-    await file.writeAsBytes(List.filled(1234, 0));
-    await File('${imagesDir.path}/photo2.jpg').writeAsBytes(List.filled(766, 0));
+      final now = DateTime.now();
+      final content = MediaContent(
+        id: 'a',
+        createdAt: now,
+        updatedAt: now,
+        authorId: 'author',
+        senderId: 'sender',
+        flair: 'test',
+        origin: ContentOrigin.owned,
+        broadcastScore: 1,
+        survivalScore: 1,
+        displayScore: 1,
+        bounce: 0,
+        sizeInBytes: 999999,
+        media: const [
+          ContentMedia(url: 'https://a.io/1.png', kind: MediaKind.image),
+          ContentMedia(url: 'https://a.io/2.mp4', kind: MediaKind.video),
+        ],
+        title: 'Titre',
+        body: 'é',
+      );
 
+      await saveUsecase(SaveContentParams(content: content));
+
+      final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a') as MediaContent;
+      // « Titre » (5) + « é » (2 octets en UTF-8) + deux adresses de 18 caractères.
+      expect(saved.sizeInBytes, 5 + 2 + 18 + 18);
+      expect(saved.media.map((media) => media.kind), [MediaKind.image, MediaKind.video]);
+    },
+  );
+
+  /// Retourne un contenu dessiné composé de [drawing].
+  DrawingContent drawingContent(Drawing drawing) {
     final now = DateTime.now();
-    final content = ImageContent(
-      id: 'a',
+    return DrawingContent(
+      id: 'd',
       createdAt: now,
       updatedAt: now,
       authorId: 'author',
@@ -129,45 +161,39 @@ void main() {
       survivalScore: 1,
       displayScore: 1,
       bounce: 0,
-      sizeInBytes: 1,
-      images: const [
-        ContentImage(fileName: 'photo.jpg', width: 100, height: 100),
-        ContentImage(fileName: 'photo2.jpg', width: 100, height: 100),
-      ],
+      sizeInBytes: 0,
+      drawing: drawing,
       title: 'Titre',
     );
+  }
 
-    await saveUsecase(SaveContentParams(content: content));
+  test('enregistre un dessin dans les limites, et compte son titre et une borne de ses opérations', () async {
+    final saveUsecase = container.read(saveContentUsecaseProvider);
+    const stroke = DrawingStroke(
+      layer: 1,
+      colorIndex: 0,
+      brush: DrawingBrush.pen,
+      size: 1,
+      seed: 1,
+      points: [DrawingPoint(1, 1), DrawingPoint(2, 2)],
+    );
+    const drawing = Drawing(palette: defaultDrawingPalette, operations: [stroke]);
 
-    final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a');
-    expect(saved.sizeInBytes, 2000);
+    final result = await saveUsecase(SaveContentParams(content: drawingContent(drawing)));
+
+    // « Titre » (5) + 16 couleurs × 4 + 1 opération × 12 + 2 points × 4.
+    expect(result.right!.sizeInBytes, 5 + 64 + 12 + 8);
+    final saved = (await container.read(contentRepositoryProvider).getAll()).single as DrawingContent;
+    expect(saved.drawing, drawing);
   });
 
-  test('retourne un poids de 0 pour un ImageContent dont le fichier est introuvable sur disque', () async {
+  test("refuse d'enregistrer un dessin hors limites", () async {
     final saveUsecase = container.read(saveContentUsecaseProvider);
-    final repository = container.read(contentRepositoryProvider);
+    final tooManyColors = const Drawing(palette: [...defaultDrawingPalette, 0xFF123456], operations: []);
 
-    final now = DateTime.now();
-    final content = ImageContent(
-      id: 'a',
-      createdAt: now,
-      updatedAt: now,
-      authorId: 'author',
-      senderId: 'sender',
-      flair: 'test',
-      origin: ContentOrigin.owned,
-      broadcastScore: 1,
-      survivalScore: 1,
-      displayScore: 1,
-      bounce: 0,
-      sizeInBytes: 999999,
-      images: const [ContentImage(fileName: 'missing.jpg', width: 100, height: 100)],
-      title: 'Titre',
-    );
+    final result = await saveUsecase(SaveContentParams(content: drawingContent(tooManyColors)));
 
-    await saveUsecase(SaveContentParams(content: content));
-
-    final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a');
-    expect(saved.sizeInBytes, 0);
+    expect(result.left, SaveContentFailure.invalidContent);
+    expect(await container.read(contentRepositoryProvider).getAll(), isEmpty);
   });
 }

@@ -1,14 +1,18 @@
 import 'dart:math';
 
 import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/entities/image_content.dart';
+import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
+import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/enums/tag.dart';
-import 'package:bedbug/features/content/domain/object_values/content_image.dart';
+import 'package:bedbug/features/content/domain/object_values/drawing.dart';
+import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
+import 'package:bedbug/features/content/domain/object_values/drawing_point.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
+import 'package:bedbug/features/content/domain/services/media_kind_service.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_storage_repository.dart';
 import 'package:bedbug/shared/domain/either.dart';
@@ -22,50 +26,62 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SeedContentsUsecase].
 final seedContentsUsecaseProvider = Provider<SeedContentsUsecase>((ref) {
-  return SeedContentsUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider));
+  return SeedContentsUsecase(
+    ref.read(contentRepositoryProvider),
+    ref.read(storageRepositoryProvider),
+    ref.read(mediaKindServiceProvider),
+  );
 });
 
-/// URLs de liens valides utilisées comme exemples réalistes.
-const List<String> _validUrls = [
-  'https://flutter.dev',
-  'https://dart.dev',
-  'https://pub.dev',
-  'https://github.com',
-  'https://stackoverflow.com',
-];
-
-/// URLs intentionnellement cassées pour tester les états d'erreur.
-const List<String> _brokenUrls = [
-  'https://this-domain-does-not-exist-xyz-bedbug.com',
-  'https://example.com/page-that-does-not-exist-404',
-  'not-a-url-at-all',
-  'https://broken-og-image-test.invalid/article',
-];
-
-/// Noms de fichiers image valides (fichiers inexistants — tests d'affichage).
-const List<String> _validImageFileNames = [
-  'photo_landscape.jpg',
-  'avatar_user.png',
-  'thumbnail_preview.webp',
-  'cover_article.jpeg',
-];
-
-/// Noms de fichiers image intentionnellement cassés pour tester les états d'erreur.
-const List<String> _brokenImageFileNames = ['nonexistent_file.jpg', 'missing_image.png', 'corrupt.xyz', ''];
-
-/// Dimensions natives (largeur, hauteur) des images de seed.
+/// Liens factices, avec leur image d'aperçu, couvrant chaque niveau de confiance des listes par défaut.
 ///
-/// Couvre les trois zones de la hauteur d'affichage :
-/// - sous le minimum (300px) → clampé à 300
-/// - dans la plage (300–600px) → affiché tel quel
-/// - au-dessus du maximum (600px) → clampé à 600
-const List<(int, int)> _imageDimensions = [
-  (1080, 200), // hauteur sous le min → clampé à 300
-  (1080, 400), // hauteur dans la plage
-  (1080, 600), // hauteur exactement au max
-  (1080, 900), // hauteur au-dessus du max → clampé à 600
-  (400, 350), // image presque carrée, dans la plage
-  (1920, 1080), // paysage HD → clampé à 600
+/// À retirer avant la préprod, avec le reste du seed.
+const List<(String, String?)> _seedLinks = [
+  // Domaine de confiance, aperçu de confiance (avec redirection vers le CDN de picsum).
+  ('https://fr.wikipedia.org/wiki/Punaise_de_lit', 'https://picsum.photos/id/1025/600/400'),
+  ('https://www.youtube.com/watch?v=aqz-KE-bpKQ', 'https://picsum.photos/id/1062/600/400'),
+  // Domaine de confiance, aperçu en greylist (flouté).
+  ('https://github.com/Elymne/bedbug', 'https://placehold.co/600x400/png?text=greylist'),
+  // Domaine de confiance, aperçu sur un domaine inconnu (omis).
+  ('https://github.com/flutter/flutter', 'https://www.leoxa.fr/wp-content/uploads/2023/02/flutter.png'),
+  // Lien en greylist.
+  ('https://www.reddit.com/r/FlutterDev/', null),
+  // Lien vers un domaine inconnu (masqué par défaut).
+  ('https://flutter.dev', null),
+  // Lien piégé : toujours masqué.
+  ('https://github.com@evil.example/', null),
+];
+
+/// Jeux de médias factices, couvrant les cas de rendu : image, gif, vidéo, plusieurs médias, 404, greylist,
+/// domaine inconnu et adresse piégée.
+///
+/// Sources choisies pour leur fiabilité (placeholders, vidéos de test). À
+/// retirer avant la préprod, avec le reste du seed.
+const List<List<String>> _seedMediaSets = [
+  // Image de confiance, servie après une redirection vers fastly.picsum.photos.
+  ['https://picsum.photos/id/237/800/600'],
+  // Gif de confiance.
+  ['https://upload.wikimedia.org/wikipedia/commons/2/2c/Rotating_earth_%28large%29.gif'],
+  // Vidéo de confiance.
+  ['https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4'],
+  // Plusieurs médias de confiance, de proportions variées.
+  [
+    'https://picsum.photos/id/1015/900/600',
+    'https://picsum.photos/id/1011/600/900',
+    'https://upload.wikimedia.org/wikipedia/commons/a/a7/Camponotus_flavomarginatus_ant.jpg',
+    'https://test-videos.co.uk/vids/jellyfish/mp4/h264/360/Jellyfish_360_10s_1MB.mp4',
+  ],
+  // Domaine de confiance, mais le média n'existe pas (404).
+  ['https://picsum.photos/id/99999/600/400'],
+  ['https://upload.wikimedia.org/wikipedia/commons/0/00/Bedbug_n_existe_pas_404.png'],
+  // Greylist : flouté, affiché sur confirmation.
+  ['https://placehold.co/600x400/png?text=greylist'],
+  // Mélange de confiance et de greylist.
+  ['https://picsum.photos/id/1040/800/500', 'https://placehold.co/400x600/png?text=greylist'],
+  // Domaine inconnu : masqué par défaut, flouté si l'utilisateur change le réglage.
+  ['https://images.example-inconnu.com/photo.jpg'],
+  // Adresse piégée : toujours masquée.
+  ['https://picsum.photos@evil.example/id/237/800/600'],
 ];
 
 /// Provenances attribuées à tour de rôle aux contenus générés.
@@ -101,10 +117,11 @@ const List<String> _longBodies = [
 /// Génère une grande quantité de contenus factices pour les tests de charge et d'affichage.
 class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailure, void> {
   /// Crée un [SeedContentsUsecase].
-  SeedContentsUsecase(this._contentRepository, this._storageRepository);
+  SeedContentsUsecase(this._contentRepository, this._storageRepository, this._mediaKindService);
 
   final ContentRepository _contentRepository;
   final StorageRepository _storageRepository;
+  final MediaKindService _mediaKindService;
 
   /// Nombre d'items écrits en une seule opération Hive.
   static const int _batchSize = 500;
@@ -187,8 +204,9 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
   /// Construit un contenu factice selon le modulo de [index] pour distribuer les types.
   ///
   /// - index % 10 in [0..3] → [TextContent] (40 %)
-  /// - index % 10 in [4..6] → [ImageContent] (30 %)
-  /// - index % 10 in [7..9] → [LinkContent] (30 %)
+  /// - index % 10 in [4..6] → [MediaContent] (30 %)
+  /// - index % 10 in [7..8] → [LinkContent] (20 %)
+  /// - index % 10 == 9 → [DrawingContent] (10 %)
   Content _buildContent(
     int index,
     DateTime createdAt,
@@ -205,10 +223,14 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     }
 
     if (bucket <= 6) {
-      return _buildImageContent(index, createdAt, origin, bounce, flair, authorId, tags);
+      return _buildMediaContent(index, createdAt, origin, bounce, flair, authorId, tags);
     }
 
-    return _buildLinkContent(index, createdAt, origin, bounce, flair, authorId, tags);
+    if (bucket <= 8) {
+      return _buildLinkContent(index, createdAt, origin, bounce, flair, authorId, tags);
+    }
+
+    return _buildDrawingContent(index, createdAt, origin, bounce, flair, authorId, tags);
   }
 
   /// Construit un [TextContent] avec titre court, long, ou corps vide selon l'index.
@@ -249,8 +271,8 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     );
   }
 
-  /// Construit un [ImageContent] avec des noms de fichiers valides ou cassés selon l'index.
-  ImageContent _buildImageContent(
+  /// Construit un [MediaContent] à partir de l'un des jeux de médias factices, choisi selon l'index.
+  MediaContent _buildMediaContent(
     int index,
     DateTime createdAt,
     ContentOrigin origin,
@@ -259,22 +281,10 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     String authorId,
     List<Tag> tags,
   ) {
-    final isBroken = index % 4 == 0;
-    final fileNames = isBroken ? _brokenImageFileNames : _validImageFileNames;
-    // 1 à 4 images selon l'index, pour couvrir l'affichage mono et multi-images.
-    final imageCount = 1 + index % 4;
-    final images = [
-      for (var imageIndex = 0; imageIndex < imageCount; imageIndex++)
-        ContentImage(
-          fileName: fileNames[(index + imageIndex) % fileNames.length],
-          width: _imageDimensions[(index + imageIndex) % _imageDimensions.length].$1,
-          height: _imageDimensions[(index + imageIndex) % _imageDimensions.length].$2,
-        ),
-    ];
-
+    final mediaUrls = _seedMediaSets[index % _seedMediaSets.length];
     final hasBody = index % 5 != 0;
 
-    return ImageContent(
+    return MediaContent(
       id: UuidX.generate(),
       createdAt: createdAt,
       updatedAt: createdAt,
@@ -285,16 +295,16 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       survivalScore: 1,
       displayScore: 1,
       bounce: bounce,
-      sizeInBytes: isBroken ? 0 : 204800 * imageCount,
+      sizeInBytes: mediaUrls.fold(0, (total, url) => total + url.length),
       flair: flair,
       tags: tags,
-      images: images,
-      title: 'Image #${index + 1}',
+      media: [for (final url in mediaUrls) _mediaKindService.mediaOf(url)],
+      title: 'Média #${index + 1}',
       body: hasBody ? _shortBodies[index % _shortBodies.length] : null,
     );
   }
 
-  /// Construit un [LinkContent] avec des URLs valides, cassées ou malformées selon l'index.
+  /// Construit un [LinkContent] à partir de l'un des liens factices, choisi selon l'index.
   LinkContent _buildLinkContent(
     int index,
     DateTime createdAt,
@@ -304,9 +314,8 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     String authorId,
     List<Tag> tags,
   ) {
-    final isBroken = index % 3 == 0;
-    final urls = isBroken ? _brokenUrls : _validUrls;
-    final url = urls[index % urls.length];
+    final (url, ogImageUrl) = _seedLinks[index % _seedLinks.length];
+    final hasPreview = ogImageUrl != null;
 
     return LinkContent(
       id: UuidX.generate(),
@@ -324,10 +333,163 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       tags: tags,
       title: 'Lien #${index + 1}',
       url: url,
-      ogImageUrl: isBroken ? null : 'https://www.leoxa.fr/wp-content/uploads/2023/02/flutter.png',
-      ogTitle: isBroken ? null : 'OG Title #${index + 1}',
-      ogDescription: isBroken ? null : 'Description Open Graph du lien #${index + 1}.',
+      ogImageUrl: ogImageUrl,
+      ogTitle: hasPreview ? 'OG Title #${index + 1}' : null,
+      ogDescription: hasPreview ? 'Description Open Graph du lien #${index + 1}.' : null,
     );
+  }
+
+  /// Construit un [DrawingContent] à partir de l'un des dessins factices, choisi selon l'index.
+  DrawingContent _buildDrawingContent(
+    int index,
+    DateTime createdAt,
+    ContentOrigin origin,
+    int bounce,
+    String flair,
+    String authorId,
+    List<Tag> tags,
+  ) {
+    final drawings = [_seedSmiley(), _seedHouse(), _seedSun()];
+
+    return DrawingContent(
+      id: UuidX.generate(),
+      createdAt: createdAt,
+      updatedAt: createdAt,
+      authorId: authorId,
+      senderId: 'seed-sender',
+      origin: origin,
+      broadcastScore: 1,
+      survivalScore: 1,
+      displayScore: 1,
+      bounce: bounce,
+      sizeInBytes: 0,
+      flair: flair,
+      tags: tags,
+      title: 'Dessin #${index + 1}',
+      drawing: drawings[(index ~/ 10) % drawings.length],
+    );
+  }
+
+  /// Bonhomme sourire : un rond rempli de jaune, deux yeux et une bouche, sur deux calques.
+  Drawing _seedSmiley() {
+    return Drawing(
+      palette: defaultDrawingPalette,
+      operations: [
+        _seedStroke(layer: 1, colorIndex: 0, brush: DrawingBrush.pen, size: 2, points: _arc(512, 384, 260, 0, 2 * pi)),
+        const DrawingFill(layer: 0, colorIndex: 6, point: DrawingPoint(512, 384)),
+        _seedStroke(layer: 1, colorIndex: 0, brush: DrawingBrush.pen, size: 3, points: _arc(420, 300, 12, 0, 2 * pi)),
+        _seedStroke(layer: 1, colorIndex: 0, brush: DrawingBrush.pen, size: 3, points: _arc(604, 300, 12, 0, 2 * pi)),
+        _seedStroke(
+          layer: 1,
+          colorIndex: 4,
+          brush: DrawingBrush.marker,
+          size: 2,
+          points: _arc(512, 400, 150, 0.2 * pi, 0.8 * pi),
+        ),
+      ],
+    );
+  }
+
+  /// Maison : murs et toit au stylo, murs remplis, porte au crayon, herbe à la bombe.
+  Drawing _seedHouse() {
+    const walls = [
+      DrawingPoint(312, 640),
+      DrawingPoint(312, 380),
+      DrawingPoint(712, 380),
+      DrawingPoint(712, 640),
+      DrawingPoint(312, 640),
+    ];
+    const roof = [DrawingPoint(282, 390), DrawingPoint(512, 180), DrawingPoint(742, 390)];
+    return Drawing(
+      palette: defaultDrawingPalette,
+      operations: [
+        _seedStroke(layer: 1, colorIndex: 0, brush: DrawingBrush.pen, size: 2, points: walls),
+        _seedStroke(layer: 1, colorIndex: 14, brush: DrawingBrush.pen, size: 3, points: roof),
+        const DrawingFill(layer: 0, colorIndex: 15, point: DrawingPoint(400, 500)),
+        _seedStroke(
+          layer: 2,
+          colorIndex: 14,
+          brush: DrawingBrush.pencil,
+          size: 1,
+          points: const [
+            DrawingPoint(470, 640),
+            DrawingPoint(470, 520),
+            DrawingPoint(554, 520),
+            DrawingPoint(554, 640),
+          ],
+        ),
+        _seedStroke(
+          layer: 2,
+          colorIndex: 7,
+          brush: DrawingBrush.spray,
+          size: 3,
+          points: [for (var x = 40; x < 1000; x += 40) DrawingPoint(x, 700)],
+        ),
+      ],
+    );
+  }
+
+  /// Soleil : un disque orange au feutre, des rayons au stylo, un ciel rempli de bleu, et un bout gommé.
+  Drawing _seedSun() {
+    return Drawing(
+      palette: defaultDrawingPalette,
+      operations: [
+        const DrawingFill(layer: 0, colorIndex: 9, point: DrawingPoint(10, 10)),
+        _seedStroke(
+          layer: 1,
+          colorIndex: 5,
+          brush: DrawingBrush.marker,
+          size: 3,
+          points: _arc(512, 384, 60, 0, 2 * pi),
+        ),
+        for (var ray = 0; ray < 12; ray++)
+          _seedStroke(
+            layer: 1,
+            colorIndex: 6,
+            brush: DrawingBrush.pen,
+            size: 1,
+            points: [_polar(512, 384, 160, ray * pi / 6), _polar(512, 384, 280, ray * pi / 6)],
+          ),
+        _seedStroke(
+          layer: 1,
+          colorIndex: 0,
+          brush: DrawingBrush.eraser,
+          size: 3,
+          points: _arc(512, 384, 220, 0, pi / 3),
+        ),
+      ],
+    );
+  }
+
+  /// Retourne un trait factice, sa graine tirée de sa position dans la liste.
+  DrawingStroke _seedStroke({
+    required int layer,
+    required int colorIndex,
+    required DrawingBrush brush,
+    required int size,
+    required List<DrawingPoint> points,
+  }) {
+    return DrawingStroke(
+      layer: layer,
+      colorIndex: colorIndex,
+      brush: brush,
+      size: size,
+      seed: points.length * 7919 + layer,
+      points: points,
+    );
+  }
+
+  /// Retourne les points d'un arc de cercle de centre ([centerX], [centerY]) et de rayon [radius].
+  List<DrawingPoint> _arc(int centerX, int centerY, int radius, double from, double to) {
+    const steps = 48;
+    return [
+      for (var step = 0; step <= steps; step++) _polar(centerX, centerY, radius, from + (to - from) * step / steps),
+    ];
+  }
+
+  /// Retourne le point à [radius] du centre ([centerX], [centerY]), dans la direction [angle].
+  DrawingPoint _polar(int centerX, int centerY, int radius, double angle) {
+    return DrawingPoint((centerX + radius * cos(angle)).round(), (centerY + radius * sin(angle)).round());
   }
 }
 

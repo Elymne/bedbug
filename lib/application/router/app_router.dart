@@ -1,11 +1,13 @@
 import 'package:bedbug/application/router/error_route_page.dart';
 import 'package:bedbug/application/screens/avatar_picker/avatar_picker_screen.dart';
-import 'package:bedbug/application/screens/content_detail/image_content_detail_screen.dart';
+import 'package:bedbug/application/screens/content_detail/drawing_content_detail_screen.dart';
 import 'package:bedbug/application/screens/content_detail/link_content_detail_screen.dart';
+import 'package:bedbug/application/screens/content_detail/media_content_detail_screen.dart';
 import 'package:bedbug/application/screens/content_detail/text_content_detail_screen.dart';
 import 'package:bedbug/application/screens/create/create_screen.dart';
+import 'package:bedbug/application/screens/drawing_editor/drawing_editor_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
-import 'package:bedbug/application/screens/image_viewer/image_viewer_screen.dart';
+import 'package:bedbug/application/screens/media_viewer/media_viewer_screen.dart';
 import 'package:bedbug/application/screens/search/search_screen.dart';
 import 'package:bedbug/application/screens/search_results/search_criteria.dart';
 import 'package:bedbug/application/screens/search_results/search_results_screen.dart';
@@ -13,9 +15,11 @@ import 'package:bedbug/application/screens/settings/settings_screen.dart';
 import 'package:bedbug/application/screens/signature/signature_screen.dart';
 import 'package:bedbug/application/screens/splash/splash_screen.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/entities/image_content.dart';
+import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
+import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
+import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,11 +76,17 @@ const String signaturesPath = '/signatures';
 /// Chemin de la page d'une signature, identifiant en paramètre de chemin.
 const String signaturePath = '$signaturesPath/:id';
 
-/// Chemin vers la visionneuse plein écran des images d'un contenu.
+/// Chemin vers la visionneuse plein écran des médias d'un contenu.
 ///
-/// Les images et la position de départ sont transmises via `extra`
-/// (`ImageViewerParams`).
-const String imageViewerPath = '/image-viewer';
+/// Les médias et la position de départ sont transmis via `extra`
+/// (`MediaViewerParams`).
+const String mediaViewerPath = '/media-viewer';
+
+/// Chemin vers l'éditeur de dessin.
+///
+/// Le dessin à reprendre est transmis via `extra` (`Drawing`), et le dessin
+/// validé est retourné au `pop`.
+const String drawingEditorPath = '/drawing-editor';
 
 /// Chemin vers la page de détail d'un contenu.
 ///
@@ -143,8 +153,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => _fadePage(SignatureScreen(signatureId: state.pathParameters['id']!)),
       ),
       GoRoute(
-        path: imageViewerPath,
-        pageBuilder: (context, state) => _fadePage(ImageViewerScreen(params: state.extra! as ImageViewerParams)),
+        path: mediaViewerPath,
+        pageBuilder: (context, state) => _fadePage(MediaViewerScreen(params: state.extra! as MediaViewerParams)),
+      ),
+      GoRoute(
+        path: drawingEditorPath,
+        pageBuilder: (context, state) {
+          return _fadePage(DrawingEditorScreen(initialDrawing: state.extra as Drawing? ?? const Drawing.empty()));
+        },
       ),
       GoRoute(
         path: contentDetailPath,
@@ -180,6 +196,7 @@ Widget _searchResultsScreenFor(Map<String, String> queryParameters) {
 Widget _contentDetailScreenFor(Content content) {
   if (content is TextContent) return TextContentDetailScreen(content: content);
   if (content is LinkContent) return LinkContentDetailScreen(content: content);
-  if (content is ImageContent) return ImageContentDetailScreen(content: content);
+  if (content is MediaContent) return MediaContentDetailScreen(content: content);
+  if (content is DrawingContent) return DrawingContentDetailScreen(content: content);
   return const ErrorRoutePage(message: 'Unknown content type');
 }

@@ -97,7 +97,7 @@ class AppSnackbar {
                 child: SnackbarPulseBorder(color: ghostColor, intensity: intensity, borderRadius: _kBorderRadius),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 6, 8, 6),
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 6, 8, 6),
                 child: Row(
                   spacing: 8,
                   children: [

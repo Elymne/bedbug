@@ -1,4 +1,6 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/text_font_x.dart';
+import 'package:bedbug/features/signature/domain/enums/text_font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,17 +13,21 @@ class AppSignatureBio extends ConsumerWidget {
   /// Crée un [AppSignatureBio].
   ///
   /// - [bio] : description à afficher.
-  const AppSignatureBio({super.key, required this.bio});
+  /// - [font] : police choisie par l'auteur pour sa description (défaut [TextFont.standard]).
+  const AppSignatureBio({super.key, required this.bio, this.font = TextFont.standard});
 
   /// Description à afficher.
   final String bio;
+
+  /// Police choisie par l'auteur pour sa description.
+  final TextFont font;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Text(
       bio,
       textAlign: TextAlign.center,
-      style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic, color: AppColors.onLighter),
+      style: font.apply(const TextStyle(fontSize: 14, fontStyle: FontStyle.italic, color: AppColors.onLighter)),
     );
   }
 }

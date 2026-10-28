@@ -1,4 +1,6 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/text_font_x.dart';
+import 'package:bedbug/features/signature/domain/enums/text_font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,6 +21,7 @@ class ReactionBubbleLayer extends ConsumerWidget {
   ///
   /// - [avatarText] : bedbug de la réaction.
   /// - [bubbleText] : texte de la bulle, bulle absente si vide.
+  /// - [bubbleFont] : police du texte de la bulle.
   /// - [fontSize] : taille du bedbug.
   /// - [isMirrored] : `true` pour caler le calque à droite, coin de la bulle pincé à droite.
   /// - [hasFill] : `true` pour dessiner le fond blanc de la bulle.
@@ -28,6 +31,7 @@ class ReactionBubbleLayer extends ConsumerWidget {
     super.key,
     required this.avatarText,
     required this.bubbleText,
+    required this.bubbleFont,
     required this.fontSize,
     required this.isMirrored,
     required this.hasFill,
@@ -40,6 +44,9 @@ class ReactionBubbleLayer extends ConsumerWidget {
 
   /// Texte de la bulle, bulle absente si vide.
   final String bubbleText;
+
+  /// Police du texte de la bulle.
+  final TextFont bubbleFont;
 
   /// Taille du bedbug.
   final double fontSize;
@@ -74,14 +81,16 @@ class ReactionBubbleLayer extends ConsumerWidget {
               // Toujours une bordure, transparente si masquée : sa largeur fait partie de la mise en page.
               border: Border.all(color: hasBorder ? AppColors.onLight : Colors.transparent),
               // Coin inférieur pincé du côté du bedbug : la bulle « sort » de lui.
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(12),
-                topRight: const Radius.circular(12),
-                bottomRight: Radius.circular(isMirrored ? 2 : 12),
-                bottomLeft: Radius.circular(isMirrored ? 12 : 2),
+              // Directionnel : le bedbug est calé au début de la ligne, à
+              // droite dans une langue écrite de droite à gauche.
+              borderRadius: BorderRadiusDirectional.only(
+                topStart: const Radius.circular(12),
+                topEnd: const Radius.circular(12),
+                bottomEnd: Radius.circular(isMirrored ? 2 : 12),
+                bottomStart: Radius.circular(isMirrored ? 12 : 2),
               ),
             ),
-            child: Text(bubbleText, style: TextStyle(fontSize: 12, color: textColor)),
+            child: Text(bubbleText, style: bubbleFont.apply(TextStyle(fontSize: 12, color: textColor))),
           ),
         Text(
           avatarText,

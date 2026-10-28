@@ -1,309 +1,166 @@
-# dslc_tools
+# BedBug
 
-Flutter reference skeleton for the team. Used as a reusable base for all future projects.
+Open-source local social network: messages and contents are transmitted from device to device (Wi-Fi / BLE).
+
+This file only describes the architecture, the folder structure, the libraries and the coding rules. Anything that can
+be learned by reading the code (existing widgets, entities, use cases…) does not belong here.
 
 ## Architecture
 
-# Clean Architecture — Feature-based (Revised)
-
-This project follows **Clean Architecture** with an **object-oriented** approach, organised around **features for business logic**, and a separate **application layer for UI and framework concerns**.
-
-The architecture enforces a strict separation:
-
-- **Features** → business logic only (domain + infrastructure)
-- **Application** → UI and framework orchestration
-- **Shared** → cross-cutting technical code (no business logic)
-
----
-
-### High-level structure
-
-The source code is split into three top-level folders:
+Clean Architecture, object-oriented, organised around **features** for business logic and a separate **application**
+layer for UI and framework concerns.
 
 ```
-features/
-application/
-shared/
+lib/
+  features/      business logic only (domain + infrastructure)
+  application/   UI and framework orchestration
+  shared/        cross-cutting technical code, no business logic
 ```
-
----
-
-### Features (Business layer)
-
-Each feature is a **self-contained business module**.
-
-It contains only business logic and its implementation, split into two layers:
-
-```
-features/
-  feature_name/
-    domain/
-    infrastructure/
-```
-
-A feature **does not know anything about UI or frameworks**.
-
----
-
-#### Domain
-
-The **core business logic layer**, completely independent from external systems.
-
-##### Contains
-
-- Entities
-- Value objects
-- Repository interfaces
-- Gateway interfaces
-- Use cases
-- Domain extensions
-
-##### Rules
-
-- No external dependencies
-- No framework imports
-- No exceptions thrown
-- Errors handled via `Either`
-
-##### Structure
-
-```
-domain/
-  entities/
-  object_values/
-  repositories/
-  gateways/
-  usecases/
-  extensions/
-  enums/ (only if global to the feature)
-```
-
----
-
-#### Infrastructure
-
-The **implementation layer** of domain contracts.
-
-##### Contains
-
-- Gateway implementations
-- Datasources that are Repository implementations (API, DB, SDK)
-- Models (DTOs, serialization)
-
-##### Structure
-
-```
-infrastructure/
-  datasources/
-  models/
-  gateways/
-```
-
-##### Rules
-
-- Can use external libraries
-- Can throw exceptions
-- Implements domain interfaces only
-
----
-
-### Application (UI & Framework layer)
-
-The `application/` layer is completely separated from features.
-
-It is responsible for:
-
-- UI (pages, widgets)
-- State management (notifiers, controllers)
-- Orchestration of use cases
-- Framework interaction (Flutter, etc.)
-
-#### Structure
-
-```
-application/
-  pages/
-  widgets/
-  controllers/
-  notifiers/
-```
-
-#### Notes
-
-- Pages can contain their own local widgets and state
-- Application depends on **domain only**
-- Never depends directly on infrastructure
-- This is the **only layer aware of the framework**
-
----
-
-### Shared (Technical layer)
-
-`shared/` contains only **cross-cutting technical code**.
-
-It must **never contain business logic**, and **never contain UI or widgets**.
-
-Widgets and UI components shared across the app belong in `application/widgets/`, not here.
-
-#### Typical contents
-
-- Base classes and interfaces (`UseCase`, `Repository`, `Either`)
-- Error handling (exceptions)
-- Logger
-- Helpers / utilities
-- Technical extensions
-- Configuration (SDKs, tools)
-- Localization system
-
-#### Example structure
-
-```
-shared/
-  usecase/
-  repository/
-  exceptions/
-  logger/
-  helpers/
-  extensions/
-  config/
-```
-
-#### Rules
-
-- No feature-specific logic
-- No business rules
-- No domain knowledge
-- Structure emerges naturally (no forced layering)
-
----
 
 ### Dependency rules
 
-Strict dependency direction:
-
 ```
-application → domain → (interfaces) → infrastructure
+application → domain ← infrastructure
 shared → used by all
 ```
 
-#### Constraints
+- `application` depends on feature **domains** only, never on infrastructure (except to wire providers).
+- `domain` depends on nothing but `shared`.
+- `infrastructure` depends on its feature's domain and on `shared`.
+- `shared` depends on nothing.
+- Features are isolated from each other.
 
-- Application depends on **domain only**
-- Domain depends on **nothing**
-- Infrastructure depends on **domain + shared**
-- Shared depends on **nothing**
-- Features are isolated from each other
+### Features
 
----
+Each feature is a self-contained business module that knows nothing about UI or frameworks.
+
+```
+features/<feature_name>/
+  domain/
+    entities/
+    object_values/
+    repositories/      repository interfaces
+    gateways/          gateway interfaces
+    usecases/
+    services/          small pure logic bricks shared by use cases
+    extensions/        feature-specific extensions
+    enums/             only enums shared across the feature
+  infrastructure/
+    datasources/       repository implementations (DB, API, SDK)
+    gateways/          gateway implementations
+    models/            DTOs, serialization
+```
+
+#### Domain rules
+
+- No external dependency, no framework import.
+- Never throws: errors are returned through `Either`.
+
+#### Infrastructure rules
+
+- May use external libraries and throw exceptions.
+- Only implements domain interfaces.
+
+### Application
+
+The only layer aware of the framework.
+
+```
+application/
+  screens/<screen>/   one folder per screen: the screen, its local notifiers and its local widgets/
+  widgets/            widgets reused across screens, grouped by kind
+  notifiers/          notifiers shared across screens
+  providers/          technical providers shared across screens
+  router/             router and route paths
+  style/              colors, text styles, theme, constants
+  validators/         form validators
+  formatters/         input formatters
+  l10n/               ARB files and localization
+```
+
+### Shared
+
+Purely technical code: no business rule, no domain knowledge, no UI or widget.
+
+```
+shared/
+  domain/          base classes (Usecase, Service, Params, Entity, ValueObject, Either)
+  infrastructure/  technical setup (Hive initialisation, type ids)
+  exceptions/
+  extensions/      cross-cutting extensions
+  logger/
+  config/
+```
 
 ### Use cases
 
-Each use case:
+- Extend `Usecase<P extends Params, F, V>` and implement `call(params)`, returning `Future<Either<F, V>>`.
+- Never throw: failures are explicit and typed (failure enum).
+- Use `NoParams` when no input is required.
+- Logic needed by a single use case stays a private method of that use case.
 
-- Extends `UseCase<Success, Failure, Params>`
-- Exposes `execute(params)`
-- Returns `Either<Failure, Success>`
+### Services
 
-#### Rules
+- Extend `Service`. A service holds small pure logic bricks reused by several use cases or by the application
+  (parsing an address, matching a domain rule, detecting a file format).
+- Synchronous, no data access (no repository, no gateway): a service may only depend on other services. Anything
+  that needs more is a use case.
+- Never throw, and never return an `Either`: a failure is expressed by `null` or by an enum value. No `try/catch`
+  either: use the non-throwing APIs (`Uri.tryParse`, `int.tryParse`) and guard indexes and lengths.
+- Provided through a provider, like everything else.
 
-- No exceptions
-- Failures are explicit and typed
-- Use `NoParams` when no input is required
+### Entities and value objects
 
----
-
-### Entities and Value Objects
-
-#### Entity
-
-Base class for persisted objects:
-
-- `id`
-- `createdAt`
-- `updatedAt`
-
-##### Rules
-
-- Immutable (`final`)
-- `const` constructor
-- Equality based on values
-
----
-
-#### ValueObject
-
-Used for:
-
-- Computed data
-- Composite structures
-- Concepts without identity
-
-##### Rules
-
-- Immutable (`final`)
-- `const` constructor
-- Equality based on values
-
----
+- `Entity`: persisted object with `id`, `createdAt`, `updatedAt`.
+- `ValueObject`: computed data, composite structure or concept without identity.
+- Both are immutable (`final` fields, `const` constructor) with value-based equality.
+- Both are dumb data: fields, equality, `toString` and `copyWith` only. No parsing, validation, matching or business
+  rule inside them: that logic belongs in a service or in a use case.
 
 ### Enums
 
-- Tied to a class → same file
-- Shared in feature → `domain/enums/`
+- Tied to a single class → same file as the class.
+- Shared across a feature → `domain/enums/`.
 
----
+### Repositories
 
-### Domain extensions
-
-- Feature-specific → `feature/domain/extensions/`
-- Cross-cutting → `shared/extensions/`
-
----
-
-### Repository pattern
-
-Each repository:
-
-- Declared in domain as a standalone `abstract class` (no shared `Repository<Entity, Params>` base)
-- Implemented in infrastructure
-
-#### Rules
-
-- Une repository ne déclare que les méthodes dont son entité a réellement besoin métier. Pas de CRUD imposé par une interface commune : une entité qui n'a pas vocation à être mise à jour ou supprimée n'expose ni `update` ni `delete`.
-- Le seul intérêt d'une interface de repository est de pouvoir swapper l'implémentation (changer d'outil de stockage), de faciliter les tests (mocks), et de garder la convention symétrique avec les use cases (interface déclarée en domain, implémentation en infrastructure). Elle ne sert pas à imposer une forme.
-- Pas de système de pagination générique (`Page<T>`, `RepositoryParams`, `PageNotFoundException`) : chaque méthode de listing déclare directement les paramètres et le type de retour dont elle a besoin.
-
----
+- Declared in domain as a standalone `abstract class` (no shared `Repository<Entity, Params>` base), implemented in
+  infrastructure.
+- A repository only declares the methods its entity actually needs. No imposed CRUD: an entity that is never updated or
+  deleted exposes neither `update` nor `delete`.
+- The interface exists only to swap the storage implementation, to ease testing (mocks) and to stay symmetric with use
+  cases. It is not meant to impose a shape.
+- No generic pagination system (`Page<T>`, `RepositoryParams`…): each listing method declares the parameters and return
+  type it needs.
 
 ### Core principles
 
-- One file = one responsibility
-- No mixing UI, business, and data access
-- Business logic isolated in features
-- UI decoupled from infrastructure
-- Shared is purely technical
+- One file = one responsibility.
+- Never mix UI, business logic and data access.
 
 ## Code style
 
 ### General
 
-- Line length: **120 characters** (`dart.lineLength: 120`).
-- Prefer block functions over arrow functions. Never use `=>` on named functions (methods, getters, top-level functions). Reserve `=>` strictly for lambdas (anonymous functions passed as arguments or assigned to variables):
+- Line length: **120 characters**.
+- Follow `analysis_options.yaml` strictly.
+- Never use `=>` on named functions (methods, getters, top-level functions). Reserve it for lambdas:
 
   ```dart
-  // ✅ OK — lambda in a collection
+  // ✅ OK
   users.map((user) => user.fullName);
 
-  // ✅ OK — block for named functions, even short ones
   String format(String value) {
     return value.trim().toLowerCase();
   }
 
-  // ❌ Avoid — arrow on a named function
+  // ❌ Avoid
   String format(String value) => value.trim().toLowerCase();
   ```
 
-- An arrow lambda is only allowed when it fits on a single line once formatted. As soon as the formatter has to break it — its body wraps over several lines, or the lambda is pushed onto its own line because it does not fit after the opening parenthesis of its call — use a block body with `{}` and `return`. This applies in particular to provider definitions:
+- An arrow lambda is only allowed when it fits on a single line once formatted. As soon as the formatter has to break
+  it (body wrapping over several lines, or lambda pushed onto its own line), use a block body with `return`. This
+  applies in particular to provider definitions:
 
   ```dart
   // ✅ OK — fits on one line
@@ -318,564 +175,149 @@ Each repository:
   final saveContentUsecaseProvider = Provider<SaveContentUsecase>(
     (ref) => SaveContentUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider)),
   );
-
-  // ❌ Avoid — arrow body spread over several lines
-  data: (state) => ContentListView(
-    contents: state.contents,
-    emptyChild: const SizedBox.shrink(),
-  ),
   ```
 
-- Follow `analysis_options.yaml` strictly (strict-casts, strict-inference, strict-raw-types, prefer*const*\*, avoid_dynamic_calls, etc.).
-- Document every **class**, **function**, and **function parameter** — **always in French**. Includes `@override` and private methods.
-- For non-trivial functions — and **always** for use cases — the doc comment must explain **why** the function exists, not just what it does. State the underlying need/intent driving it, not merely a paraphrase of the signature. This is especially critical for use cases: their doc comment must give the business justification for calling them (e.g. why the score needs periodic recalculation), so future readers understand the intent even without conversation context:
-
-  ```dart
-  // ✅ OK — explains the underlying need
-  /// Retourne une copie de ce contenu avec ses scores mis à jour.
-  ///
-  /// Les scores ([broadcastScore], [survivalScore]) sont recalculés
-  /// périodiquement à mesure que les contenus vieillissent ou changent de
-  /// statut ; cette méthode permet d'appliquer ces nouvelles valeurs sans
-  /// reconstruire manuellement chaque sous-type de [Content].
-  Content copyWithScores({double? broadcastScore, double? survivalScore});
-
-  // ❌ Avoid — restates the signature, no rationale
-  /// Copie ce contenu avec de nouveaux scores.
-  Content copyWithScores({double? broadcastScore, double? survivalScore});
-  ```
-- Always use braces `{}` for `if`, `else`, `for`, `while`, etc., even for single-line bodies. Never write a control-flow statement without braces:
-
-  ```dart
-  // ✅ OK
-  if (condition) {
-    return valueA;
-  }
-
-  // ❌ Avoid
-  if (condition) return valueA;
-  ```
-
-- Never use `else` or `else if`. Use early returns or guards:
-
-  ```dart
-  // ✅ OK
-  if (condition) return valueA;
-  return valueB;
-
-  // ❌ Avoid
-  if (condition) {
-    return valueA;
-  } else {
-    return valueB;
-  }
-  ```
-
-- Avoid ternary expressions unless they fit on a single line:
-
-  ```dart
-  // ✅ OK
-  final label = isActive ? 'Active' : 'Inactive';
-
-  // ❌ Avoid
-  final description = isExpired
-      ? 'Account expired on ${user.expirationDate}'
-      : 'Account is valid';
-  ```
-
-- Don't extract private functions unless the block is complex or reused. Inline simple expressions directly.
-- Constructors are always declared first in a class, before fields. (consistent with `sort_constructors_first`)
-- Order class members so all public methods come before private ones. Fields and constructors still come first as per `sort_constructors_first`; within the methods that follow, public methods (including `build`) are declared before private (`_`-prefixed) methods:
-
-  ```dart
-  // ✅ OK
-  class ExampleWidget extends ConsumerWidget {
-    const ExampleWidget({super.key});
-
-    @override
-    Widget build(BuildContext context, WidgetRef ref) {
-      return _buildBody();
-    }
-
-    Widget _buildBody() { ... }
-  }
-
-  // ❌ Avoid — private method declared before the public build()
-  class ExampleWidget extends ConsumerWidget {
-    const ExampleWidget({super.key});
-
-    Widget _buildBody() { ... }
-
-    @override
-    Widget build(BuildContext context, WidgetRef ref) {
-      return _buildBody();
-    }
-  }
-  ```
-- For injected dependencies, always use the short `this.` constructor form. Never use `: _field = param`:
+- Always use braces `{}` for `if`, `for`, `while`…, even for single-line bodies.
+- Never use `else` or `else if`: use early returns and guards.
+- Ternary expressions only when they fit on a single line.
+- Don't extract private functions unless the block is complex or reused.
+- Constructors come first in a class, then fields, then public methods (including `build`), then private methods.
+- Inject dependencies with the short `this.` constructor form, never `: _field = param`:
 
   ```dart
   // ✅ OK
   UserRepository(this._database, this._logger);
+  ```
+
+### Documentation
+
+- Document every class, function and function parameter, **always in French**, including `@override` and private
+  members.
+- For non-trivial functions, and **always** for use cases, the doc comment explains **why** the function exists (the
+  underlying need, the business justification), not a paraphrase of its signature:
+
+  ```dart
+  // ✅ OK
+  /// Retourne une copie de ce contenu avec ses scores mis à jour.
+  ///
+  /// Les scores ([broadcastScore], [survivalScore]) sont recalculés périodiquement à mesure que les contenus
+  /// vieillissent ou changent de statut ; cette méthode permet d'appliquer ces nouvelles valeurs sans reconstruire
+  /// manuellement chaque sous-type de [Content].
 
   // ❌ Avoid
-  UserRepository({required Database database, required Logger logger})
-      : _database = database,
-        _logger = logger;
+  /// Copie ce contenu avec de nouveaux scores.
   ```
 
 ### Naming
 
-- Never use single-character identifiers, including in lambdas and loops:
-
-  ```dart
-  // ✅ OK
-  users.map((user) => user.fullName);
-  for (final product in products) { ... }
-
-  // ❌ Avoid
-  users.map((u) => u.fullName);
-  for (final p in products) { ... }
-  ```
-
-- `bool` variables and parameters always use the `is` prefix:
-
-  ```dart
-  // ✅ OK
-  final bool isSaving;
-
-  // ❌ Avoid
-  final bool saving;
-  ```
-
-- Infrastructure class names are prefixed with the concrete service they depend on, so the external technology is immediately visible from the name:
-
-  ```dart
-  // ✅ OK
-  class FirestoreUserRepository ...   // uses Firestore
-  class FireauthAuthModel ...          // uses Firebase Auth
-  class DioProductRepository ...       // uses Dio
-
-  // ❌ Avoid
-  class FirebaseUserRepository ...    // "Firebase" is ambiguous (Auth? Firestore?)
-  class RemoteProductRepository ...   // hides the actual technology
-  ```
+- No single-character identifiers, including in lambdas and loops.
+- `bool` variables and parameters always use the `is` prefix (`isSaving`).
+- Infrastructure classes are prefixed with the concrete technology they depend on (`HiveContentRepository`,
+  `GalImageGalleryGateway`), never a vague word (`RemoteProductRepository`, `FirebaseUserRepository`).
 
 ## Flutter
 
-### Widgets
-
-- Use `const` everywhere possible — widget constructors, lists, stateless instances (validators, formatters).
+- Use `const` everywhere possible.
 - Never use `setState`.
-- Prefer inlining widget code directly in `build`. When extraction is needed, apply this rule:
-  - **Simple, display-only widget** (no state, no logic, no callbacks) → a private function returning a widget is acceptable.
-  - **Widget with logic, callbacks, or reused across files** → extract as a **public** widget class in its own file and folder.
-
-  ```dart
-  // ✅ OK — simple display, no logic
-  Widget _buildLabel(String text) => Text(text, style: ...);
-
-  // ✅ OK — complex or reused → public widget class
-  class UserAvatarWidget extends ConsumerWidget { ... }
-
-  // ❌ Avoid — function for something that has state or callbacks
-  Widget _buildForm() => ReactiveForm(...);
-  ```
-- Avoid `initState` if attributes can be initialized directly. `late final` initializers are lazy — `widget` is accessible at declaration:
-
-  ```dart
-  // ✅ OK
-  late final TextEditingController _nameController =
-      TextEditingController(text: widget.user.name);
-
-  // ❌ Avoid
-  @override
-  void initState() {
-    super.initState();
-    _nameController = TextEditingController(text: widget.user.name);
-  }
-  ```
-
-- In `Column` and `Row`, use `SizedBox` for spacing instead of `Padding`. Reserve `Padding` for isolated widgets outside a layout axis. When all children need uniform spacing, prefer the `spacing` attribute of `Column` or `Row` over inserting `SizedBox` between each child:
-
-  ```dart
-  // ✅ OK
-  Column(
-    children: [
-      Text('Title'),
-      SizedBox(height: 16),
-      Text('Subtitle'),
-    ],
-  )
-
-  // ❌ Avoid
-  Column(
-    children: [
-      Text('Title'),
-      Padding(
-        padding: EdgeInsets.only(top: 16),
-        child: Text('Subtitle'),
-      ),
-    ],
-  )
-  ```
-
-- `State` and `ConsumerState` classes are named `_State`. They are always private:
-
-  ```dart
-  // ✅ OK
-  class _State extends ConsumerState<ExampleWidget> { ... }
-
-  // ❌ Avoid
-  class ExampleWidgetState extends ConsumerState<ExampleWidget> { ... }
-  ```
+- Prefer inlining widget code in `build`. When extraction is needed:
+  - display-only widget (no state, no logic, no callback) → a private function returning a widget is acceptable;
+  - widget with logic or callbacks, or reused across files → a public widget class in its own file.
+- Avoid `initState` when attributes can be initialized directly with `late final` (`widget` is accessible there).
+- In `Column` / `Row`, space children with `SizedBox`, or with the `spacing` attribute when spacing is uniform. Reserve
+  `Padding` for isolated widgets.
+- `State` / `ConsumerState` classes are always private and named `_State`.
+- Never use color literals (`Color(0xFF…)`) in widgets: always use `AppColors`, adding the color there first if needed.
+- Before creating a widget, check `application/widgets/` for an existing one.
 
 ## Libraries
 
+| Concern               | Library                                                 |
+| --------------------- | ------------------------------------------------------- |
+| State management + DI | `flutter_riverpod`                                      |
+| Routing               | `go_router`                                             |
+| Forms                 | `reactive_forms`                                        |
+| Local persistence     | `hive_ce` (+ `hive_ce_generator`), `shared_preferences` |
+| Localization          | `flutter_localizations`, `intl`                         |
+| HTTP                  | `dio`                                                   |
+
 ### Riverpod
 
-Riverpod handles both **state management** and **dependency injection**. Every piece of shared state and every dependency is exposed via a provider.
+Riverpod handles both state management and dependency injection.
 
 #### Widgets
 
-- Always use `ConsumerStatefulWidget` / `ConsumerState` instead of `StatefulWidget` / `State`. Never use `StatefulWidget` in this project.
-- Always use `ConsumerWidget` instead of `StatelessWidget`. Never use `StatelessWidget` in this project.
+- Always `ConsumerWidget` / `ConsumerStatefulWidget`. Never `StatelessWidget` / `StatefulWidget`.
 
-#### State management
+#### State
 
-- Only use a variable for `ref.watch` calls.
-  - For `AsyncNotifier`, name the variable after the notifier with a `Watcher` suffix:
-
-    ```dart
-    // ✅ OK
-    final exampleNotifierWatcher = ref.watch(exampleNotifierProvider);
-
-    // ❌ Avoid
-    final watcher = ref.watch(exampleNotifierProvider);
-    ```
-
-  - Otherwise, name it after the encapsulated state:
-
-    ```dart
-    final currentUser = ref.watch(currentUserProvider);
-    ```
-
-- If a notifier uses async functions, it must extend `AsyncNotifier`. `AsyncValue` already exposes `isLoading` — never add an `isLoading` field to the state.
-- In `ref.listen`, always start with `if (next.isLoading) return;` before reading `next.value` or `next.hasError`. An `AsyncValue` in loading state can still expose the previous value, which would incorrectly trigger error logic on reload.
-- Never store `ref.read` in a variable, especially in `build`:
-
-  ```dart
-  // ✅ OK
-  ref.read(exampleNotifierProvider.notifier).doSomething();
-
-  // ❌ Avoid in build()
-  final notifier = ref.read(exampleNotifierProvider.notifier);
-  ```
+- Only store `ref.watch` results in a variable. For an `AsyncNotifier`, suffix the variable with `Watcher`
+  (`exampleNotifierWatcher`); otherwise name it after the state (`currentUser`).
+- Never store `ref.read` in a variable inside `build`: call `ref.read(provider.notifier).doSomething()` directly.
+- A notifier using async functions extends `AsyncNotifier`. Never add an `isLoading` field: `AsyncValue` has it.
+- In `ref.listen`, always start with `if (next.isLoading) return;` before reading `next.value` or `next.hasError`.
 
 #### Dependency injection
 
-- All dependencies are injected via Riverpod providers.
-- Use `ref.read` to inject dependencies — never `ref.watch`. Declare dependencies as `late final` attributes in notifiers:
+- All dependencies are injected through providers, with `ref.read`, never `ref.watch`.
+- Store each injected dependency in a named `late final` attribute of the notifier:
 
   ```dart
-  // ✅ OK
   late final exampleRepository = ref.read(exampleRepositoryProvider);
-
-  // ❌ Avoid
-  late final exampleRepository = ref.watch(exampleRepositoryProvider);
-  ```
-
-- Always store an injected dependency in a named attribute:
-
-  ```dart
-  // ✅ OK
-  final exampleRepository = ref.read(exampleRepositoryProvider);
-
-  // ❌ Avoid
-  ref.read(exampleRepositoryProvider).doSomething();
   ```
 
 #### Notifiers
 
-- Un notifier par préoccupation distincte, pas un seul notifier fourre-tout par page. Un état métier (données chargées depuis un use case) et un état d'UI éphémère (animation pilotée par le scroll, position d'un curseur, etc.) ne doivent jamais partager le même notifier : les deux évoluent à des fréquences et pour des raisons différentes, et les mélanger force des rebuilds inutiles sur tout ce qui `watch` l'état métier dès que l'état d'UI change.
-- Chaque notifier porte un nom qui reflète la préoccupation qu'il gère, pas seulement le nom de la page :
-
-  ```dart
-  // ✅ OK — préoccupations distinctes, noms explicites
-  class LoginPage extends ... { ... }
-  class LoginNotifier extends ... { ... }          // état métier : soumission du formulaire
-  class LoginBarsOffsetNotifier extends ... { ... } // état d'UI : animation de barres au scroll
-
-  // ❌ Avoid — état d'UI éphémère mélangé à l'état métier
-  class LoginNotifier extends ... {
-    // ... logique de connexion ...
-    void applyScrollDelta(double delta) { ... } // n'a rien à faire ici
-  }
-  ```
-
-- Un `ref.watch` sur un notifier d'état d'UI éphémère (scroll, animation) doit rester scopé au plus près du widget qui en a besoin (`Consumer` local), jamais fait en tête du `build()` de la page entière — sous peine de rebuild la page entière à chaque évènement haute fréquence.
+- One notifier per concern, not one catch-all notifier per screen. Business state (data from a use case) and ephemeral
+  UI state (scroll-driven animation, cursor position…) never share a notifier.
+- Name each notifier after its concern (`HomeFeedNotifier`, `HomeBarsOffsetNotifier`), not only after its screen.
+- A `ref.watch` on high-frequency UI state is scoped to the closest widget that needs it (local `Consumer`), never at
+  the top of the screen's `build`.
 
 #### Conventions
 
-- All providers end with `Provider`:
-
-  ```dart
-  final exampleNotifierProvider = ...;
-  final exampleRepositoryProvider = ...;
-  ```
-
-- A provider is always declared in the **same file** as the class it provides. Never group providers in a separate file.
-- A provider is always declared **before** the class it provides:
-
-  ```dart
-  // ✅ OK
-  final loginNotifierProvider =
-      NotifierProvider<LoginNotifier, LoginState>(LoginNotifier.new);
-
-  class LoginNotifier extends Notifier<LoginState> { ... }
-  ```
-
-- In a use case file, declaration order is always: **provider → use case class → failure enum → params class**.
-- In a notifier file, declaration order is always: **provider → notifier class → notifier state class**.
+- Every provider name ends with `Provider`.
+- A provider is declared in the same file as the class it provides, right before it.
+- Use case file order: provider → use case → failure enum → params class.
+- Notifier file order: provider → notifier → state class.
 
 ### go_router
 
-#### pageBuilder and transitions
-
-Always use `pageBuilder` — never `builder`. On **web**, use `NoTransitionPage` to suppress the default slide animation. On **mobile**, use `MaterialPage` (Android) or `CupertinoPage` (iOS) to preserve native transitions.
-
-```dart
-// Web
-pageBuilder: (context, state) => const NoTransitionPage(child: ExamplePage())
-
-// Mobile
-pageBuilder: (context, state) => const MaterialPage(child: ExamplePage())
-```
-
-#### Route paths
-
-Declare every route path as a top-level `const String` in the router file, before the provider. This makes paths referenceable across the app without importing the router widget tree.
-
-```dart
-const String loginPath = '/login';
-const String usersPath = '/users';
-const String userDetailPath = '/users/:id';
-```
-
-#### Nested routes
-
-Sub-routes use a **relative** path (no leading `/`). The full path is composed by GoRouter automatically.
-
-```dart
-GoRoute(
-  path: usersPath,       // '/users'
-  routes: [
-    GoRoute(path: 'create'),   // resolves to '/users/create'
-    GoRoute(path: ':id'),      // resolves to '/users/:id'
-  ],
-)
-```
-
-#### Path parameters
-
-Read path parameters via `state.pathParameters`:
-
-```dart
-pageBuilder: (context, state) => NoTransitionPage(
-  child: UserDetailPage(userId: state.pathParameters['id']!),
-)
-```
-
-#### Error page
-
-Always provide an `errorBuilder` pointing to a dedicated error page widget. Never handle unknown routes inline.
+- The router is a `Provider<GoRouter>` declared in the same file as the route paths.
+- Every route path is a top-level `const String` in the router file, before the provider.
+- Always `pageBuilder`, never `builder`: `NoTransitionPage` on web, `MaterialPage` / `CupertinoPage` on mobile.
+- Sub-routes use a relative path (no leading `/`).
+- Read path parameters through `state.pathParameters`.
+- Always provide an `errorBuilder` pointing to a dedicated error page.
 
 ### reactive_forms
 
-- Use `reactive_forms`. Never use `TextEditingController`, `ValueNotifier`, or `GlobalKey<FormState>`.
-- The `FormGroup` and its controls are `late final` attributes on the widget's `State`, not the notifier. Call `_form.dispose()` in `dispose()`.
-- Use `AppValidators` (`core/validators/app_validators.dart`) for all validations. Declare validators on the `FormControl`, not the widget. Each validator is a `const` instance of a private class extending `Validator<dynamic>` — never use plain functions (`ValidatorFunction`).
-- Always declare each `FormControl<T>` as a separate typed `late final` attribute, then reference those controls when building the `FormGroup`. This avoids casts when reading values — `_emailControl.value` is already `String?`, no cast needed:
+- Never use `TextEditingController`, `ValueNotifier` or `GlobalKey<FormState>`.
+- The `FormGroup` and its controls are `late final` attributes of the widget's `State`, not of the notifier. Dispose the
+  form in `dispose()`.
+- Declare each `FormControl<T>` as its own typed `late final` attribute, then reference it in the `FormGroup`, so values
+  are read without casts:
 
   ```dart
-  // ✅ OK
-  late final _emailControl = FormControl<String>(
-    validators: [AppValidators.required, AppValidators.email],
-  );
-  late final _passwordControl = FormControl<String>(
-    validators: [AppValidators.required, AppValidators.password],
-  );
-  late final _isRememberMeControl = FormControl<bool>(value: false);
-  late final FormGroup _form = FormGroup({
-    'email': _emailControl,
-    'password': _passwordControl,
-    'isRememberMe': _isRememberMeControl,
-  });
-
-  // ❌ Avoid — forces casts when reading values
-  late final FormGroup _form = FormGroup({
-    'email': FormControl<String>(validators: [...]),
-    'password': FormControl<String>(validators: [...]),
-  });
-  // (_form.control('email') as FormControl<String>).value
+  late final _emailControl = FormControl<String>(validators: [AppValidators.required, AppValidators.email]);
+  late final FormGroup _form = FormGroup({'email': _emailControl});
   ```
 
-- Validate with `_form.valid` before submitting. If invalid, call `_form.markAllAsTouched()` and return:
-
-  ```dart
-  if (!_form.valid) {
-    _form.markAllAsTouched();
-    return;
-  }
-  ```
-
-- Text fields use `ReactiveTextField<String>`, dropdowns use `ReactiveDropdownField<T>`. For non-standard fields (date pickers, multi-value checkboxes), pass the `FormControl<T>` directly to the child widget and use `ListenableBuilder` to react to changes.
-
-### Localization — flutter_localizations / intl
-
-Localization is handled via `flutter_localizations` and `intl`. All user-facing strings must go through the localization system — never hardcode strings in widgets or notifiers.
-
-#### ARB files
-
-Translation files are `.arb` files located in `shared/application/l10n/`, one per supported locale:
-
-```
-shared/application/l10n/
-├── app_en.arb
-├── app_fr.arb
-└── generated/          # never edit manually
-```
-
-Each key has a companion `@key` entry carrying a `description`. The description is mandatory — it documents the intent of the string for translators.
-
-```json
-{
-  "loginButton": "Sign in",
-  "@loginButton": {
-    "description": "Login button label"
-  }
-}
-```
-
-After every `.arb` modification, run `flutter gen-l10n` to regenerate the localization classes. Never edit files in `generated/` manually.
-
-#### Naming keys
-
-Keys follow a `<feature><Context>` convention in camelCase:
-
-- `loginEmailLabel` — email field label on the login page
-- `usersPageTitle` — title of the users page
-- `userDetailSaveButton` — save button on the user detail page
-
-Generic, reusable strings use a short unprefixed name: `close`, `loadingDefaultText`, `errorDefaultText`.
-
-## Project
-
-# Project-specific rules
-
-Rules tied to our own implementation choices: how we wire libraries together, which shared widgets to use, and patterns specific to this codebase.
-
-### Colors
-
-Never use color literals (`Color(0xFF...)`) inline in widget code. Always reference a constant from `AppColors`. If the required color does not exist in `AppColors`, add it there first.
-
----
-
-### Router
-
-The router is declared as a Riverpod `Provider<GoRouter>` in the same file as the route paths. This gives notifiers and use cases access to the router via `ref.read(routerProvider)`.
-
----
-
-### Localization — accessing translations
-
-**In widgets**, use `AppLocalizations.of(context)!`:
-
-```dart
-Text(AppLocalizations.of(context)!.loginButton)
-```
-
-**In notifiers and providers** — only applicable if the project uses Riverpod. Declare an `appLocalizationsProvider` (a `StateProvider<AppLocalizations>`) and a `ref.l10n` extension on `Ref` in `shared/application/l10n/app_localizations_provider.dart`. Create this file if it does not exist. Then access translations via `ref.l10n` anywhere a `Ref` is available:
-
-```dart
-final message = ref.l10n.loginButton;
-```
-
----
-
-### Locale management
-
-The active locale is managed by `LocaleNotifier` (`localeNotifierProvider`). It initialises from the persisted preference (via `SharedPreferences`), falling back to the system locale, then to English if the system locale is not supported.
-
-To change the locale at runtime, call `ref.read(localeNotifierProvider.notifier).setLocale(locale)`. The change is persisted automatically.
-
-Supported locale codes are defined as a constant list inside `LocaleNotifier`. Add a new code there whenever a new `.arb` file is added.
-
----
-
-### Shared widgets
-
-All shared widgets live in `shared/application/widgets/`. Always reuse them before creating a new widget. When a new shared widget is added to the codebase, document it here.
-
-#### General
-
-**`AppLoadingButton`** — button with built-in loading state. Disabled and shows `loadingChild` when `isLoading` is `true`; shows `child` and triggers `onTap` otherwise. Accepts an optional `style`.
-
-**`AppLoadingText`** — animated loading indicator displaying text with a letter-by-letter fade-in loop. Defaults to the localised `loadingDefaultText` string if no `text` is provided.
-
-**`AppText`** — animated message widget driven by a `type` parameter (`AppTextType`).
-
-- `AppTextType.error` (default): red text, one-shot shake animation. Defaults to `errorDefaultText`. To replay the animation on a new error, pass a new `Key` (e.g. `ValueKey(errorCounter)`).
-- `AppTextType.info`: blue text, smooth looping fade animation between 40 % and 100 % opacity. Defaults to `infoDefaultText`.
-
-**`AppPageHeader`** — standard page title row with an optional back `IconButton`. Accepts `title`, an optional `onBack` callback and an optional `titlePrefix` (shown in primary colour, see `AppPrefixedText`).
-
-**`AppPrefixedText`** — a name preceded by its prefix (`AppPrefixes.flair` = `f/`, `AppPrefixes.signature` = `s/`), the prefix in bold primary colour. Accepts `prefix`, `text`, optional `style`, `overflow`, `textAlign`. Always use it to display a flair or a signature pseudo; `AppExpandableSection` also takes a `subtitlePrefix`.
-
-**`AppSnackbar`** — static utility for snackbars. Never instantiated directly. Dark background (`onLight`), white text, over a row of animated bedbugs (`SnackbarBedbugBackground`), inside a border whose width pulses with a bounce (`SnackbarPulseBorder`); their colour carries the tone of the message.
-
-- `AppSnackbar.showError(context, message, {intensity})` — red ghost, angry bedbugs, maximum intensity by default.
-- `AppSnackbar.showSuccess(context, message, {intensity})` — green ghost, happy bedbugs, low intensity by default.
-  `intensity` (0 to 1) only drives the speed of the background and border animations; their amplitude stays soft. Snackbars are compact and floating, auto-dismiss after 3 seconds, and always show a close icon.
-
-**`AppTag`** — small coloured pill label for statuses, permissions, or categories. Accepts `label` and `color`; the background is derived automatically at reduced opacity.
-
-**`ContentListView`** — list of tappable contents (tap opens the detail page). Accepts `contents`, a required `emptyChild` shown when the list is empty, and an optional scroll `controller`. Used by the home feed and the search results page.
-
-**`AppExpandableSection`** — rounded card with a tappable header (`title`, `icon`, optional `subtitle`) that expands to show `child`. Collapsed by default. Building block of the settings page: one section per setting.
-
-**`AppSignatureAvatar`** — the text icon of a signature (kaomoji, emoji, symbols…) rendered with `AppGhostText`, the ghost layer using the signature colour and speed. Accepts `avatarText`, `ghostColor`, optional `ghostSpeed` (1), `fontSize` (32) and `isAnimating` (`true`; pass `false` in lists).
-
-**`AppReactionBubble`** — a reaction: a bedbug topped by its optional speech bubble (`bubbleText`), both shaken together in the reaction colour and intensity. The layering depends on `style` (`ReactionBubbleStyle.outline`: no fill, only the outline; `backed`: outline with a white fill behind everything, ghost included; `layered`: black border > colour ghost > text > white fill), defaulting to the app-wide `appReactionBubbleStyle` constant. Accepts `avatarText`, `ghostColor`, optional `bubbleText`, `ghostSpeed` (1), `fontSize` (20), `isAnimating` (`true`; pass `false` in lists) and `isMirrored` (`false`; `true` for a right-aligned reaction: content aligned right, bubble pinched on the right). Used by the reactions list of the detail page and by the preview of the reaction form.
-
-**`AppGhostEffect`** — the ghost effect applied to any `child`: a silhouette of the child tinted with `ghostColor` and the child itself, jittering out of sync. Accepts `child`, `isAnimating`, optional `speed` (1), `intensity` (1) and `ghostColor`. `AppGhostText` is a thin wrapper around it; use it directly to make a whole composite widget tremble.
-
-**`AppGhostAnimation`** — the ghost animation engine alone: it draws nothing and calls `builder(context, offsets)` with the current `GhostOffsets` (`ghost`, `main`), or `null` when not animating. Use it to stack layers your own way; `AppGhostEffect` is its default two-layer composition. Built for long lists: each animation sits in its own `RepaintBoundary` and pauses itself when it leaves the visible area of its nearest `Scrollable`, so there is no need to limit how many ghost effects are animated.
-
-**`AppScrollReveal`** — makes its `child` appear with a bounce (fade + elastic zoom) when it becomes fully visible in its nearest `Scrollable`, and fade out with a slight shrink as soon as it starts leaving. Layout is never affected, only rendering. Outside a scrollable, the child is shown as is. Used on each reaction of the detail page. Visibility comes from `scrollVisibilityOf` (`widgets/scroll/scroll_visibility.dart`), shared with `AppGhostAnimation`.
-
-**`AppScatter`** — scatters its `children` randomly over the available width, at their natural size, without any overlap (minimum `spacing`, default 12), and takes the height they occupy. Positions come from `seed` and stay stable across rebuilds. Needs a bounded width. Used for the reactions of the detail page.
-
-**`AppGhostColorSelector`** — picker for the colour of a ghost effect: a few preset swatches plus one opening a free colour picker. Driven by a `FormControl<Color>` passed as `control`. Used for the signature colour and for the bedbug colour of a reaction.
-
-**`AppGhostSpeedSlider`** — reactive slider for the intensity of a ghost effect, between `minGhostSpeed` and `maxGhostSpeed` by steps of 0.25. Accepts a `FormControl<double>` as `formControl`. Always use it rather than a raw `ReactiveSlider`, so bounds and step stay the same everywhere.
-
-**`AppSignatureBio`** — the short description of a signature (`bio`), centred and italic under the pseudo. Used on the signature page and in the profile form preview.
-
-**`AppStat`** — compact statistic: an `icon` followed by a number (`label`) in the same `color`, read by screen readers as `semanticsLabel` (e.g. « 12 rebonds »). Use it instead of a tag when only a figure matters.
-
-**`ContentStats`** — the statistics of a content: bounces (`AppBounceIcon` + `+12`, primary colour) then reactions (`AppBurstIcon` + count, secondary colour), the latter shown once loaded. Accepts `contentId` and `bounce`. Placed before the tags on tiles (followed by the first tag only) and on the detail page (followed by all tags).
-
-**`AppBounceIcon`** — hand-drawn icon (`CustomPainter`) of a bounce: a ball bouncing on the ground. Accepts `color` and an optional `size` (16).
-
-**`AppBurstIcon`** — hand-drawn icon (`CustomPainter`) of a reaction: the outline of a comic-book explosion with irregular spikes and three exclamation marks, all in `color`. Accepts `color` and an optional `size` (16).
-
-**`AppImageCountBadge`** — dark translucent pill (collections icon + `label`) overlaid on an image that belongs to a multi-image content. Used with the image count on content tiles and with the position (`2/4`) in the detail carousel.
-
----
-
-#### Form fields
-
-**`ReactiveAppNameFormField`** — reactive text field for proper names (first name, last name). Blocks digit input in real time. Requires `AppValidators.required` and `AppValidators.noDigits` on the associated `FormControl`. Accepts `formControlName`, `labelText`, `requiredErrorText`, `containsDigitsErrorText`.
-
-**`ReactiveAppDecimalFormField`** — reactive text field for positive decimal numbers. Restricts input to digits and a single decimal separator (`.` or `,`). Requires `AppValidators.decimal` and `AppValidators.notNegative` on the associated `FormControl`. Accepts `formControlName`, `labelText`, `invalidErrorText`, `negativeErrorText`.
+- Validators come from `AppValidators` and are declared on the `FormControl`. Each one is a `const` instance of a private
+  class extending `Validator<dynamic>`, never a plain function.
+- Before submitting, check `_form.valid`; if invalid, call `_form.markAllAsTouched()` and return.
+- Text fields use `ReactiveTextField<String>`, dropdowns `ReactiveDropdownField<T>`. For custom fields, pass the
+  `FormControl<T>` to the child widget and react with `ListenableBuilder`.
+
+### Hive
+
+- Hive models live in the feature's `infrastructure/models/`, annotated with `@HiveType` / `@HiveField`.
+- Every `typeId` is declared in `HiveTypeIds`. Never reuse a removed `typeId`.
+- Regenerate with `build_runner` after each model change (see README).
+
+### Localization
+
+- No hardcoded user-facing string: everything goes through the ARB files in `application/l10n/`.
+- Every key has a companion `@key` entry with a mandatory `description`.
+- Keys are camelCase `<screen><Context>` (`homeEmptyList`). Generic strings use a short unprefixed name (`close`).
+- Run `flutter gen-l10n` after each ARB change. Never edit `generated/`.
+- In widgets: `AppLocalizations.of(context)!`. In notifiers and providers: `ref.l10n`.

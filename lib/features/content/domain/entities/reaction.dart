@@ -1,5 +1,6 @@
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
+import 'package:bedbug/features/signature/domain/enums/text_font.dart';
 import 'package:bedbug/shared/domain/entity.dart';
 
 /// Longueur maximale, en caractères, de la bulle de texte d'une [Reaction].
@@ -33,6 +34,7 @@ class Reaction extends Entity {
   /// - [bubbleText] : bulle de texte, non vide et au plus [maxReactionBubbleLength] caractères.
   /// - [colorArgb] : couleur de l'effet ghost du bedbug, `null` pour la couleur par défaut de l'app.
   /// - [ghostSpeed] : intensité de l'effet ghost, entre [minGhostSpeed] et [maxGhostSpeed].
+  /// - [bubbleFont] : police de la bulle de texte (défaut [TextFont.standard]).
   Reaction({
     required super.id,
     required super.createdAt,
@@ -43,6 +45,7 @@ class Reaction extends Entity {
     required this.bubbleText,
     this.colorArgb,
     this.ghostSpeed = defaultGhostSpeed,
+    this.bubbleFont = TextFont.standard,
   });
 
   /// Identifiant du [Content] auquel cette réaction est rattachée.
@@ -71,4 +74,10 @@ class Reaction extends Entity {
 
   /// Intensité de l'effet ghost du bedbug (multiplicateur de la vitesse normale).
   final double ghostSpeed;
+
+  /// Police de la bulle de texte.
+  ///
+  /// Choisie à chaque réaction, comme la couleur : un « NOOON » ne s'écrit
+  /// pas dans la même police qu'un « trop mignon ».
+  final TextFont bubbleFont;
 }

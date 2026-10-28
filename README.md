@@ -3,6 +3,14 @@
 Projet BedBug, une application de communication locale (wifi/ble) open-source.
 Pensé comme un réseau social local. La transmission de messages et contenus se fait d'appareils à appareils.
 
+## Développement assisté par IA
+
+Ce projet est développé en grande partie avec l'aide de l'IA ([Claude Code](https://claude.com/claude-code)).
+Les règles d'architecture, de structure et de style suivies par l'IA sont décrites dans [`CLAUDE.md`](CLAUDE.md).
+
+Si tu souhaites contribuer en codant à la main, tu dois respecter ces mêmes règles, afin que le code reste homogène
+quelle que soit sa provenance.
+
 ## Commandes utiles
 
 ### Installer les packages

@@ -1,5 +1,6 @@
 import 'package:bedbug/application/widgets/ghost/app_ghost_animation.dart';
 import 'package:bedbug/application/widgets/reactions/reaction_bubble_layer.dart';
+import 'package:bedbug/features/signature/domain/enums/text_font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,6 +24,7 @@ class AppReactionBubble extends ConsumerWidget {
   /// - [avatarText] : bedbug de la réaction.
   /// - [ghostColor] : couleur de l'effet ghost, choisie pour la réaction.
   /// - [bubbleText] : bulle de texte optionnelle, masquée si `null` ou vide.
+  /// - [bubbleFont] : police de la bulle de texte (défaut [TextFont.standard]).
   /// - [ghostSpeed] : vitesse de l'effet ghost (défaut 1).
   /// - [fontSize] : taille du bedbug (défaut 20).
   /// - [isAnimating] : `false` pour figer le bedbug, par exemple dans une liste (défaut `true`).
@@ -33,6 +35,7 @@ class AppReactionBubble extends ConsumerWidget {
     required this.avatarText,
     required this.ghostColor,
     this.bubbleText,
+    this.bubbleFont = TextFont.standard,
     this.ghostSpeed = 1,
     this.fontSize = 20,
     this.isAnimating = true,
@@ -48,6 +51,9 @@ class AppReactionBubble extends ConsumerWidget {
 
   /// Bulle de texte optionnelle.
   final String? bubbleText;
+
+  /// Police de la bulle de texte.
+  final TextFont bubbleFont;
 
   /// Vitesse de l'effet ghost.
   final double ghostSpeed;
@@ -136,6 +142,7 @@ class AppReactionBubble extends ConsumerWidget {
     return ReactionBubbleLayer(
       avatarText: avatarText,
       bubbleText: bubbleText?.trim() ?? '',
+      bubbleFont: bubbleFont,
       fontSize: fontSize,
       isMirrored: isMirrored,
       hasFill: hasFill,

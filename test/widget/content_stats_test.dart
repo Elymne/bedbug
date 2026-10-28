@@ -24,8 +24,9 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('+12'), findsOneWidget);
-    expect(find.text('3'), findsOneWidget);
+    // Deux fois chacun : le nombre lui-même, et sa silhouette dans la couche de l'effet ghost.
+    expect(find.text('+12'), findsNWidgets(2));
+    expect(find.text('3'), findsNWidgets(2));
     expect(find.bySemanticsLabel('12 rebonds'), findsOneWidget);
     expect(find.bySemanticsLabel('3 réactions'), findsOneWidget);
     semantics.dispose();

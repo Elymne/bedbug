@@ -6,6 +6,7 @@ import 'package:bedbug/features/content/domain/repositories/reaction_repository.
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
+import 'package:bedbug/features/signature/domain/enums/text_font.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/domain/usecase.dart';
@@ -116,6 +117,7 @@ class SeedReactionsUsecase extends Usecase<SeedReactionsParams, SeedReactionsFai
       bubbleText: _bubbleTexts[random.nextInt(_bubbleTexts.length)],
       colorArgb: _colorArgbs[random.nextInt(_colorArgbs.length)],
       ghostSpeed: minGhostSpeed + random.nextInt(steps + 1) * 0.25,
+      bubbleFont: TextFont.values[random.nextInt(TextFont.values.length)],
     );
   }
 }
