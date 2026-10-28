@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/enums/social_network.dart';
+import 'package:bedbug/features/signature/domain/enums/text_font.dart';
 import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
 import 'package:bedbug/features/signature/infrastructure/datasources/hive_signature_repository.dart';
 import 'package:bedbug/shared/domain/either.dart';
@@ -106,6 +107,7 @@ class SeedSignaturesUsecase extends Usecase<SeedSignaturesParams, SeedSignatures
             socialLinks: _randomSocialLinks(random, pseudos[index]),
             // Une signature sur trois n'a pas de description, pour tester l'affichage sans.
             bio: index % 3 == 0 ? null : _bios[random.nextInt(_bios.length)],
+            bioFont: TextFont.values[random.nextInt(TextFont.values.length)],
           ),
       ];
 

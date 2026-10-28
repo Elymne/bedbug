@@ -1,11 +1,12 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/notifiers/own_contents_notifier.dart';
+import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/screens/home/home_feed_notifier.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
-import 'package:bedbug/features/content/domain/object_values/content_image.dart';
-import 'package:bedbug/features/content/domain/usecases/prepare_content_images_usecase.dart';
+import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
+import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
+import 'package:bedbug/features/content/domain/services/url_trust_service.dart';
 import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
 import 'package:bedbug/features/content/infrastructure/og_metadata_service.dart';
 import 'package:bedbug/shared/domain/either.dart';
@@ -18,28 +19,30 @@ final publishContentNotifierProvider = AsyncNotifierProvider.autoDispose<Publish
 
 /// Notifier gérant la publication d'un nouveau contenu, préparation comprise.
 ///
-/// Publier peut prendre plusieurs secondes : recompresser jusqu'à dix
-/// images, ou lire l'aperçu d'un lien sur le réseau. Tout ce travail se fait
-/// ici, pendant que l'état est en chargement, pour que la page affiche son
-/// écran de chargement du premier au dernier instant. Le résultat est
-/// retourné à l'appelant : le contenu enregistré en cas de succès, pour
-/// pouvoir l'ouvrir, ou le message d'erreur à afficher. Un succès recharge le
-/// fil de la page d'accueil et la liste « Mes posts », où le contenu doit
-/// apparaître.
+/// Publier un lien peut prendre quelques secondes, le temps de lire son
+/// aperçu sur le réseau. Tout ce travail se fait ici, pendant que l'état est
+/// en chargement, pour que la page affiche son écran de chargement du
+/// premier au dernier instant. Le résultat est retourné à l'appelant : le
+/// contenu enregistré en cas de succès, pour pouvoir l'ouvrir, ou le message
+/// d'erreur à afficher. Un succès recharge le fil de la page d'accueil et la
+/// liste « Mes posts », où le contenu doit apparaître.
 class PublishContentNotifier extends AsyncNotifier<void> {
   /// Cas d'usage de sauvegarde d'un contenu.
   late final _saveContentUsecase = ref.read(saveContentUsecaseProvider);
 
-  /// Cas d'usage de préparation des images d'un contenu image.
-  late final _prepareContentImagesUsecase = ref.read(prepareContentImagesUsecaseProvider);
-
   /// Service de lecture de l'aperçu (Open Graph) d'un lien.
   late final _ogMetadataService = ref.read(ogMetadataServiceProvider);
+
+  /// Service de vérification des URLs.
+  late final _urlSafetyService = ref.read(urlSafetyServiceProvider);
+
+  /// Service d'évaluation des URLs selon les listes de l'utilisateur.
+  late final _urlTrustService = ref.read(urlTrustServiceProvider);
 
   @override
   Future<void> build() async {}
 
-  /// Publie [content], déjà complet (contenu texte).
+  /// Publie [content], déjà complet (contenu texte ou média).
   ///
   /// - [content] : contenu à publier.
   Future<Either<String, Content>> publish(Content content) async {
@@ -49,27 +52,11 @@ class PublishContentNotifier extends AsyncNotifier<void> {
     return result;
   }
 
-  /// Prépare les images [sourcePaths], puis publie le contenu image construit à partir d'elles.
+  /// Lit l'aperçu du lien [url] s'il est de confiance, puis publie le contenu lien construit à partir de lui.
   ///
-  /// - [sourcePaths] : chemins absolus des images choisies, dans l'ordre d'affichage.
-  /// - [buildContent] : construit le contenu à partir des images préparées.
-  Future<Either<String, Content>> publishImages({
-    required List<String> sourcePaths,
-    required ImageContent Function(List<ContentImage> images) buildContent,
-  }) async {
-    state = const AsyncLoading();
-    final result = await _prepareContentImagesUsecase(PrepareContentImagesParams(sourcePaths: sourcePaths));
-    final images = result.right;
-    if (images == null) {
-      state = const AsyncData(null);
-      return Left(ref.l10n.createImageCompressionError);
-    }
-    final publishResult = await _save(buildContent(images));
-    state = const AsyncData(null);
-    return publishResult;
-  }
-
-  /// Lit l'aperçu du lien [url], puis publie le contenu lien construit à partir de lui.
+  /// Lire l'aperçu, c'est contacter le site du lien sans que l'auteur ait
+  /// rien ouvert : ce n'est fait que pour un domaine de sa whitelist de
+  /// liens. Sinon, le lien est publié sans aperçu.
   ///
   /// - [url] : adresse du lien partagé.
   /// - [buildContent] : construit le contenu à partir de l'aperçu lu.
@@ -78,7 +65,12 @@ class PublishContentNotifier extends AsyncNotifier<void> {
     required LinkContent Function(OgMetadata ogMetadata) buildContent,
   }) async {
     state = const AsyncLoading();
-    final ogMetadata = await _ogMetadataService.fetch(url);
+    final trustSettings = await ref.read(trustSettingsNotifierProvider.future);
+    var ogMetadata = const OgMetadata();
+    final safeUrl = _urlSafetyService.parse(url);
+    if (safeUrl != null && _urlTrustService.evaluate(trustSettings.linkPolicy, safeUrl.url) == UrlTrust.trusted) {
+      ogMetadata = await _ogMetadataService.fetch(safeUrl.url);
+    }
     final result = await _save(buildContent(ogMetadata));
     state = const AsyncData(null);
     return result;
@@ -94,6 +86,7 @@ class PublishContentNotifier extends AsyncNotifier<void> {
         final message = switch (failure) {
           SaveContentFailure.storageError => ref.l10n.homeGetContentsStorageError,
           SaveContentFailure.unknown => ref.l10n.createSaveError,
+          SaveContentFailure.invalidContent => ref.l10n.createInvalidContentError,
         };
         return Left(message);
       },

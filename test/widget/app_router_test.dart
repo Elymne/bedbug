@@ -1,11 +1,8 @@
-import 'dart:io';
-
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
-import 'package:bedbug/application/providers/app_docs_dir_provider.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/router/error_route_page.dart';
-import 'package:bedbug/application/screens/content_detail/image_content_detail_screen.dart';
 import 'package:bedbug/application/screens/content_detail/link_content_detail_screen.dart';
+import 'package:bedbug/application/screens/content_detail/media_content_detail_screen.dart';
 import 'package:bedbug/application/screens/content_detail/text_content_detail_screen.dart';
 import 'package:bedbug/application/screens/create/create_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
@@ -13,11 +10,11 @@ import 'package:bedbug/application/screens/search/search_screen.dart';
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
 import 'package:bedbug/application/screens/splash/splash_screen.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/entities/image_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
+import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/object_values/content_image.dart';
+import 'package:bedbug/features/content/domain/object_values/content_media.dart';
 import 'package:bedbug/features/content/domain/usecases/clear_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
@@ -99,9 +96,9 @@ LinkContent _buildLinkContent() {
   );
 }
 
-ImageContent _buildImageContent() {
-  return ImageContent(
-    id: 'image-1',
+MediaContent _buildMediaContent() {
+  return MediaContent(
+    id: 'media-1',
     createdAt: DateTime(2026),
     updatedAt: DateTime(2026),
     authorId: 'local',
@@ -113,7 +110,8 @@ ImageContent _buildImageContent() {
     displayScore: 1,
     bounce: 0,
     sizeInBytes: 10,
-    images: const [ContentImage(fileName: 'inexistant.jpg', width: 100, height: 100)],
+    // Domaine inconnu : le média reste voilé, rien n'est chargé pendant le test.
+    media: const [ContentMedia(url: 'https://example.com/a.png', kind: MediaKind.image)],
     title: 'Titre',
   );
 }
@@ -147,7 +145,6 @@ void main() {
         seedReactionsUsecaseProvider.overrideWithValue(_FakeSeedReactionsUsecase()),
         seedSignaturesUsecaseProvider.overrideWithValue(_FakeSeedSignaturesUsecase()),
         clearContentsUsecaseProvider.overrideWithValue(_FakeClearContentsUsecase()),
-        appDocsDirProvider.overrideWith((ref) async => Directory.systemTemp),
       ],
     );
     addTearDown(container.dispose);
@@ -209,9 +206,9 @@ void main() {
     router.pop();
     await settleRoute(tester);
 
-    router.push(contentDetailPath, extra: _buildImageContent());
+    router.push(contentDetailPath, extra: _buildMediaContent());
     await settleRoute(tester);
-    expect(find.byType(ImageContentDetailScreen), findsOneWidget);
+    expect(find.byType(MediaContentDetailScreen), findsOneWidget);
     router.pop();
     await settleRoute(tester);
     expect(find.byType(HomeScreen), findsOneWidget);

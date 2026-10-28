@@ -3,6 +3,7 @@ import 'package:bedbug/application/notifiers/content_reaction_count_notifier.dar
 import 'package:bedbug/application/notifiers/content_reactions_notifier.dart';
 import 'package:bedbug/features/content/domain/entities/reaction.dart';
 import 'package:bedbug/features/content/domain/usecases/save_reaction_usecase.dart';
+import 'package:bedbug/features/signature/domain/enums/text_font.dart';
 import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
 import 'package:bedbug/shared/extensions/string_uuid_x.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,6 +39,7 @@ class SaveReactionNotifier extends AsyncNotifier<void> {
   /// - [bubbleText] : bulle de texte.
   /// - [colorArgb] : couleur de l'effet ghost du bedbug en ARGB 32 bits.
   /// - [ghostSpeed] : intensité de l'effet ghost du bedbug.
+  /// - [bubbleFont] : police de la bulle de texte.
   /// - [previousReaction] : réaction actuelle de l'utilisateur sur ce contenu, `null` s'il n'a pas encore réagi.
   Future<String?> save({
     required String contentId,
@@ -45,6 +47,7 @@ class SaveReactionNotifier extends AsyncNotifier<void> {
     required int colorArgb,
     required double ghostSpeed,
     required String bubbleText,
+    required TextFont bubbleFont,
     Reaction? previousReaction,
   }) async {
     state = const AsyncLoading();
@@ -61,6 +64,7 @@ class SaveReactionNotifier extends AsyncNotifier<void> {
           bubbleText: bubbleText,
           colorArgb: colorArgb,
           ghostSpeed: ghostSpeed,
+          bubbleFont: bubbleFont,
         ),
       ),
     );

@@ -1,10 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/entities/image_content.dart';
+import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
+import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/enums/tag.dart';
-import 'package:bedbug/features/content/domain/object_values/content_image.dart';
+import 'package:bedbug/features/content/domain/object_values/content_media.dart';
+import 'package:bedbug/features/content/infrastructure/models/drawing_binary_codec.dart';
 import 'package:bedbug/shared/exceptions/data_exception.dart';
 import 'package:bedbug/shared/infrastructure/hive_type_ids.dart';
 import 'package:hive_ce/hive.dart';
@@ -14,7 +18,14 @@ part 'content_hive_model.g.dart';
 /// Discriminant identifiant le type concret d'un [Content] stocké.
 const _typeTextContent = 'text_content';
 const _typeLinkContent = 'link_content';
-const _typeImageContent = 'image_content';
+const _typeMediaContent = 'media_content';
+const _typeDrawingContent = 'drawing_content';
+
+/// Discriminant des anciens contenus image, dont les fichiers étaient stockés localement.
+///
+/// Ils ne peuvent plus être relus : ils sont supprimés au démarrage (voir
+/// `ContentHiveModel.isLegacyImageContent`).
+const _typeLegacyImageContent = 'image_content';
 
 /// Flair attribué aux contenus persistés avant que le flair devienne obligatoire.
 const _legacyFlair = 'public';
@@ -23,6 +34,10 @@ const _legacyFlair = 'public';
 ///
 /// Un seul modèle couvre tous les sous-types de [Content] via le champ
 /// [type]. Les champs spécifiques à chaque sous-type sont nullable.
+///
+/// Champs volontairement laissés inutilisés, à ne jamais réutiliser :
+/// 11, 17, 18, 24, 25 et 26 (fichiers et dimensions des anciennes images
+/// locales), 12 (ancien `subId`).
 @HiveType(typeId: HiveTypeIds.content)
 class ContentHiveModel extends HiveObject {
   /// Crée un [ContentHiveModel].
@@ -41,12 +56,9 @@ class ContentHiveModel extends HiveObject {
     this.title,
     this.body,
     this.url,
-    this.fileName,
-    this.imageWidth,
-    this.imageHeight,
-    this.imageFileNames = const [],
-    this.imageWidths = const [],
-    this.imageHeights = const [],
+    this.mediaUrls = const [],
+    this.mediaKinds = const [],
+    this.drawingData,
     required this.flair,
     required this.sizeInBytes,
     this.ogImageUrl,
@@ -101,24 +113,43 @@ class ContentHiveModel extends HiveObject {
         tagValues: entity.tags.map((tag) => tag.value).toList(),
       );
     }
-    if (entity is ImageContent) {
+    if (entity is MediaContent) {
       return ContentHiveModel(
         id: entity.id,
         createdAt: entity.createdAt.millisecondsSinceEpoch,
         updatedAt: entity.updatedAt.millisecondsSinceEpoch,
         authorId: entity.authorId,
-        type: _typeImageContent,
+        type: _typeMediaContent,
         origin: entity.origin.value,
         broadcastScore: entity.broadcastScore,
         survivalScore: entity.survivalScore,
         displayScore: entity.displayScore,
         bounce: entity.bounce,
         senderId: entity.senderId,
-        imageFileNames: entity.images.map((image) => image.fileName).toList(),
-        imageWidths: entity.images.map((image) => image.width).toList(),
-        imageHeights: entity.images.map((image) => image.height).toList(),
+        mediaUrls: entity.media.map((media) => media.url).toList(),
+        mediaKinds: entity.media.map((media) => media.kind.value).toList(),
         title: entity.title,
         body: entity.body,
+        flair: entity.flair,
+        sizeInBytes: entity.sizeInBytes,
+        tagValues: entity.tags.map((tag) => tag.value).toList(),
+      );
+    }
+    if (entity is DrawingContent) {
+      return ContentHiveModel(
+        id: entity.id,
+        createdAt: entity.createdAt.millisecondsSinceEpoch,
+        updatedAt: entity.updatedAt.millisecondsSinceEpoch,
+        authorId: entity.authorId,
+        type: _typeDrawingContent,
+        origin: entity.origin.value,
+        broadcastScore: entity.broadcastScore,
+        survivalScore: entity.survivalScore,
+        displayScore: entity.displayScore,
+        bounce: entity.bounce,
+        senderId: entity.senderId,
+        drawingData: const DrawingBinaryCodec().encode(entity.drawing),
+        title: entity.title,
         flair: entity.flair,
         sizeInBytes: entity.sizeInBytes,
         tagValues: entity.tags.map((tag) => tag.value).toList(),
@@ -147,11 +178,11 @@ class ContentHiveModel extends HiveObject {
   @HiveField(4)
   final String type;
 
-  /// Titre du contenu. Renseigné pour [TextContent] uniquement.
+  /// Titre du contenu.
   @HiveField(5)
   final String? title;
 
-  /// Corps du contenu. Renseigné pour [TextContent] uniquement.
+  /// Corps du contenu.
   @HiveField(6)
   final String? body;
 
@@ -171,42 +202,23 @@ class ContentHiveModel extends HiveObject {
   @HiveField(10)
   final String? url;
 
-  /// Ancien nom du fichier de l'unique image d'un [ImageContent].
+  /// Adresses des médias, dans l'ordre d'affichage. Renseigné pour [MediaContent] uniquement.
   ///
-  /// N'est plus écrit depuis qu'un contenu image peut porter plusieurs images
-  /// ([imageFileNames]) : conservé en lecture seule pour relire les contenus
-  /// persistés avant ce changement.
-  @HiveField(11)
-  final String? fileName;
+  /// Stocké en listes parallèles ([mediaKinds]) plutôt qu'en liste d'objets,
+  /// pour ne pas avoir à déclarer un adaptateur Hive dédié.
+  @HiveField(27, defaultValue: <String>[])
+  final List<String> mediaUrls;
 
-  /// Ancienne largeur de l'unique image. Lecture seule, voir [fileName].
-  @HiveField(17)
-  final int? imageWidth;
+  /// Natures des médias (valeurs de [MediaKind]), alignées sur [mediaUrls].
+  @HiveField(28, defaultValue: <int>[])
+  final List<int> mediaKinds;
 
-  /// Ancienne hauteur de l'unique image. Lecture seule, voir [fileName].
-  @HiveField(18)
-  final int? imageHeight;
-
-  /// Noms des fichiers images dans le dossier géré par l'app, dans l'ordre
-  /// d'affichage. Renseigné pour [ImageContent] uniquement.
-  ///
-  /// Stocké en listes parallèles ([imageWidths], [imageHeights]) plutôt qu'en
-  /// liste d'objets, pour ne pas avoir à déclarer un adaptateur Hive dédié.
-  @HiveField(24, defaultValue: <String>[])
-  final List<String> imageFileNames;
-
-  /// Largeurs des images en pixels, alignées sur [imageFileNames].
-  @HiveField(25, defaultValue: <int>[])
-  final List<int> imageWidths;
-
-  /// Hauteurs des images en pixels, alignées sur [imageFileNames].
-  @HiveField(26, defaultValue: <int>[])
-  final List<int> imageHeights;
+  /// Dessin encodé par [DrawingBinaryCodec]. Renseigné pour [DrawingContent] uniquement.
+  @HiveField(29)
+  final Uint8List? drawingData;
 
   /// Flair libre du contenu, sans le `/` initial.
   ///
-  /// Le champ 12 (ancien `subId`) est volontairement laissé inutilisé : le
-  /// réutiliser ferait relire les anciens identifiants de sub comme des flairs.
   /// Les contenus persistés avant l'ajout du flair n'ont pas ce champ : ils
   /// sont relus avec [_legacyFlair] au lieu de faire échouer la lecture.
   @HiveField(23, defaultValue: _legacyFlair)
@@ -243,6 +255,11 @@ class ContentHiveModel extends HiveObject {
   /// Valeurs [Tag.value] des tags associés à ce contenu.
   @HiveField(22)
   final List<int> tagValues;
+
+  /// Indique si ce modèle est un ancien contenu image, à fichiers locaux, qui ne peut plus être relu.
+  bool get isLegacyImageContent {
+    return type == _typeLegacyImageContent;
+  }
 
   /// Convertit ce modèle en entité [Content] concrète.
   Content toEntity() {
@@ -298,8 +315,8 @@ class ContentHiveModel extends HiveObject {
         tags: tags,
       );
     }
-    if (type == _typeImageContent) {
-      return ImageContent(
+    if (type == _typeMediaContent) {
+      return MediaContent(
         id: id,
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
@@ -310,7 +327,13 @@ class ContentHiveModel extends HiveObject {
         displayScore: displayScore,
         bounce: bounce,
         senderId: senderId,
-        images: _toContentImages(),
+        media: [
+          for (var index = 0; index < mediaUrls.length; index++)
+            ContentMedia(
+              url: mediaUrls[index],
+              kind: index < mediaKinds.length ? MediaKind.fromValue(mediaKinds[index]) : MediaKind.image,
+            ),
+        ],
         title: title!,
         body: body,
         flair: flair,
@@ -318,21 +341,25 @@ class ContentHiveModel extends HiveObject {
         tags: tags,
       );
     }
-    throw UnimplementedError('ContentHiveModel._toEntity : type "$type" non supporté.');
-  }
-
-  /// Reconstruit les images d'un [ImageContent] depuis les listes parallèles.
-  ///
-  /// Un contenu persisté avant le passage aux images multiples n'a que les
-  /// anciens champs ([fileName], [imageWidth], [imageHeight]) : il est relu
-  /// comme un contenu à une seule image.
-  List<ContentImage> _toContentImages() {
-    if (imageFileNames.isEmpty) {
-      return [ContentImage(fileName: fileName!, width: imageWidth!, height: imageHeight!)];
+    if (type == _typeDrawingContent) {
+      return DrawingContent(
+        id: id,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
+        updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
+        authorId: authorId,
+        origin: ContentOrigin.values.firstWhere((value) => value.value == origin),
+        broadcastScore: broadcastScore,
+        survivalScore: survivalScore,
+        displayScore: displayScore,
+        bounce: bounce,
+        senderId: senderId,
+        drawing: const DrawingBinaryCodec().decode(drawingData!),
+        title: title!,
+        flair: flair,
+        sizeInBytes: sizeInBytes,
+        tags: tags,
+      );
     }
-    return [
-      for (var index = 0; index < imageFileNames.length; index++)
-        ContentImage(fileName: imageFileNames[index], width: imageWidths[index], height: imageHeights[index]),
-    ];
+    throw UnimplementedError('ContentHiveModel._toEntity : type "$type" non supporté.');
   }
 }

@@ -68,7 +68,8 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.text('s/Punaise-Royale'), findsOneWidget);
+    // Le préfixe est rendu à part, pour son effet ghost : le nom complet n'existe que dans le libellé accessible.
+    expect(find.bySemanticsLabel('s/Punaise-Royale'), findsOneWidget);
     expect(find.text('GitHub'), findsOneWidget);
     expect(find.text('Mon premier post'), findsOneWidget);
   });

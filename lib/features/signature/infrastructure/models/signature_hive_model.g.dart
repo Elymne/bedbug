@@ -24,13 +24,14 @@ class SignatureHiveModelAdapter extends TypeAdapter<SignatureHiveModel> {
       ghostSpeed: fields[9] == null ? 1.0 : (fields[9] as num).toDouble(),
       socialLinks: fields[7] == null ? {} : (fields[7] as Map).cast<int, String>(),
       bio: fields[10] as String?,
+      bioFont: fields[11] == null ? 0 : (fields[11] as num).toInt(),
     );
   }
 
   @override
   void write(BinaryWriter writer, SignatureHiveModel obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -48,7 +49,9 @@ class SignatureHiveModelAdapter extends TypeAdapter<SignatureHiveModel> {
       ..writeByte(9)
       ..write(obj.ghostSpeed)
       ..writeByte(10)
-      ..write(obj.bio);
+      ..write(obj.bio)
+      ..writeByte(11)
+      ..write(obj.bioFont);
   }
 
   @override

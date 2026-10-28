@@ -7,8 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Icône associée à chaque [ContentType].
 const _kTypeIcons = {
   ContentType.text: Icons.notes,
-  ContentType.image: Icons.image_outlined,
+  ContentType.media: Icons.perm_media_outlined,
   ContentType.link: Icons.link,
+  ContentType.drawing: Icons.brush_outlined,
 };
 
 /// Sélecteur de type de contenu affiché sous forme d'icônes toggleables.

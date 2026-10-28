@@ -1,6 +1,7 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/enums/social_network.dart';
+import 'package:bedbug/features/signature/domain/enums/text_font.dart';
 import 'package:bedbug/features/signature/domain/usecases/save_local_signature_usecase.dart';
 import 'package:bedbug/shared/notifier/notifier_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,12 +29,14 @@ class SaveSignatureNotifier extends AsyncNotifier<SaveSignatureState> {
   /// - [ghostSpeed] : vitesse de l'effet ghost.
   /// - [socialLinks] : identifiants saisis par réseau.
   /// - [bio] : description saisie, `null` ou vide pour ne pas en avoir.
+  /// - [bioFont] : police choisie pour la description.
   Future<void> save({
     required String pseudo,
     required String avatarText,
     required int colorArgb,
     required double ghostSpeed,
     required Map<SocialNetwork, String> socialLinks,
+    required TextFont bioFont,
     String? bio,
   }) async {
     state = const AsyncLoading();
@@ -46,6 +49,7 @@ class SaveSignatureNotifier extends AsyncNotifier<SaveSignatureState> {
         ghostSpeed: ghostSpeed,
         socialLinks: socialLinks,
         bio: bio,
+        bioFont: bioFont,
       ),
     );
     result.fold(

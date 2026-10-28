@@ -1,5 +1,6 @@
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/enums/social_network.dart';
+import 'package:bedbug/features/signature/domain/enums/text_font.dart';
 import 'package:bedbug/shared/exceptions/data_exception.dart';
 import 'package:bedbug/shared/infrastructure/hive_type_ids.dart';
 import 'package:hive_ce/hive.dart';
@@ -20,6 +21,7 @@ class SignatureHiveModel extends HiveObject {
   /// - [ghostSpeed] : vitesse de l'effet ghost.
   /// - [socialLinks] : identifiants par réseau, indexés par valeur de [SocialNetwork].
   /// - [bio] : courte description de l'utilisateur, `null` s'il n'en a pas.
+  /// - [bioFont] : police de la description, valeur de [TextFont].
   SignatureHiveModel({
     required this.id,
     required this.createdAt,
@@ -30,6 +32,7 @@ class SignatureHiveModel extends HiveObject {
     required this.ghostSpeed,
     required this.socialLinks,
     this.bio,
+    this.bioFont = 0,
   });
 
   /// Crée un [SignatureHiveModel] depuis une entité [Signature].
@@ -44,6 +47,7 @@ class SignatureHiveModel extends HiveObject {
       ghostSpeed: entity.ghostSpeed,
       socialLinks: {for (final entry in entity.socialLinks.entries) entry.key.value: entry.value},
       bio: entity.bio,
+      bioFont: entity.bioFont.value,
     );
   }
 
@@ -98,6 +102,13 @@ class SignatureHiveModel extends HiveObject {
   @HiveField(10)
   final String? bio;
 
+  /// Police de la description, sous forme de valeur de [TextFont].
+  ///
+  /// Les utilisateurs persistés avant l'ajout de ce réglage n'ont pas ce
+  /// champ : leur description est relue dans la police par défaut.
+  @HiveField(11, defaultValue: 0)
+  final int bioFont;
+
   /// Convertit ce modèle en entité [Signature].
   Signature toEntity() {
     try {
@@ -116,6 +127,7 @@ class SignatureHiveModel extends HiveObject {
             if (SocialNetwork.fromValue(entry.key) != null) SocialNetwork.fromValue(entry.key)!: entry.value,
         },
         bio: bio,
+        bioFont: TextFont.fromValue(bioFont),
       );
     } catch (error) {
       throw DataException('SignatureHiveModel', error);

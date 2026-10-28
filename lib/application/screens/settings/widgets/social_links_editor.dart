@@ -118,31 +118,37 @@ class _State extends ConsumerState<SocialLinksEditor> {
                     );
                   }
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: 4,
-                    children: [
-                      ReactiveTextField<String>(
-                        formControl: _handleControl,
-                        decoration: InputDecoration(
-                          hintText: l10n.settingsSocialHandleHint,
-                          // `prefixIcon` plutôt que `prefixText` : le début
-                          // de l'URL reste affiché même champ vide et non focus.
-                          prefixIcon: urlPrefix,
-                          prefixIconConstraints: const BoxConstraints(),
-                          suffixIcon: IconButton(
-                            onPressed: _add,
-                            tooltip: l10n.settingsSocialAdd,
-                            icon: const Icon(Icons.add_circle, color: AppColors.primary),
+                  // Une URL se lit toujours de gauche à droite, même dans une
+                  // langue écrite de droite à gauche : sans ça, l'identifiant
+                  // saisi s'afficherait avant le début de l'URL.
+                  return Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      spacing: 4,
+                      children: [
+                        ReactiveTextField<String>(
+                          formControl: _handleControl,
+                          decoration: InputDecoration(
+                            hintText: l10n.settingsSocialHandleHint,
+                            // `prefixIcon` plutôt que `prefixText` : le début
+                            // de l'URL reste affiché même champ vide et non focus.
+                            prefixIcon: urlPrefix,
+                            prefixIconConstraints: const BoxConstraints(),
+                            suffixIcon: IconButton(
+                              onPressed: _add,
+                              tooltip: l10n.settingsSocialAdd,
+                              icon: const Icon(Icons.add_circle, color: AppColors.primary),
+                            ),
                           ),
+                          validationMessages: {
+                            ValidationMessage.required: (_) => l10n.createRequiredFieldError,
+                            'socialHandle': (_) => l10n.settingsSocialHandleError,
+                          },
                         ),
-                        validationMessages: {
-                          ValidationMessage.required: (_) => l10n.createRequiredFieldError,
-                          'socialHandle': (_) => l10n.settingsSocialHandleError,
-                        },
-                      ),
-                      if (network != null && handleInput.isNotEmpty) _buildUrlPreview(network, handleInput),
-                    ],
+                        if (network != null && handleInput.isNotEmpty) _buildUrlPreview(network, handleInput),
+                      ],
+                    ),
                   );
                 },
               ),

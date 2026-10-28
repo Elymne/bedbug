@@ -27,7 +27,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Bedbug enregistre dans ta galerie les images des contenus que tu choisis de télécharger.</string>
+	<string>Bedbug enregistre dans ta galerie les images, gifs et vidéos que tu choisis de télécharger.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

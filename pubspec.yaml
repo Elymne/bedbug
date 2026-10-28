@@ -25,8 +25,6 @@ dependencies:
 
   # Persistance
   path_provider: ^2.1.5
-  image_picker: ^1.1.2
-  flutter_image_compress: ^2.5.1
   shared_preferences: ^2.5.5
   shared_preferences_android: ^2.4.26
   hive_ce: ^2.19.3
@@ -43,7 +41,11 @@ dependencies:
   # MaterialLocalizations ne sont pas celles de `flutter/material` utilisé par
   # l'app — le dialog du picker plante alors avant même de s'afficher.
   flex_color_picker: ^3.7.1
+  public_suffix: ^3.0.0
+  video_player: ^2.14.1
+  url_launcher: ^6.3.3
   gal: ^2.3.3
+  perfect_freehand: ^2.5.2+1
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +60,9 @@ flutter:
   uses-material-design: true
   assets:
     - assets/config/
+    # Public Suffix List de Mozilla (MPL 2.0), pour refuser les règles de
+    # domaine trop larges (`co.uk`, `github.io`). Voir `PublicSuffixGateway`.
+    - assets/data/
 
   fonts:
     - family: DynaPuff
@@ -109,3 +114,45 @@ flutter:
           weight: 600
         - asset: assets/fonts/Quicksand/Quicksand-Bold.ttf
           weight: 700
+
+    # Polices au choix de l'auteur pour les textes courts (bulle de réaction,
+    # description de signature). Voir `TextFont` et `TextFontX`.
+    - family: SnowburstOne
+      fonts:
+        - asset: assets/fonts/SnowburstOne/SnowburstOne-Regular.ttf
+
+    - family: CraftyGirls
+      fonts:
+        - asset: assets/fonts/CraftyGirls/CraftyGirls-Regular.ttf
+
+    - family: Molle
+      fonts:
+        - asset: assets/fonts/Molle/Molle-Regular.ttf
+
+    - family: Audiowide
+      fonts:
+        - asset: assets/fonts/Audiowide/Audiowide-Regular.ttf
+
+    - family: Silkscreen
+      fonts:
+        - asset: assets/fonts/Silkscreen/Silkscreen-Regular.ttf
+
+    - family: Gugi
+      fonts:
+        - asset: assets/fonts/Gugi/Gugi-Regular.ttf
+
+    - family: Eater
+      fonts:
+        - asset: assets/fonts/Eater/Eater-Regular.ttf
+
+    - family: Kablammo
+      fonts:
+        - asset: assets/fonts/Kablammo/Kablammo-Variable.ttf
+
+    - family: RockSalt
+      fonts:
+        - asset: assets/fonts/RockSalt/RockSalt-Regular.ttf
+
+    - family: LakkiReddy
+      fonts:
+        - asset: assets/fonts/LakkiReddy/LakkiReddy-Regular.ttf

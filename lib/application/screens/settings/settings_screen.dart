@@ -1,7 +1,11 @@
+import 'package:bedbug/application/l10n/locale_display_name_x.dart';
+import 'package:bedbug/application/l10n/locale_notifier.dart';
 import 'package:bedbug/application/screens/settings/local_signature_notifier.dart';
+import 'package:bedbug/application/screens/settings/widgets/language_section.dart';
 import 'package:bedbug/application/screens/settings/widgets/own_contents_section.dart';
 import 'package:bedbug/application/screens/settings/widgets/publishing_section.dart';
 import 'package:bedbug/application/screens/settings/widgets/signature_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/trust_section.dart';
 import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/widgets/headers/app_page_header.dart';
@@ -23,6 +27,7 @@ class SettingsScreen extends ConsumerWidget {
     final l10n = context.loc;
     final localSignatureNotifierWatcher = ref.watch(localSignatureNotifierProvider);
     final pseudo = localSignatureNotifierWatcher.value?.signature?.pseudo;
+    final locale = ref.watch(localeNotifierProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -52,9 +57,23 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 12),
                   AppExpandableSection(
+                    title: l10n.settingsLanguageTitle,
+                    subtitle: locale.displayName,
+                    icon: Icons.translate,
+                    child: const LanguageSection(),
+                  ),
+                  const SizedBox(height: 12),
+                  AppExpandableSection(
                     title: l10n.settingsPublishingTitle,
                     icon: Icons.edit_note_outlined,
                     child: const PublishingSection(),
+                  ),
+                  const SizedBox(height: 12),
+                  AppExpandableSection(
+                    title: l10n.trustSettingsTitle,
+                    subtitle: l10n.trustSettingsSubtitle,
+                    icon: Icons.shield_outlined,
+                    child: const TrustSection(),
                   ),
                   const SizedBox(height: 12),
                   AppExpandableSection(

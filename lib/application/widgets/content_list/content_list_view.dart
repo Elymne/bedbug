@@ -1,7 +1,11 @@
+import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/content_tile/content_widget.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/extensions/content_urls_extension.dart';
+import 'package:bedbug/features/content/domain/object_values/trust_settings.dart';
+import 'package:bedbug/features/content/domain/services/url_trust_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -30,21 +34,35 @@ class ContentListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (contents.isEmpty) {
+    final trustSettingsNotifierWatcher = ref.watch(trustSettingsNotifierProvider);
+    // Tant que les réglages ne sont pas chargés, les réglages par défaut
+    // s'appliquent : ce sont les plus prudents.
+    final trustSettings = trustSettingsNotifierWatcher.value ?? defaultTrustSettings;
+    // Les contenus de l'utilisateur restent toujours visibles : il sait ce
+    // qu'il a publié, et doit pouvoir le retrouver.
+    final visibleContents = [
+      for (final content in contents)
+        if (content.isOwned ||
+            !ref
+                .read(urlTrustServiceProvider)
+                .isContentHidden(trustSettings, mediaUrls: content.mediaUrls, linkUrls: content.linkUrls))
+          content,
+    ];
+    if (visibleContents.isEmpty) {
       return emptyChild;
     }
 
     return ListView.separated(
       controller: controller,
-      itemCount: contents.length,
+      itemCount: visibleContents.length,
       // Séparateurs en retrait des bords, comme ceux de la page de détail.
       separatorBuilder: (context, index) {
         return const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16, color: AppColors.border);
       },
       itemBuilder: (context, index) {
         return InkWell(
-          onTap: () => context.push(contentDetailPath, extra: contents[index]),
-          child: ContentWidget(content: contents[index]),
+          onTap: () => context.push(contentDetailPath, extra: visibleContents[index]),
+          child: ContentWidget(content: visibleContents[index]),
         );
       },
     );
