@@ -115,9 +115,12 @@ class HiveContentRepository implements ContentRepository {
   }
 
   @override
-  Future<List<Content>> getAllByAuthors(Set<String> authorIds) async {
+  Future<List<Content>> getAllBySignatures(Set<String> signatureIds) async {
     try {
-      return _box.values.where((model) => authorIds.contains(model.authorId)).map((model) => model.toEntity()).toList();
+      return _box.values
+          .where((model) => signatureIds.contains(model.signatureId))
+          .map((model) => model.toEntity())
+          .toList();
     } on HiveError catch (error) {
       throw DatasourceException('HiveContentRepository', error);
     }
@@ -136,6 +139,36 @@ class HiveContentRepository implements ContentRepository {
   Future<Content?> getById(String id) async {
     try {
       return _box.get(id)?.toEntity();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
+  Future<List<Content>> getByIds(List<String> ids) async {
+    try {
+      return ids.map(_box.get).whereType<ContentHiveModel>().map((model) => model.toEntity()).toList();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
+  Future<Set<String>> getExistingIds(Set<String> ids) async {
+    try {
+      return ids.where(_box.containsKey).toSet();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
+  Future<List<Content>> getTopByBroadcastScore(int limit) async {
+    try {
+      // Tri sur les modèles avant conversion : seuls les contenus retenus paient le coût de `toEntity()`.
+      final models = _box.values.toList()
+        ..sort((first, second) => second.broadcastScore.compareTo(first.broadcastScore));
+      return models.take(limit).map((model) => model.toEntity()).toList();
     } on HiveError catch (error) {
       throw DatasourceException('HiveContentRepository', error);
     }

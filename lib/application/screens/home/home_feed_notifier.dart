@@ -3,7 +3,7 @@ import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/seed_reactions_usecase.dart';
-import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
+import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/usecases/seed_signatures_usecase.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/notifier/notifier_state.dart';
@@ -50,8 +50,8 @@ class HomeFeedNotifier extends AsyncNotifier<HomeFeedState> {
   Future<void> seedAndReload() async {
     state = const AsyncLoading();
     final seedSignaturesResult = await _seedSignaturesUsecase(const SeedSignaturesParams());
-    final authorIds = [...?seedSignaturesResult.right, anonymousSignatureId];
-    await _seedContentsUsecase(SeedContentsParams(authorIds: authorIds));
+    final signatureIds = [...?seedSignaturesResult.right, anonymousSignatureId];
+    await _seedContentsUsecase(SeedContentsParams(signatureIds: signatureIds));
     await _seedReactionsUsecase(const SeedReactionsParams());
     ref.invalidateSelf();
   }

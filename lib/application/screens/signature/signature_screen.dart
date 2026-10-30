@@ -10,7 +10,7 @@ import 'package:bedbug/application/widgets/signature/app_signature_avatar.dart';
 import 'package:bedbug/application/widgets/signature/app_signature_bio.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
-import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
+import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

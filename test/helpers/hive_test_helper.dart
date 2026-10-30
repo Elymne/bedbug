@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bedbug/features/content/infrastructure/datasources/hive_drawing_draft_repository.dart';
+import 'package:bedbug/features/content/infrastructure/datasources/hive_seen_content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/models/comment_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/reaction_hive_model.dart';
@@ -35,6 +36,7 @@ Future<Directory> openTestHive() async {
     Hive.openBox<StorageHiveModel>('storage'),
     Hive.openBox<SettingsHiveModel>('settings'),
     Hive.openBox<Uint8List>(drawingDraftBoxName),
+    Hive.openBox<int>(seenContentBoxName),
   ]);
   return tempDir;
 }

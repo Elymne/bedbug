@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
+import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
 import 'package:bedbug/features/signature/domain/usecases/get_signature_usecase.dart';
 import 'package:bedbug/features/signature/domain/usecases/save_local_signature_usecase.dart';
@@ -25,7 +25,7 @@ void main() {
 
   test('un contenu anonyme est présenté avec le profil anonyme codé en dur', () async {
     final result = await container.read(getSignatureUsecaseProvider)(
-      const GetSignatureParams(authorId: anonymousSignatureId),
+      const GetSignatureParams(signatureId: anonymousSignatureId),
     );
 
     expect(result.right, same(anonymousSignature));
@@ -35,7 +35,7 @@ void main() {
 
   test("un auteur inconnu de l'appareil est présenté comme anonyme", () async {
     final result = await container.read(getSignatureUsecaseProvider)(
-      const GetSignatureParams(authorId: 'seed-author-3'),
+      const GetSignatureParams(signatureId: 'seed-author-3'),
     );
 
     expect(result.right, same(anonymousSignature));
@@ -53,7 +53,7 @@ void main() {
     );
 
     final result = await container.read(getSignatureUsecaseProvider)(
-      const GetSignatureParams(authorId: localSignatureId),
+      const GetSignatureParams(signatureId: localSignatureId),
     );
 
     expect(result.right!.pseudo, 'bedbug');

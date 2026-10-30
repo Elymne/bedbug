@@ -24,7 +24,7 @@ class DrawingContentDetailScreen extends ConsumerWidget {
       isOwned: content.isOwned,
       title: content.title,
       flair: content.flair,
-      authorId: content.authorId,
+      signatureId: content.signatureId,
       createdAt: content.createdAt,
       bounce: content.bounce,
       tags: content.tags,

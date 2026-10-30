@@ -29,7 +29,7 @@ import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:bedbug/features/content/domain/services/media_kind_service.dart';
 import 'package:bedbug/features/content/infrastructure/og_metadata_service.dart';
-import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
+import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
 import 'package:bedbug/shared/extensions/string_uuid_x.dart';
 import 'package:flutter/material.dart';
@@ -169,13 +169,13 @@ class _State extends ConsumerState<CreateScreen> {
     super.dispose();
   }
 
-  /// Identifiant d'auteur à porter par le contenu créé.
+  /// Identifiant de la signature à porter par le contenu créé.
   ///
   /// [anonymousSignatureId] si la case « publier en anonyme » est cochée : le
   /// contenu sera affiché avec le profil anonyme commun. Sinon, l'utilisateur
   /// du téléphone ([localSignatureId]), dont le profil configuré dans les options
   /// sera affiché.
-  String get _authorId {
+  String get _signatureId {
     return _isAnonymousControl.value == true ? anonymousSignatureId : localSignatureId;
   }
 
@@ -242,8 +242,7 @@ class _State extends ConsumerState<CreateScreen> {
       id: UuidX.generate(),
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
-      authorId: _authorId,
-      senderId: 'local',
+      signatureId: _signatureId,
       origin: ContentOrigin.owned,
       broadcastScore: 1,
       survivalScore: 1,
@@ -267,8 +266,7 @@ class _State extends ConsumerState<CreateScreen> {
       id: UuidX.generate(),
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
-      authorId: _authorId,
-      senderId: 'local',
+      signatureId: _signatureId,
       origin: ContentOrigin.owned,
       broadcastScore: 1,
       survivalScore: 1,
@@ -293,8 +291,7 @@ class _State extends ConsumerState<CreateScreen> {
       id: UuidX.generate(),
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
-      authorId: _authorId,
-      senderId: 'local',
+      signatureId: _signatureId,
       origin: ContentOrigin.owned,
       broadcastScore: 1,
       survivalScore: 1,
@@ -319,8 +316,7 @@ class _State extends ConsumerState<CreateScreen> {
       id: UuidX.generate(),
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
-      authorId: _authorId,
-      senderId: 'local',
+      signatureId: _signatureId,
       origin: ContentOrigin.owned,
       broadcastScore: 1,
       survivalScore: 1,
@@ -412,7 +408,7 @@ class _State extends ConsumerState<CreateScreen> {
                       children: [
                         ReactiveTextField<String>(
                           formControl: _flairControl,
-                          maxLength: 32,
+                          maxLength: maxFlairLength,
                           validationMessages: {'required': (_) => l10n.createFlairRequiredError},
                           decoration: InputDecoration(
                             labelText: l10n.createFlairLabel,

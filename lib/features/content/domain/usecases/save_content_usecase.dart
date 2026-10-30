@@ -52,6 +52,10 @@ class SaveContentUsecase extends Usecase<SaveContentParams, SaveContentFailure, 
         return const Left(SaveContentFailure.invalidContent);
       }
       final sizeInBytes = await _computeSizeInBytes(content);
+      final maxSizeInBytes = params.maxSizeInBytes;
+      if (maxSizeInBytes != null && sizeInBytes > maxSizeInBytes) {
+        return const Left(SaveContentFailure.tooLarge);
+      }
       final resized = content.copyWithSizeInBytes(sizeInBytes);
 
       final saved = await _contentRepository.addOne(resized);
@@ -122,6 +126,9 @@ enum SaveContentFailure {
   /// Le contenu dépasse ses limites (dessin trop riche, mal formé) : il n'est pas enregistré.
   invalidContent,
 
+  /// Le contenu pèse plus que le plafond demandé par l'appelant : il n'est pas enregistré.
+  tooLarge,
+
   /// Erreur de la couche de stockage locale.
   storageError,
 
@@ -134,8 +141,15 @@ class SaveContentParams extends Params {
   /// Crée des [SaveContentParams].
   ///
   /// - [content] : entité à persister.
-  const SaveContentParams({required this.content});
+  /// - [maxSizeInBytes] : poids maximal accepté, `null` pour ne pas en imposer.
+  const SaveContentParams({required this.content, this.maxSizeInBytes});
 
   /// Contenu à persister.
   final Content content;
+
+  /// Poids maximal accepté, en octets, `null` pour ne pas en imposer.
+  ///
+  /// Un contenu créé sur l'appareil n'a pas de plafond ; un contenu reçu d'un pair en a un, pour qu'un pair ne
+  /// puisse pas remplir le stockage avec quelques contenus démesurés.
+  final int? maxSizeInBytes;
 }

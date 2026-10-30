@@ -87,6 +87,8 @@ class PublishContentNotifier extends AsyncNotifier<void> {
           SaveContentFailure.storageError => ref.l10n.homeGetContentsStorageError,
           SaveContentFailure.unknown => ref.l10n.createSaveError,
           SaveContentFailure.invalidContent => ref.l10n.createInvalidContentError,
+          // Jamais renvoyé ici : la publication locale n'impose pas de plafond de poids.
+          SaveContentFailure.tooLarge => ref.l10n.createSaveError,
         };
         return Left(message);
       },

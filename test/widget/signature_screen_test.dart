@@ -2,7 +2,7 @@ import 'package:bedbug/application/screens/signature/signature_screen.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/usecases/get_contents_by_authors_usecase.dart';
+import 'package:bedbug/features/content/domain/usecases/get_contents_by_signatures_usecase.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/enums/social_network.dart';
 import 'package:bedbug/features/signature/domain/usecases/get_signature_usecase.dart';
@@ -17,7 +17,7 @@ class _FakeGetSignatureUsecase implements GetSignatureUsecase {
   Future<Either<GetSignatureFailure, Signature>> call(GetSignatureParams params) async {
     return Right(
       Signature(
-        id: params.authorId,
+        id: params.signatureId,
         createdAt: DateTime(2026),
         updatedAt: DateTime(2026),
         pseudo: 'Punaise-Royale',
@@ -28,17 +28,16 @@ class _FakeGetSignatureUsecase implements GetSignatureUsecase {
   }
 }
 
-/// Fake [GetContentsByAuthorsUsecase] retournant un unique contenu de l'auteur demandé.
-class _FakeGetContentsByAuthorsUsecase implements GetContentsByAuthorsUsecase {
+/// Fake [GetContentsBySignaturesUsecase] retournant un unique contenu de l'auteur demandé.
+class _FakeGetContentsBySignaturesUsecase implements GetContentsBySignaturesUsecase {
   @override
-  Future<Either<GetContentsByAuthorsFailure, List<Content>>> call(GetContentsByAuthorsParams params) async {
+  Future<Either<GetContentsBySignaturesFailure, List<Content>>> call(GetContentsBySignaturesParams params) async {
     return Right([
       TextContent(
         id: 'post',
         createdAt: DateTime(2026),
         updatedAt: DateTime(2026),
-        authorId: params.authorIds.first,
-        senderId: 'local',
+        signatureId: params.signatureIds.first,
         flair: 'literie',
         origin: ContentOrigin.public,
         broadcastScore: 1,
@@ -60,7 +59,7 @@ void main() {
       const SignatureScreen(signatureId: 'seed-signature-0'),
       overrides: [
         getSignatureUsecaseProvider.overrideWithValue(_FakeGetSignatureUsecase()),
-        getContentsByAuthorsUsecaseProvider.overrideWithValue(_FakeGetContentsByAuthorsUsecase()),
+        getContentsBySignaturesUsecaseProvider.overrideWithValue(_FakeGetContentsBySignaturesUsecase()),
       ],
     );
     // Le bedbug s'anime en boucle : on avance le temps au lieu d'attendre une

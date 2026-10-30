@@ -1,7 +1,7 @@
 import 'package:bedbug/features/content/domain/usecases/clear_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/seed_reactions_usecase.dart';
-import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
+import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/usecases/seed_signatures_usecase.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/notifier/notifier_state.dart';
@@ -34,8 +34,8 @@ class SplashNotifier extends AsyncNotifier<SplashState> {
   Future<void> _reseed() async {
     await _clearContentsUsecase(const NoParams());
     final seedSignaturesResult = await _seedSignaturesUsecase(const SeedSignaturesParams());
-    final authorIds = [...?seedSignaturesResult.right, anonymousSignatureId];
-    await _seedContentsUsecase(SeedContentsParams(authorIds: authorIds));
+    final signatureIds = [...?seedSignaturesResult.right, anonymousSignatureId];
+    await _seedContentsUsecase(SeedContentsParams(signatureIds: signatureIds));
     await _seedReactionsUsecase(const SeedReactionsParams());
   }
 }

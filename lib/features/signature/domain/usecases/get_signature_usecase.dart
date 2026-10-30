@@ -1,4 +1,3 @@
-import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
 import 'package:bedbug/features/signature/infrastructure/datasources/hive_signature_repository.dart';
@@ -17,7 +16,7 @@ final getSignatureUsecaseProvider = Provider<GetSignatureUsecase>((ref) {
 
 /// Retrouve le profil à afficher pour l'auteur d'un contenu.
 ///
-/// Un contenu ne porte que l'identifiant de son auteur. Pour lui donner un
+/// Un contenu ne porte que l'identifiant de sa signature. Pour lui donner un
 /// visage sur la page de détail (pseudo, icône, couleur), on cherche ce
 /// profil sur l'appareil. Un contenu anonyme, ou dont l'auteur est inconnu
 /// de l'appareil (profil jamais configuré, pair dont on n'a pas reçu le
@@ -32,10 +31,10 @@ class GetSignatureUsecase extends Usecase<GetSignatureParams, GetSignatureFailur
   @override
   Future<Either<GetSignatureFailure, Signature>> call(GetSignatureParams params) async {
     try {
-      if (params.authorId == anonymousSignatureId) {
+      if (params.signatureId == anonymousSignatureId) {
         return Right(anonymousSignature);
       }
-      final signature = await _signatureRepository.getById(params.authorId);
+      final signature = await _signatureRepository.getById(params.signatureId);
       return Right(signature ?? anonymousSignature);
     } on DataException catch (error, stackTrace) {
       AppLogger.error('GetSignatureUsecase', error, stackTrace);
@@ -66,9 +65,9 @@ enum GetSignatureFailure {
 class GetSignatureParams extends Params {
   /// Crée des [GetSignatureParams].
   ///
-  /// - [authorId] : identifiant d'auteur porté par le contenu.
-  const GetSignatureParams({required this.authorId});
+  /// - [signatureId] : identifiant de la signature portée par le contenu.
+  const GetSignatureParams({required this.signatureId});
 
-  /// Identifiant d'auteur porté par le contenu.
-  final String authorId;
+  /// Identifiant de la signature portée par le contenu.
+  final String signatureId;
 }

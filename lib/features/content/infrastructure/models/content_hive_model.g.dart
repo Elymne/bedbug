@@ -13,19 +13,20 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
   @override
   ContentHiveModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read()};
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
     return ContentHiveModel(
       id: fields[0] as String,
       createdAt: (fields[1] as num).toInt(),
       updatedAt: (fields[2] as num).toInt(),
-      authorId: fields[3] as String,
+      signatureId: fields[3] as String,
       type: fields[4] as String,
       origin: (fields[7] as num).toInt(),
       broadcastScore: (fields[19] as num).toDouble(),
       survivalScore: (fields[20] as num).toDouble(),
       displayScore: (fields[21] as num).toDouble(),
       bounce: (fields[8] as num).toInt(),
-      senderId: fields[9] as String,
       title: fields[5] as String?,
       body: fields[6] as String?,
       url: fields[10] as String?,
@@ -37,14 +38,16 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       ogImageUrl: fields[14] as String?,
       ogTitle: fields[15] as String?,
       ogDescription: fields[16] as String?,
-      tagValues: fields[22] == null ? const [] : (fields[22] as List).cast<int>(),
+      tagValues: fields[22] == null
+          ? const []
+          : (fields[22] as List).cast<int>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, ContentHiveModel obj) {
     writer
-      ..writeByte(23)
+      ..writeByte(22)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -52,7 +55,7 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       ..writeByte(2)
       ..write(obj.updatedAt)
       ..writeByte(3)
-      ..write(obj.authorId)
+      ..write(obj.signatureId)
       ..writeByte(4)
       ..write(obj.type)
       ..writeByte(5)
@@ -63,8 +66,6 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       ..write(obj.origin)
       ..writeByte(8)
       ..write(obj.bounce)
-      ..writeByte(9)
-      ..write(obj.senderId)
       ..writeByte(10)
       ..write(obj.url)
       ..writeByte(13)
@@ -99,5 +100,7 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ContentHiveModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+      other is ContentHiveModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

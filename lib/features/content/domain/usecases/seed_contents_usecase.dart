@@ -140,8 +140,8 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
         final bounce = index % 11;
         final flair = _flairs[index % _flairs.length];
 
-        final authorId = _pickAuthorId(params, random, index);
-        final content = _buildContent(index, createdAt, origin, bounce, flair, authorId, _pickTags(random));
+        final signatureId = _pickSignatureId(params, random, index);
+        final content = _buildContent(index, createdAt, origin, bounce, flair, signatureId, _pickTags(random));
         totalSizeInBytes += content.sizeInBytes;
         batch.add(content);
 
@@ -174,7 +174,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
 
   /// Choisit l'auteur du contenu factice d'index [index].
   ///
-  /// Tiré au hasard parmi [SeedContentsParams.authorIds] pour que chaque
+  /// Tiré au hasard parmi [SeedContentsParams.signatureIds] pour que chaque
   /// auteur factice signe un échantillon varié de contenus (et que la
   /// recherche par utilisateur ait de quoi être testée). Sans auteur fourni,
   /// retombe sur cinq identifiants fictifs sans profil.
@@ -182,11 +182,11 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
   /// - [params] : paramètres du seed, portant les auteurs disponibles.
   /// - [random] : générateur partagé par tout le seed.
   /// - [index] : position du contenu dans le seed.
-  String _pickAuthorId(SeedContentsParams params, Random random, int index) {
-    if (params.authorIds.isEmpty) {
+  String _pickSignatureId(SeedContentsParams params, Random random, int index) {
+    if (params.signatureIds.isEmpty) {
       return 'seed-author-${index % 5}';
     }
-    return params.authorIds[random.nextInt(params.authorIds.length)];
+    return params.signatureIds[random.nextInt(params.signatureIds.length)];
   }
 
   /// Tire au hasard de 0 à 2 tags distincts pour un contenu factice.
@@ -213,24 +213,24 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     ContentOrigin origin,
     int bounce,
     String flair,
-    String authorId,
+    String signatureId,
     List<Tag> tags,
   ) {
     final bucket = index % 10;
 
     if (bucket <= 3) {
-      return _buildTextContent(index, createdAt, origin, bounce, flair, authorId, tags);
+      return _buildTextContent(index, createdAt, origin, bounce, flair, signatureId, tags);
     }
 
     if (bucket <= 6) {
-      return _buildMediaContent(index, createdAt, origin, bounce, flair, authorId, tags);
+      return _buildMediaContent(index, createdAt, origin, bounce, flair, signatureId, tags);
     }
 
     if (bucket <= 8) {
-      return _buildLinkContent(index, createdAt, origin, bounce, flair, authorId, tags);
+      return _buildLinkContent(index, createdAt, origin, bounce, flair, signatureId, tags);
     }
 
-    return _buildDrawingContent(index, createdAt, origin, bounce, flair, authorId, tags);
+    return _buildDrawingContent(index, createdAt, origin, bounce, flair, signatureId, tags);
   }
 
   /// Construit un [TextContent] avec titre court, long, ou corps vide selon l'index.
@@ -240,7 +240,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     ContentOrigin origin,
     int bounce,
     String flair,
-    String authorId,
+    String signatureId,
     List<Tag> tags,
   ) {
     final isLongTitle = index % 7 == 0;
@@ -256,8 +256,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       id: UuidX.generate(),
       createdAt: createdAt,
       updatedAt: createdAt,
-      authorId: authorId,
-      senderId: 'seed-sender',
+      signatureId: signatureId,
       origin: origin,
       broadcastScore: 1,
       survivalScore: 1,
@@ -278,7 +277,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     ContentOrigin origin,
     int bounce,
     String flair,
-    String authorId,
+    String signatureId,
     List<Tag> tags,
   ) {
     final mediaUrls = _seedMediaSets[index % _seedMediaSets.length];
@@ -288,8 +287,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       id: UuidX.generate(),
       createdAt: createdAt,
       updatedAt: createdAt,
-      authorId: authorId,
-      senderId: 'seed-sender',
+      signatureId: signatureId,
       origin: origin,
       broadcastScore: 1,
       survivalScore: 1,
@@ -311,7 +309,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     ContentOrigin origin,
     int bounce,
     String flair,
-    String authorId,
+    String signatureId,
     List<Tag> tags,
   ) {
     final (url, ogImageUrl) = _seedLinks[index % _seedLinks.length];
@@ -321,8 +319,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       id: UuidX.generate(),
       createdAt: createdAt,
       updatedAt: createdAt,
-      authorId: authorId,
-      senderId: 'seed-sender',
+      signatureId: signatureId,
       origin: origin,
       broadcastScore: 1,
       survivalScore: 1,
@@ -346,7 +343,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
     ContentOrigin origin,
     int bounce,
     String flair,
-    String authorId,
+    String signatureId,
     List<Tag> tags,
   ) {
     final drawings = [_seedSmiley(), _seedHouse(), _seedSun()];
@@ -355,8 +352,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       id: UuidX.generate(),
       createdAt: createdAt,
       updatedAt: createdAt,
-      authorId: authorId,
-      senderId: 'seed-sender',
+      signatureId: signatureId,
       origin: origin,
       broadcastScore: 1,
       survivalScore: 1,
@@ -510,19 +506,19 @@ class SeedContentsParams extends Params {
   /// Crée des [SeedContentsParams].
   ///
   /// - [count] : nombre de contenus à générer. Par défaut : 10 000.
-  /// - [authorIds] : identifiants d'auteurs entre lesquels répartir les contenus au hasard.
+  /// - [signatureIds] : identifiants de signatures entre lesquels répartir les contenus au hasard.
   /// - [randomSeed] : graine du tirage des auteurs, pour un seed reproductible (tests). `null` pour un tirage aléatoire.
-  const SeedContentsParams({this.count = 10000, this.authorIds = const [], this.randomSeed});
+  const SeedContentsParams({this.count = 10000, this.signatureIds = const [], this.randomSeed});
 
   /// Nombre de contenus factices à générer.
   final int count;
 
-  /// Identifiants d'auteurs entre lesquels répartir les contenus au hasard.
+  /// Identifiants de signatures entre lesquels répartir les contenus au hasard.
   ///
   /// Le domaine des contenus ne connaît pas les utilisateurs : c'est
   /// l'appelant qui fournit les auteurs (utilisateurs factices, anonyme…).
   /// Vide : les contenus sont attribués à des identifiants fictifs sans profil.
-  final List<String> authorIds;
+  final List<String> signatureIds;
 
   /// Graine du tirage des auteurs, `null` pour un tirage aléatoire.
   final int? randomSeed;

@@ -45,14 +45,13 @@ class ContentHiveModel extends HiveObject {
     required this.id,
     required this.createdAt,
     required this.updatedAt,
-    required this.authorId,
+    required this.signatureId,
     required this.type,
     required this.origin,
     required this.broadcastScore,
     required this.survivalScore,
     required this.displayScore,
     required this.bounce,
-    required this.senderId,
     this.title,
     this.body,
     this.url,
@@ -74,14 +73,13 @@ class ContentHiveModel extends HiveObject {
         id: entity.id,
         createdAt: entity.createdAt.millisecondsSinceEpoch,
         updatedAt: entity.updatedAt.millisecondsSinceEpoch,
-        authorId: entity.authorId,
+        signatureId: entity.signatureId,
         type: _typeTextContent,
         origin: entity.origin.value,
         broadcastScore: entity.broadcastScore,
         survivalScore: entity.survivalScore,
         displayScore: entity.displayScore,
         bounce: entity.bounce,
-        senderId: entity.senderId,
         title: entity.title,
         body: entity.body,
         flair: entity.flair,
@@ -94,14 +92,13 @@ class ContentHiveModel extends HiveObject {
         id: entity.id,
         createdAt: entity.createdAt.millisecondsSinceEpoch,
         updatedAt: entity.updatedAt.millisecondsSinceEpoch,
-        authorId: entity.authorId,
+        signatureId: entity.signatureId,
         type: _typeLinkContent,
         origin: entity.origin.value,
         broadcastScore: entity.broadcastScore,
         survivalScore: entity.survivalScore,
         displayScore: entity.displayScore,
         bounce: entity.bounce,
-        senderId: entity.senderId,
         title: entity.title,
         body: entity.body,
         url: entity.url,
@@ -118,14 +115,13 @@ class ContentHiveModel extends HiveObject {
         id: entity.id,
         createdAt: entity.createdAt.millisecondsSinceEpoch,
         updatedAt: entity.updatedAt.millisecondsSinceEpoch,
-        authorId: entity.authorId,
+        signatureId: entity.signatureId,
         type: _typeMediaContent,
         origin: entity.origin.value,
         broadcastScore: entity.broadcastScore,
         survivalScore: entity.survivalScore,
         displayScore: entity.displayScore,
         bounce: entity.bounce,
-        senderId: entity.senderId,
         mediaUrls: entity.media.map((media) => media.url).toList(),
         mediaKinds: entity.media.map((media) => media.kind.value).toList(),
         title: entity.title,
@@ -140,14 +136,13 @@ class ContentHiveModel extends HiveObject {
         id: entity.id,
         createdAt: entity.createdAt.millisecondsSinceEpoch,
         updatedAt: entity.updatedAt.millisecondsSinceEpoch,
-        authorId: entity.authorId,
+        signatureId: entity.signatureId,
         type: _typeDrawingContent,
         origin: entity.origin.value,
         broadcastScore: entity.broadcastScore,
         survivalScore: entity.survivalScore,
         displayScore: entity.displayScore,
         bounce: entity.bounce,
-        senderId: entity.senderId,
         drawingData: const DrawingBinaryCodec().encode(entity.drawing),
         title: entity.title,
         flair: entity.flair,
@@ -170,9 +165,9 @@ class ContentHiveModel extends HiveObject {
   @HiveField(2)
   final int updatedAt;
 
-  /// Identifiant de l'auteur du contenu.
+  /// Identifiant de la signature de l'auteur du contenu.
   @HiveField(3)
-  final String authorId;
+  final String signatureId;
 
   /// Discriminant du type concret de contenu.
   @HiveField(4)
@@ -194,9 +189,7 @@ class ContentHiveModel extends HiveObject {
   @HiveField(8)
   final int bounce;
 
-  /// Identifiant de l'appareil ou de l'utilisateur ayant transmis ce contenu.
-  @HiveField(9)
-  final String senderId;
+  // Index 9 retiré (ancien `senderId`) : ne jamais le réutiliser, il existe encore dans les contenus déjà stockés.
 
   /// URL du lien. Renseigné pour [LinkContent] uniquement.
   @HiveField(10)
@@ -278,13 +271,12 @@ class ContentHiveModel extends HiveObject {
         id: id,
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
-        authorId: authorId,
+        signatureId: signatureId,
         origin: ContentOrigin.values.firstWhere((value) => value.value == origin),
         broadcastScore: broadcastScore,
         survivalScore: survivalScore,
         displayScore: displayScore,
         bounce: bounce,
-        senderId: senderId,
         title: title!,
         body: body!,
         flair: flair,
@@ -297,13 +289,12 @@ class ContentHiveModel extends HiveObject {
         id: id,
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
-        authorId: authorId,
+        signatureId: signatureId,
         origin: ContentOrigin.values.firstWhere((value) => value.value == origin),
         broadcastScore: broadcastScore,
         survivalScore: survivalScore,
         displayScore: displayScore,
         bounce: bounce,
-        senderId: senderId,
         title: title ?? url!,
         body: body,
         url: url!,
@@ -320,13 +311,12 @@ class ContentHiveModel extends HiveObject {
         id: id,
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
-        authorId: authorId,
+        signatureId: signatureId,
         origin: ContentOrigin.values.firstWhere((value) => value.value == origin),
         broadcastScore: broadcastScore,
         survivalScore: survivalScore,
         displayScore: displayScore,
         bounce: bounce,
-        senderId: senderId,
         media: [
           for (var index = 0; index < mediaUrls.length; index++)
             ContentMedia(
@@ -346,13 +336,12 @@ class ContentHiveModel extends HiveObject {
         id: id,
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
-        authorId: authorId,
+        signatureId: signatureId,
         origin: ContentOrigin.values.firstWhere((value) => value.value == origin),
         broadcastScore: broadcastScore,
         survivalScore: survivalScore,
         displayScore: displayScore,
         bounce: bounce,
-        senderId: senderId,
         drawing: const DrawingBinaryCodec().decode(drawingData!),
         title: title!,
         flair: flair,

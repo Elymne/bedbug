@@ -32,7 +32,7 @@ void main() {
     await saveUsecase(SaveContentParams(content: _buildTextContent('ancien', ContentOrigin.owned, DateTime(2026))));
     await saveUsecase(
       SaveContentParams(
-        content: _buildTextContent('anonyme', ContentOrigin.owned, DateTime(2026, 2), authorId: 'anonymous'),
+        content: _buildTextContent('anonyme', ContentOrigin.owned, DateTime(2026, 2), signatureId: 'anonymous'),
       ),
     );
     await saveUsecase(SaveContentParams(content: _buildTextContent('recu', ContentOrigin.public, DateTime(2026, 3))));
@@ -79,13 +79,12 @@ void main() {
   });
 }
 
-TextContent _buildTextContent(String id, ContentOrigin origin, DateTime createdAt, {String authorId = 'local'}) {
+TextContent _buildTextContent(String id, ContentOrigin origin, DateTime createdAt, {String signatureId = 'local'}) {
   return TextContent(
     id: id,
     createdAt: createdAt,
     updatedAt: createdAt,
-    authorId: authorId,
-    senderId: 'local',
+    signatureId: signatureId,
     flair: 'test',
     origin: origin,
     broadcastScore: 1,

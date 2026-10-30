@@ -9,9 +9,9 @@ import 'package:bedbug/shared/exceptions/datasource_exception.dart';
 import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Provider du [GetContentsByAuthorsUsecase].
-final getContentsByAuthorsUsecaseProvider = Provider<GetContentsByAuthorsUsecase>((ref) {
-  return GetContentsByAuthorsUsecase(ref.read(contentRepositoryProvider));
+/// Provider du [GetContentsBySignaturesUsecase].
+final getContentsBySignaturesUsecaseProvider = Provider<GetContentsBySignaturesUsecase>((ref) {
+  return GetContentsBySignaturesUsecase(ref.read(contentRepositoryProvider));
 });
 
 /// Récupère tous les contenus signés par l'un des auteurs donnés.
@@ -25,37 +25,37 @@ final getContentsByAuthorsUsecaseProvider = Provider<GetContentsByAuthorsUsecase
 ///
 /// Les résultats sont triés par `displayScore` décroissant, pour présenter
 /// les contenus dans le même ordre de pertinence que la home page.
-class GetContentsByAuthorsUsecase
-    extends Usecase<GetContentsByAuthorsParams, GetContentsByAuthorsFailure, List<Content>> {
-  /// Crée un [GetContentsByAuthorsUsecase].
-  GetContentsByAuthorsUsecase(this._contentRepository);
+class GetContentsBySignaturesUsecase
+    extends Usecase<GetContentsBySignaturesParams, GetContentsBySignaturesFailure, List<Content>> {
+  /// Crée un [GetContentsBySignaturesUsecase].
+  GetContentsBySignaturesUsecase(this._contentRepository);
 
   final ContentRepository _contentRepository;
 
   @override
-  Future<Either<GetContentsByAuthorsFailure, List<Content>>> call(GetContentsByAuthorsParams params) async {
+  Future<Either<GetContentsBySignaturesFailure, List<Content>>> call(GetContentsBySignaturesParams params) async {
     try {
-      if (params.authorIds.isEmpty) {
+      if (params.signatureIds.isEmpty) {
         return const Right([]);
       }
-      final contents = await _contentRepository.getAllByAuthors(params.authorIds.toSet());
+      final contents = await _contentRepository.getAllBySignatures(params.signatureIds.toSet());
       contents.sort((first, second) => second.displayScore.compareTo(first.displayScore));
       return Right(contents);
     } on DataException catch (error, stackTrace) {
-      AppLogger.error('GetContentsByAuthorsUsecase', error, stackTrace);
-      return const Left(GetContentsByAuthorsFailure.invalidData);
+      AppLogger.error('GetContentsBySignaturesUsecase', error, stackTrace);
+      return const Left(GetContentsBySignaturesFailure.invalidData);
     } on DatasourceException catch (error, stackTrace) {
-      AppLogger.error('GetContentsByAuthorsUsecase', error, stackTrace);
-      return const Left(GetContentsByAuthorsFailure.storageError);
+      AppLogger.error('GetContentsBySignaturesUsecase', error, stackTrace);
+      return const Left(GetContentsBySignaturesFailure.storageError);
     } catch (error, stackTrace) {
-      AppLogger.error('GetContentsByAuthorsUsecase', error, stackTrace);
-      return const Left(GetContentsByAuthorsFailure.unknown);
+      AppLogger.error('GetContentsBySignaturesUsecase', error, stackTrace);
+      return const Left(GetContentsBySignaturesFailure.unknown);
     }
   }
 }
 
-/// Échecs possibles du [GetContentsByAuthorsUsecase].
-enum GetContentsByAuthorsFailure {
+/// Échecs possibles du [GetContentsBySignaturesUsecase].
+enum GetContentsBySignaturesFailure {
   /// La donnée lue est invalide ou corrompue.
   invalidData,
 
@@ -66,13 +66,13 @@ enum GetContentsByAuthorsFailure {
   unknown,
 }
 
-/// Paramètres du [GetContentsByAuthorsUsecase].
-class GetContentsByAuthorsParams extends Params {
-  /// Crée des [GetContentsByAuthorsParams].
+/// Paramètres du [GetContentsBySignaturesUsecase].
+class GetContentsBySignaturesParams extends Params {
+  /// Crée des [GetContentsBySignaturesParams].
   ///
-  /// - [authorIds] : identifiants des auteurs dont on veut les contenus.
-  const GetContentsByAuthorsParams({required this.authorIds});
+  /// - [signatureIds] : identifiants des signatures dont on veut les contenus.
+  const GetContentsBySignaturesParams({required this.signatureIds});
 
-  /// Identifiants des auteurs dont on veut les contenus.
-  final List<String> authorIds;
+  /// Identifiants des signatures dont on veut les contenus.
+  final List<String> signatureIds;
 }
