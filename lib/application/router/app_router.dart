@@ -6,6 +6,9 @@ import 'package:bedbug/application/screens/content_detail/media_content_detail_s
 import 'package:bedbug/application/screens/content_detail/text_content_detail_screen.dart';
 import 'package:bedbug/application/screens/create/create_screen.dart';
 import 'package:bedbug/application/screens/drawing_editor/drawing_editor_screen.dart';
+import 'package:bedbug/application/screens/drawing_format/drawing_format_screen.dart';
+import 'package:bedbug/application/screens/drawing_viewer/drawing_viewer_screen.dart';
+import 'package:bedbug/application/screens/exchange/exchange_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/screens/media_viewer/media_viewer_screen.dart';
 import 'package:bedbug/application/screens/search/search_screen.dart';
@@ -33,6 +36,9 @@ const String homePath = '/home';
 
 /// Chemin vers la page de création de contenu.
 const String createPath = '/create';
+
+/// Chemin vers la page d'activation de l'échange entre téléphones.
+const String exchangePath = '/exchange';
 
 /// Chemin vers la page des paramètres.
 const String settingsPath = '/settings';
@@ -88,6 +94,16 @@ const String mediaViewerPath = '/media-viewer';
 /// validé est retourné au `pop`.
 const String drawingEditorPath = '/drawing-editor';
 
+/// Chemin vers le choix de la surface d'un nouveau dessin, avant l'éditeur.
+///
+/// Le dessin vide à la surface choisie est retourné au `pop`.
+const String drawingFormatPath = '/drawing-format';
+
+/// Chemin vers la visionneuse plein écran d'un dessin.
+///
+/// Le dessin est transmis via `extra` (`DrawingViewerParams`).
+const String drawingViewerPath = '/drawing-viewer';
+
 /// Chemin vers la page de détail d'un contenu.
 ///
 /// Le contenu est transmis via `extra` (pas de fetch par id pour l'instant).
@@ -127,6 +143,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: splashPath, pageBuilder: (context, state) => _fadePage(const SplashScreen())),
       GoRoute(path: homePath, pageBuilder: (context, state) => _fadePage(const HomeScreen())),
       GoRoute(path: createPath, pageBuilder: (context, state) => _fadePage(const CreateScreen())),
+      GoRoute(path: exchangePath, pageBuilder: (context, state) => _fadePage(const ExchangeScreen())),
       GoRoute(
         path: settingsPath,
         pageBuilder: (context, state) => _fadePage(const SettingsScreen()),
@@ -161,6 +178,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) {
           return _fadePage(DrawingEditorScreen(initialDrawing: state.extra as Drawing? ?? const Drawing.empty()));
         },
+      ),
+      GoRoute(path: drawingFormatPath, pageBuilder: (context, state) => _fadePage(const DrawingFormatScreen())),
+      GoRoute(
+        path: drawingViewerPath,
+        pageBuilder: (context, state) => _fadePage(DrawingViewerScreen(params: state.extra! as DrawingViewerParams)),
       ),
       GoRoute(
         path: contentDetailPath,

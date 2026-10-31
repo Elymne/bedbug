@@ -73,19 +73,24 @@ void main() {
   );
   final png = _bytes([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
 
-  /// Lance l'enregistrement de [rawUrl] avec le faux serveur [http] et la fausse galerie [gallery].
-  Future<SaveMediaToGalleryFailure?> save(
+  /// Télécharge [rawUrl] avec le faux serveur [http] puis l'enregistre dans la fausse galerie [gallery], comme le fait
+  /// `SaveMediaToGalleryNotifier`, et retourne l'échec du téléchargement ou de l'enregistrement.
+  Future<Object?> save(
     _FakeMediaHttpGateway http,
     _FakeMediaGalleryGateway gallery,
     String rawUrl, {
     bool isConfirmed = false,
   }) async {
-    final usecase = SaveMediaToGalleryUsecase(
-      FetchMediaUsecase(http, urlSafetyService, urlTrustService),
-      gallery,
-      mediaFormatService,
+    final fetched = await FetchMediaUsecase(http, urlSafetyService, urlTrustService)(
+      FetchMediaParams(rawUrl: rawUrl, policy: policy, isConfirmed: isConfirmed, maxBytes: maxGalleryMediaBytes),
     );
-    final result = await usecase(SaveMediaToGalleryParams(rawUrl: rawUrl, policy: policy, isConfirmed: isConfirmed));
+    final fetchedMedia = fetched.right;
+    if (fetchedMedia == null) {
+      return fetched.left;
+    }
+    final result = await SaveMediaToGalleryUsecase(gallery, mediaFormatService)(
+      SaveMediaToGalleryParams(bytes: fetchedMedia.bytes),
+    );
     return result.left;
   }
 
@@ -162,9 +167,9 @@ void main() {
       'https://evil.com/a.png': MediaHttpBody(png),
     });
     final gallery = _FakeMediaGalleryGateway();
-    expect(await save(http, gallery, 'https://unknown.com/a.png'), SaveMediaToGalleryFailure.unavailable);
-    expect(await save(http, gallery, 'https://cdn.trusted.com/r'), SaveMediaToGalleryFailure.unavailable);
-    expect(await save(http, gallery, 'https://cdn.trusted.com@evil.com/a.png'), SaveMediaToGalleryFailure.unavailable);
+    expect(await save(http, gallery, 'https://unknown.com/a.png'), FetchMediaFailure.untrustedDomain);
+    expect(await save(http, gallery, 'https://cdn.trusted.com/r'), FetchMediaFailure.untrustedDomain);
+    expect(await save(http, gallery, 'https://cdn.trusted.com@evil.com/a.png'), FetchMediaFailure.invalidUrl);
     expect(http.requestedUrls, ['https://cdn.trusted.com/r']);
     expect(gallery.savedFormats, isEmpty);
 
@@ -177,10 +182,7 @@ void main() {
       'https://cdn.trusted.com/big.mp4': const MediaHttpError(MediaHttpErrorKind.tooLarge),
       'https://cdn.trusted.com/a.png': MediaHttpBody(png),
     });
-    expect(
-      await save(http, _FakeMediaGalleryGateway(), 'https://cdn.trusted.com/big.mp4'),
-      SaveMediaToGalleryFailure.tooLarge,
-    );
+    expect(await save(http, _FakeMediaGalleryGateway(), 'https://cdn.trusted.com/big.mp4'), FetchMediaFailure.tooLarge);
     expect(
       await save(
         http,

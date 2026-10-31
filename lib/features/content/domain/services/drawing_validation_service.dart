@@ -1,3 +1,4 @@
+import 'package:bedbug/features/content/domain/extensions/drawing_dimensions_extension.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing_point.dart';
@@ -47,7 +48,7 @@ class DrawingValidationService extends Service {
       switch (operation) {
         case DrawingFill(:final point):
           fillCount++;
-          if (fillCount > maxDrawingFills || !isInside(point)) {
+          if (fillCount > maxDrawingFills || !isInside(point, drawing)) {
             return false;
           }
         case DrawingStroke(:final size, :final seed, :final points):
@@ -58,7 +59,7 @@ class DrawingValidationService extends Service {
           if (points.isEmpty || points.length > maxDrawingStrokePoints || pointCount > maxDrawingPoints) {
             return false;
           }
-          if (!points.every(isInside)) {
+          if (!points.every((point) => isInside(point, drawing))) {
             return false;
           }
       }
@@ -66,10 +67,11 @@ class DrawingValidationService extends Service {
     return true;
   }
 
-  /// Indique si [point] est dans le repère du dessin.
+  /// Indique si [point] est dans le repère de [drawing].
   ///
   /// - [point] : point à vérifier.
-  bool isInside(DrawingPoint point) {
-    return point.x >= 0 && point.x < drawingWidth && point.y >= 0 && point.y < drawingHeight;
+  /// - [drawing] : dessin, dont la taille et l'orientation fixent le repère.
+  bool isInside(DrawingPoint point, Drawing drawing) {
+    return point.x >= 0 && point.x < drawing.width && point.y >= 0 && point.y < drawing.height;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
 import 'package:bedbug/features/content/domain/extensions/reaction_text_extension.dart';
+import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
 import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
 import 'package:bedbug/features/signature/domain/enums/social_network.dart';
 import 'package:bedbug/features/signature/domain/extensions/signature_text_extension.dart';
@@ -78,6 +79,11 @@ class AppValidators {
   /// Les espaces autour sont ignorés : ils viennent souvent d'un copier-coller.
   /// Retourne `null` si vide — déléguer la vérification à [required].
   static const safeUrl = _SafeUrlValidator();
+
+  /// Vérifie que la limite de stockage saisie, en mégaoctets, reste dans les bornes autorisées.
+  ///
+  /// Retourne `null` si vide — déléguer la vérification à [required].
+  static const storageLimit = _StorageLimitValidator();
 
   /// Validator de [FormGroup] vérifiant que l'identifiant saisi est valide sur le réseau choisi.
   ///
@@ -274,6 +280,23 @@ class _SocialHandleValidator extends Validator<dynamic> {
       return error;
     }
     handleControl.removeError('socialHandle');
+    return null;
+  }
+}
+
+class _StorageLimitValidator extends Validator<dynamic> {
+  const _StorageLimitValidator() : super();
+
+  @override
+  Map<String, dynamic>? validate(AbstractControl<dynamic> control) {
+    final value = control.value;
+    if (value is! String || value.trim().isEmpty) {
+      return null;
+    }
+    final megabytes = int.tryParse(value.trim());
+    if (megabytes == null || megabytes < minStorageLimitInMegabytes || megabytes > maxStorageLimitInMegabytes) {
+      return {'storageLimit': true};
+    }
     return null;
   }
 }

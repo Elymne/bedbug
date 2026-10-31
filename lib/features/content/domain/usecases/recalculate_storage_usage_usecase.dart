@@ -22,7 +22,7 @@ final recalculateStorageUsageUsecaseProvider = Provider<RecalculateStorageUsageU
 ///
 /// `currentSizeInBytes` est normalement maintenu de façon incrémentale par
 /// les use cases qui ajoutent ou suppriment des contenus
-/// (`SaveContentUsecase`, `SeedContentsUsecase`, `ClearContentsUsecase` via
+/// (`SaveContentUsecase`, `ClearContentsUsecase` via
 /// `StorageRepository.adjustCurrentSizeInBytes`/`resetCurrentSizeInBytes`),
 /// pour éviter de reparcourir l'intégralité des contenus à chaque écriture.
 /// Mais un compteur incrémental peut dériver de

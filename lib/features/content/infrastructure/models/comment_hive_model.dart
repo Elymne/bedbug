@@ -14,7 +14,7 @@ class CommentHiveModel extends HiveObject {
     required this.createdAt,
     required this.updatedAt,
     required this.contentId,
-    required this.authorId,
+    required this.signatureId,
     required this.body,
   });
 
@@ -25,7 +25,7 @@ class CommentHiveModel extends HiveObject {
       createdAt: entity.createdAt.millisecondsSinceEpoch,
       updatedAt: entity.updatedAt.millisecondsSinceEpoch,
       contentId: entity.contentId,
-      authorId: entity.authorId,
+      signatureId: entity.signatureId,
       body: entity.body,
     );
   }
@@ -42,9 +42,9 @@ class CommentHiveModel extends HiveObject {
   @HiveField(2)
   final int updatedAt;
 
-  /// Identifiant de l'auteur du commentaire.
+  /// Identifiant de la signature de l'auteur du commentaire.
   @HiveField(3)
-  final String authorId;
+  final String signatureId;
 
   /// Corps du commentaire.
   @HiveField(4)
@@ -62,7 +62,7 @@ class CommentHiveModel extends HiveObject {
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
         contentId: contentId,
-        authorId: authorId,
+        signatureId: signatureId,
         body: body,
       );
     } catch (error) {

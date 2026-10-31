@@ -5,6 +5,7 @@ import 'package:bedbug/application/screens/content_detail/link_content_detail_sc
 import 'package:bedbug/application/screens/content_detail/media_content_detail_screen.dart';
 import 'package:bedbug/application/screens/content_detail/text_content_detail_screen.dart';
 import 'package:bedbug/application/screens/create/create_screen.dart';
+import 'package:bedbug/application/screens/exchange/exchange_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/screens/search/search_screen.dart';
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
@@ -17,9 +18,6 @@ import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/object_values/content_media.dart';
 import 'package:bedbug/features/content/domain/usecases/clear_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/seed_reactions_usecase.dart';
-import 'package:bedbug/features/signature/domain/usecases/seed_signatures_usecase.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:flutter/material.dart';
@@ -33,25 +31,6 @@ class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
   Future<Either<GetHomeFeedFailure, List<Content>>> call(NoParams params) async => const Right([]);
 }
 
-/// Fake [SeedContentsUsecase] ne touchant à aucune infrastructure réelle.
-class _FakeSeedContentsUsecase implements SeedContentsUsecase {
-  @override
-  Future<Either<SeedContentsFailure, void>> call(SeedContentsParams params) async => const Right(null);
-}
-
-class _FakeSeedReactionsUsecase implements SeedReactionsUsecase {
-  @override
-  Future<Either<SeedReactionsFailure, void>> call(SeedReactionsParams params) async {
-    return const Right(null);
-  }
-}
-
-/// Fake [SeedSignaturesUsecase] ne touchant à aucune infrastructure réelle.
-class _FakeSeedSignaturesUsecase implements SeedSignaturesUsecase {
-  @override
-  Future<Either<SeedSignaturesFailure, List<String>>> call(SeedSignaturesParams params) async => const Right([]);
-}
-
 /// Fake [ClearContentsUsecase] ne touchant à aucune infrastructure réelle.
 class _FakeClearContentsUsecase implements ClearContentsUsecase {
   @override
@@ -63,8 +42,7 @@ TextContent _buildTextContent() {
     id: 'text-1',
     createdAt: DateTime(2026),
     updatedAt: DateTime(2026),
-    authorId: 'local',
-    senderId: 'local',
+    signatureId: 'local',
     flair: 'test',
     origin: ContentOrigin.owned,
     broadcastScore: 1,
@@ -82,8 +60,7 @@ LinkContent _buildLinkContent() {
     id: 'link-1',
     createdAt: DateTime(2026),
     updatedAt: DateTime(2026),
-    authorId: 'local',
-    senderId: 'local',
+    signatureId: 'local',
     flair: 'test',
     origin: ContentOrigin.owned,
     broadcastScore: 1,
@@ -101,8 +78,7 @@ MediaContent _buildMediaContent() {
     id: 'media-1',
     createdAt: DateTime(2026),
     updatedAt: DateTime(2026),
-    authorId: 'local',
-    senderId: 'local',
+    signatureId: 'local',
     flair: 'test',
     origin: ContentOrigin.owned,
     broadcastScore: 1,
@@ -141,9 +117,6 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         getHomeFeedUsecaseProvider.overrideWithValue(_FakeGetHomeFeedUsecase()),
-        seedContentsUsecaseProvider.overrideWithValue(_FakeSeedContentsUsecase()),
-        seedReactionsUsecaseProvider.overrideWithValue(_FakeSeedReactionsUsecase()),
-        seedSignaturesUsecaseProvider.overrideWithValue(_FakeSeedSignaturesUsecase()),
         clearContentsUsecaseProvider.overrideWithValue(_FakeClearContentsUsecase()),
       ],
     );
@@ -176,6 +149,7 @@ void main() {
 
     for (final entry in <String, Type>{
       createPath: CreateScreen,
+      exchangePath: ExchangeScreen,
       settingsPath: SettingsScreen,
       searchPath: SearchScreen,
     }.entries) {

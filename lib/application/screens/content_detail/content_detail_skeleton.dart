@@ -14,7 +14,7 @@ import 'package:bedbug/application/widgets/stats/content_stats.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
 import 'package:bedbug/features/content/domain/enums/tag.dart';
-import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
+import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:bedbug/shared/extensions/datetime_x.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +35,7 @@ class ContentDetailSkeleton extends ConsumerWidget {
   ///
   /// - [title] : titre du contenu, affiché en gras.
   /// - [flair] : flair libre du contenu, sans le `/` initial.
-  /// - [authorId] : identifiant de l'auteur du contenu, dont le profil est affiché.
+  /// - [signatureId] : identifiant de la signature de l'auteur du contenu, dont le profil est affiché.
   /// - [contentBody] : widget spécifique au type de contenu.
   /// - [createdAt] : date de création du contenu, utilisée pour le temps écoulé.
   /// - [bounce] : nombre de rebonds du contenu, affiché dans les statistiques.
@@ -49,7 +49,7 @@ class ContentDetailSkeleton extends ConsumerWidget {
     required this.isOwned,
     required this.title,
     required this.flair,
-    required this.authorId,
+    required this.signatureId,
     required this.contentBody,
     required this.createdAt,
     required this.bounce,
@@ -69,8 +69,8 @@ class ContentDetailSkeleton extends ConsumerWidget {
   /// Flair libre du contenu, sans le `/` initial.
   final String flair;
 
-  /// Identifiant de l'auteur du contenu, dont le profil est affiché.
-  final String authorId;
+  /// Identifiant de la signature de l'auteur du contenu, dont le profil est affiché.
+  final String signatureId;
 
   /// Widget spécifique au type de contenu.
   final Widget contentBody;
@@ -89,7 +89,7 @@ class ContentDetailSkeleton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final contentAuthorNotifierWatcher = ref.watch(contentAuthorNotifierProvider(authorId));
+    final contentAuthorNotifierWatcher = ref.watch(contentAuthorNotifierProvider(signatureId));
     // Le temps de charger le profil, l'auteur est présenté comme anonyme :
     // la ligne garde sa place au lieu d'apparaître après coup.
     final author = contentAuthorNotifierWatcher.value ?? anonymousSignature;
@@ -154,7 +154,7 @@ class ContentDetailSkeleton extends ConsumerWidget {
                                     // Le pseudo et le bedbug ouvrent la page de la signature,
                                     // sauf pour l'anonyme, commun à tous les auteurs anonymes.
                                     GestureDetector(
-                                      onTap: authorId == anonymousSignatureId ? null : () => _openSignature(context),
+                                      onTap: signatureId == anonymousSignatureId ? null : () => _openSignature(context),
                                       behavior: HitTestBehavior.opaque,
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
@@ -220,7 +220,7 @@ class ContentDetailSkeleton extends ConsumerWidget {
   ///
   /// - [context] : contexte depuis lequel naviguer.
   void _openSignature(BuildContext context) {
-    context.push('$signaturesPath/${Uri.encodeComponent(authorId)}');
+    context.push('$signaturesPath/${Uri.encodeComponent(signatureId)}');
   }
 
   /// Demande confirmation, supprime le contenu puis ferme la page de détail.

@@ -1,13 +1,14 @@
 import 'package:bedbug/application/providers/drawing_image_provider.dart';
 import 'package:bedbug/application/widgets/media/app_media_placeholder.dart';
+import 'package:bedbug/features/content/domain/extensions/drawing_dimensions_extension.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Dessin affiché au format 4:3, sans lissage, pour garder ses pixels nets.
+/// Dessin affiché à ses proportions, sans lissage, pour garder ses pixels nets.
 ///
-/// Remplit la largeur que lui donne son parent.
+/// Remplit la largeur que lui donne son parent, ou sa hauteur si elle est bornée et ne suffit pas.
 class AppDrawingImage extends ConsumerWidget {
   /// Crée un [AppDrawingImage].
   ///
@@ -26,7 +27,7 @@ class AppDrawingImage extends ConsumerWidget {
     final drawingImageWatcher = ref.watch(drawingImageProvider(DrawingImageRequest(key: cacheKey, drawing: drawing)));
 
     return AspectRatio(
-      aspectRatio: drawingWidth / drawingHeight,
+      aspectRatio: drawing.width / drawing.height,
       child: drawingImageWatcher.when(
         loading: () => const AppMediaPlaceholder(icon: Icons.brush_outlined),
         error: (error, stackTrace) {

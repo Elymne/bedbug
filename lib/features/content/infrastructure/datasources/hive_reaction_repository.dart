@@ -76,6 +76,16 @@ class HiveReactionRepository implements ReactionRepository {
   }
 
   @override
+  Future<void> deleteAllByContentIds(Set<String> contentIds) async {
+    try {
+      final ids = _box.values.where((model) => contentIds.contains(model.contentId)).map((model) => model.id).toList();
+      await _box.deleteAll(ids);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveReactionRepository', error);
+    }
+  }
+
+  @override
   Future<void> deleteAll() async {
     try {
       await _box.clear();

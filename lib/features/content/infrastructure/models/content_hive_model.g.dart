@@ -18,14 +18,13 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       id: fields[0] as String,
       createdAt: (fields[1] as num).toInt(),
       updatedAt: (fields[2] as num).toInt(),
-      authorId: fields[3] as String,
+      signatureId: fields[3] as String,
       type: fields[4] as String,
       origin: (fields[7] as num).toInt(),
       broadcastScore: (fields[19] as num).toDouble(),
       survivalScore: (fields[20] as num).toDouble(),
       displayScore: (fields[21] as num).toDouble(),
       bounce: (fields[8] as num).toInt(),
-      senderId: fields[9] as String,
       title: fields[5] as String?,
       body: fields[6] as String?,
       url: fields[10] as String?,
@@ -44,7 +43,7 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
   @override
   void write(BinaryWriter writer, ContentHiveModel obj) {
     writer
-      ..writeByte(23)
+      ..writeByte(22)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -52,7 +51,7 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       ..writeByte(2)
       ..write(obj.updatedAt)
       ..writeByte(3)
-      ..write(obj.authorId)
+      ..write(obj.signatureId)
       ..writeByte(4)
       ..write(obj.type)
       ..writeByte(5)
@@ -63,8 +62,6 @@ class ContentHiveModelAdapter extends TypeAdapter<ContentHiveModel> {
       ..write(obj.origin)
       ..writeByte(8)
       ..write(obj.bounce)
-      ..writeByte(9)
-      ..write(obj.senderId)
       ..writeByte(10)
       ..write(obj.url)
       ..writeByte(13)

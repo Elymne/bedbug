@@ -1,3 +1,4 @@
+import 'package:bedbug/application/exchange/passive_exchange_notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/home/home_bars_offset_notifier.dart';
 import 'package:bedbug/application/screens/home/home_feed_notifier.dart';
@@ -36,6 +37,7 @@ class _State extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final homeFeedNotifierWatcher = ref.watch(homeFeedNotifierProvider);
+    final passiveExchangeNotifierWatcher = ref.watch(passiveExchangeNotifierProvider);
     final navBarHeight = AppConst.homeNavBarBaseHeight + MediaQuery.paddingOf(context).bottom;
     final l10n = context.loc;
 
@@ -72,6 +74,7 @@ class _State extends ConsumerState<HomeScreen> {
                     contents: state.contents,
                     emptyChild: const HomeEmptyFeed(),
                     controller: _scrollController,
+                    onRefresh: ref.read(homeFeedNotifierProvider.notifier).refresh,
                   );
                 },
               ),
@@ -94,6 +97,11 @@ class _State extends ConsumerState<HomeScreen> {
           items: [
             AppNavBarItem(icon: Icons.home, label: l10n.navHomeLabel),
             AppNavBarItem(icon: Icons.add_circle, label: l10n.navCreateLabel),
+            AppNavBarItem(
+              icon: Icons.bluetooth,
+              label: l10n.navExchangeLabel,
+              isGhosting: passiveExchangeNotifierWatcher.value ?? false,
+            ),
             AppNavBarItem(icon: Icons.settings, label: l10n.navSettingsLabel),
           ],
           onTap: (index) {
@@ -102,6 +110,10 @@ class _State extends ConsumerState<HomeScreen> {
               return;
             }
             if (index == 2) {
+              context.push(exchangePath);
+              return;
+            }
+            if (index == 3) {
               // `push` et non `go` : la page s'empile au-dessus de la home,
               // pour que le retour système y ramène au lieu de quitter l'app.
               context.push(settingsPath);

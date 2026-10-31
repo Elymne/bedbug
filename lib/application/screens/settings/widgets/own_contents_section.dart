@@ -9,7 +9,7 @@ import 'package:bedbug/application/widgets/tags/app_tag.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/extensions/content_title_extension.dart';
-import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
+import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:bedbug/shared/extensions/datetime_x.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +61,7 @@ class OwnContentsSection extends ConsumerWidget {
                         style: const TextStyle(fontSize: 13, color: AppColors.disabled),
                       ),
                     ),
-                    if (content.authorId == anonymousSignatureId)
+                    if (content.signatureId == anonymousSignatureId)
                       AppTag(label: anonymousSignature.pseudo, color: AppColors.onLighter),
                   ],
                 ),

@@ -2,9 +2,8 @@ import 'dart:io';
 
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/usecases/get_contents_by_authors_usecase.dart';
+import 'package:bedbug/features/content/domain/usecases/get_contents_by_signatures_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
-import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/usecases/get_signature_suggestions_usecase.dart';
 import 'package:bedbug/features/signature/infrastructure/datasources/hive_signature_repository.dart';
@@ -57,16 +56,16 @@ void main() {
     await saveUsecase(SaveContentParams(content: _buildTextContent('b', 'bedbug-b')));
     await saveUsecase(SaveContentParams(content: _buildTextContent('anonyme', anonymousSignatureId)));
 
-    final result = await container.read(getContentsByAuthorsUsecaseProvider)(
-      const GetContentsByAuthorsParams(authorIds: ['bedbug-a']),
+    final result = await container.read(getContentsBySignaturesUsecaseProvider)(
+      const GetContentsBySignaturesParams(signatureIds: ['bedbug-a']),
     );
 
     expect(result.right!.map((content) => content.id), ['a']);
   });
 
   test('aucun auteur donné : aucun contenu', () async {
-    final result = await container.read(getContentsByAuthorsUsecaseProvider)(
-      const GetContentsByAuthorsParams(authorIds: []),
+    final result = await container.read(getContentsBySignaturesUsecaseProvider)(
+      const GetContentsBySignaturesParams(signatureIds: []),
     );
 
     expect(result.right, isEmpty);
@@ -77,13 +76,12 @@ Signature _buildSignature(String id, String pseudo) {
   return Signature(id: id, createdAt: DateTime(2026), updatedAt: DateTime(2026), pseudo: pseudo);
 }
 
-TextContent _buildTextContent(String id, String authorId) {
+TextContent _buildTextContent(String id, String signatureId) {
   return TextContent(
     id: id,
     createdAt: DateTime(2026),
     updatedAt: DateTime(2026),
-    authorId: authorId,
-    senderId: 'local',
+    signatureId: signatureId,
     flair: 'test',
     origin: ContentOrigin.public,
     broadcastScore: 1,

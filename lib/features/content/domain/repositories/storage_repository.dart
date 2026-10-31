@@ -1,10 +1,26 @@
 import 'package:bedbug/features/content/domain/entities/storage.dart';
 
-/// Taille maximale allouée par défaut aux contenus, en octets (500 Mo).
+/// Nombre d'octets dans un mégaoctet, l'unité des limites de stockage présentées à l'utilisateur.
+const int bytesPerMegabyte = 1024 * 1024;
+
+/// Taille maximale allouée par défaut aux contenus, en octets (100 Mo).
 ///
-/// Valeur de repli tant qu'aucun réglage utilisateur ne permet encore de la
-/// modifier.
-const int defaultMaxStorageSizeInBytes = 500 * 1024 * 1024;
+/// Toute la box des contenus vit en mémoire et son parcours suit chaque échange : une limite haute pèse sur le
+/// téléphone. Un contenu pesant 128 Ko au maximum, 100 Mo en gardent déjà plusieurs milliers.
+const int defaultMaxStorageSizeInBytes = 100 * bytesPerMegabyte;
+
+/// Limites proposées d'office à l'utilisateur, en octets.
+const List<int> storageLimitPresetsInBytes = [
+  50 * bytesPerMegabyte,
+  defaultMaxStorageSizeInBytes,
+  250 * bytesPerMegabyte,
+];
+
+/// Plus petite limite qu'un utilisateur peut définir, en mégaoctets.
+const int minStorageLimitInMegabytes = 1;
+
+/// Plus grande limite qu'un utilisateur peut définir, en mégaoctets.
+const int maxStorageLimitInMegabytes = 1000;
 
 /// Contrat du repository gérant la configuration [Storage].
 ///
@@ -41,7 +57,7 @@ abstract class StorageRepository {
   /// Recalculer ce total en parcourant l'intégralité des contenus stockés à
   /// chaque écriture serait coûteux sur un gros volume de contenus. Ce
   /// compteur incrémental évite ce recalcul complet ; il est utilisé par
-  /// `SaveContentUsecase` et `SeedContentsUsecase`.
+  /// `SaveContentUsecase` et `EnforceStorageLimitUsecase`.
   Future<void> adjustCurrentSizeInBytes(int deltaBytes);
 
   /// Réinitialise `currentSizeInBytes` à `0`.

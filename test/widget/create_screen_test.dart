@@ -11,7 +11,7 @@ import 'package:bedbug/features/content/domain/enums/tag.dart';
 import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
 import 'package:bedbug/features/settings/domain/usecases/get_settings_usecase.dart';
 import 'package:bedbug/features/settings/domain/value_objects/user_settings.dart';
-import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
+import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
@@ -125,7 +125,7 @@ void main() {
 
     await _fillAndSaveTextContent(tester);
 
-    expect(fakeSaveUsecase.savedContent!.authorId, localSignatureId);
+    expect(fakeSaveUsecase.savedContent!.signatureId, localSignatureId);
   });
 
   testWidgets('la case anonyme part cochée selon le réglage, et le contenu est alors signé anonyme', (tester) async {
@@ -138,7 +138,7 @@ void main() {
 
     await _fillAndSaveTextContent(tester);
 
-    expect(fakeSaveUsecase.savedContent!.authorId, anonymousSignatureId);
+    expect(fakeSaveUsecase.savedContent!.signatureId, anonymousSignatureId);
   });
 
   testWidgets('crée un contenu texte, ouvre son détail, et un retour ramène à l\'accueil', (tester) async {

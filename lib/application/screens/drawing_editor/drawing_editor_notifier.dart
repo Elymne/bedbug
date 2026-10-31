@@ -1,3 +1,4 @@
+import 'package:bedbug/application/notifiers/drawing_draft_notifier.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
 import 'package:bedbug/features/content/domain/services/drawing_validation_service.dart';
@@ -27,6 +28,9 @@ class DrawingEditorNotifier extends Notifier<DrawingEditorState> {
 
   /// Service de vérification des limites d'un dessin.
   late final _drawingValidationService = ref.read(drawingValidationServiceProvider);
+
+  /// Brouillon du dessin en cours, mis à jour à chaque modification.
+  late final _drawingDraftNotifier = ref.read(drawingDraftNotifierProvider.notifier);
 
   @override
   DrawingEditorState build() {
@@ -68,11 +72,13 @@ class DrawingEditorNotifier extends Notifier<DrawingEditorState> {
     if (state.past.isEmpty) {
       return;
     }
-    state = DrawingEditorState(
-      drawing: state.past.last,
-      past: state.past.sublist(0, state.past.length - 1),
-      future: [state.drawing, ...state.future],
-      revision: state.revision + 1,
+    _update(
+      DrawingEditorState(
+        drawing: state.past.last,
+        past: state.past.sublist(0, state.past.length - 1),
+        future: [state.drawing, ...state.future],
+        revision: state.revision + 1,
+      ),
     );
   }
 
@@ -81,11 +87,13 @@ class DrawingEditorNotifier extends Notifier<DrawingEditorState> {
     if (state.future.isEmpty) {
       return;
     }
-    state = DrawingEditorState(
-      drawing: state.future.first,
-      past: [...state.past, state.drawing],
-      future: state.future.sublist(1),
-      revision: state.revision + 1,
+    _update(
+      DrawingEditorState(
+        drawing: state.future.first,
+        past: [...state.past, state.drawing],
+        future: state.future.sublist(1),
+        revision: state.revision + 1,
+      ),
     );
   }
 
@@ -94,11 +102,25 @@ class DrawingEditorNotifier extends Notifier<DrawingEditorState> {
   /// - [drawing] : nouveau dessin.
   void _apply(Drawing drawing) {
     final past = [...state.past, state.drawing];
-    state = DrawingEditorState(
-      drawing: drawing,
-      past: past.length > _maxHistory ? past.sublist(past.length - _maxHistory) : past,
-      revision: state.revision + 1,
+    _update(
+      DrawingEditorState(
+        drawing: drawing,
+        past: past.length > _maxHistory ? past.sublist(past.length - _maxHistory) : past,
+        revision: state.revision + 1,
+      ),
     );
+  }
+
+  /// Passe à l'état [next], et enregistre son dessin comme brouillon.
+  ///
+  /// Chaque changement est enregistré aussitôt, sans attendre : si le
+  /// système ferme l'app pendant que l'utilisateur est ailleurs, il retrouve
+  /// son dessin au dernier trait près.
+  ///
+  /// - [next] : nouvel état de l'éditeur.
+  void _update(DrawingEditorState next) {
+    state = next;
+    _drawingDraftNotifier.save(next.drawing);
   }
 }
 

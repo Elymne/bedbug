@@ -2,7 +2,7 @@ import 'package:bedbug/features/signature/domain/entities/signature.dart';
 
 /// Identifiant de la signature de l'utilisateur du téléphone.
 ///
-/// Identique à l'`authorId` attribué aux contenus créés localement, pour que
+/// Identique au `signatureId` attribué aux contenus créés localement, pour que
 /// la signature configurée dans les options s'affiche sur ces contenus.
 const String localSignatureId = 'local';
 

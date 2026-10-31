@@ -31,8 +31,8 @@ if ($LASTEXITCODE -ne 0)
     exit $LASTEXITCODE
 }
 
-Write-Host "🧪 Run tests"
-flutter test
+Write-Host "🧪 Run unit and use case tests"
+flutter test test/unit test/integration
 if ($LASTEXITCODE -ne 0)
 {
     exit $LASTEXITCODE

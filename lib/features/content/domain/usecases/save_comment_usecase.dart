@@ -52,7 +52,7 @@ class SaveCommentUsecase extends Usecase<SaveCommentParams, SaveCommentFailure, 
         createdAt: params.comment.createdAt,
         updatedAt: params.comment.updatedAt,
         contentId: params.comment.contentId,
-        authorId: params.comment.authorId,
+        signatureId: params.comment.signatureId,
         body: body,
       );
       await _commentRepository.addOne(comment);

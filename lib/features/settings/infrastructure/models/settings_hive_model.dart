@@ -13,7 +13,13 @@ class SettingsHiveModel extends HiveObject {
   /// - [blockedUrls] : liste des URLs bloquées.
   /// - [blockedWords] : liste des mots bloqués.
   /// - [isAnonymousByDefault] : publication anonyme par défaut des nouveaux contenus.
-  SettingsHiveModel({required this.blockedUrls, required this.blockedWords, required this.isAnonymousByDefault});
+  /// - [isExchangeEnabled] : échange avec les téléphones proches activé.
+  SettingsHiveModel({
+    required this.blockedUrls,
+    required this.blockedWords,
+    required this.isAnonymousByDefault,
+    required this.isExchangeEnabled,
+  });
 
   /// Crée un [SettingsHiveModel] depuis un [UserSettings].
   factory SettingsHiveModel.fromEntity(UserSettings entity) {
@@ -21,6 +27,7 @@ class SettingsHiveModel extends HiveObject {
       blockedUrls: entity.blockedUrls,
       blockedWords: entity.blockedWords,
       isAnonymousByDefault: entity.isAnonymousByDefault,
+      isExchangeEnabled: entity.isExchangeEnabled,
     );
   }
 
@@ -39,6 +46,13 @@ class SettingsHiveModel extends HiveObject {
   @HiveField(2, defaultValue: false)
   final bool isAnonymousByDefault;
 
+  /// Échange avec les téléphones proches activé.
+  ///
+  /// Les settings persistés avant l'ajout de cette option n'ont pas ce champ :
+  /// ils sont relus avec l'option désactivée.
+  @HiveField(3, defaultValue: false)
+  final bool isExchangeEnabled;
+
   /// Convertit ce modèle en [UserSettings].
   UserSettings toEntity() {
     try {
@@ -46,6 +60,7 @@ class SettingsHiveModel extends HiveObject {
         blockedUrls: blockedUrls,
         blockedWords: blockedWords,
         isAnonymousByDefault: isAnonymousByDefault,
+        isExchangeEnabled: isExchangeEnabled,
       );
     } catch (error) {
       throw DataException('SettingsHiveModel', error);

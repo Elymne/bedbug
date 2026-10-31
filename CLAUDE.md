@@ -28,7 +28,8 @@ shared → used by all
 - `domain` depends on nothing but `shared`.
 - `infrastructure` depends on its feature's domain and on `shared`.
 - `shared` depends on nothing.
-- Features are isolated from each other.
+- Features are isolated from each other. Sole exception: a use case may depend on the domain of another feature
+  (repositories, gateways, services, entities), never on its use cases.
 
 ### Features
 
@@ -71,6 +72,7 @@ application/
   widgets/            widgets reused across screens, grouped by kind
   notifiers/          notifiers shared across screens
   providers/          technical providers shared across screens
+  exchange/           device-to-device session, orchestrating the exchange and content features
   router/             router and route paths
   style/              colors, text styles, theme, constants
   validators/         form validators
@@ -97,6 +99,8 @@ shared/
 - Extend `Usecase<P extends Params, F, V>` and implement `call(params)`, returning `Future<Either<F, V>>`.
 - Never throw: failures are explicit and typed (failure enum).
 - Use `NoParams` when no input is required.
+- A use case never depends on another use case, only on repositories, gateways and services, even if it duplicates code.
+  Only the application layer calls use cases.
 - Logic needed by a single use case stays a private method of that use case.
 
 ### Services

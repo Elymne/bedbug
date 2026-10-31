@@ -1,12 +1,15 @@
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:bedbug/features/content/infrastructure/datasources/hive_drawing_draft_repository.dart';
+import 'package:bedbug/features/content/infrastructure/datasources/hive_seen_content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_trust_settings_repository.dart';
 import 'package:bedbug/features/content/infrastructure/models/comment_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/reaction_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/storage_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/trust_settings_hive_model.dart';
-import 'package:bedbug/features/discovery/infrastructure/models/keychain_hive_model.dart';
+import 'package:bedbug/features/exchange/infrastructure/models/keychain_hive_model.dart';
 import 'package:bedbug/features/settings/infrastructure/models/settings_hive_model.dart';
 import 'package:bedbug/features/signature/infrastructure/models/signature_hive_model.dart';
 import 'package:bedbug/hive_registrar.g.dart';
@@ -31,7 +34,9 @@ Future<void> initHive() async {
     Hive.openBox<KeychainHiveModel>('keychains'),
     Hive.openBox<StorageHiveModel>('storage'),
     Hive.openBox<SettingsHiveModel>('settings'),
+    Hive.openBox<Uint8List>(drawingDraftBoxName),
     Hive.openBox<TrustSettingsHiveModel>(trustSettingsBoxName),
+    Hive.openBox<int>(seenContentBoxName),
   ]);
   await _purgeLegacyImageContents();
 }

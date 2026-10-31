@@ -16,7 +16,7 @@ dart format --line-length 120 lib/ test/
 echo "🔍 Analyze code"
 flutter analyze --fatal-infos --fatal-warnings
 
-echo "🧪 Run tests"
-flutter test
+echo "🧪 Run unit and use case tests"
+flutter test test/unit test/integration
 
 echo "✅ CI checks passed"

@@ -25,6 +25,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- Échange de contenus en arrière-plan : voir documentations/exchange/01-android.md. -->
+        <service
+            android:name=".exchange.ExchangeService"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice"/>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
@@ -40,6 +45,21 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Enregistrement des médias dans la galerie (package gal), nécessaire jusqu'à Android 10. -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29"/>
+    <!-- Échange de contenus entre appareils en BLE. -->
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+    <!-- Android 12+ : permissions Bluetooth dédiées. Le scan ne sert jamais à localiser l'utilisateur. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <!-- Android 10 et 11 : anciennes permissions Bluetooth, et la localisation exigée par le système pour scanner. -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="30"/>
+    <!-- Service d'échange en arrière-plan, sa notification, et le processeur gardé éveillé pendant un échange. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>

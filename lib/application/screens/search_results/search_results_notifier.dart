@@ -1,8 +1,8 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/screens/search_results/search_criteria.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/usecases/get_contents_by_authors_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_contents_by_flair_usecase.dart';
+import 'package:bedbug/features/content/domain/usecases/get_contents_by_signatures_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_filtered_contents_usecase.dart';
 import 'package:bedbug/shared/notifier/notifier_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,7 +25,7 @@ class SearchResultsNotifier extends AsyncNotifier<SearchResultsState> {
   late final _getContentsByFlairUsecase = ref.read(getContentsByFlairUsecaseProvider);
 
   /// Cas d'usage de récupération des contenus de plusieurs auteurs.
-  late final _getContentsByAuthorsUsecase = ref.read(getContentsByAuthorsUsecaseProvider);
+  late final _getContentsBySignaturesUsecase = ref.read(getContentsBySignaturesUsecaseProvider);
 
   /// Cas d'usage de recherche globale sur le titre et le flair.
   late final _getFilteredContentsUsecase = ref.read(getFilteredContentsUsecaseProvider);
@@ -34,20 +34,20 @@ class SearchResultsNotifier extends AsyncNotifier<SearchResultsState> {
   Future<SearchResultsState> build() async {
     return switch (criteria) {
       FlairSearchCriteria(:final flair) => _loadByFlair(flair),
-      SignatureSearchCriteria(:final signatureId) => _loadByAuthors([signatureId]),
+      SignatureSearchCriteria(:final signatureId) => _loadBySignatures([signatureId]),
       QuerySearchCriteria(:final query) => _loadByQuery(query),
     };
   }
 
-  /// Charge les contenus signés par l'un des [authorIds].
-  Future<SearchResultsState> _loadByAuthors(List<String> authorIds) async {
-    final result = await _getContentsByAuthorsUsecase(GetContentsByAuthorsParams(authorIds: authorIds));
+  /// Charge les contenus signés par l'un des [signatureIds].
+  Future<SearchResultsState> _loadBySignatures(List<String> signatureIds) async {
+    final result = await _getContentsBySignaturesUsecase(GetContentsBySignaturesParams(signatureIds: signatureIds));
     return result.fold(
-      onFailure: (GetContentsByAuthorsFailure failure) {
+      onFailure: (GetContentsBySignaturesFailure failure) {
         final message = switch (failure) {
-          GetContentsByAuthorsFailure.invalidData => ref.l10n.homeGetContentsInvalidData,
-          GetContentsByAuthorsFailure.storageError => ref.l10n.homeGetContentsStorageError,
-          GetContentsByAuthorsFailure.unknown => ref.l10n.homeGetContentsUnknown,
+          GetContentsBySignaturesFailure.invalidData => ref.l10n.homeGetContentsInvalidData,
+          GetContentsBySignaturesFailure.storageError => ref.l10n.homeGetContentsStorageError,
+          GetContentsBySignaturesFailure.unknown => ref.l10n.homeGetContentsUnknown,
         };
         return SearchResultsState(contents: const [], failureMessage: message);
       },

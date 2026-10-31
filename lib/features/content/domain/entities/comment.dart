@@ -23,14 +23,14 @@ class Comment extends Entity {
   /// Crée un [Comment].
   ///
   /// - [contentId] : identifiant du contenu commenté.
-  /// - [authorId] : identifiant de la signature qui a commenté.
+  /// - [signatureId] : identifiant de la signature qui a commenté.
   /// - [body] : corps du commentaire, au plus [maxCommentLength] caractères.
   Comment({
     required super.id,
     required super.createdAt,
     required super.updatedAt,
     required this.contentId,
-    required this.authorId,
+    required this.signatureId,
     required this.body,
   });
 
@@ -38,7 +38,7 @@ class Comment extends Entity {
   final String contentId;
 
   /// Identifiant de la signature qui a commenté.
-  final String authorId;
+  final String signatureId;
 
   /// Corps du commentaire.
   final String body;
