@@ -14,7 +14,6 @@ import 'package:bedbug/application/widgets/signature/app_signature_bio.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
 import 'package:bedbug/application/widgets/texts/app_text_font_selector.dart';
-import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/enums/social_network.dart';
 import 'package:bedbug/features/signature/domain/enums/text_font.dart';
@@ -164,7 +163,8 @@ class _State extends ConsumerState<SignatureSection> {
           formControl: _bioControl,
           textCapitalization: TextCapitalization.sentences,
           maxLength: maxSignatureBioLength,
-          maxLines: 1,
+          maxLines: null,
+          textInputAction: TextInputAction.done,
           decoration: InputDecoration(labelText: l10n.settingsBioLabel, hintText: l10n.settingsBioHint),
           validationMessages: {'signatureBio': (_) => l10n.settingsBioError(maxSignatureBioLength)},
         ),

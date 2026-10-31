@@ -1,10 +1,12 @@
 import 'package:bedbug/features/content/domain/repositories/comment_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/reaction_repository.dart';
+import 'package:bedbug/features/content/domain/repositories/seen_content_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_comment_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
+import 'package:bedbug/features/content/infrastructure/datasources/hive_seen_content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_storage_repository.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
@@ -21,6 +23,7 @@ final deleteOwnContentUsecaseProvider = Provider<DeleteOwnContentUsecase>((ref) 
     ref.read(storageRepositoryProvider),
     ref.read(reactionRepositoryProvider),
     ref.read(commentRepositoryProvider),
+    ref.read(seenContentRepositoryProvider),
   );
 });
 
@@ -33,7 +36,9 @@ final deleteOwnContentUsecaseProvider = Provider<DeleteOwnContentUsecase>((ref) 
 /// copies déjà transmises à d'autres appareils ne peuvent pas être rappelées.
 ///
 /// Les réactions et les commentaires du contenu sont supprimés avec lui, et
-/// le poids du contenu est retiré du compteur de stockage.
+/// le poids du contenu est retiré du compteur de stockage. Le contenu est
+/// mémorisé comme déjà vu : un pair qui en détient une copie ne pourra pas
+/// le faire revenir sur l'appareil.
 class DeleteOwnContentUsecase extends Usecase<DeleteOwnContentParams, DeleteOwnContentFailure, void> {
   /// Crée un [DeleteOwnContentUsecase].
   DeleteOwnContentUsecase(
@@ -41,12 +46,14 @@ class DeleteOwnContentUsecase extends Usecase<DeleteOwnContentParams, DeleteOwnC
     this._storageRepository,
     this._reactionRepository,
     this._commentRepository,
+    this._seenContentRepository,
   );
 
   final ContentRepository _contentRepository;
   final StorageRepository _storageRepository;
   final ReactionRepository _reactionRepository;
   final CommentRepository _commentRepository;
+  final SeenContentRepository _seenContentRepository;
 
   @override
   Future<Either<DeleteOwnContentFailure, void>> call(DeleteOwnContentParams params) async {
@@ -63,6 +70,7 @@ class DeleteOwnContentUsecase extends Usecase<DeleteOwnContentParams, DeleteOwnC
       await _storageRepository.adjustCurrentSizeInBytes(-content.sizeInBytes);
       await _reactionRepository.deleteAllByContentId(content.id);
       await _commentRepository.deleteAllByContentId(content.id);
+      await _seenContentRepository.addMany([content.id], DateTime.now());
       return const Right(null);
     } on DataException catch (error, stackTrace) {
       AppLogger.error('DeleteOwnContentUsecase', error, stackTrace);

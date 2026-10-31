@@ -158,7 +158,7 @@ class _State extends ConsumerState<ReactionComposerSheet> {
                 formControl: _bubbleTextControl,
                 textCapitalization: TextCapitalization.sentences,
                 maxLength: maxReactionBubbleLength,
-                maxLines: 1,
+                maxLines: null,
                 textInputAction: TextInputAction.done,
                 decoration: InputDecoration(labelText: l10n.reactionBubbleLabel),
                 validationMessages: {

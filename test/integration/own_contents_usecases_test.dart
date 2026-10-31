@@ -6,12 +6,12 @@ import 'package:bedbug/features/content/domain/usecases/delete_own_content_useca
 import 'package:bedbug/features/content/domain/usecases/get_own_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_storage_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/hive_test_helper.dart';
+import '../helpers/seed_contents_usecase.dart';
 
 void main() {
   late Directory tempDir;
@@ -32,7 +32,7 @@ void main() {
     await saveUsecase(SaveContentParams(content: _buildTextContent('ancien', ContentOrigin.owned, DateTime(2026))));
     await saveUsecase(
       SaveContentParams(
-        content: _buildTextContent('anonyme', ContentOrigin.owned, DateTime(2026, 2), authorId: 'anonymous'),
+        content: _buildTextContent('anonyme', ContentOrigin.owned, DateTime(2026, 2), signatureId: 'anonymous'),
       ),
     );
     await saveUsecase(SaveContentParams(content: _buildTextContent('recu', ContentOrigin.public, DateTime(2026, 3))));
@@ -79,13 +79,12 @@ void main() {
   });
 }
 
-TextContent _buildTextContent(String id, ContentOrigin origin, DateTime createdAt, {String authorId = 'local'}) {
+TextContent _buildTextContent(String id, ContentOrigin origin, DateTime createdAt, {String signatureId = 'local'}) {
   return TextContent(
     id: id,
     createdAt: createdAt,
     updatedAt: createdAt,
-    authorId: authorId,
-    senderId: 'local',
+    signatureId: signatureId,
     flair: 'test',
     origin: origin,
     broadcastScore: 1,

@@ -5,11 +5,9 @@ import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/seed_reactions_usecase.dart';
-import 'package:bedbug/features/signature/domain/usecases/seed_signatures_usecase.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/pump_app.dart';
@@ -23,32 +21,12 @@ class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
   Future<Either<GetHomeFeedFailure, List<Content>>> call(NoParams params) async => Right(_contents);
 }
 
-/// Fake [SeedContentsUsecase] ne touchant à aucune infrastructure réelle.
-class _FakeSeedContentsUsecase implements SeedContentsUsecase {
-  @override
-  Future<Either<SeedContentsFailure, void>> call(SeedContentsParams params) async => const Right(null);
-}
-
-class _FakeSeedReactionsUsecase implements SeedReactionsUsecase {
-  @override
-  Future<Either<SeedReactionsFailure, void>> call(SeedReactionsParams params) async {
-    return const Right(null);
-  }
-}
-
-/// Fake [SeedSignaturesUsecase] ne touchant à aucune infrastructure réelle.
-class _FakeSeedSignaturesUsecase implements SeedSignaturesUsecase {
-  @override
-  Future<Either<SeedSignaturesFailure, List<String>>> call(SeedSignaturesParams params) async => const Right([]);
-}
-
 TextContent _buildTextContent(String id) {
   return TextContent(
     id: id,
     createdAt: DateTime(2026),
     updatedAt: DateTime(2026),
-    authorId: 'local',
-    senderId: 'local',
+    signatureId: 'local',
     flair: 'test',
     origin: ContentOrigin.owned,
     broadcastScore: 1,
@@ -61,17 +39,57 @@ TextContent _buildTextContent(String id) {
   );
 }
 
+/// Fake [GetHomeFeedUsecase] dont la liste change en cours de test, comme après la réception de contenus d'un pair.
+class _ChangingGetHomeFeedUsecase implements GetHomeFeedUsecase {
+  _ChangingGetHomeFeedUsecase(this.contents);
+
+  /// Liste retournée au prochain appel.
+  List<Content> contents;
+
+  @override
+  Future<Either<GetHomeFeedFailure, List<Content>>> call(NoParams params) async => Right(contents);
+}
+
 void main() {
+  testWidgets('tirer le fil vers le bas affiche les contenus reçus depuis', (tester) async {
+    final usecase = _ChangingGetHomeFeedUsecase([_buildTextContent('1')]);
+    await pumpApp(tester, const HomeScreen(), overrides: [getHomeFeedUsecaseProvider.overrideWithValue(usecase)]);
+    await tester.pump();
+    await tester.pump();
+    expect(find.byType(ContentWidget), findsOneWidget);
+
+    usecase.contents = [_buildTextContent('1'), _buildTextContent('2')];
+    await tester.fling(find.byType(RefreshIndicator), const Offset(0, 300), 1000);
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.byType(RefreshProgressIndicator), findsNothing);
+
+    expect(find.byType(ContentWidget), findsNWidgets(2));
+  });
+
+  testWidgets('un accueil vide se recharge aussi, pour faire apparaître les premiers contenus', (tester) async {
+    final usecase = _ChangingGetHomeFeedUsecase([]);
+    await pumpApp(tester, const HomeScreen(), overrides: [getHomeFeedUsecaseProvider.overrideWithValue(usecase)]);
+    await tester.pump();
+    await tester.pump();
+    expect(find.byType(ContentWidget), findsNothing);
+
+    usecase.contents = [_buildTextContent('1')];
+    await tester.fling(find.byType(RefreshIndicator), const Offset(0, 300), 1000);
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.byType(RefreshProgressIndicator), findsNothing);
+
+    expect(find.byType(ContentWidget), findsOneWidget);
+  });
+
   testWidgets('affiche la barre de recherche et le message vide quand aucun contenu', (tester) async {
     await pumpApp(
       tester,
       const HomeScreen(),
-      overrides: [
-        getHomeFeedUsecaseProvider.overrideWithValue(_FakeGetHomeFeedUsecase(const [])),
-        seedContentsUsecaseProvider.overrideWithValue(_FakeSeedContentsUsecase()),
-        seedReactionsUsecaseProvider.overrideWithValue(_FakeSeedReactionsUsecase()),
-        seedSignaturesUsecaseProvider.overrideWithValue(_FakeSeedSignaturesUsecase()),
-      ],
+      overrides: [getHomeFeedUsecaseProvider.overrideWithValue(_FakeGetHomeFeedUsecase(const []))],
     );
     await tester.pump();
     await tester.pump();
@@ -88,9 +106,6 @@ void main() {
         getHomeFeedUsecaseProvider.overrideWithValue(
           _FakeGetHomeFeedUsecase([_buildTextContent('1'), _buildTextContent('2')]),
         ),
-        seedContentsUsecaseProvider.overrideWithValue(_FakeSeedContentsUsecase()),
-        seedReactionsUsecaseProvider.overrideWithValue(_FakeSeedReactionsUsecase()),
-        seedSignaturesUsecaseProvider.overrideWithValue(_FakeSeedSignaturesUsecase()),
       ],
     );
     await tester.pump();

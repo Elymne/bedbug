@@ -21,7 +21,7 @@ Comment _comment({required String id, required DateTime createdAt, String body =
     createdAt: createdAt,
     updatedAt: createdAt,
     contentId: 'content',
-    authorId: 'alice',
+    signatureId: 'alice',
     body: body,
   );
 }

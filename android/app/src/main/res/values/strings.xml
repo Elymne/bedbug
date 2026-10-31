@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nom du canal de notification, visible dans les réglages Android de l'app. -->
+    <string name="exchange_notification_channel">Échange de contenus</string>
+    <!-- Titre de la notification permanente du service d'échange. -->
+    <string name="exchange_notification_title">BedBug échange autour de vous</string>
+    <!-- Texte de la notification permanente du service d'échange. -->
+    <string name="exchange_notification_text">Les contenus circulent avec les téléphones à proximité.</string>
+    <!-- Bouton de la notification qui arrête le service d'échange. -->
+    <string name="exchange_notification_stop">Arrêter</string>
+</resources>

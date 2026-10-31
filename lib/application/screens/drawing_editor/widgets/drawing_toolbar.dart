@@ -1,17 +1,17 @@
 import 'package:bedbug/application/screens/drawing_editor/drawing_tool_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/widgets/icons/app_eraser_icon.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Icône de chaque outil de l'éditeur.
+/// Icône de chaque outil de l'éditeur, sauf la gomme, dessinée par [AppEraserIcon].
 const Map<DrawingTool, IconData> _kToolIcons = {
   DrawingTool.pen: Icons.edit,
   DrawingTool.marker: Icons.brush,
   DrawingTool.pencil: Icons.draw,
   DrawingTool.spray: Icons.blur_on,
-  DrawingTool.eraser: Icons.auto_fix_normal,
   DrawingTool.fill: Icons.format_color_fill,
 };
 
@@ -53,7 +53,7 @@ class DrawingToolbar extends ConsumerWidget {
                   backgroundColor: tool == toolState.tool ? AppColors.primary : AppColors.backgroundLight,
                   foregroundColor: tool == toolState.tool ? AppColors.onDark : AppColors.onLight,
                 ),
-                icon: Icon(_kToolIcons[tool]),
+                icon: tool == DrawingTool.eraser ? const AppEraserIcon() : Icon(_kToolIcons[tool]),
               ),
           ],
         ),

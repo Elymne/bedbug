@@ -1,4 +1,6 @@
+import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/content_detail/content_detail_skeleton.dart';
+import 'package:bedbug/application/screens/drawing_viewer/drawing_viewer_screen.dart';
 import 'package:bedbug/application/widgets/drawing/app_drawing_image.dart';
 import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
 import 'package:flutter/material.dart';
@@ -22,14 +24,23 @@ class DrawingContentDetailScreen extends ConsumerWidget {
       isOwned: content.isOwned,
       title: content.title,
       flair: content.flair,
-      authorId: content.authorId,
+      signatureId: content.signatureId,
       createdAt: content.createdAt,
       bounce: content.bounce,
       tags: content.tags,
       onClose: () => context.pop(),
-      contentBody: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: AppDrawingImage(drawing: content.drawing, cacheKey: content.id),
+      // Toucher le dessin l'ouvre en grand, pour zoomer dedans.
+      contentBody: GestureDetector(
+        onTap: () {
+          context.push(
+            drawingViewerPath,
+            extra: DrawingViewerParams(drawing: content.drawing, cacheKey: content.id),
+          );
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: AppDrawingImage(drawing: content.drawing, cacheKey: content.id),
+        ),
       ),
     );
   }

@@ -23,7 +23,26 @@ const double defaultGhostSpeed = 1;
 ///
 /// La description est une phrase pour se présenter, pas une biographie : elle
 /// voyage avec la signature de pair à pair et doit rester légère.
-const int maxSignatureBioLength = 80;
+const int maxSignatureBioLength = 250;
+
+/// Identifiant de signature porté par les contenus publiés anonymement.
+const String anonymousSignatureId = 'anonymous';
+
+/// Signature anonyme, identique pour tout le monde.
+///
+/// Codée en dur dans l'app et jamais stockée en base : un contenu anonyme ne
+/// doit rien révéler de son auteur, pas même une signature qu'il aurait pu
+/// modifier. Sert aussi de repli pour tout auteur dont la signature est
+/// inconnue de l'appareil.
+/// Icône « agent secret », couleur et vitesse du ghost par défaut, aucun
+/// réseau.
+final Signature anonymousSignature = Signature(
+  id: anonymousSignatureId,
+  createdAt: DateTime.fromMillisecondsSinceEpoch(0),
+  updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
+  pseudo: 'anonyme',
+  avatarText: '(⌐■_■)',
+);
 
 /// Signature apposée sur un contenu : un pseudo, une icône texte animée d'un effet ghost, une courte description et des réseaux.
 ///

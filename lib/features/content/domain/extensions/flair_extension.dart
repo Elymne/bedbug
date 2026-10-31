@@ -1,3 +1,8 @@
+/// Longueur maximale, en caractères, d'un flair saisi.
+///
+/// Appliquée au formulaire de création et aux contenus reçus des pairs, qui ne passent par aucun formulaire.
+const int maxFlairLength = 32;
+
 /// Normalisation du flair saisi à la main par l'auteur d'un contenu.
 ///
 /// Le flair est un texte libre : l'utilisateur peut écrire `f/france`,

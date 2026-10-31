@@ -55,7 +55,9 @@ class SaveReactionNotifier extends AsyncNotifier<void> {
     final result = await _saveReactionUsecase(
       SaveReactionParams(
         reaction: Reaction(
-          id: UuidX.generate(),
+          // Même identifiant que la réaction remplacée : chez les pairs, qui ne reçoivent pas l'auteur, c'est
+          // l'identifiant qui permet à la nouvelle version de remplacer l'ancienne.
+          id: previousReaction?.id ?? UuidX.generate(),
           createdAt: previousReaction?.createdAt ?? now,
           updatedAt: now,
           contentId: contentId,

@@ -31,8 +31,8 @@ void main() {
   Future<Uint8List> pixelsOf(WidgetTester tester, List<DrawingOperation> operations) async {
     final bytes = await tester.runAsync(() async {
       final image = await rasterizer.render(Drawing(palette: defaultDrawingPalette, operations: operations));
-      expect(image.width, drawingRasterWidth);
-      expect(image.height, drawingRasterHeight);
+      expect(image.width, rasterizer.rasterWidth(const Drawing.empty()));
+      expect(image.height, rasterizer.rasterHeight(const Drawing.empty()));
       return image.toByteData(format: ui.ImageByteFormat.rawStraightRgba);
     });
     return bytes!.buffer.asUint8List();
@@ -40,7 +40,7 @@ void main() {
 
   /// Couleur RGB du pixel de l'image correspondant au point (x, y) du repère.
   List<int> colorAt(Uint8List pixels, int x, int y) {
-    final offset = ((y ~/ 2) * drawingRasterWidth + (x ~/ 2)) * 4;
+    final offset = ((y ~/ 2) * rasterizer.rasterWidth(const Drawing.empty()) + (x ~/ 2)) * 4;
     return pixels.sublist(offset, offset + 3);
   }
 

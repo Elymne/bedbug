@@ -1,27 +1,37 @@
+import 'package:bedbug/application/notifiers/drawing_draft_notifier.dart';
+import 'package:bedbug/application/screens/drawing_editor/drawing_canvas_zoom_notifier.dart';
 import 'package:bedbug/application/screens/drawing_editor/drawing_editor_notifier.dart';
+import 'package:bedbug/application/screens/drawing_editor/drawing_tool_notifier.dart';
 import 'package:bedbug/application/screens/drawing_editor/widgets/drawing_canvas.dart';
-import 'package:bedbug/application/screens/drawing_editor/widgets/drawing_palette.dart';
-import 'package:bedbug/application/screens/drawing_editor/widgets/drawing_toolbar.dart';
-import 'package:bedbug/application/style/app_values.dart';
-import 'package:bedbug/application/widgets/buttons/app_close_button.dart';
-import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
+import 'package:bedbug/application/screens/drawing_editor/widgets/drawing_editor_menu.dart';
+import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Éditeur de dessin, en plein écran.
+/// Marge entre les boutons flottants et le bord de l'écran.
+const double _kButtonMargin = 8;
+
+/// Épaisseur de l'anneau du bouton du menu, à la couleur en cours.
+const double _kColorRingWidth = 3;
+
+/// Éditeur de dessin, la surface sur tout l'écran.
 ///
-/// Retourne le dessin validé à la page qui l'a ouvert (`context.pop`), ou
-/// rien si l'utilisateur ferme l'éditeur sans valider.
+/// Seuls trois boutons flottent par-dessus le dessin : le menu (outils,
+/// gomme, couleurs, calques, valider…), le mode zoom, et annuler, le geste
+/// le plus fréquent. Le dessin en cours est enregistré comme brouillon à
+/// chaque trait ; le brouillon est effacé quand l'éditeur est validé ou
+/// fermé depuis le menu. Retourne le dessin validé à la page qui l'a ouvert
+/// (`context.pop`), ou rien si l'utilisateur ferme l'éditeur.
 class DrawingEditorScreen extends ConsumerStatefulWidget {
   /// Crée un [DrawingEditorScreen].
   ///
-  /// - [initialDrawing] : dessin à reprendre, vide pour un nouveau dessin.
+  /// - [initialDrawing] : dessin à reprendre, ou dessin vide à la surface choisie.
   const DrawingEditorScreen({super.key, required this.initialDrawing});
 
-  /// Dessin à reprendre, vide pour un nouveau dessin.
+  /// Dessin à reprendre, ou dessin vide à la surface choisie.
   final Drawing initialDrawing;
 
   @override
@@ -35,62 +45,97 @@ class _State extends ConsumerState<DrawingEditorScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.loc;
-    final editorState = ref.watch(drawingEditorNotifierProvider(_args));
-    final editorNotifier = drawingEditorNotifierProvider(_args).notifier;
+    final canUndo = ref.watch(drawingEditorNotifierProvider(_args).select((state) => state.past.isNotEmpty));
+    final palette = ref.watch(drawingEditorNotifierProvider(_args).select((state) => state.drawing.palette));
+    // Écouté ici aussi pour que l'outil choisi survive à la fermeture du menu, qui était seul à le lire.
+    final colorIndex = ref.watch(drawingToolNotifierProvider.select((state) => state.colorIndex));
+    final buttonStyle = IconButton.styleFrom(
+      backgroundColor: AppColors.surface,
+      foregroundColor: AppColors.onLight,
+      side: const BorderSide(color: AppColors.border),
+    );
 
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin),
-              child: Row(
-                children: [
-                  const AppCloseButton(),
-                  const Spacer(),
-                  IconButton(
-                    onPressed: editorState.past.isEmpty ? null : () => ref.read(editorNotifier).undo(),
-                    tooltip: l10n.drawingUndo,
-                    icon: const Icon(Icons.undo),
-                  ),
-                  IconButton(
-                    onPressed: editorState.future.isEmpty ? null : () => ref.read(editorNotifier).redo(),
-                    tooltip: l10n.drawingRedo,
-                    icon: const Icon(Icons.redo),
-                  ),
-                  IconButton(
-                    onPressed: editorState.drawing.operations.isEmpty ? null : () => ref.read(editorNotifier).clear(),
-                    tooltip: l10n.drawingClear,
-                    icon: const Icon(Icons.delete_sweep_outlined),
-                  ),
-                  const SizedBox(width: 8),
-                  AppGradientButton(
-                    onTap: editorState.drawing.operations.isEmpty ? null : () => context.pop(editorState.drawing),
-                    child: Text(l10n.drawingDone),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(AppValues.baseMargin),
-              child: DrawingCanvas(args: _args),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin),
+      // Un fond gris, comme dans un logiciel de dessin : la surface blanche s'en détache quand on dézoome.
+      backgroundColor: AppColors.border,
+      body: Stack(
+        children: [
+          Positioned.fill(child: DrawingCanvas(args: _args)),
+          SafeArea(
+            child: Align(
+              alignment: AlignmentDirectional.topEnd,
+              child: Padding(
+                padding: const EdgeInsets.all(_kButtonMargin),
                 child: Column(
-                  spacing: 16,
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 8,
                   children: [
-                    const DrawingToolbar(),
-                    DrawingPalette(args: _args),
+                    IconButton(
+                      onPressed: _openMenu,
+                      tooltip: l10n.drawingMenu,
+                      style: buttonStyle.copyWith(
+                        side: WidgetStatePropertyAll(
+                          BorderSide(color: Color(palette[colorIndex]), width: _kColorRingWidth),
+                        ),
+                      ),
+                      icon: const Icon(Icons.palette_outlined),
+                    ),
+                    // Le zoom change au rythme des doigts : seul son bouton se reconstruit.
+                    Consumer(
+                      builder: (context, ref, _) {
+                        final isZoomMode = ref.watch(
+                          drawingCanvasZoomNotifierProvider.select((zoom) => zoom.isZoomMode),
+                        );
+                        return IconButton(
+                          onPressed: () => ref.read(drawingCanvasZoomNotifierProvider.notifier).toggleZoomMode(),
+                          tooltip: l10n.drawingZoomMode,
+                          isSelected: isZoomMode,
+                          style: buttonStyle.copyWith(
+                            backgroundColor: WidgetStatePropertyAll(isZoomMode ? AppColors.primary : AppColors.surface),
+                            foregroundColor: WidgetStatePropertyAll(isZoomMode ? AppColors.onDark : AppColors.onLight),
+                          ),
+                          icon: const Icon(Icons.zoom_in),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      onPressed: canUndo ? () => ref.read(drawingEditorNotifierProvider(_args).notifier).undo() : null,
+                      tooltip: l10n.drawingUndo,
+                      style: buttonStyle,
+                      icon: const Icon(Icons.undo),
+                    ),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
+
+  /// Ouvre le menu de l'éditeur, puis ferme ou valide l'éditeur si le menu le demande.
+  ///
+  /// Dans les deux cas, le brouillon est effacé : le dessin est soit rendu à
+  /// la page de création, soit abandonné volontairement.
+  Future<void> _openMenu() async {
+    final action = await showModalBottomSheet<DrawingEditorMenuAction>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => DrawingEditorMenu(args: _args),
+    );
+    if (action == null || !mounted) {
+      return;
+    }
+    final drawing = ref.read(drawingEditorNotifierProvider(_args)).drawing;
+    await ref.read(drawingDraftNotifierProvider.notifier).clear();
+    if (!mounted) {
+      return;
+    }
+    if (action == DrawingEditorMenuAction.close) {
+      context.pop();
+      return;
+    }
+    context.pop(drawing);
   }
 }

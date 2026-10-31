@@ -19,7 +19,7 @@ class CommentHiveModelAdapter extends TypeAdapter<CommentHiveModel> {
       createdAt: (fields[1] as num).toInt(),
       updatedAt: (fields[2] as num).toInt(),
       contentId: fields[5] as String,
-      authorId: fields[3] as String,
+      signatureId: fields[3] as String,
       body: fields[4] as String,
     );
   }
@@ -35,7 +35,7 @@ class CommentHiveModelAdapter extends TypeAdapter<CommentHiveModel> {
       ..writeByte(2)
       ..write(obj.updatedAt)
       ..writeByte(3)
-      ..write(obj.authorId)
+      ..write(obj.signatureId)
       ..writeByte(4)
       ..write(obj.body)
       ..writeByte(5)

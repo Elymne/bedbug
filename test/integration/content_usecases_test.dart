@@ -5,12 +5,12 @@ import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/usecases/clear_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/hive_test_helper.dart';
+import '../helpers/seed_contents_usecase.dart';
 
 void main() {
   late Directory tempDir;
@@ -72,8 +72,7 @@ TextContent _buildTextContent(String id) {
     id: id,
     createdAt: DateTime(2026),
     updatedAt: DateTime(2026),
-    authorId: 'local',
-    senderId: 'local',
+    signatureId: 'local',
     flair: 'test',
     origin: ContentOrigin.owned,
     broadcastScore: 1,

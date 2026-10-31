@@ -1,4 +1,5 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
+import 'package:bedbug/application/notifiers/drawing_draft_notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/drawing/app_drawing_image.dart';
@@ -57,7 +58,7 @@ class DrawingContentForm extends ConsumerWidget {
                 if (control.invalid && control.touched)
                   Text(l10n.createDrawingRequiredError, style: const TextStyle(color: AppColors.failure)),
                 OutlinedButton.icon(
-                  onPressed: () => _openEditor(context, drawing),
+                  onPressed: () => _openEditor(context, ref, drawing),
                   icon: const Icon(Icons.brush_outlined),
                   label: Text(drawing == null ? l10n.createDrawingButton : l10n.createDrawingEditButton),
                 ),
@@ -69,12 +70,26 @@ class DrawingContentForm extends ConsumerWidget {
     );
   }
 
-  /// Ouvre l'éditeur sur [drawing], et garde le dessin validé.
+  /// Ouvre l'éditeur, et garde le dessin validé.
+  ///
+  /// Un brouillon laissé en cours passe avant tout : c'est le travail le
+  /// plus récent, interrompu avant d'être validé. Sinon l'éditeur reprend
+  /// [drawing], et sans dessin, la page de choix de la surface s'ouvre
+  /// d'abord.
   ///
   /// - [context] : contexte depuis lequel naviguer.
-  /// - [drawing] : dessin à reprendre, `null` pour commencer un dessin vide.
-  Future<void> _openEditor(BuildContext context, Drawing? drawing) async {
-    final edited = await context.push<Drawing>(drawingEditorPath, extra: drawing ?? const Drawing.empty());
+  /// - [ref] : accès au brouillon.
+  /// - [drawing] : dessin à reprendre, `null` pour en commencer un.
+  Future<void> _openEditor(BuildContext context, WidgetRef ref, Drawing? drawing) async {
+    final draft = await ref.read(drawingDraftNotifierProvider.future);
+    if (!context.mounted) {
+      return;
+    }
+    final start = draft ?? drawing ?? await context.push<Drawing>(drawingFormatPath);
+    if (start == null || !context.mounted) {
+      return;
+    }
+    final edited = await context.push<Drawing>(drawingEditorPath, extra: start);
     if (edited == null) {
       return;
     }

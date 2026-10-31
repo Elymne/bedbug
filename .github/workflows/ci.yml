@@ -38,5 +38,5 @@ jobs:
       - name: 🎨 Check formatting
         run: dart format --set-exit-if-changed --line-length 120 lib/ test/
 
-      - name: 🧪 Run tests
-        run: flutter test
+      - name: 🧪 Run unit and use case tests
+        run: flutter test test/unit test/integration

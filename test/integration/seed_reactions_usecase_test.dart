@@ -2,14 +2,14 @@ import 'dart:io';
 
 import 'package:bedbug/features/content/domain/entities/reaction.dart';
 import 'package:bedbug/features/content/domain/extensions/reaction_text_extension.dart';
-import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/seed_reactions_usecase.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/hive_test_helper.dart';
+import '../helpers/seed_contents_usecase.dart';
+import '../helpers/seed_reactions_usecase.dart';
 
 void main() {
   late Directory tempDir;

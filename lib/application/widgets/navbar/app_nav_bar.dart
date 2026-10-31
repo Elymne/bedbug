@@ -1,23 +1,31 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/widgets/ghost/app_ghost_effect.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Données d'un item de la [AppNavBar].
 class AppNavBarItem {
   /// Crée un [AppNavBarItem].
-  const AppNavBarItem({required this.icon, required this.label});
+  ///
+  /// - [icon] : icône affichée dans la barre de navigation.
+  /// - [label] : label sémantique de l'item.
+  /// - [isGhosting] : `true` pour animer l'icône, afin de signaler une activité en cours.
+  const AppNavBarItem({required this.icon, required this.label, this.isGhosting = false});
 
   /// Icône affichée dans la barre de navigation.
   final IconData icon;
 
   /// Label sémantique de l'item (pour l'accessibilité).
   final String label;
+
+  /// Indique si l'icône est animée, pour signaler une activité en cours.
+  final bool isGhosting;
 }
 
 /// Barre de navigation inférieure de l'application.
 ///
 /// Affiche uniquement des icônes. L'item sélectionné est coloré en
-/// [AppColors.primary].
+/// [AppColors.primary], et un item animé tremble avec un fantôme de cette couleur.
 class AppNavBar extends ConsumerWidget {
   /// Crée une [AppNavBar].
   const AppNavBar({super.key, required this.selectedIndex, required this.onTap, required this.items});
@@ -86,9 +94,22 @@ class _NavBarItemWidget extends ConsumerWidget {
         child: SizedBox(
           width: 64,
           height: 56,
-          child: Center(child: Icon(item.icon, color: isSelected ? AppColors.primary : AppColors.disabled, size: 26)),
+          child: Center(
+            child: AppGhostEffect(
+              isAnimating: item.isGhosting,
+              child: Icon(item.icon, color: _iconColor, size: 26),
+            ),
+          ),
         ),
       ),
     );
+  }
+
+  /// Couleur de l'icône : plus contrastée quand l'item est animé, pour que l'activité se remarque.
+  Color get _iconColor {
+    if (isSelected) {
+      return AppColors.primary;
+    }
+    return item.isGhosting ? AppColors.onLight : AppColors.disabled;
   }
 }

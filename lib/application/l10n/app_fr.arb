@@ -12,6 +12,10 @@
   "@navCreateLabel": {
     "description": "Label sémantique de l'item Créer dans la barre de navigation"
   },
+  "navExchangeLabel": "Échange",
+  "@navExchangeLabel": {
+    "description": "Libellé de l'onglet Échange dans la barre de navigation"
+  },
   "navSettingsLabel": "Paramètres",
   "@navSettingsLabel": {
     "description": "Label sémantique de l'item Paramètres dans la barre de navigation"
@@ -31,10 +35,6 @@
   "homeEmptyList": "Aucun contenu disponible.",
   "@homeEmptyList": {
     "description": "Message affiché sur l'accueil quand la liste de contenus est vide"
-  },
-  "homeSeedButton": "Charger des données de test",
-  "@homeSeedButton": {
-    "description": "Bouton de chargement de données factices sur l'accueil quand la liste est vide"
   },
   "createTitle": "Créer",
   "@createTitle": {
@@ -258,6 +258,47 @@
   "settingsSaveError": "Échec de l'enregistrement du réglage.",
   "@settingsSaveError": {
     "description": "Message snackbar d'erreur affiché quand un réglage ne peut pas être enregistré"
+  },
+  "settingsStorageTitle": "Stockage",
+  "@settingsStorageTitle": {
+    "description": "Titre de la section Stockage des paramètres"
+  },
+  "settingsStorageSubtitle": "Limite du poids des contenus",
+  "@settingsStorageSubtitle": {
+    "description": "Sous-titre de la section Stockage des paramètres"
+  },
+  "settingsStorageDescription": "Au-delà de cette limite, les contenus reçus les moins bien notés sont supprimés. Tes propres contenus ne le sont jamais.",
+  "@settingsStorageDescription": {
+    "description": "Explication de la limite de stockage et de ce qui est supprimé au-delà"
+  },
+  "settingsStorageMegabytes": "{size} Mo",
+  "@settingsStorageMegabytes": {
+    "description": "Limite de stockage proposée, en mégaoctets",
+    "placeholders": {
+      "size": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsStorageCustomLabel": "Limite personnalisée (Mo)",
+  "@settingsStorageCustomLabel": {
+    "description": "Libellé du champ de limite de stockage personnalisée"
+  },
+  "settingsStorageCustomApply": "Appliquer",
+  "@settingsStorageCustomApply": {
+    "description": "Infobulle du bouton appliquant la limite personnalisée"
+  },
+  "settingsStorageCustomInvalid": "Entre un nombre entre {min} et {max}.",
+  "@settingsStorageCustomInvalid": {
+    "description": "Erreur quand la limite saisie sort des bornes",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
   },
   "settingsAvatarBrowse": "Parcourir les icônes",
   "@settingsAvatarBrowse": {
@@ -725,6 +766,54 @@
   "@drawingPaletteHint": {
     "description": "Aide affichée sous la palette de l'éditeur de dessin"
   },
+  "drawingSurfaceSmall": "Petit",
+  "@drawingSurfaceSmall": {
+    "description": "Petite surface de dessin, dans le choix de la taille de l'éditeur"
+  },
+  "drawingSurfaceMedium": "Moyen",
+  "@drawingSurfaceMedium": {
+    "description": "Surface de dessin moyenne, dans le choix de la taille de l'éditeur"
+  },
+  "drawingSurfaceLarge": "Grand",
+  "@drawingSurfaceLarge": {
+    "description": "Grande surface de dessin, dans le choix de la taille de l'éditeur"
+  },
+  "drawingOrientationLandscape": "Paysage",
+  "@drawingOrientationLandscape": {
+    "description": "Orientation paysage de la surface, dans le choix de l'orientation de l'éditeur"
+  },
+  "drawingOrientationPortrait": "Portrait",
+  "@drawingOrientationPortrait": {
+    "description": "Orientation portrait de la surface, dans le choix de l'orientation de l'éditeur"
+  },
+  "drawingZoomMode": "Mode zoom",
+  "@drawingZoomMode": {
+    "description": "Bouton de l'éditeur de dessin qui fait zoomer et déplacer la surface au lieu de dessiner"
+  },
+  "drawingZoomReset": "Dézoomer",
+  "@drawingZoomReset": {
+    "description": "Bouton de l'éditeur de dessin qui ramène la surface entière à l'écran"
+  },
+  "drawingMenu": "Outils et couleurs",
+  "@drawingMenu": {
+    "description": "Bouton de l'éditeur de dessin qui ouvre le menu des outils, couleurs et actions"
+  },
+  "drawingFormatTitle": "Choisis ta surface",
+  "@drawingFormatTitle": {
+    "description": "Titre de la page de choix de la surface, avant l'éditeur de dessin"
+  },
+  "drawingFormatSizeLabel": "Taille",
+  "@drawingFormatSizeLabel": {
+    "description": "Libellé du choix de la taille de la surface, sur la page de choix de la surface"
+  },
+  "drawingFormatOrientationLabel": "Orientation",
+  "@drawingFormatOrientationLabel": {
+    "description": "Libellé du choix de l'orientation de la surface, sur la page de choix de la surface"
+  },
+  "drawingFormatStart": "Commencer",
+  "@drawingFormatStart": {
+    "description": "Bouton de la page de choix de la surface qui ouvre l'éditeur de dessin"
+  },
   "linkOpenTitle": "Ouvrir ce lien ?",
   "@linkOpenTitle": {
     "description": "Titre de la popup demandant confirmation avant d'ouvrir un lien d'un domaine qui n'est pas de confiance"
@@ -849,5 +938,30 @@
   "trustResetButton": "Rétablir les listes par défaut",
   "@trustResetButton": {
     "description": "Bouton rétablissant les listes de domaines par défaut"
+  },
+  "exchangeToggleLabel": "Échanger avec les téléphones proches",
+  "@exchangeToggleLabel": {
+    "description": "Interrupteur activant l'échange de contenus en arrière-plan"
+  },
+  "exchangePermissionDenied": "L'échange a besoin de l'accès au Bluetooth.",
+  "@exchangePermissionDenied": {
+    "description": "Erreur quand l'utilisateur refuse les permissions Bluetooth"
+  },
+  "exchangeBluetoothOff": "Activez le Bluetooth pour échanger.",
+  "@exchangeBluetoothOff": {
+    "description": "Erreur quand le Bluetooth est désactivé"
+  },
+  "exchangeUnavailable": "L'échange n'est pas disponible sur ce téléphone.",
+  "@exchangeUnavailable": {
+    "description": "Erreur quand le téléphone ne peut pas lancer l'échange"
+  },
+  "exchangeStats": "Échanges réussis : {successCount}\nÉchanges échoués : {failureCount}\nContenus reçus : {contentCount}",
+  "@exchangeStats": {
+    "description": "Compteurs des échanges depuis le lancement de l'app, sur la page Échange",
+    "placeholders": {
+      "successCount": { "type": "int" },
+      "failureCount": { "type": "int" },
+      "contentCount": { "type": "int" }
+    }
   }
 }

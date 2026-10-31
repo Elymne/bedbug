@@ -1,19 +1,19 @@
 import 'dart:io';
 
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
-import 'package:bedbug/features/signature/domain/entities/anonymous_signature.dart';
+import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/extensions/signature_text_extension.dart';
 import 'package:bedbug/features/signature/domain/usecases/get_local_signature_usecase.dart';
 import 'package:bedbug/features/signature/domain/usecases/get_signature_suggestions_usecase.dart';
 import 'package:bedbug/features/signature/domain/usecases/save_local_signature_usecase.dart';
-import 'package:bedbug/features/signature/domain/usecases/seed_signatures_usecase.dart';
 import 'package:bedbug/features/signature/infrastructure/datasources/hive_signature_repository.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/hive_test_helper.dart';
+import '../helpers/seed_contents_usecase.dart';
+import '../helpers/seed_signatures_usecase.dart';
 
 void main() {
   late Directory tempDir;
@@ -75,14 +75,14 @@ void main() {
     final signatureIds = (await container.read(seedSignaturesUsecaseProvider)(
       const SeedSignaturesParams(randomSeed: 7),
     )).right!;
-    final authorIds = [...signatureIds, anonymousSignatureId];
+    final allSignatureIds = [...signatureIds, anonymousSignatureId];
 
     await container.read(seedContentsUsecaseProvider)(
-      SeedContentsParams(count: 200, authorIds: authorIds, randomSeed: 7),
+      SeedContentsParams(count: 200, signatureIds: allSignatureIds, randomSeed: 7),
     );
 
     final contents = (await container.read(getHomeFeedUsecaseProvider)(const NoParams())).right!;
-    final usedAuthorIds = contents.map((content) => content.authorId).toSet();
-    expect(usedAuthorIds, authorIds.toSet());
+    final usedSignatureIds = contents.map((content) => content.signatureId).toSet();
+    expect(usedSignatureIds, allSignatureIds.toSet());
   });
 }

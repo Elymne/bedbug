@@ -55,3 +55,12 @@ Reproduit localement la CI (install, fix, format, analyse, tests) :
 ./ci-checker.sh     # bash
 ./ci-checker.ps1    # PowerShell
 ```
+
+### Lancer les tests
+
+Deux jeux de tests séparés :
+
+```sh
+flutter test test/unit test/integration    # logique et use cases, à chaque PR
+flutter test test/widget                   # widgets, hors CI
+```
