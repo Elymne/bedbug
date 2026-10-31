@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/object_values/flair_suggestion.dart';
@@ -47,6 +49,13 @@ abstract class ContentRepository {
 
   /// Retourne les [limit] contenus de plus fort `broadcastScore`, du plus fort au plus faible.
   Future<List<Content>> getTopByBroadcastScore(int limit);
+
+  /// Retourne au plus [limit] contenus tirés au hasard, en dehors de [excludedIds].
+  ///
+  /// - [limit] : nombre maximal de contenus.
+  /// - [excludedIds] : contenus à ne pas tirer.
+  /// - [random] : générateur du tirage.
+  Future<List<Content>> getRandomExcluding(int limit, Set<String> excludedIds, Random random);
 
   /// Supprime le contenu d'identifiant [id]. Sans effet s'il n'existe pas.
   Future<void> deleteOne(String id);

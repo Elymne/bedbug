@@ -21,6 +21,12 @@ abstract class ExchangeTransportGateway {
   /// - [bytes] : octets à envoyer.
   Future<void> send(Uint8List bytes);
 
+  /// Signale que l'échange a réussi : le lot du pair a été importé.
+  ///
+  /// Le transport peut alors laisser ce pair tranquille un moment, alors qu'il le recontactera vite après un échec.
+  /// Sans effet si la connexion est fermée.
+  Future<void> confirmSuccess();
+
   /// Ferme la connexion. Sans effet si elle l'est déjà.
   Future<void> close();
 }

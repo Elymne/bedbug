@@ -268,7 +268,22 @@ void main() {
       expect((await buildOffer()).contents, isEmpty);
     });
 
-    test('ne propose que les contenus les plus prioritaires, dans la limite de maxOfferedContents', () async {
+    test('une offre variée propose peu à peu les contenus hors des plus prioritaires', () async {
+      await container.read(contentRepositoryProvider).addMany([
+        for (var index = 0; index < 120; index++) _text('c$index', broadcastScore: 1),
+      ]);
+
+      final offeredIds = <String>{};
+      for (var round = 0; round < 10; round++) {
+        final offer = await buildOffer();
+        expect(offer.contents, hasLength(maxOfferedContents));
+        offeredIds.addAll(offer.contents.map((content) => content.id));
+      }
+
+      expect(offeredIds.length, greaterThan(maxOfferedContents));
+    });
+
+    test('commence par les contenus les plus prioritaires, dans la limite de maxOfferedContents', () async {
       await container.read(contentRepositoryProvider).addMany([
         for (var index = 0; index < maxOfferedContents + 10; index++) _text('c$index', broadcastScore: index / 100),
       ]);
@@ -277,7 +292,9 @@ void main() {
 
       expect(offer.contents, hasLength(maxOfferedContents));
       expect(offer.contents.first.id, 'c${maxOfferedContents + 9}');
-      expect(offer.contents.map((content) => content.id), isNot(contains('c9')));
+      expect(offer.contents.take(priorityOfferedContents).map((content) => content.id), [
+        for (var index = 0; index < priorityOfferedContents; index++) 'c${maxOfferedContents + 9 - index}',
+      ]);
     });
 
     test('annonce le poids stocké de chaque contenu', () async {

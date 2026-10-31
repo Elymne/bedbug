@@ -42,6 +42,15 @@ class HomeFeedNotifier extends AsyncNotifier<HomeFeedState> {
     );
   }
 
+  /// Recharge le flux et se termine une fois la nouvelle liste disponible.
+  ///
+  /// Les contenus reçus d'un pair arrivent directement en base, sans passer par ce notifier : c'est ainsi que
+  /// l'utilisateur les fait apparaître. La liste actuelle reste affichée pendant le rechargement.
+  Future<void> refresh() async {
+    ref.invalidateSelf();
+    await future;
+  }
+
   /// Génère des utilisateurs, des contenus et des réactions factices puis recharge la liste.
   ///
   /// Les contenus sont répartis au hasard entre les utilisateurs factices et

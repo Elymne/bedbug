@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/extensions/content_title_extension.dart';
@@ -168,6 +170,17 @@ class HiveContentRepository implements ContentRepository {
       // Tri sur les modèles avant conversion : seuls les contenus retenus paient le coût de `toEntity()`.
       final models = _box.values.toList()
         ..sort((first, second) => second.broadcastScore.compareTo(first.broadcastScore));
+      return models.take(limit).map((model) => model.toEntity()).toList();
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
+  Future<List<Content>> getRandomExcluding(int limit, Set<String> excludedIds, Random random) async {
+    try {
+      // Tirage sur les modèles avant conversion : seuls les contenus retenus paient le coût de `toEntity()`.
+      final models = _box.values.where((model) => !excludedIds.contains(model.id)).toList()..shuffle(random);
       return models.take(limit).map((model) => model.toEntity()).toList();
     } on HiveError catch (error) {
       throw DatasourceException('HiveContentRepository', error);

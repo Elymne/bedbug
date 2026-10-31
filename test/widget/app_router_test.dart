@@ -5,6 +5,7 @@ import 'package:bedbug/application/screens/content_detail/link_content_detail_sc
 import 'package:bedbug/application/screens/content_detail/media_content_detail_screen.dart';
 import 'package:bedbug/application/screens/content_detail/text_content_detail_screen.dart';
 import 'package:bedbug/application/screens/create/create_screen.dart';
+import 'package:bedbug/application/screens/exchange/exchange_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/screens/search/search_screen.dart';
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
@@ -173,6 +174,7 @@ void main() {
 
     for (final entry in <String, Type>{
       createPath: CreateScreen,
+      exchangePath: ExchangeScreen,
       settingsPath: SettingsScreen,
       searchPath: SearchScreen,
     }.entries) {

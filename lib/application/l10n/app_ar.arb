@@ -3,6 +3,7 @@
   "title": "BEDBUG",
   "navHomeLabel": "الرئيسية",
   "navCreateLabel": "إنشاء",
+  "navExchangeLabel": "التبادل",
   "navSettingsLabel": "الإعدادات",
   "homeGetContentsInvalidData": "البيانات تالفة أو غير صالحة.",
   "homeGetContentsStorageError": "تعذّر الوصول إلى التخزين المحلي.",
@@ -197,5 +198,10 @@
   "trustMoveToTrusted": "نقل إلى الموثوقة",
   "trustRuleInvalidError": "نطاق غير صالح.",
   "trustRulePublicSuffixError": "واسع جدًا: هذا النطاق سيسمح بآلاف المواقع المجهولة.",
-  "trustResetButton": "استعادة القوائم الافتراضية"
+  "trustResetButton": "استعادة القوائم الافتراضية",
+  "exchangeToggleLabel": "التبادل مع الهواتف القريبة",
+  "exchangePermissionDenied": "يحتاج التبادل إلى إذن الوصول إلى البلوتوث.",
+  "exchangeBluetoothOff": "فعّل البلوتوث للتبادل.",
+  "exchangeUnavailable": "التبادل غير متاح على هذا الهاتف.",
+  "exchangeStats": "عمليات تبادل ناجحة: {successCount}\nعمليات تبادل فاشلة: {failureCount}\nالمحتوى المستلم: {contentCount}"
 }

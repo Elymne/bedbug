@@ -3,6 +3,7 @@
   "title": "BEDBUG",
   "navHomeLabel": "Inicio",
   "navCreateLabel": "Crear",
+  "navExchangeLabel": "Intercambio",
   "navSettingsLabel": "Ajustes",
   "homeGetContentsInvalidData": "Los datos están dañados o no son válidos.",
   "homeGetContentsStorageError": "No se puede acceder al almacenamiento local.",
@@ -197,5 +198,10 @@
   "trustMoveToTrusted": "Pasar a confianza",
   "trustRuleInvalidError": "Dominio no válido.",
   "trustRulePublicSuffixError": "Demasiado amplio: este dominio permitiría miles de sitios desconocidos.",
-  "trustResetButton": "Restablecer las listas predeterminadas"
+  "trustResetButton": "Restablecer las listas predeterminadas",
+  "exchangeToggleLabel": "Intercambiar con teléfonos cercanos",
+  "exchangePermissionDenied": "El intercambio necesita acceso al Bluetooth.",
+  "exchangeBluetoothOff": "Activa el Bluetooth para intercambiar.",
+  "exchangeUnavailable": "El intercambio no está disponible en este teléfono.",
+  "exchangeStats": "Intercambios correctos: {successCount}\nIntercambios fallidos: {failureCount}\nContenidos recibidos: {contentCount}"
 }

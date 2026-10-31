@@ -12,6 +12,10 @@
   "@navCreateLabel": {
     "description": "Label sémantique de l'item Créer dans la barre de navigation"
   },
+  "navExchangeLabel": "Échange",
+  "@navExchangeLabel": {
+    "description": "Libellé de l'onglet Échange dans la barre de navigation"
+  },
   "navSettingsLabel": "Paramètres",
   "@navSettingsLabel": {
     "description": "Label sémantique de l'item Paramètres dans la barre de navigation"
@@ -897,5 +901,30 @@
   "trustResetButton": "Rétablir les listes par défaut",
   "@trustResetButton": {
     "description": "Bouton rétablissant les listes de domaines par défaut"
+  },
+  "exchangeToggleLabel": "Échanger avec les téléphones proches",
+  "@exchangeToggleLabel": {
+    "description": "Interrupteur activant l'échange de contenus en arrière-plan"
+  },
+  "exchangePermissionDenied": "L'échange a besoin de l'accès au Bluetooth.",
+  "@exchangePermissionDenied": {
+    "description": "Erreur quand l'utilisateur refuse les permissions Bluetooth"
+  },
+  "exchangeBluetoothOff": "Activez le Bluetooth pour échanger.",
+  "@exchangeBluetoothOff": {
+    "description": "Erreur quand le Bluetooth est désactivé"
+  },
+  "exchangeUnavailable": "L'échange n'est pas disponible sur ce téléphone.",
+  "@exchangeUnavailable": {
+    "description": "Erreur quand le téléphone ne peut pas lancer l'échange"
+  },
+  "exchangeStats": "Échanges réussis : {successCount}\nÉchanges échoués : {failureCount}\nContenus reçus : {contentCount}",
+  "@exchangeStats": {
+    "description": "Compteurs des échanges depuis le lancement de l'app, sur la page Échange",
+    "placeholders": {
+      "successCount": { "type": "int" },
+      "failureCount": { "type": "int" },
+      "contentCount": { "type": "int" }
+    }
   }
 }

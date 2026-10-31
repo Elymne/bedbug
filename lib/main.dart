@@ -1,4 +1,5 @@
 import 'package:bedbug/application/app_root.dart';
+import 'package:bedbug/application/exchange/passive_exchange_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/shared/config/app_config.dart';
 import 'package:bedbug/shared/infrastructure/hive_initializer.dart';
@@ -30,5 +31,10 @@ void main() async {
   );
 
   debugPrint('Starting Web App');
-  runApp(const ProviderScope(child: AppRoot()));
+
+  // * L'échange ne dépend d'aucun écran : Android peut relancer l'app en arrière-plan, sans en afficher un seul.
+  final container = ProviderContainer();
+  container.read(passiveExchangeNotifierProvider);
+
+  runApp(UncontrolledProviderScope(container: container, child: const AppRoot()));
 }

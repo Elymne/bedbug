@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
@@ -20,6 +21,7 @@ final buildExchangeOfferUsecaseProvider = Provider<BuildExchangeOfferUsecase>((r
     ref.read(contentRepositoryProvider),
     ref.read(reactionRepositoryProvider),
     ref.read(exchangeCodecGatewayProvider),
+    Random(),
   );
 });
 
@@ -29,28 +31,46 @@ final buildExchangeOfferUsecaseProvider = Provider<BuildExchangeOfferUsecase>((r
 /// tiennent en quelques kilo-octets, une fraction de seconde en BLE, tout en laissant au pair un vrai choix.
 const int maxOfferedContents = 50;
 
+/// Nombre de contenus de l'offre choisis par priorité de diffusion, le reste étant tiré au hasard.
+///
+/// Une offre uniquement faite des contenus les plus prioritaires proposerait toujours les mêmes : au-delà de
+/// [maxOfferedContents] contenus, les autres ne circuleraient plus du tout.
+const int priorityOfferedContents = 35;
+
 /// Construit l'offre envoyée à un pair au début d'un échange, déjà encodée pour le transport.
 ///
 /// Un échange commence par proposer, pas par envoyer : on ne connaît pas encore ce que le pair possède, et
 /// pousser des contenus à l'aveugle gaspillerait une bande passante BLE rare (quelques dizaines de Ko/s). L'offre
-/// liste donc les [maxOfferedContents] contenus de plus fort `broadcastScore` (les plus « chauds », et toujours
-/// ceux de l'utilisateur), du plus prioritaire au moins prioritaire. Pour chacun, elle résume ses réactions
+/// liste donc les [priorityOfferedContents] contenus de plus fort `broadcastScore` (les plus « chauds », et toujours
+/// ceux de l'utilisateur), du plus prioritaire au moins prioritaire, complétés au hasard jusqu'à
+/// [maxOfferedContents], pour que les autres contenus aient leur chance. Pour chacun, elle résume ses réactions
 /// (nombre, date de la plus récente) : un pair qui possède déjà le contenu peut ainsi ne demander que les
 /// réactions qui lui manquent.
 class BuildExchangeOfferUsecase extends Usecase<NoParams, BuildExchangeOfferFailure, Uint8List> {
   /// Crée un [BuildExchangeOfferUsecase].
-  BuildExchangeOfferUsecase(this._contentRepository, this._reactionRepository, this._exchangeCodecGateway);
+  BuildExchangeOfferUsecase(
+    this._contentRepository,
+    this._reactionRepository,
+    this._exchangeCodecGateway,
+    this._random,
+  );
 
   final ContentRepository _contentRepository;
   final ReactionRepository _reactionRepository;
   final ExchangeCodecGateway _exchangeCodecGateway;
+  final Random _random;
 
   @override
   Future<Either<BuildExchangeOfferFailure, Uint8List>> call(NoParams params) async {
     try {
-      final contents = await _contentRepository.getTopByBroadcastScore(maxOfferedContents);
+      final priorityContents = await _contentRepository.getTopByBroadcastScore(priorityOfferedContents);
+      final otherContents = await _contentRepository.getRandomExcluding(
+        maxOfferedContents - priorityContents.length,
+        priorityContents.map((content) => content.id).toSet(),
+        _random,
+      );
       final offered = <OfferedContent>[];
-      for (final content in contents) {
+      for (final content in [...priorityContents, ...otherContents]) {
         final reactions = await _reactionRepository.getAllByContentId(content.id);
         DateTime? latestReactionAt;
         for (final reaction in reactions) {

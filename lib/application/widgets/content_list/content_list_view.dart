@@ -21,7 +21,8 @@ class ContentListView extends ConsumerWidget {
   /// - [contents] : liste des contenus à afficher.
   /// - [emptyChild] : widget affiché à la place de la liste quand [contents] est vide.
   /// - [controller] : contrôleur de scroll de la liste.
-  const ContentListView({super.key, required this.contents, required this.emptyChild, this.controller});
+  /// - [onRefresh] : appelé quand l'utilisateur tire la liste vers le bas, `null` pour ne pas le proposer.
+  const ContentListView({super.key, required this.contents, required this.emptyChild, this.controller, this.onRefresh});
 
   /// Liste des contenus à afficher.
   final List<Content> contents;
@@ -31,6 +32,9 @@ class ContentListView extends ConsumerWidget {
 
   /// Contrôleur de scroll de la liste.
   final ScrollController? controller;
+
+  /// Appelé quand l'utilisateur tire la liste vers le bas, `null` pour ne pas le proposer.
+  final Future<void> Function()? onRefresh;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,12 +52,29 @@ class ContentListView extends ConsumerWidget {
                 .isContentHidden(trustSettings, mediaUrls: content.mediaUrls, linkUrls: content.linkUrls))
           content,
     ];
+    final onRefresh = this.onRefresh;
     if (visibleContents.isEmpty) {
-      return emptyChild;
+      if (onRefresh == null) {
+        return emptyChild;
+      }
+      // Un accueil vide doit rester rechargeable : c'est là qu'arrivent les premiers contenus reçus.
+      return RefreshIndicator(
+        onRefresh: onRefresh,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(height: constraints.maxHeight, child: emptyChild),
+            );
+          },
+        ),
+      );
     }
 
-    return ListView.separated(
+    final list = ListView.separated(
       controller: controller,
+      // Une liste trop courte pour défiler doit pouvoir être tirée quand même.
+      physics: onRefresh == null ? null : const AlwaysScrollableScrollPhysics(),
       itemCount: visibleContents.length,
       // Séparateurs en retrait des bords, comme ceux de la page de détail.
       separatorBuilder: (context, index) {
@@ -66,5 +87,9 @@ class ContentListView extends ConsumerWidget {
         );
       },
     );
+    if (onRefresh == null) {
+      return list;
+    }
+    return RefreshIndicator(onRefresh: onRefresh, child: list);
   }
 }

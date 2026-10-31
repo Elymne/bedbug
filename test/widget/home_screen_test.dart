@@ -10,6 +10,7 @@ import 'package:bedbug/features/content/domain/usecases/seed_reactions_usecase.d
 import 'package:bedbug/features/signature/domain/usecases/seed_signatures_usecase.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/pump_app.dart';
@@ -60,7 +61,52 @@ TextContent _buildTextContent(String id) {
   );
 }
 
+/// Fake [GetHomeFeedUsecase] dont la liste change en cours de test, comme après la réception de contenus d'un pair.
+class _ChangingGetHomeFeedUsecase implements GetHomeFeedUsecase {
+  _ChangingGetHomeFeedUsecase(this.contents);
+
+  /// Liste retournée au prochain appel.
+  List<Content> contents;
+
+  @override
+  Future<Either<GetHomeFeedFailure, List<Content>>> call(NoParams params) async => Right(contents);
+}
+
 void main() {
+  testWidgets('tirer le fil vers le bas affiche les contenus reçus depuis', (tester) async {
+    final usecase = _ChangingGetHomeFeedUsecase([_buildTextContent('1')]);
+    await pumpApp(tester, const HomeScreen(), overrides: [getHomeFeedUsecaseProvider.overrideWithValue(usecase)]);
+    await tester.pump();
+    await tester.pump();
+    expect(find.byType(ContentWidget), findsOneWidget);
+
+    usecase.contents = [_buildTextContent('1'), _buildTextContent('2')];
+    await tester.fling(find.byType(RefreshIndicator), const Offset(0, 300), 1000);
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.byType(RefreshProgressIndicator), findsNothing);
+
+    expect(find.byType(ContentWidget), findsNWidgets(2));
+  });
+
+  testWidgets('un accueil vide se recharge aussi, pour faire apparaître les premiers contenus', (tester) async {
+    final usecase = _ChangingGetHomeFeedUsecase([]);
+    await pumpApp(tester, const HomeScreen(), overrides: [getHomeFeedUsecaseProvider.overrideWithValue(usecase)]);
+    await tester.pump();
+    await tester.pump();
+    expect(find.byType(ContentWidget), findsNothing);
+
+    usecase.contents = [_buildTextContent('1')];
+    await tester.fling(find.byType(RefreshIndicator), const Offset(0, 300), 1000);
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.byType(RefreshProgressIndicator), findsNothing);
+
+    expect(find.byType(ContentWidget), findsOneWidget);
+  });
+
   testWidgets('affiche la barre de recherche et le message vide quand aucun contenu', (tester) async {
     await pumpApp(
       tester,

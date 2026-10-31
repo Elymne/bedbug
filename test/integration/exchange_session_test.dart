@@ -4,6 +4,8 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bedbug/application/exchange/exchange_session.dart';
+import 'package:bedbug/application/exchange/exchange_stats_notifier.dart';
+import 'package:bedbug/application/exchange/passive_exchange_notifier.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
@@ -16,6 +18,7 @@ import 'package:bedbug/features/content/infrastructure/models/storage_hive_model
 import 'package:bedbug/features/exchange/domain/enums/exchange_frame_type.dart';
 import 'package:bedbug/features/exchange/domain/gateways/exchange_frame_decoder_gateway.dart';
 import 'package:bedbug/features/exchange/domain/gateways/exchange_transport_gateway.dart';
+import 'package:bedbug/features/exchange/domain/gateways/peer_link_gateway.dart';
 import 'package:bedbug/features/exchange/domain/object_values/exchange_bundle.dart';
 import 'package:bedbug/features/exchange/domain/object_values/exchange_frame.dart';
 import 'package:bedbug/features/exchange/domain/object_values/exchange_offer.dart';
@@ -26,12 +29,14 @@ import 'package:bedbug/features/exchange/domain/usecases/import_exchange_bundle_
 import 'package:bedbug/features/exchange/domain/usecases/select_from_exchange_offer_usecase.dart';
 import 'package:bedbug/features/exchange/infrastructure/gateways/binary_exchange_frame_codec_gateway.dart';
 import 'package:bedbug/features/exchange/infrastructure/gateways/binary_exchange_frame_decoder_gateway.dart';
+import 'package:bedbug/features/exchange/infrastructure/gateways/ble_peer_link_gateway.dart';
 import 'package:bedbug/features/exchange/infrastructure/gateways/json_zlib_exchange_codec_gateway.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
 import 'package:bedbug/features/signature/infrastructure/datasources/hive_signature_repository.dart';
 import 'package:bedbug/features/signature/infrastructure/models/signature_hive_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 
@@ -83,7 +88,8 @@ String _noise(Random random, int length) {
 /// et les vrais repositories, chacun sur sa propre base.
 ///
 /// - [prefix] : préfixe des box de l'appareil.
-Future<ProviderContainer> _openDevice(String prefix) async {
+/// - [overrides] : overrides supplémentaires.
+Future<ProviderContainer> _openDevice(String prefix, {List<Override> overrides = const []}) async {
   final contents = await Hive.openBox<ContentHiveModel>('${prefix}_contents');
   final reactions = await Hive.openBox<ReactionHiveModel>('${prefix}_reactions');
   final seen = await Hive.openBox<int>('${prefix}_seen');
@@ -96,6 +102,7 @@ Future<ProviderContainer> _openDevice(String prefix) async {
       hiveSeenContentBoxProvider.overrideWithValue(seen),
       hiveSignatureBoxProvider.overrideWithValue(signatures),
       hiveStorageBoxProvider.overrideWithValue(storage),
+      ...overrides,
     ],
   );
 }
@@ -122,6 +129,40 @@ ExchangeSession _session(
     inactivityTimeout: inactivityTimeout,
     sessionTimeout: sessionTimeout,
   );
+}
+
+/// Fausse recherche de pairs : le test y fait arriver les connexions.
+class _FakePeerLinkGateway implements PeerLinkGateway {
+  /// Connexions livrées au reste de l'app.
+  final StreamController<ExchangeTransportGateway> controller = StreamController.broadcast();
+
+  @override
+  Stream<ExchangeTransportGateway> get connections {
+    return controller.stream;
+  }
+
+  @override
+  Stream<void> get stopped {
+    return const Stream.empty();
+  }
+
+  @override
+  Future<bool> requestPermissions() async {
+    return true;
+  }
+
+  @override
+  Future<PeerLinkStartStatus> start() async {
+    return PeerLinkStartStatus.started;
+  }
+
+  @override
+  Future<void> stop() async {}
+
+  /// Ferme le flux des connexions.
+  Future<void> close() {
+    return controller.close();
+  }
 }
 
 /// Pair simulé, piloté trame par trame par le test, pour envoyer ce qu'un pair honnête n'enverrait jamais.
@@ -250,6 +291,8 @@ void main() {
       expect((receivedByB as TextContent).title, 'Titre de-a');
       expect(transportA.isClosed, isTrue);
       expect(transportB.isClosed, isTrue);
+      expect(transportA.isSuccessConfirmed, isTrue);
+      expect(transportB.isSuccessConfirmed, isTrue);
     });
 
     test('deux appareils sans contenu terminent proprement l\'échange', () async {
@@ -398,6 +441,7 @@ void main() {
       await transportB.close();
 
       expect((await session).failure, ExchangeSessionFailure.transportClosed);
+      expect(transportA.isSuccessConfirmed, isFalse);
     });
 
     test('une connexion perdue une fois le lot importé n\'est pas un échec', () async {
@@ -472,6 +516,27 @@ void main() {
       final result = await _session(deviceA, transportA, inactivityTimeout: const Duration(milliseconds: 50)).run();
 
       expect(result.failure, ExchangeSessionFailure.timeout);
+    });
+  });
+
+  group('transfert passif', () {
+    test('une connexion reçue déroule une session, et les compteurs reflètent son bilan', () async {
+      final gateway = _FakePeerLinkGateway();
+      addTearDown(gateway.close);
+      final passiveDevice = await _openDevice('c', overrides: [peerLinkGatewayProvider.overrideWithValue(gateway)]);
+      addTearDown(passiveDevice.dispose);
+      await deviceB.read(contentRepositoryProvider).addOne(_text('de-b'));
+      await passiveDevice.read(passiveExchangeNotifierProvider.future);
+
+      gateway.controller.add(transportA);
+      await _session(deviceB, transportB).run();
+      while (passiveDevice.read(exchangeStatsNotifierProvider).successCount == 0) {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
+
+      final stats = passiveDevice.read(exchangeStatsNotifierProvider);
+      expect(stats.failureCount, 0);
+      expect(stats.contentCount, 1);
     });
   });
 

@@ -26,6 +26,9 @@ class InMemoryExchangeTransportGateway implements ExchangeTransportGateway {
   /// Vrai si les envois ne se terminent jamais, comme une radio saturée.
   bool isSendBlocked = false;
 
+  /// Vrai si l'échange a été signalé comme réussi.
+  bool isSuccessConfirmed = false;
+
   /// Vrai une fois la connexion fermée.
   bool get isClosed {
     return _incoming.isClosed;
@@ -49,6 +52,11 @@ class InMemoryExchangeTransportGateway implements ExchangeTransportGateway {
     if (!_peer.isClosed) {
       _peer._incoming.add(Uint8List.fromList(bytes));
     }
+  }
+
+  @override
+  Future<void> confirmSuccess() async {
+    isSuccessConfirmed = true;
   }
 
   @override

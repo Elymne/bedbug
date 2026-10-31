@@ -331,6 +331,7 @@ class ExchangeSession {
       return;
     }
     _report = report;
+    await _transport.confirmSuccess();
     _expectedFrame = ExchangeFrameType.done;
     await _sendFrame(ExchangeFrameType.done, Uint8List(0));
   }

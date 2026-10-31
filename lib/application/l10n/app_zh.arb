@@ -3,6 +3,7 @@
   "title": "BEDBUG",
   "navHomeLabel": "首页",
   "navCreateLabel": "创建",
+  "navExchangeLabel": "交换",
   "navSettingsLabel": "设置",
   "homeGetContentsInvalidData": "数据已损坏或无效。",
   "homeGetContentsStorageError": "无法访问本地存储。",
@@ -197,5 +198,10 @@
   "trustMoveToTrusted": "移到可信",
   "trustRuleInvalidError": "域名无效。",
   "trustRulePublicSuffixError": "范围太大：该域名会放行成千上万个未知网站。",
-  "trustResetButton": "恢复默认列表"
+  "trustResetButton": "恢复默认列表",
+  "exchangeToggleLabel": "与附近的手机交换",
+  "exchangePermissionDenied": "交换需要蓝牙访问权限。",
+  "exchangeBluetoothOff": "请开启蓝牙以进行交换。",
+  "exchangeUnavailable": "此手机无法使用交换功能。",
+  "exchangeStats": "成功交换:{successCount}\n失败交换:{failureCount}\n已接收内容:{contentCount}"
 }
