@@ -13,10 +13,10 @@ import 'package:bedbug/features/content/domain/object_values/content_media.dart'
 import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing_point.dart';
-import 'package:bedbug/features/content/domain/object_values/exchange_bundle.dart';
-import 'package:bedbug/features/content/domain/object_values/exchange_offer.dart';
-import 'package:bedbug/features/content/domain/object_values/exchange_request.dart';
-import 'package:bedbug/features/content/infrastructure/gateways/json_zlib_exchange_codec_gateway.dart';
+import 'package:bedbug/features/exchange/domain/object_values/exchange_bundle.dart';
+import 'package:bedbug/features/exchange/domain/object_values/exchange_offer.dart';
+import 'package:bedbug/features/exchange/domain/object_values/exchange_request.dart';
+import 'package:bedbug/features/exchange/infrastructure/gateways/json_zlib_exchange_codec_gateway.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/enums/social_network.dart';
 import 'package:bedbug/features/signature/domain/enums/text_font.dart';

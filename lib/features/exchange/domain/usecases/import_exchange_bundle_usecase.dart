@@ -2,20 +2,24 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
 import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/reaction.dart';
 import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
-import 'package:bedbug/features/content/domain/gateways/exchange_codec_gateway.dart';
-import 'package:bedbug/features/content/domain/object_values/exchange_import_report.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/reaction_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/seen_content_repository.dart';
-import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/save_reaction_usecase.dart';
+import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
+import 'package:bedbug/features/content/domain/services/content_size_service.dart';
+import 'package:bedbug/features/content/domain/services/drawing_validation_service.dart';
+import 'package:bedbug/features/content/domain/services/reaction_merge_service.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_seen_content_repository.dart';
-import 'package:bedbug/features/content/infrastructure/gateways/json_zlib_exchange_codec_gateway.dart';
+import 'package:bedbug/features/content/infrastructure/datasources/hive_storage_repository.dart';
+import 'package:bedbug/features/exchange/domain/gateways/exchange_codec_gateway.dart';
+import 'package:bedbug/features/exchange/domain/object_values/exchange_import_report.dart';
+import 'package:bedbug/features/exchange/infrastructure/gateways/json_zlib_exchange_codec_gateway.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/extensions/signature_text_extension.dart';
 import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
@@ -35,15 +39,17 @@ final importExchangeBundleUsecaseProvider = Provider<ImportExchangeBundleUsecase
     ref.read(reactionRepositoryProvider),
     ref.read(seenContentRepositoryProvider),
     ref.read(signatureRepositoryProvider),
+    ref.read(storageRepositoryProvider),
     ref.read(exchangeCodecGatewayProvider),
-    ref.read(saveContentUsecaseProvider),
-    ref.read(saveReactionUsecaseProvider),
+    ref.read(contentSizeServiceProvider),
+    ref.read(drawingValidationServiceProvider),
+    ref.read(reactionMergeServiceProvider),
   );
 });
 
 /// Poids maximal d'un contenu reçu d'un pair, en octets.
 ///
-/// Un dessin au maximum de ses limites pèse environ 90 Ko selon le calcul de `SaveContentUsecase` ; au-delà,
+/// Un dessin au maximum de ses limites pèse environ 90 Ko selon le calcul de [ContentSizeService] ; au-delà,
 /// un contenu reçu n'a rien de légitime et ne sert qu'à remplir le stockage.
 const int maxReceivedContentBytes = 128 * 1024;
 
@@ -77,8 +83,8 @@ const String peerSignatureIdPrefix = 'peer-';
 /// - L'auteur est déduit de la signature jointe : son identifiant local est une empreinte de ses champs, si bien
 ///   que deux contenus portant exactement la même signature se retrouvent sous la même page `s/pseudo`. Une
 ///   signature invalide est ignorée et le contenu s'affiche en anonyme.
-/// - Les limites de contenu (dessin, poids) sont celles de `SaveContentUsecase`, avec un plafond de poids
-///   ([maxReceivedContentBytes]) ; celles des réactions sont celles de `SaveReactionUsecase`.
+/// - Les limites de contenu sont celles d'un contenu local ([DrawingValidationService], [ContentSizeService]), avec
+///   un plafond de poids ([maxReceivedContentBytes]) ; celles des réactions viennent de [ReactionMergeService].
 /// - Une réaction n'a pas d'auteur transmis : son identifiant en tient lieu, l'auteur réutilisant le même
 ///   identifiant quand il modifie sa réaction. Une réaction reçue ne remplace jamais celle de l'utilisateur.
 ///
@@ -91,18 +97,22 @@ class ImportExchangeBundleUsecase
     this._reactionRepository,
     this._seenContentRepository,
     this._signatureRepository,
+    this._storageRepository,
     this._exchangeCodecGateway,
-    this._saveContentUsecase,
-    this._saveReactionUsecase,
+    this._contentSizeService,
+    this._drawingValidationService,
+    this._reactionMergeService,
   );
 
   final ContentRepository _contentRepository;
   final ReactionRepository _reactionRepository;
   final SeenContentRepository _seenContentRepository;
   final SignatureRepository _signatureRepository;
+  final StorageRepository _storageRepository;
   final ExchangeCodecGateway _exchangeCodecGateway;
-  final SaveContentUsecase _saveContentUsecase;
-  final SaveReactionUsecase _saveReactionUsecase;
+  final ContentSizeService _contentSizeService;
+  final DrawingValidationService _drawingValidationService;
+  final ReactionMergeService _reactionMergeService;
 
   @override
   Future<Either<ImportExchangeBundleFailure, ExchangeImportReport>> call(ImportExchangeBundleParams params) async {
@@ -139,10 +149,7 @@ class ImportExchangeBundleUsecase
           rejectedContents++;
           continue;
         }
-        final result = await _saveContentUsecase(
-          SaveContentParams(content: content, maxSizeInBytes: maxReceivedContentBytes),
-        );
-        if (result.isFailure) {
+        if (!await _saveReceivedContent(content)) {
           rejectedContents++;
           continue;
         }
@@ -204,6 +211,30 @@ class ImportExchangeBundleUsecase
       updatedAt: updatedAt.isBefore(createdAt) ? createdAt : updatedAt,
       flair: flair,
     );
+  }
+
+  /// Enregistre [content] et indique s'il l'a été.
+  ///
+  /// Un contenu refusé, ou qui échoue à l'écriture, n'empêche pas d'importer les suivants. Son poids est recalculé :
+  /// celui annoncé par le pair n'est pas fiable.
+  ///
+  /// - [content] : contenu reçu, avec ses champs propres à l'appareil.
+  Future<bool> _saveReceivedContent(Content content) async {
+    try {
+      if (content is DrawingContent && !_drawingValidationService.isValid(content.drawing)) {
+        return false;
+      }
+      final sizeInBytes = _contentSizeService.sizeInBytes(content);
+      if (sizeInBytes > maxReceivedContentBytes) {
+        return false;
+      }
+      final saved = await _contentRepository.addOne(content.copyWithSizeInBytes(sizeInBytes));
+      await _storageRepository.adjustCurrentSizeInBytes(saved.sizeInBytes);
+      return true;
+    } catch (error, stackTrace) {
+      AppLogger.error('ImportExchangeBundleUsecase', error, stackTrace);
+      return false;
+    }
   }
 
   /// Retourne la signature reçue [signature], vérifiée et rattachée à son identifiant local, ou `null` si elle
@@ -327,29 +358,57 @@ class ImportExchangeBundleUsecase
 
       final createdAt = received.createdAt.isAfter(now) ? now : received.createdAt;
       final updatedAt = received.updatedAt.isAfter(now) ? now : received.updatedAt;
-      final result = await _saveReactionUsecase(
-        SaveReactionParams(
-          reaction: Reaction(
-            id: received.id,
-            createdAt: createdAt,
-            updatedAt: updatedAt.isBefore(createdAt) ? createdAt : updatedAt,
-            contentId: contentId,
-            authorId: received.id,
-            avatarText: received.avatarText,
-            bubbleText: received.bubbleText,
-            colorArgb: received.colorArgb,
-            ghostSpeed: received.ghostSpeed,
-            bubbleFont: received.bubbleFont,
-          ),
+      final isSaved = await _saveReceivedReaction(
+        Reaction(
+          id: received.id,
+          createdAt: createdAt,
+          updatedAt: updatedAt.isBefore(createdAt) ? createdAt : updatedAt,
+          contentId: contentId,
+          authorId: received.id,
+          avatarText: received.avatarText,
+          bubbleText: received.bubbleText,
+          colorArgb: received.colorArgb,
+          ghostSpeed: received.ghostSpeed,
+          bubbleFont: received.bubbleFont,
         ),
       );
-      if (result.isFailure) {
+      if (!isSaved) {
         rejected++;
         continue;
       }
       imported++;
     }
     return (imported: imported, rejected: rejected);
+  }
+
+  /// Enregistre [reaction] selon les règles de [ReactionMergeService], et indique si elle a été traitée.
+  ///
+  /// Une version plus ancienne que celle connue compte comme traitée : elle n'est simplement pas écrite. Une réaction
+  /// refusée, ou qui échoue à l'écriture, n'empêche pas d'importer les suivantes.
+  ///
+  /// - [reaction] : réaction reçue, avec ses champs propres à l'appareil.
+  Future<bool> _saveReceivedReaction(Reaction reaction) async {
+    try {
+      final normalized = _reactionMergeService.normalize(reaction);
+      if (normalized == null) {
+        return false;
+      }
+      final existingReactions = await _reactionRepository.getAllByContentId(normalized.contentId);
+      final merge = _reactionMergeService.merge(existingReactions, normalized);
+      if (!merge.isNewReactionKept) {
+        return true;
+      }
+
+      await _reactionRepository.deleteMany(merge.replacedIds);
+      await _reactionRepository.addOne(normalized);
+      if (merge.overflowIds.isNotEmpty) {
+        await _reactionRepository.deleteMany(merge.overflowIds);
+      }
+      return true;
+    } catch (error, stackTrace) {
+      AppLogger.error('ImportExchangeBundleUsecase', error, stackTrace);
+      return false;
+    }
   }
 
   /// Retourne les identifiants des réactions de l'utilisateur sur le contenu [contentId].

@@ -1,7 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:bedbug/features/content/domain/gateways/media_gallery_gateway.dart';
-import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
 import 'package:bedbug/features/content/domain/services/media_format_service.dart';
-import 'package:bedbug/features/content/domain/usecases/fetch_media_usecase.dart';
 import 'package:bedbug/features/content/infrastructure/gateways/gal_media_gallery_gateway.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
@@ -19,26 +19,19 @@ const int maxGalleryMediaBytes = 50 * 1024 * 1024;
 
 /// Provider du [SaveMediaToGalleryUsecase].
 final saveMediaToGalleryUsecaseProvider = Provider<SaveMediaToGalleryUsecase>((ref) {
-  return SaveMediaToGalleryUsecase(
-    ref.read(fetchMediaUsecaseProvider),
-    ref.read(mediaGalleryGatewayProvider),
-    ref.read(mediaFormatServiceProvider),
-  );
+  return SaveMediaToGalleryUsecase(ref.read(mediaGalleryGatewayProvider), ref.read(mediaFormatServiceProvider));
 });
 
-/// Télécharge un média distant et l'enregistre dans la galerie du téléphone.
+/// Enregistre un média déjà téléchargé dans la galerie du téléphone.
 ///
 /// Les médias ne vivent plus dans l'app, seulement chez leur hébergeur, qui
 /// peut les retirer à tout moment : l'utilisateur doit pouvoir garder ceux
-/// qui lui plaisent. Le téléchargement passe par [FetchMediaUsecase], avec
-/// les mêmes vérifications que l'affichage, et le fichier n'est écrit que si
-/// ses octets sont bien ceux d'une image ou d'une vidéo : la galerie ne doit
-/// jamais recevoir une page web ou un exécutable déguisé.
+/// qui lui plaisent. Le fichier n'est écrit que si ses octets sont bien ceux
+/// d'une image ou d'une vidéo : la galerie ne doit jamais recevoir une page
+/// web ou un exécutable déguisé.
 class SaveMediaToGalleryUsecase extends Usecase<SaveMediaToGalleryParams, SaveMediaToGalleryFailure, void> {
   /// Crée un [SaveMediaToGalleryUsecase].
-  SaveMediaToGalleryUsecase(this._fetchMediaUsecase, this._mediaGalleryGateway, this._mediaFormatService);
-
-  final FetchMediaUsecase _fetchMediaUsecase;
+  SaveMediaToGalleryUsecase(this._mediaGalleryGateway, this._mediaFormatService);
 
   final MediaGalleryGateway _mediaGalleryGateway;
 
@@ -47,28 +40,12 @@ class SaveMediaToGalleryUsecase extends Usecase<SaveMediaToGalleryParams, SaveMe
   @override
   Future<Either<SaveMediaToGalleryFailure, void>> call(SaveMediaToGalleryParams params) async {
     try {
-      final fetched = await _fetchMediaUsecase(
-        FetchMediaParams(
-          rawUrl: params.rawUrl,
-          policy: params.policy,
-          isConfirmed: params.isConfirmed,
-          maxBytes: maxGalleryMediaBytes,
-        ),
-      );
-      final fetchedMedia = fetched.right;
-      if (fetchedMedia == null) {
-        return Left(switch (fetched.left!) {
-          FetchMediaFailure.tooLarge => SaveMediaToGalleryFailure.tooLarge,
-          _ => SaveMediaToGalleryFailure.unavailable,
-        });
-      }
-
-      final format = _mediaFormatService.detect(fetchedMedia.bytes);
+      final format = _mediaFormatService.detect(params.bytes);
       if (format == null) {
         return const Left(SaveMediaToGalleryFailure.unsupportedFormat);
       }
 
-      await _mediaGalleryGateway.save(fetchedMedia.bytes, format);
+      await _mediaGalleryGateway.save(params.bytes, format);
       return const Right(null);
     } on GalleryException catch (error, stackTrace) {
       AppLogger.error('SaveMediaToGalleryUsecase', error, stackTrace);
@@ -85,13 +62,7 @@ class SaveMediaToGalleryUsecase extends Usecase<SaveMediaToGalleryParams, SaveMe
 
 /// Échecs possibles du [SaveMediaToGalleryUsecase].
 enum SaveMediaToGalleryFailure {
-  /// Le média n'a pas pu être téléchargé (adresse ou domaine refusé, introuvable, réseau).
-  unavailable,
-
-  /// Le média dépasse [maxGalleryMediaBytes].
-  tooLarge,
-
-  /// Le fichier téléchargé n'est pas une image ou une vidéo d'un format accepté.
+  /// Le fichier n'est pas une image ou une vidéo d'un format accepté.
   unsupportedFormat,
 
   /// L'utilisateur a refusé l'accès à sa galerie.
@@ -105,17 +76,9 @@ enum SaveMediaToGalleryFailure {
 class SaveMediaToGalleryParams extends Params {
   /// Crée des [SaveMediaToGalleryParams].
   ///
-  /// - [rawUrl] : adresse du média, telle que reçue.
-  /// - [policy] : politique de confiance des médias de l'utilisateur.
-  /// - [isConfirmed] : `true` si l'utilisateur a confirmé vouloir afficher ce média malgré un domaine inconnu.
-  const SaveMediaToGalleryParams({required this.rawUrl, required this.policy, this.isConfirmed = false});
+  /// - [bytes] : contenu du média, téléchargé par `FetchMediaUsecase`.
+  const SaveMediaToGalleryParams({required this.bytes});
 
-  /// Adresse du média, telle que reçue.
-  final String rawUrl;
-
-  /// Politique de confiance des médias de l'utilisateur.
-  final UrlTrustPolicy policy;
-
-  /// Indique si l'utilisateur a confirmé vouloir afficher ce média malgré un domaine inconnu.
-  final bool isConfirmed;
+  /// Contenu du média.
+  final Uint8List bytes;
 }

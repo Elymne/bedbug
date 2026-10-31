@@ -1,4 +1,4 @@
-import 'package:bedbug/features/discovery/domain/entities/keychain.dart';
+import 'package:bedbug/features/exchange/domain/entities/keychain.dart';
 import 'package:bedbug/shared/exceptions/data_exception.dart';
 import 'package:bedbug/shared/infrastructure/hive_type_ids.dart';
 import 'package:hive_ce/hive.dart';

@@ -1,5 +1,5 @@
-import 'package:bedbug/features/discovery/domain/repositories/keychain_repository.dart';
-import 'package:bedbug/features/discovery/infrastructure/models/keychain_hive_model.dart';
+import 'package:bedbug/features/exchange/domain/repositories/keychain_repository.dart';
+import 'package:bedbug/features/exchange/infrastructure/models/keychain_hive_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 

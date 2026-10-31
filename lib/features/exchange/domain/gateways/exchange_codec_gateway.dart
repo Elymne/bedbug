@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/features/content/domain/object_values/exchange_bundle.dart';
-import 'package:bedbug/features/content/domain/object_values/exchange_offer.dart';
-import 'package:bedbug/features/content/domain/object_values/exchange_request.dart';
+import 'package:bedbug/features/exchange/domain/object_values/exchange_bundle.dart';
+import 'package:bedbug/features/exchange/domain/object_values/exchange_offer.dart';
+import 'package:bedbug/features/exchange/domain/object_values/exchange_request.dart';
 
 /// Contrat de mise en octets des messages échangés entre deux appareils.
 ///

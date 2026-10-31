@@ -1,12 +1,12 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/features/content/domain/gateways/exchange_codec_gateway.dart';
-import 'package:bedbug/features/content/domain/object_values/exchange_offer.dart';
 import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/reaction_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
-import 'package:bedbug/features/content/infrastructure/gateways/json_zlib_exchange_codec_gateway.dart';
+import 'package:bedbug/features/exchange/domain/gateways/exchange_codec_gateway.dart';
+import 'package:bedbug/features/exchange/domain/object_values/exchange_offer.dart';
+import 'package:bedbug/features/exchange/infrastructure/gateways/json_zlib_exchange_codec_gateway.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/domain/usecase.dart';
