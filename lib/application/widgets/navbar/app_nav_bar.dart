@@ -97,19 +97,11 @@ class _NavBarItemWidget extends ConsumerWidget {
           child: Center(
             child: AppGhostEffect(
               isAnimating: item.isGhosting,
-              child: Icon(item.icon, color: _iconColor, size: 26),
+              child: Icon(item.icon, color: isSelected ? AppColors.primary : AppColors.onLight, size: 26),
             ),
           ),
         ),
       ),
     );
-  }
-
-  /// Couleur de l'icône : plus contrastée quand l'item est animé, pour que l'activité se remarque.
-  Color get _iconColor {
-    if (isSelected) {
-      return AppColors.primary;
-    }
-    return item.isGhosting ? AppColors.onLight : AppColors.disabled;
   }
 }
