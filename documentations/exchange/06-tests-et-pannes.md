@@ -12,6 +12,8 @@
 | `test/integration/exchange_usecases_limits_test.dart` | Limites et valeurs falsifiées |
 | `test/integration/exchange_session_test.dart` | Deux appareils simulés, pair hostile, coupures |
 | `test/integration/exchange_network_test.dart` | 10 appareils en parallèle |
+| `test/integration/storage_limit_usecases_test.dart` | Nettoyage du stockage, ordre de suppression |
+| `test/widget/storage_section_test.dart` | Choix de la limite dans les paramètres |
 
 `exchange_network_test.dart` donne à chaque appareil ses vrais use cases et sa propre base Hive, et les fait se rencontrer
 par paires, en vagues parallèles. Il vérifie que tout le monde finit par tout posséder, sans doublon, avec un compteur de
@@ -58,6 +60,7 @@ adb logcat -s ExchangeRadio BleDiscovery LinkTuner ExchangeService ExchangeChann
 | La case se décoche toute seule | Bouton « Arrêter », Bluetooth coupé, ou relance refusée |
 | Échange trouvé, mais très lent | La découverte n'a pas été coupée, ou le lien n'a pas eu la PHY 2M (`LinkTuner`) |
 | Un contenu n'apparaît pas | Tirer le fil vers le bas, puis parcourir la liste : son rang dépend de `displayScore` |
+| Un contenu reçu disparaît | Limite de stockage atteinte : il était parmi les plus faibles `survivalScore` |
 
 ## Limites connues
 
@@ -65,7 +68,8 @@ adb logcat -s ExchangeRadio BleDiscovery LinkTuner ExchangeService ExchangeChann
 - L'échange ne redémarre pas après un redémarrage du téléphone, seulement à l'ouverture de l'app.
 - La consommation de batterie et le comportement à 5-10 m n'ont pas été mesurés.
 - Les compteurs de l'onglet Échange repartent de zéro au redémarrage de l'app.
-- La home ne se recharge pas d'elle-même après une réception.
+- La home ne se recharge pas d'elle-même après une réception ou un nettoyage : un contenu supprimé reste affiché jusqu'au
+  prochain rechargement.
 - Le comportement face à plus de deux vrais téléphones n'a pas été observé.
 - iOS n'est pas pris en charge.
 - Les contenus voyagent en clair : `Wrap` et `Keychain` ne sont pas branchés.

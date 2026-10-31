@@ -16,6 +16,9 @@ abstract class CommentRepository {
   /// Supprime tous les commentaires rattachés au contenu [contentId].
   Future<void> deleteAllByContentId(String contentId);
 
+  /// Supprime tous les commentaires rattachés aux contenus [contentIds], en un seul parcours de la box.
+  Future<void> deleteAllByContentIds(Set<String> contentIds);
+
   /// Supprime l'intégralité des commentaires stockés.
   Future<void> deleteAll();
 }

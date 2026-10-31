@@ -48,4 +48,18 @@ class Storage extends Entity {
       strategy: strategy,
     );
   }
+
+  /// Retourne une copie de ce [Storage] avec [maxSizeInBytes] remplacé.
+  ///
+  /// La limite se règle dans les paramètres, sans toucher au poids actuel ni au reste de la configuration.
+  Storage copyWithMaxSizeInBytes(int maxSizeInBytes) {
+    return Storage(
+      id: id,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      maxSizeInBytes: maxSizeInBytes,
+      currentSizeInBytes: currentSizeInBytes,
+      strategy: strategy,
+    );
+  }
 }

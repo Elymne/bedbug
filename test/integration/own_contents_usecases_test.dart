@@ -6,12 +6,12 @@ import 'package:bedbug/features/content/domain/usecases/delete_own_content_useca
 import 'package:bedbug/features/content/domain/usecases/get_own_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_storage_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/hive_test_helper.dart';
+import '../helpers/seed_contents_usecase.dart';
 
 void main() {
   late Directory tempDir;

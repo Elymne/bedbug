@@ -4,6 +4,7 @@ import 'package:bedbug/application/exchange/exchange_session.dart';
 import 'package:bedbug/application/exchange/exchange_stats_notifier.dart';
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/screens/settings/user_settings_notifier.dart';
+import 'package:bedbug/features/content/domain/usecases/enforce_storage_limit_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/recalculate_broadcast_scores_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/recalculate_display_scores_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/recalculate_survival_scores_usecase.dart';
@@ -50,6 +51,9 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
 
   /// Cas d'usage de recalcul de la priorité de conservation.
   late final _recalculateSurvivalScoresUsecase = ref.read(recalculateSurvivalScoresUsecaseProvider);
+
+  /// Cas d'usage de nettoyage du stockage.
+  late final _enforceStorageLimitUsecase = ref.read(enforceStorageLimitUsecaseProvider);
 
   /// Recherche de pairs, dont sont écoutés les connexions et les arrêts.
   late final _peerLinkGateway = ref.read(peerLinkGatewayProvider);
@@ -128,10 +132,11 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
     ref.invalidate(userSettingsNotifierProvider);
   }
 
-  /// Déroule un échange sur [transport], puis recalcule les scores.
+  /// Déroule un échange sur [transport], recalcule les scores, puis fait respecter la limite de stockage.
   ///
   /// Les scores vieillissent et les contenus reçus arrivent avec ceux du pair : sans ce recalcul, ils resteraient
-  /// figés, et la prochaine offre proposerait toujours les mêmes contenus.
+  /// figés, et la prochaine offre proposerait toujours les mêmes contenus. Le nettoyage vient après, car il s'appuie
+  /// sur ces scores.
   ///
   /// - [transport] : connexion avec le pair, fermée par la session à la fin.
   Future<void> _runSession(ExchangeTransportGateway transport) async {
@@ -142,6 +147,7 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
     await _recalculateBroadcastScoresUsecase(const NoParams());
     await _recalculateDisplayScoresUsecase(const NoParams());
     await _recalculateSurvivalScoresUsecase(const NoParams());
+    await _enforceStorageLimitUsecase(const NoParams());
     ref.read(exchangeStatsNotifierProvider.notifier).addResult(result);
     final failure = result.failure;
     if (failure != null) {

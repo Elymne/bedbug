@@ -8,6 +8,8 @@ import 'package:bedbug/application/exchange/exchange_stats_notifier.dart';
 import 'package:bedbug/application/exchange/passive_exchange_notifier.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
+import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
+import 'package:bedbug/features/content/domain/usecases/save_storage_limit_usecase.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_seen_content_repository.dart';
@@ -537,6 +539,43 @@ void main() {
       final stats = passiveDevice.read(exchangeStatsNotifierProvider);
       expect(stats.failureCount, 0);
       expect(stats.contentCount, 1);
+    });
+
+    test('la limite de stockage est appliquée après la session', () async {
+      final gateway = _FakePeerLinkGateway();
+      addTearDown(gateway.close);
+      final passiveDevice = await _openDevice('c', overrides: [peerLinkGatewayProvider.overrideWithValue(gateway)]);
+      addTearDown(passiveDevice.dispose);
+      await passiveDevice.read(saveStorageLimitUsecaseProvider)(
+        const SaveStorageLimitParams(maxSizeInBytes: bytesPerMegabyte),
+      );
+      final heavyContent = TextContent(
+        id: 'lourd',
+        createdAt: _date,
+        updatedAt: _date,
+        signatureId: 'pair',
+        origin: ContentOrigin.public,
+        broadcastScore: 0,
+        survivalScore: 0,
+        displayScore: 0,
+        bounce: 0,
+        sizeInBytes: 2 * bytesPerMegabyte,
+        flair: 'france',
+        title: 'Lourd',
+        body: 'Corps',
+      );
+      await passiveDevice.read(contentRepositoryProvider).addOne(heavyContent);
+      await deviceB.read(contentRepositoryProvider).addOne(_text('de-b'));
+      await passiveDevice.read(passiveExchangeNotifierProvider.future);
+
+      gateway.controller.add(transportA);
+      await _session(deviceB, transportB).run();
+      while (passiveDevice.read(exchangeStatsNotifierProvider).successCount == 0) {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
+
+      final remaining = await passiveDevice.read(contentRepositoryProvider).getAll();
+      expect(remaining.map((content) => content.id), ['de-b']);
     });
   });
 

@@ -5,9 +5,6 @@ import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/seed_contents_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/seed_reactions_usecase.dart';
-import 'package:bedbug/features/signature/domain/usecases/seed_signatures_usecase.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:flutter/material.dart';
@@ -22,25 +19,6 @@ class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
 
   @override
   Future<Either<GetHomeFeedFailure, List<Content>>> call(NoParams params) async => Right(_contents);
-}
-
-/// Fake [SeedContentsUsecase] ne touchant à aucune infrastructure réelle.
-class _FakeSeedContentsUsecase implements SeedContentsUsecase {
-  @override
-  Future<Either<SeedContentsFailure, void>> call(SeedContentsParams params) async => const Right(null);
-}
-
-class _FakeSeedReactionsUsecase implements SeedReactionsUsecase {
-  @override
-  Future<Either<SeedReactionsFailure, void>> call(SeedReactionsParams params) async {
-    return const Right(null);
-  }
-}
-
-/// Fake [SeedSignaturesUsecase] ne touchant à aucune infrastructure réelle.
-class _FakeSeedSignaturesUsecase implements SeedSignaturesUsecase {
-  @override
-  Future<Either<SeedSignaturesFailure, List<String>>> call(SeedSignaturesParams params) async => const Right([]);
 }
 
 TextContent _buildTextContent(String id) {
@@ -111,12 +89,7 @@ void main() {
     await pumpApp(
       tester,
       const HomeScreen(),
-      overrides: [
-        getHomeFeedUsecaseProvider.overrideWithValue(_FakeGetHomeFeedUsecase(const [])),
-        seedContentsUsecaseProvider.overrideWithValue(_FakeSeedContentsUsecase()),
-        seedReactionsUsecaseProvider.overrideWithValue(_FakeSeedReactionsUsecase()),
-        seedSignaturesUsecaseProvider.overrideWithValue(_FakeSeedSignaturesUsecase()),
-      ],
+      overrides: [getHomeFeedUsecaseProvider.overrideWithValue(_FakeGetHomeFeedUsecase(const []))],
     );
     await tester.pump();
     await tester.pump();
@@ -133,9 +106,6 @@ void main() {
         getHomeFeedUsecaseProvider.overrideWithValue(
           _FakeGetHomeFeedUsecase([_buildTextContent('1'), _buildTextContent('2')]),
         ),
-        seedContentsUsecaseProvider.overrideWithValue(_FakeSeedContentsUsecase()),
-        seedReactionsUsecaseProvider.overrideWithValue(_FakeSeedReactionsUsecase()),
-        seedSignaturesUsecaseProvider.overrideWithValue(_FakeSeedSignaturesUsecase()),
       ],
     );
     await tester.pump();

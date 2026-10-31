@@ -94,6 +94,25 @@ l'utilisateur.
 
 Ils sont recalculés après chaque session, qu'elle ait réussi ou non. Un contenu arrive avec les scores du pair jusqu'à ce recalcul.
 
+## La limite de stockage
+
+Les échanges ajoutent des contenus sans intervention : il faut bien en retirer. La limite se règle dans Paramètres >
+Stockage : 50, 100 (par défaut) ou 250 Mo, ou une valeur libre entre 1 et 1000 Mo.
+
+`EnforceStorageLimitUsecase` tourne après chaque session, juste après le recalcul des scores, et aussitôt quand la limite
+change. S'il y a dépassement :
+
+1. Les contenus reçus partent du plus faible `survivalScore` au plus fort, le plus ancien d'abord à score égal, jusqu'à
+   repasser sous la limite.
+2. Leurs réactions et commentaires partent avec eux.
+3. Ils entrent dans `seen_contents` : sinon, le prochain pair les renverrait aussitôt.
+
+Tes propres contenus ne sont jamais supprimés, même s'ils dépassent la limite à eux seuls. Tous les contenus reçus partent
+alors, et ceux qui arrivent ensuite sont retirés après chaque session.
+
+La limite est une limite d'usage, pas de sécurité : un échange peut la dépasser de 200 Ko le temps du nettoyage. Elle est
+bornée à 1000 Mo parce que toute la box `contents` est chargée en mémoire.
+
 ## Où c'est stocké
 
 | Box Hive | Contenu |

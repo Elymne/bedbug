@@ -36,10 +36,6 @@
   "@homeEmptyList": {
     "description": "Message affiché sur l'accueil quand la liste de contenus est vide"
   },
-  "homeSeedButton": "Charger des données de test",
-  "@homeSeedButton": {
-    "description": "Bouton de chargement de données factices sur l'accueil quand la liste est vide"
-  },
   "createTitle": "Créer",
   "@createTitle": {
     "description": "Titre de la page de création de contenu"
@@ -262,6 +258,47 @@
   "settingsSaveError": "Échec de l'enregistrement du réglage.",
   "@settingsSaveError": {
     "description": "Message snackbar d'erreur affiché quand un réglage ne peut pas être enregistré"
+  },
+  "settingsStorageTitle": "Stockage",
+  "@settingsStorageTitle": {
+    "description": "Titre de la section Stockage des paramètres"
+  },
+  "settingsStorageSubtitle": "Limite du poids des contenus",
+  "@settingsStorageSubtitle": {
+    "description": "Sous-titre de la section Stockage des paramètres"
+  },
+  "settingsStorageDescription": "Au-delà de cette limite, les contenus reçus les moins bien notés sont supprimés. Tes propres contenus ne le sont jamais.",
+  "@settingsStorageDescription": {
+    "description": "Explication de la limite de stockage et de ce qui est supprimé au-delà"
+  },
+  "settingsStorageMegabytes": "{size} Mo",
+  "@settingsStorageMegabytes": {
+    "description": "Limite de stockage proposée, en mégaoctets",
+    "placeholders": {
+      "size": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsStorageCustomLabel": "Limite personnalisée (Mo)",
+  "@settingsStorageCustomLabel": {
+    "description": "Libellé du champ de limite de stockage personnalisée"
+  },
+  "settingsStorageCustomApply": "Appliquer",
+  "@settingsStorageCustomApply": {
+    "description": "Infobulle du bouton appliquant la limite personnalisée"
+  },
+  "settingsStorageCustomInvalid": "Entre un nombre entre {min} et {max}.",
+  "@settingsStorageCustomInvalid": {
+    "description": "Erreur quand la limite saisie sort des bornes",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
   },
   "settingsAvatarBrowse": "Parcourir les icônes",
   "@settingsAvatarBrowse": {

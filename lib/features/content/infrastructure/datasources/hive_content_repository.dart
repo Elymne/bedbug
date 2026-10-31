@@ -197,6 +197,15 @@ class HiveContentRepository implements ContentRepository {
   }
 
   @override
+  Future<void> deleteMany(List<String> ids) async {
+    try {
+      await _box.deleteAll(ids);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveContentRepository', error);
+    }
+  }
+
+  @override
   Future<List<FlairSuggestion>> getFlairsStartingWith(String prefix, {required int limit}) async {
     try {
       // Appelée à chaque frappe : on ne lit que le flair des modèles, sans

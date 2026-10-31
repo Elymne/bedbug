@@ -60,6 +60,9 @@ abstract class ContentRepository {
   /// Supprime le contenu d'identifiant [id]. Sans effet s'il n'existe pas.
   Future<void> deleteOne(String id);
 
+  /// Supprime les contenus dont l'identifiant fait partie de [ids].
+  Future<void> deleteMany(List<String> ids);
+
   /// Retourne les flairs commençant par [prefix] (déjà normalisé), avec leur nombre de contenus.
   ///
   /// Les flairs sont triés du plus utilisé au moins utilisé, puis par ordre

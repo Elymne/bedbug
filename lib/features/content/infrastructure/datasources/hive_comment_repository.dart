@@ -58,6 +58,16 @@ class HiveCommentRepository implements CommentRepository {
   }
 
   @override
+  Future<void> deleteAllByContentIds(Set<String> contentIds) async {
+    try {
+      final ids = _box.values.where((model) => contentIds.contains(model.contentId)).map((model) => model.id).toList();
+      await _box.deleteAll(ids);
+    } on HiveError catch (error) {
+      throw DatasourceException('HiveCommentRepository', error);
+    }
+  }
+
+  @override
   Future<void> deleteAll() async {
     try {
       await _box.clear();
