@@ -10,6 +10,13 @@ import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/screens/search/search_screen.dart';
 import 'package:bedbug/application/screens/select_options/select_options_screen.dart';
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
+import 'package:bedbug/application/screens/settings/widgets/debug_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/language_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/own_contents_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/publishing_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/signature_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/storage_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/trust_section.dart';
 import 'package:bedbug/application/screens/splash/splash_screen.dart';
 import 'package:bedbug/application/widgets/fields/app_select_option.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
@@ -215,6 +222,48 @@ void main() {
 
     expect(await result, 2);
     expect(find.byType(HomeScreen), findsOneWidget);
+  });
+
+  testWidgets('chaque ligne du menu des paramètres ouvre sa page, et le retour ramène au menu', (tester) async {
+    final router = await pumpAppOnHome(tester);
+    router.push(settingsPath);
+    await settleRoute(tester);
+
+    for (final entry in <String, Type>{
+      'Ma signature': SignatureSection,
+      'Langue': LanguageSection,
+      'Publication': PublishingSection,
+      'Domaines autorisés': TrustSection,
+      'Stockage': StorageSection,
+      'Mes posts': OwnContentsSection,
+      'Debug': DebugSection,
+    }.entries) {
+      await tester.tap(find.text(entry.key));
+      await settleRoute(tester);
+      expect(find.byType(entry.value), findsOneWidget, reason: 'échec en ouvrant ${entry.key}');
+      expect(find.text(entry.key), findsOneWidget, reason: 'titre absent sur ${entry.key}');
+      expect(find.byType(SettingsScreen, skipOffstage: true), findsNothing);
+
+      await tester.tap(find.byIcon(Icons.arrow_back));
+      await settleRoute(tester);
+      expect(find.byType(SettingsScreen), findsOneWidget, reason: 'échec en revenant de ${entry.key}');
+    }
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('le journal des échanges se referme sur la page debug', (tester) async {
+    final router = await pumpAppOnHome(tester);
+    router.push(settingsPath);
+    await settleRoute(tester);
+    router.push(settingsDebugPath);
+    await settleRoute(tester);
+    router.push(exchangeLogsPath);
+    await settleRoute(tester);
+
+    router.pop();
+    await settleRoute(tester);
+
+    expect(find.byType(DebugSection), findsOneWidget);
   });
 
   testWidgets('naviguer vers une route inconnue affiche la page d\'erreur, pas un crash', (tester) async {

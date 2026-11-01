@@ -1,3 +1,4 @@
+import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/router/error_route_page.dart';
 import 'package:bedbug/application/screens/avatar_picker/avatar_picker_screen.dart';
 import 'package:bedbug/application/screens/content_detail/drawing_content_detail_screen.dart';
@@ -17,6 +18,14 @@ import 'package:bedbug/application/screens/search_results/search_criteria.dart';
 import 'package:bedbug/application/screens/search_results/search_results_screen.dart';
 import 'package:bedbug/application/screens/select_options/select_options_screen.dart';
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
+import 'package:bedbug/application/screens/settings/settings_section_screen.dart';
+import 'package:bedbug/application/screens/settings/widgets/debug_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/language_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/own_contents_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/publishing_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/signature_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/storage_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/trust_section.dart';
 import 'package:bedbug/application/screens/signature/signature_screen.dart';
 import 'package:bedbug/application/screens/signature_setup/signature_setup_screen.dart';
 import 'package:bedbug/application/screens/splash/splash_screen.dart';
@@ -45,6 +54,27 @@ const String exchangePath = '/exchange';
 
 /// Chemin vers la page des paramètres.
 const String settingsPath = '/settings';
+
+/// Chemin vers la page de modification de la signature.
+const String settingsSignaturePath = '/settings/signature';
+
+/// Chemin vers la page de choix de la langue.
+const String settingsLanguagePath = '/settings/language';
+
+/// Chemin vers la page des réglages de publication.
+const String settingsPublishingPath = '/settings/publishing';
+
+/// Chemin vers la page des domaines autorisés.
+const String settingsTrustPath = '/settings/trust';
+
+/// Chemin vers la page de la limite de stockage.
+const String settingsStoragePath = '/settings/storage';
+
+/// Chemin vers la page des posts de l'utilisateur.
+const String settingsOwnContentsPath = '/settings/own-contents';
+
+/// Chemin vers la page des outils de debug.
+const String settingsDebugPath = '/settings/debug';
 
 /// Chemin vers la page de debug du journal des échanges.
 const String exchangeLogsPath = '/settings/exchange-logs';
@@ -142,6 +172,18 @@ CustomTransitionPage<void> _fadePage(Widget child) {
   );
 }
 
+/// Construit la route d'un réglage ouvert depuis le menu des paramètres.
+///
+/// - [path] : chemin relatif à [settingsPath].
+/// - [titleOf] : retourne le titre de la page dans la langue donnée.
+/// - [section] : réglage affiché par la page.
+GoRoute _settingsSectionRoute(String path, String Function(AppLocalizations l10n) titleOf, Widget section) {
+  return GoRoute(
+    path: path,
+    pageBuilder: (context, state) => _fadePage(SettingsSectionScreen(titleOf: titleOf, child: section)),
+  );
+}
+
 /// Provider du [GoRouter] de l'application.
 ///
 /// Le router se rafraîchit automatiquement lorsque [_RouterRefreshNotifier] le notifie, ce qui déclanche le redirect.
@@ -165,6 +207,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: settingsPath,
         pageBuilder: (context, state) => _fadePage(const SettingsScreen()),
         routes: [
+          _settingsSectionRoute('signature', (l10n) => l10n.settingsProfileTitle, const SignatureSection()),
+          _settingsSectionRoute('language', (l10n) => l10n.settingsLanguageTitle, const LanguageSection()),
+          _settingsSectionRoute('publishing', (l10n) => l10n.settingsPublishingTitle, const PublishingSection()),
+          _settingsSectionRoute('trust', (l10n) => l10n.trustSettingsTitle, const TrustSection()),
+          _settingsSectionRoute('storage', (l10n) => l10n.settingsStorageTitle, const StorageSection()),
+          _settingsSectionRoute('own-contents', (l10n) => l10n.settingsOwnContentsTitle, const OwnContentsSection()),
+          _settingsSectionRoute('debug', (l10n) => l10n.settingsDebugTitle, const DebugSection()),
           GoRoute(path: 'exchange-logs', pageBuilder: (context, state) => _fadePage(const ExchangeLogsScreen())),
         ],
       ),

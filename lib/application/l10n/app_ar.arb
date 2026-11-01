@@ -247,5 +247,7 @@
   "selectFilterHint": "تصفية…",
   "selectNoResult": "لا توجد نتائج",
   "settingsSocialAddLabel": "إضافة شبكة",
-  "settingsSocialDialogTitle": "حسابك على {network}"
+  "settingsSocialDialogTitle": "حسابك على {network}",
+  "settingsPublishingSubtitle": "كيف تُنشر محتوياتك",
+  "settingsStorageCustomOption": "مخصص"
 }

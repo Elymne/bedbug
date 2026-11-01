@@ -247,5 +247,7 @@
   "selectFilterHint": "筛选…",
   "selectNoResult": "没有结果",
   "settingsSocialAddLabel": "添加网络",
-  "settingsSocialDialogTitle": "你的 {network} 账号"
+  "settingsSocialDialogTitle": "你的 {network} 账号",
+  "settingsPublishingSubtitle": "你的内容如何发布",
+  "settingsStorageCustomOption": "自定义"
 }

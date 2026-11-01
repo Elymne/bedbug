@@ -1,4 +1,6 @@
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
+import 'package:bedbug/application/screens/settings/widgets/settings_menu_tile.dart';
+import 'package:bedbug/application/widgets/separators/app_list_separator.dart';
 import 'package:bedbug/features/settings/domain/usecases/get_settings_usecase.dart';
 import 'package:bedbug/features/settings/domain/value_objects/user_settings.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
@@ -22,7 +24,7 @@ class _FakeGetSettingsUsecase implements GetSettingsUsecase {
 }
 
 void main() {
-  testWidgets('affiche la page de settings avec ses sections repliées', (tester) async {
+  testWidgets('affiche le menu des réglages, chacun avec sa description', (tester) async {
     await pumpApp(
       tester,
       const SettingsScreen(),
@@ -37,6 +39,9 @@ void main() {
     expect(find.text('Ma signature'), findsOneWidget);
     expect(find.text('Pas encore configurée'), findsOneWidget);
     expect(find.text('Publication'), findsOneWidget);
+    expect(find.text('Comment tes contenus sont publiés'), findsOneWidget);
     expect(find.text('Mes posts'), findsOneWidget);
+    expect(find.byType(SettingsMenuTile), findsNWidgets(7));
+    expect(find.byType(AppListSeparator), findsNWidgets(6));
   });
 }

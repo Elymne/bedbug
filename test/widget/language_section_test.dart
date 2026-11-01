@@ -1,5 +1,6 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/l10n/locale_notifier.dart';
+import 'package:bedbug/application/screens/settings/settings_section_screen.dart';
 import 'package:bedbug/application/screens/settings/widgets/language_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -48,6 +49,33 @@ void main() {
     expect(Directionality.of(tester.element(find.byType(LanguageSection))), TextDirection.rtl);
     final prefs = await SharedPreferences.getInstance();
     expect(prefs.getString('locale'), 'ar');
+  });
+
+  testWidgets('le titre de la page suit la langue choisie depuis la page elle-même', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: Consumer(
+          builder: (context, ref, _) {
+            return MaterialApp(
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              locale: ref.watch(localeNotifierProvider),
+              home: SettingsSectionScreen(
+                titleOf: (l10n) => l10n.settingsLanguageTitle,
+                child: const LanguageSection(),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text(lookupAppLocalizations(const Locale('fr')).settingsLanguageTitle), findsOneWidget);
+
+    await tester.tap(find.text('العربية'));
+    await tester.pumpAndSettle();
+
+    expect(find.text(lookupAppLocalizations(const Locale('ar')).settingsLanguageTitle), findsOneWidget);
   });
 
   testWidgets("une langue enregistrée qui n'est plus proposée est ignorée", (tester) async {

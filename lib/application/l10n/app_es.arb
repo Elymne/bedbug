@@ -247,5 +247,7 @@
   "selectFilterHint": "Filtrar…",
   "selectNoResult": "Sin resultados",
   "settingsSocialAddLabel": "Añadir una red",
-  "settingsSocialDialogTitle": "Tu cuenta de {network}"
+  "settingsSocialDialogTitle": "Tu cuenta de {network}",
+  "settingsPublishingSubtitle": "Cómo se publican tus contenidos",
+  "settingsStorageCustomOption": "Personalizado"
 }

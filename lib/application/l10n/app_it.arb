@@ -247,5 +247,7 @@
   "selectFilterHint": "Filtra…",
   "selectNoResult": "Nessun risultato",
   "settingsSocialAddLabel": "Aggiungi una rete",
-  "settingsSocialDialogTitle": "Il tuo account {network}"
+  "settingsSocialDialogTitle": "Il tuo account {network}",
+  "settingsPublishingSubtitle": "Come vengono pubblicati i tuoi contenuti",
+  "settingsStorageCustomOption": "Personalizzato"
 }

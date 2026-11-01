@@ -1160,5 +1160,13 @@
   "@settingsSocialDialogTitle": {
     "description": "Titre de la popup de saisie de l'identifiant sur le réseau choisi",
     "placeholders": {"network":{"type":"String"}}
+  },
+  "settingsPublishingSubtitle": "Comment tes contenus sont publiés",
+  "@settingsPublishingSubtitle": {
+    "description": "Description de la ligne Publication dans le menu des paramètres"
+  },
+  "settingsStorageCustomOption": "Personnalisée",
+  "@settingsStorageCustomOption": {
+    "description": "Option de la page Stockage activant le champ de limite personnalisée"
   }
 }

@@ -84,6 +84,15 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// Choisit l'option personnalisée et laisse le champ prendre le focus.
+  ///
+  /// Le halo du champ actif tourne en boucle : `pumpAndSettle` ne rendrait pas la main.
+  Future<void> selectCustomOption(WidgetTester tester) async {
+    await tester.tap(find.text('Personnalisée'));
+    await tester.pump();
+    await tester.pump();
+  }
+
   testWidgets('propose les trois limites et coche la limite actuelle', (tester) async {
     await pumpSection(tester, defaultMaxStorageSizeInBytes);
 
@@ -104,8 +113,43 @@ void main() {
     expect(enforceUsecase.callCount, 1);
   });
 
+  testWidgets('le champ reste désactivé tant que l\'option personnalisée n\'est pas choisie', (tester) async {
+    await pumpSection(tester, defaultMaxStorageSizeInBytes);
+
+    expect(tester.widget<TextField>(find.byType(TextField)).enabled, isFalse);
+    expect(tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.check)).onPressed, isNull);
+  });
+
+  testWidgets('l\'option personnalisée active le champ, y place le curseur et n\'enregistre rien', (tester) async {
+    await pumpSection(tester, defaultMaxStorageSizeInBytes);
+
+    await selectCustomOption(tester);
+
+    expect(tester.widget<TextField>(find.byType(TextField)).enabled, isTrue);
+    expect(tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus, isTrue);
+    final customOption = find.ancestor(of: find.text('Personnalisée'), matching: find.byType(ListTile));
+    expect(find.descendant(of: customOption, matching: find.byIcon(Icons.check)), findsOneWidget);
+    final previousOption = find.ancestor(of: find.text('100 Mo'), matching: find.byType(ListTile));
+    expect(find.descendant(of: previousOption, matching: find.byIcon(Icons.check)), findsNothing);
+    expect(saveUsecase.savedLimits, isEmpty);
+  });
+
+  testWidgets('revenir sur une limite proposée désactive le champ', (tester) async {
+    await pumpSection(tester, defaultMaxStorageSizeInBytes);
+    await selectCustomOption(tester);
+
+    await tester.tap(find.text('50 Mo'));
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<TextField>(find.byType(TextField)).enabled, isFalse);
+    expect(saveUsecase.savedLimits, [50 * bytesPerMegabyte]);
+    final selected = find.ancestor(of: find.text('50 Mo'), matching: find.byType(ListTile));
+    expect(find.descendant(of: selected, matching: find.byIcon(Icons.check)), findsOneWidget);
+  });
+
   testWidgets('une limite personnalisée s\'applique à la validation, pas à la frappe', (tester) async {
     await pumpSection(tester, defaultMaxStorageSizeInBytes);
+    await selectCustomOption(tester);
 
     await tester.enterText(find.byType(TextField), '75');
     await tester.pump();
@@ -119,6 +163,7 @@ void main() {
 
   testWidgets('une limite hors des bornes est refusée', (tester) async {
     await pumpSection(tester, defaultMaxStorageSizeInBytes);
+    await selectCustomOption(tester);
 
     await tester.enterText(find.byType(TextField), '5000');
     await tester.tap(find.byTooltip('Appliquer'));
@@ -130,9 +175,12 @@ void main() {
     expect(find.text('Entre un nombre entre 1 et 1000.'), findsOneWidget);
   });
 
-  testWidgets('préremplit le champ quand la limite actuelle est personnalisée', (tester) async {
+  testWidgets('préremplit et active le champ quand la limite actuelle est personnalisée', (tester) async {
     await pumpSection(tester, 75 * bytesPerMegabyte);
 
     expect(find.widgetWithText(TextField, '75'), findsOneWidget);
+    expect(tester.widget<TextField>(find.byType(TextField)).enabled, isTrue);
+    final customOption = find.ancestor(of: find.text('Personnalisée'), matching: find.byType(ListTile));
+    expect(find.descendant(of: customOption, matching: find.byIcon(Icons.check)), findsOneWidget);
   });
 }
