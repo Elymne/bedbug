@@ -5,6 +5,7 @@ import 'package:bedbug/application/exchange/exchange_stats_notifier.dart';
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/screens/exchange_logs/exchange_logs_notifier.dart';
 import 'package:bedbug/application/screens/settings/user_settings_notifier.dart';
+import 'package:bedbug/features/content/domain/usecases/delete_untrusted_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/enforce_storage_limit_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/recalculate_broadcast_scores_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/recalculate_display_scores_usecase.dart';
@@ -60,6 +61,9 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
 
   /// Cas d'usage de nettoyage du stockage.
   late final _enforceStorageLimitUsecase = ref.read(enforceStorageLimitUsecaseProvider);
+
+  /// Cas d'usage de suppression des contenus de domaines absents des listes.
+  late final _deleteUntrustedContentsUsecase = ref.read(deleteUntrustedContentsUsecaseProvider);
 
   /// Cas d'usage d'ajout au journal des échanges.
   late final _saveExchangeLogUsecase = ref.read(saveExchangeLogUsecaseProvider);
@@ -167,9 +171,11 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
     ref.invalidate(exchangeLogsNotifierProvider);
   }
 
-  /// Déroule un échange sur [transport], recalcule les scores, puis fait respecter la limite de stockage.
+  /// Déroule un échange sur [transport], écarte ce que l'utilisateur n'accepte pas, recalcule les scores, puis fait
+  /// respecter la limite de stockage.
   ///
-  /// Les scores vieillissent et les contenus reçus arrivent avec ceux du pair : sans ce recalcul, ils resteraient
+  /// Les contenus de domaines absents de ses listes sont supprimés d'abord : le nettoyage n'a pas à sacrifier un
+  /// contenu accepté pour faire de la place à ceux-là. Les scores vieillissent et les contenus reçus arrivent avec ceux du pair : sans ce recalcul, ils resteraient
   /// figés, et la prochaine offre proposerait toujours les mêmes contenus. Le nettoyage vient après, car il s'appuie
   /// sur ces scores.
   ///
@@ -182,6 +188,7 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
     final result = await session.run();
     _session = null;
     stopwatch.stop();
+    await _deleteUntrustedContentsUsecase(const NoParams());
     await _recalculateBroadcastScoresUsecase(const NoParams());
     await _recalculateDisplayScoresUsecase(const NoParams());
     await _recalculateSurvivalScoresUsecase(const NoParams());

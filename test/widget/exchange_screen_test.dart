@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bedbug/application/screens/exchange/exchange_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/widgets/ghost/app_ghost_effect.dart';
-import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/object_values/home_feed.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/features/exchange/domain/gateways/exchange_transport_gateway.dart';
 import 'package:bedbug/features/exchange/domain/gateways/peer_link_gateway.dart';
@@ -94,7 +94,9 @@ class _FakeSaveSettingsUsecase implements SaveSettingsUsecase {
 /// Fake [GetHomeFeedUsecase] retournant un fil vide.
 class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
   @override
-  Future<Either<GetHomeFeedFailure, List<Content>>> call(NoParams params) async => const Right([]);
+  Future<Either<GetHomeFeedFailure, HomeFeed>> call(NoParams params) async {
+    return const Right(HomeFeed(contents: [], unviewedContentIds: {}));
+  }
 }
 
 /// Retourne la valeur affichée par la case à cocher.

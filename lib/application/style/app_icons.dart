@@ -148,11 +148,11 @@ enum AppIcons {
   /// Bouclier.
   shield,
 
+  /// Étoile à quatre branches, pour ce qui est nouveau.
+  sparkle,
+
   /// Cylindre de stockage.
   storage,
-
-  /// Flèches haut et bas.
-  swapVertical,
 
   /// Caractères à traduire.
   translate,

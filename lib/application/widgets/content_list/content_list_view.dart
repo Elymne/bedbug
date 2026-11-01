@@ -1,5 +1,6 @@
 import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
+import 'package:bedbug/application/widgets/content_list/content_view_tracker.dart';
 import 'package:bedbug/application/widgets/content_tile/content_widget.dart';
 import 'package:bedbug/application/widgets/separators/app_list_separator.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
@@ -22,7 +23,17 @@ class ContentListView extends ConsumerWidget {
   /// - [emptyChild] : widget affiché à la place de la liste quand [contents] est vide.
   /// - [controller] : contrôleur de scroll de la liste.
   /// - [onRefresh] : appelé quand l'utilisateur tire la liste vers le bas, `null` pour ne pas le proposer.
-  const ContentListView({super.key, required this.contents, required this.emptyChild, this.controller, this.onRefresh});
+  /// - [unviewedContentIds] : identifiants des contenus à signaler comme nouveaux.
+  /// - [onContentViewed] : appelé avec l'identifiant d'un contenu nouveau une fois vu, `null` pour ne pas les suivre.
+  const ContentListView({
+    super.key,
+    required this.contents,
+    required this.emptyChild,
+    this.controller,
+    this.onRefresh,
+    this.unviewedContentIds = const {},
+    this.onContentViewed,
+  });
 
   /// Liste des contenus à afficher.
   final List<Content> contents;
@@ -35,6 +46,12 @@ class ContentListView extends ConsumerWidget {
 
   /// Appelé quand l'utilisateur tire la liste vers le bas, `null` pour ne pas le proposer.
   final Future<void> Function()? onRefresh;
+
+  /// Identifiants des contenus à signaler comme nouveaux.
+  final Set<String> unviewedContentIds;
+
+  /// Appelé avec l'identifiant d'un contenu nouveau une fois vu, `null` pour ne pas les suivre.
+  final void Function(String contentId)? onContentViewed;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -79,10 +96,17 @@ class ContentListView extends ConsumerWidget {
       // Séparateurs en retrait des bords, comme ceux de la page de détail.
       separatorBuilder: (context, index) => const AppListSeparator(),
       itemBuilder: (context, index) {
-        return InkWell(
-          onTap: () => context.push(contentDetailPath, extra: visibleContents[index]),
-          child: ContentWidget(content: visibleContents[index]),
+        final content = visibleContents[index];
+        final isUnviewed = unviewedContentIds.contains(content.id);
+        final tile = InkWell(
+          onTap: () => context.push(contentDetailPath, extra: content),
+          child: ContentWidget(content: content, isUnviewed: isUnviewed),
         );
+        final onContentViewed = this.onContentViewed;
+        if (!isUnviewed || onContentViewed == null) {
+          return tile;
+        }
+        return ContentViewTracker(key: ValueKey(content.id), onViewed: () => onContentViewed(content.id), child: tile);
       },
     );
     if (onRefresh == null) {

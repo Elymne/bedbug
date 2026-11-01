@@ -1,4 +1,6 @@
 import 'package:bedbug/application/notifiers/local_signature_notifier.dart';
+import 'package:bedbug/features/content/domain/usecases/delete_untrusted_contents_usecase.dart';
+import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/notifier/notifier_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,6 +12,8 @@ class SplashNotifier extends AsyncNotifier<SplashState> {
   @override
   Future<SplashState> build() async {
     final localSignature = await ref.read(localSignatureNotifierProvider.future);
+    // Rattrape une suppression en échec, et les contenus gardés avant que les domaines inconnus soient supprimés.
+    await ref.read(deleteUntrustedContentsUsecaseProvider)(const NoParams());
     await Future<void>.delayed(const Duration(seconds: 4));
 
     // Une lecture en échec ne dit pas que la signature manque : envoyer sur la

@@ -19,12 +19,13 @@ import 'package:bedbug/application/screens/settings/widgets/storage_section.dart
 import 'package:bedbug/application/screens/settings/widgets/trust_section.dart';
 import 'package:bedbug/application/screens/splash/splash_screen.dart';
 import 'package:bedbug/application/widgets/fields/app_select_option.dart';
-import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/object_values/content_media.dart';
+import 'package:bedbug/features/content/domain/object_values/home_feed.dart';
+import 'package:bedbug/features/content/domain/usecases/delete_untrusted_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/usecases/get_local_signature_usecase.dart';
@@ -40,7 +41,17 @@ import '../helpers/find_app_icon.dart';
 /// Fake [GetHomeFeedUsecase] retournant toujours une liste vide.
 class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
   @override
-  Future<Either<GetHomeFeedFailure, List<Content>>> call(NoParams params) async => const Right([]);
+  Future<Either<GetHomeFeedFailure, HomeFeed>> call(NoParams params) async {
+    return const Right(HomeFeed(contents: [], unviewedContentIds: {}));
+  }
+}
+
+/// Fake [DeleteUntrustedContentsUsecase] sans effet.
+class _FakeDeleteUntrustedContentsUsecase implements DeleteUntrustedContentsUsecase {
+  @override
+  Future<Either<DeleteUntrustedContentsFailure, int>> call(NoParams params) async {
+    return const Right(0);
+  }
 }
 
 /// Fake [GetLocalSignatureUsecase] simulant un appareil déjà doté d'une signature.
@@ -132,6 +143,7 @@ void main() {
       overrides: [
         getHomeFeedUsecaseProvider.overrideWithValue(_FakeGetHomeFeedUsecase()),
         getLocalSignatureUsecaseProvider.overrideWithValue(_FakeGetLocalSignatureUsecase()),
+        deleteUntrustedContentsUsecaseProvider.overrideWithValue(_FakeDeleteUntrustedContentsUsecase()),
       ],
     );
     addTearDown(container.dispose);

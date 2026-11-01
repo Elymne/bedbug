@@ -76,6 +76,8 @@ class _State extends ConsumerState<HomeScreen> {
                     emptyChild: const HomeEmptyFeed(),
                     controller: _scrollController,
                     onRefresh: ref.read(homeFeedNotifierProvider.notifier).refresh,
+                    unviewedContentIds: state.unviewedContentIds,
+                    onContentViewed: ref.read(homeFeedNotifierProvider.notifier).markViewed,
                   );
                 },
               ),

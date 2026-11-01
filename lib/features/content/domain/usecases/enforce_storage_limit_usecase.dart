@@ -4,11 +4,13 @@ import 'package:bedbug/features/content/domain/repositories/content_repository.d
 import 'package:bedbug/features/content/domain/repositories/reaction_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/seen_content_repository.dart';
 import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
+import 'package:bedbug/features/content/domain/repositories/viewed_content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_comment_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_seen_content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_storage_repository.dart';
+import 'package:bedbug/features/content/infrastructure/datasources/hive_viewed_content_repository.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:bedbug/shared/domain/usecase.dart';
@@ -25,6 +27,7 @@ final enforceStorageLimitUsecaseProvider = Provider<EnforceStorageLimitUsecase>(
     ref.read(reactionRepositoryProvider),
     ref.read(commentRepositoryProvider),
     ref.read(seenContentRepositoryProvider),
+    ref.read(viewedContentRepositoryProvider),
   );
 });
 
@@ -47,6 +50,7 @@ class EnforceStorageLimitUsecase extends Usecase<NoParams, EnforceStorageLimitFa
     this._reactionRepository,
     this._commentRepository,
     this._seenContentRepository,
+    this._viewedContentRepository,
   );
 
   final ContentRepository _contentRepository;
@@ -54,6 +58,7 @@ class EnforceStorageLimitUsecase extends Usecase<NoParams, EnforceStorageLimitFa
   final ReactionRepository _reactionRepository;
   final CommentRepository _commentRepository;
   final SeenContentRepository _seenContentRepository;
+  final ViewedContentRepository _viewedContentRepository;
 
   @override
   Future<Either<EnforceStorageLimitFailure, int>> call(NoParams params) async {
@@ -77,6 +82,7 @@ class EnforceStorageLimitUsecase extends Usecase<NoParams, EnforceStorageLimitFa
 
       if (removedIds.isNotEmpty) {
         await _seenContentRepository.addMany(removedIds, DateTime.now());
+        await _viewedContentRepository.deleteMany(removedIds);
         await _reactionRepository.deleteAllByContentIds(removedIds.toSet());
         await _commentRepository.deleteAllByContentIds(removedIds.toSet());
         await _contentRepository.deleteMany(removedIds);

@@ -36,6 +36,10 @@
   "@homeEmptyList": {
     "description": "Message affiché sur l'accueil quand la liste de contenus est vide"
   },
+  "homeEmptyExchangeHint": "Active l'échange dans l'onglet Échange pour récupérer les contenus des téléphones autour de toi.",
+  "@homeEmptyExchangeHint": {
+    "description": "Conseil affiché sur l'accueil vide quand l'échange avec les téléphones proches est coupé. Reprendre le nom de l'onglet navExchangeLabel"
+  },
   "createTitle": "Créer",
   "@createTitle": {
     "description": "Titre de la page de création de contenu"
@@ -1011,17 +1015,9 @@
   "@trustSettingsSubtitle": {
     "description": "Sous-titre de la section des domaines autorisés"
   },
-  "trustUnknownLabel": "Domaines inconnus",
-  "@trustUnknownLabel": {
-    "description": "Titre du choix du sort des contenus pointant vers un domaine inconnu"
-  },
-  "trustUnknownHidden": "Masquer le contenu",
-  "@trustUnknownHidden": {
-    "description": "Option : masquer les contenus pointant vers un domaine inconnu"
-  },
-  "trustUnknownBlurred": "Afficher sur confirmation",
-  "@trustUnknownBlurred": {
-    "description": "Option : garder les contenus d'un domaine inconnu, média affiché sur confirmation"
+  "trustUnknownDeletedHint": "Les contenus reçus d'un domaine absent de ces listes sont supprimés du téléphone.",
+  "@trustUnknownDeletedHint": {
+    "description": "Rappel, en tête de la page des domaines, du sort des contenus d'un domaine absent des listes"
   },
   "trustMediaTitle": "Médias (images, gifs, vidéos)",
   "@trustMediaTitle": {
@@ -1054,14 +1050,6 @@
   "trustAddToGrey": "Ajouter en greylist",
   "@trustAddToGrey": {
     "description": "Infobulle du bouton ajoutant le domaine saisi à la greylist"
-  },
-  "trustMoveToGrey": "Passer en greylist",
-  "@trustMoveToGrey": {
-    "description": "Infobulle du bouton faisant passer un domaine de la whitelist à la greylist"
-  },
-  "trustMoveToTrusted": "Passer en confiance",
-  "@trustMoveToTrusted": {
-    "description": "Infobulle du bouton faisant passer un domaine de la greylist à la whitelist"
   },
   "trustRuleInvalidError": "Domaine invalide.",
   "@trustRuleInvalidError": {

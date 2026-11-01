@@ -27,7 +27,6 @@ void main() {
       trustedRules: [DomainRule(host: 'github.com', isIncludingSubdomains: false)],
       greyRules: [],
     ),
-    unknownDomainBehavior: UnknownDomainBehavior.hidden,
   );
 
   group('masquage des contenus', () {
@@ -40,21 +39,18 @@ void main() {
       expect(urlTrustService.isContentHidden(settings), isFalse);
     });
 
-    test('masque un contenu dont une seule adresse vise un domaine inconnu, si le réglage le demande', () {
+    test('masque un contenu dès qu\'une seule adresse vise un domaine absent des listes', () {
       expect(
         urlTrustService.isContentHidden(settings, mediaUrls: ['https://i.imgur.com/a.png', 'https://evil.com/b.png']),
         isTrue,
       );
       expect(urlTrustService.isContentHidden(settings, linkUrls: ['https://flutter.dev']), isTrue);
-      final blurred = settings.copyWith(unknownDomainBehavior: UnknownDomainBehavior.blurred);
-      expect(urlTrustService.isContentHidden(blurred, mediaUrls: ['https://evil.com/b.png']), isFalse);
     });
 
-    test('masque toujours un contenu dont une adresse est piégée, quel que soit le réglage', () {
-      final blurred = settings.copyWith(unknownDomainBehavior: UnknownDomainBehavior.blurred);
+    test('masque toujours un contenu dont une adresse est piégée', () {
       for (final url in ['https://i.imgur.com@evil.com/a.png', 'http://i.imgur.com/a.png', 'javascript:alert(1)']) {
-        expect(urlTrustService.isContentHidden(blurred, mediaUrls: [url]), isTrue, reason: url);
-        expect(urlTrustService.isContentHidden(blurred, linkUrls: [url]), isTrue, reason: url);
+        expect(urlTrustService.isContentHidden(settings, mediaUrls: [url]), isTrue, reason: url);
+        expect(urlTrustService.isContentHidden(settings, linkUrls: [url]), isTrue, reason: url);
       }
     });
 
@@ -90,7 +86,6 @@ void main() {
       expect(reread.mediaPolicy.trustedRules, defaultTrustSettings.mediaPolicy.trustedRules);
       expect(reread.mediaPolicy.greyRules, defaultTrustSettings.mediaPolicy.greyRules);
       expect(reread.linkPolicy.trustedRules, defaultTrustSettings.linkPolicy.trustedRules);
-      expect(reread.unknownDomainBehavior, defaultTrustSettings.unknownDomainBehavior);
     });
 
     test('ignore à la relecture une règle stockée qui ne passe plus les vérifications', () {
@@ -99,12 +94,9 @@ void main() {
         mediaGreyPatterns: [],
         linkTrustedPatterns: [],
         linkGreyPatterns: [],
-        unknownDomainBehavior: 99,
       );
       final reread = model.toEntity(domainRuleService);
       expect(reread.mediaPolicy.trustedRules, [const DomainRule(host: 'imgur.com', isIncludingSubdomains: false)]);
-      // Une valeur inconnue retombe sur le comportement le plus prudent.
-      expect(reread.unknownDomainBehavior, UnknownDomainBehavior.hidden);
     });
   });
 

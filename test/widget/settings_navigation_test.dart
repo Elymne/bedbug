@@ -2,7 +2,7 @@ import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
-import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/object_values/home_feed.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/features/settings/domain/usecases/get_settings_usecase.dart';
 import 'package:bedbug/features/settings/domain/value_objects/user_settings.dart';
@@ -20,7 +20,9 @@ import '../helpers/find_app_icon.dart';
 /// Fake [GetHomeFeedUsecase] retournant toujours une liste vide.
 class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
   @override
-  Future<Either<GetHomeFeedFailure, List<Content>>> call(NoParams params) async => const Right([]);
+  Future<Either<GetHomeFeedFailure, HomeFeed>> call(NoParams params) async {
+    return const Right(HomeFeed(contents: [], unviewedContentIds: {}));
+  }
 }
 
 /// Fake [GetLocalSignatureUsecase] simulant une signature jamais configurée.

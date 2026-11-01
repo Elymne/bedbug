@@ -14,6 +14,8 @@ part 'trust_settings_hive_model.g.dart';
 /// `*.imgur.com`) et réanalysées à la lecture : une règle stockée qui ne
 /// passerait plus les vérifications est ignorée plutôt que de faire
 /// confiance à un ancien format.
+///
+/// L'index 4 portait le sort des domaines inconnus, devenu fixe : ne jamais le réutiliser.
 @HiveType(typeId: HiveTypeIds.trustSettings)
 class TrustSettingsHiveModel extends HiveObject {
   /// Crée un [TrustSettingsHiveModel].
@@ -22,13 +24,11 @@ class TrustSettingsHiveModel extends HiveObject {
   /// - [mediaGreyPatterns] : règles de la greylist des médias.
   /// - [linkTrustedPatterns] : règles de la whitelist des liens.
   /// - [linkGreyPatterns] : règles de la greylist des liens.
-  /// - [unknownDomainBehavior] : valeur de [UnknownDomainBehavior].
   TrustSettingsHiveModel({
     required this.mediaTrustedPatterns,
     required this.mediaGreyPatterns,
     required this.linkTrustedPatterns,
     required this.linkGreyPatterns,
-    required this.unknownDomainBehavior,
   });
 
   /// Crée un [TrustSettingsHiveModel] depuis des [TrustSettings].
@@ -41,7 +41,6 @@ class TrustSettingsHiveModel extends HiveObject {
       mediaGreyPatterns: [for (final rule in entity.mediaPolicy.greyRules) domainRuleService.patternOf(rule)],
       linkTrustedPatterns: [for (final rule in entity.linkPolicy.trustedRules) domainRuleService.patternOf(rule)],
       linkGreyPatterns: [for (final rule in entity.linkPolicy.greyRules) domainRuleService.patternOf(rule)],
-      unknownDomainBehavior: entity.unknownDomainBehavior.value,
     );
   }
 
@@ -61,10 +60,6 @@ class TrustSettingsHiveModel extends HiveObject {
   @HiveField(3, defaultValue: <String>[])
   final List<String> linkGreyPatterns;
 
-  /// Sort des domaines inconnus, valeur de [UnknownDomainBehavior].
-  @HiveField(4, defaultValue: 0)
-  final int unknownDomainBehavior;
-
   /// Convertit ce modèle en [TrustSettings].
   ///
   /// - [domainRuleService] : service qui réanalyse chaque règle stockée.
@@ -79,7 +74,6 @@ class TrustSettingsHiveModel extends HiveObject {
           trustedRules: _toRules(linkTrustedPatterns, domainRuleService),
           greyRules: _toRules(linkGreyPatterns, domainRuleService),
         ),
-        unknownDomainBehavior: UnknownDomainBehavior.fromValue(unknownDomainBehavior),
       );
     } catch (error) {
       throw DataException('TrustSettingsHiveModel', error);

@@ -1,6 +1,7 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/screens/splash/splash_screen.dart';
 import 'package:bedbug/application/screens/splash/widgets/app_title_text.dart';
+import 'package:bedbug/features/content/domain/usecases/delete_untrusted_contents_usecase.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/usecases/get_local_signature_usecase.dart';
 import 'package:bedbug/shared/domain/either.dart';
@@ -24,6 +25,14 @@ class _FakeGetLocalSignatureUsecase implements GetLocalSignatureUsecase {
   Future<Either<GetLocalSignatureFailure, Signature?>> call(NoParams params) async => result;
 }
 
+/// Fake [DeleteUntrustedContentsUsecase] sans effet.
+class _FakeDeleteUntrustedContentsUsecase implements DeleteUntrustedContentsUsecase {
+  @override
+  Future<Either<DeleteUntrustedContentsFailure, int>> call(NoParams params) async {
+    return const Right(0);
+  }
+}
+
 /// Monte le splashscreen avec des destinations factices et laisse passer son délai.
 Future<void> pumpSplash(WidgetTester tester, Either<GetLocalSignatureFailure, Signature?> signatureResult) async {
   final router = GoRouter(
@@ -43,7 +52,10 @@ Future<void> pumpSplash(WidgetTester tester, Either<GetLocalSignatureFailure, Si
 
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [getLocalSignatureUsecaseProvider.overrideWithValue(_FakeGetLocalSignatureUsecase(signatureResult))],
+      overrides: [
+        getLocalSignatureUsecaseProvider.overrideWithValue(_FakeGetLocalSignatureUsecase(signatureResult)),
+        deleteUntrustedContentsUsecaseProvider.overrideWithValue(_FakeDeleteUntrustedContentsUsecase()),
+      ],
       child: MaterialApp.router(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
