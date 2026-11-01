@@ -1,17 +1,18 @@
 import 'package:bedbug/application/l10n/locale_display_name_x.dart';
 import 'package:bedbug/application/l10n/locale_notifier.dart';
-import 'package:bedbug/application/screens/settings/local_signature_notifier.dart';
+import 'package:bedbug/application/notifiers/local_signature_notifier.dart';
 import 'package:bedbug/application/screens/settings/widgets/debug_section.dart';
 import 'package:bedbug/application/screens/settings/widgets/language_section.dart';
 import 'package:bedbug/application/screens/settings/widgets/own_contents_section.dart';
 import 'package:bedbug/application/screens/settings/widgets/publishing_section.dart';
-import 'package:bedbug/application/screens/settings/widgets/signature_section.dart';
 import 'package:bedbug/application/screens/settings/widgets/storage_section.dart';
 import 'package:bedbug/application/screens/settings/widgets/trust_section.dart';
 import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/widgets/headers/app_page_header.dart';
 import 'package:bedbug/application/widgets/sections/app_expandable_section.dart';
+import 'package:bedbug/application/widgets/signature/app_signature_form.dart';
+import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -53,7 +54,11 @@ class SettingsScreen extends ConsumerWidget {
                         if (state.failureMessage != null) {
                           return Text(state.failureMessage!);
                         }
-                        return SignatureSection(signature: state.signature);
+                        return AppSignatureForm(
+                          signature: state.signature,
+                          submitLabel: l10n.settingsProfileSaveButton,
+                          onSaved: () => AppSnackbar.showSuccess(context, l10n.settingsProfileSaved),
+                        );
                       },
                     ),
                   ),

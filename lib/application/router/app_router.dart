@@ -15,8 +15,10 @@ import 'package:bedbug/application/screens/media_viewer/media_viewer_screen.dart
 import 'package:bedbug/application/screens/search/search_screen.dart';
 import 'package:bedbug/application/screens/search_results/search_criteria.dart';
 import 'package:bedbug/application/screens/search_results/search_results_screen.dart';
+import 'package:bedbug/application/screens/select_options/select_options_screen.dart';
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
 import 'package:bedbug/application/screens/signature/signature_screen.dart';
+import 'package:bedbug/application/screens/signature_setup/signature_setup_screen.dart';
 import 'package:bedbug/application/screens/splash/splash_screen.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
@@ -47,18 +49,28 @@ const String settingsPath = '/settings';
 /// Chemin vers la page de debug du journal des échanges.
 const String exchangeLogsPath = '/settings/exchange-logs';
 
+/// Chemin vers la page de création de la signature, proposée tant que l'appareil n'en a aucune.
+const String signatureSetupPath = '/signature-setup';
+
 /// Chemin vers la page de choix d'une icône de profil.
 ///
-/// La page renvoie le kaomoji choisi via `context.pop`, à récupérer avec
-/// `context.push<String>(avatarPickerPath)`.
-const String avatarPickerPath = '/settings/avatar';
+/// Déclarée au premier niveau : le formulaire de signature l'ouvre aussi bien
+/// depuis les paramètres que depuis la création de la signature, qui ne doit
+/// pas empiler la page des paramètres. La page renvoie le kaomoji choisi via
+/// `context.pop`, à récupérer avec `context.push<String>(avatarPickerPath)`.
+const String avatarPickerPath = '/avatar-picker';
+
+/// Chemin vers la page listant les options d'une `AppSelectBox`.
+///
+/// Les options sont transmises via `extra` (`SelectOptionsParams`), et la
+/// valeur choisie est retournée au `pop`.
+const String selectOptionsPath = '/select-options';
 
 /// Chemin vers la page de choix du bedbug d'une réaction.
 ///
-/// Même page que [avatarPickerPath], mais déclarée au premier niveau : la
-/// pousser depuis le détail d'un contenu ne doit pas empiler la page des
-/// paramètres. Le kaomoji choisi est renvoyé via `context.pop`, à récupérer
-/// avec `context.push<String>(reactionPickerPath)`.
+/// Même page que [avatarPickerPath], avec un titre propre aux réactions. Le
+/// kaomoji choisi est renvoyé via `context.pop`, à récupérer avec
+/// `context.push<String>(reactionPickerPath)`.
 const String reactionPickerPath = '/reaction-picker';
 
 /// Chemin vers la page de recherche dédiée.
@@ -145,6 +157,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     errorPageBuilder: (context, state) => const NoTransitionPage(child: ErrorRoutePage(message: 'Page not found')),
     routes: [
       GoRoute(path: splashPath, pageBuilder: (context, state) => _fadePage(const SplashScreen())),
+      GoRoute(path: signatureSetupPath, pageBuilder: (context, state) => _fadePage(const SignatureSetupScreen())),
       GoRoute(path: homePath, pageBuilder: (context, state) => _fadePage(const HomeScreen())),
       GoRoute(path: createPath, pageBuilder: (context, state) => _fadePage(const CreateScreen())),
       GoRoute(path: exchangePath, pageBuilder: (context, state) => _fadePage(const ExchangeScreen())),
@@ -152,9 +165,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: settingsPath,
         pageBuilder: (context, state) => _fadePage(const SettingsScreen()),
         routes: [
-          GoRoute(path: 'avatar', pageBuilder: (context, state) => _fadePage(const AvatarPickerScreen())),
           GoRoute(path: 'exchange-logs', pageBuilder: (context, state) => _fadePage(const ExchangeLogsScreen())),
         ],
+      ),
+      GoRoute(path: avatarPickerPath, pageBuilder: (context, state) => _fadePage(const AvatarPickerScreen())),
+      GoRoute(
+        path: selectOptionsPath,
+        pageBuilder: (context, state) => _fadePage(SelectOptionsScreen(params: state.extra! as SelectOptionsParams)),
       ),
       GoRoute(
         path: reactionPickerPath,

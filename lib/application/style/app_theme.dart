@@ -1,4 +1,5 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_values.dart';
 import 'package:flutter/material.dart';
 
 /// Thème principal de l'application.
@@ -51,18 +52,34 @@ class AppTheme {
       ),
 
       /// * Textfields style.
-      inputDecorationTheme: const InputDecorationTheme(
-        filled: false,
-        contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 14),
-        border: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.border)),
-        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.border)),
-        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.primary, width: 2)),
-        errorBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.failure)),
-        focusedErrorBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.failure, width: 2)),
-        disabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.disabled)),
+      // Le label reste flottant pour laisser voir le placeholder d'exemple dans un champ vide.
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.surface,
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        hintStyle: const TextStyle(color: AppColors.disabled),
+        labelStyle: const TextStyle(color: AppColors.onLight),
+        floatingLabelStyle: const TextStyle(color: AppColors.onLight),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        border: _fieldBorder(AppColors.onLight),
+        enabledBorder: _fieldBorder(AppColors.onLight),
+        focusedBorder: _fieldBorder(AppColors.onLight),
+        errorBorder: _fieldBorder(AppColors.failure),
+        focusedErrorBorder: _fieldBorder(AppColors.failure),
+        disabledBorder: _fieldBorder(AppColors.disabled),
       ),
     );
   }
 
   AppTheme._();
+
+  /// Bordure arrondie d'un champ de formulaire.
+  ///
+  /// - [color] : couleur du trait.
+  static OutlineInputBorder _fieldBorder(Color color) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(AppValues.fieldRadius),
+      borderSide: BorderSide(color: color),
+    );
+  }
 }

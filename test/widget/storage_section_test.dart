@@ -122,6 +122,8 @@ void main() {
 
     await tester.enterText(find.byType(TextField), '5000');
     await tester.tap(find.byTooltip('Appliquer'));
+    // Le champ refusé garde le focus et son halo tourne en boucle : `pumpAndSettle` ne rendrait jamais la main.
+    FocusManager.instance.primaryFocus?.unfocus();
     await tester.pumpAndSettle();
 
     expect(saveUsecase.savedLimits, isEmpty);

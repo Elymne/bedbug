@@ -8,16 +8,19 @@ import 'package:bedbug/application/screens/create/create_screen.dart';
 import 'package:bedbug/application/screens/exchange/exchange_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/screens/search/search_screen.dart';
+import 'package:bedbug/application/screens/select_options/select_options_screen.dart';
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
 import 'package:bedbug/application/screens/splash/splash_screen.dart';
+import 'package:bedbug/application/widgets/fields/app_select_option.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/object_values/content_media.dart';
-import 'package:bedbug/features/content/domain/usecases/clear_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
+import 'package:bedbug/features/signature/domain/entities/signature.dart';
+import 'package:bedbug/features/signature/domain/usecases/get_local_signature_usecase.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:flutter/material.dart';
@@ -31,10 +34,12 @@ class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
   Future<Either<GetHomeFeedFailure, List<Content>>> call(NoParams params) async => const Right([]);
 }
 
-/// Fake [ClearContentsUsecase] ne touchant à aucune infrastructure réelle.
-class _FakeClearContentsUsecase implements ClearContentsUsecase {
+/// Fake [GetLocalSignatureUsecase] simulant un appareil déjà doté d'une signature.
+class _FakeGetLocalSignatureUsecase implements GetLocalSignatureUsecase {
   @override
-  Future<Either<ClearContentsFailure, void>> call(NoParams params) async => const Right(null);
+  Future<Either<GetLocalSignatureFailure, Signature?>> call(NoParams params) async {
+    return Right(Signature(id: 'local', createdAt: DateTime(2026), updatedAt: DateTime(2026), pseudo: 'punaise'));
+  }
 }
 
 TextContent _buildTextContent() {
@@ -117,7 +122,7 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         getHomeFeedUsecaseProvider.overrideWithValue(_FakeGetHomeFeedUsecase()),
-        clearContentsUsecaseProvider.overrideWithValue(_FakeClearContentsUsecase()),
+        getLocalSignatureUsecaseProvider.overrideWithValue(_FakeGetLocalSignatureUsecase()),
       ],
     );
     addTearDown(container.dispose);
@@ -185,6 +190,30 @@ void main() {
     expect(find.byType(MediaContentDetailScreen), findsOneWidget);
     router.pop();
     await settleRoute(tester);
+    expect(find.byType(HomeScreen), findsOneWidget);
+  });
+
+  testWidgets('la page des options renvoie à l\'appelant la valeur choisie, avec son type', (tester) async {
+    final router = await pumpAppOnHome(tester);
+
+    final result = router.push<int>(
+      selectOptionsPath,
+      extra: const SelectOptionsParams(
+        label: 'Choix',
+        options: [
+          AppSelectOption(value: 1, label: 'Un'),
+          AppSelectOption(value: 2, label: 'Deux'),
+        ],
+        selectedValue: 1,
+      ),
+    );
+    await settleRoute(tester);
+    expect(find.byType(SelectOptionsScreen), findsOneWidget);
+
+    await tester.tap(find.text('Deux'));
+    await settleRoute(tester);
+
+    expect(await result, 2);
     expect(find.byType(HomeScreen), findsOneWidget);
   });
 

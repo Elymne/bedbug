@@ -1,4 +1,5 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
+import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -28,17 +29,21 @@ class LinkContentForm extends ConsumerWidget {
     return Column(
       spacing: 16,
       children: [
-        ReactiveTextField<String>(
-          formControl: titleControl,
-          textCapitalization: TextCapitalization.sentences,
-          validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
-          decoration: InputDecoration(labelText: l10n.createTextTitleLabel),
+        AppFieldFocusPulse(
+          child: ReactiveTextField<String>(
+            formControl: titleControl,
+            textCapitalization: TextCapitalization.sentences,
+            validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
+            decoration: InputDecoration(labelText: l10n.createTextTitleLabel, hintText: l10n.createTitleHint),
+          ),
         ),
-        ReactiveTextField<String>(
-          formControl: urlControl,
-          validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
-          keyboardType: TextInputType.url,
-          decoration: InputDecoration(labelText: l10n.createLinkUrlLabel),
+        AppFieldFocusPulse(
+          child: ReactiveTextField<String>(
+            formControl: urlControl,
+            validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
+            keyboardType: TextInputType.url,
+            decoration: InputDecoration(labelText: l10n.createLinkUrlLabel, hintText: l10n.createLinkUrlHint),
+          ),
         ),
       ],
     );

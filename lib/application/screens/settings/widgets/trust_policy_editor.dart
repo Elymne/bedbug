@@ -1,5 +1,6 @@
 import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/features/content/domain/object_values/domain_rule.dart';
 import 'package:bedbug/features/content/domain/object_values/trust_settings.dart';
@@ -61,26 +62,28 @@ class _State extends ConsumerState<TrustPolicyEditor> {
           style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.onLight),
         ),
         ..._buildRules(widget.policy.greyRules, TrustLevel.grey),
-        ReactiveTextField<String>(
-          formControl: _ruleInputControl,
-          keyboardType: TextInputType.url,
-          autocorrect: false,
-          decoration: InputDecoration(
-            hintText: l10n.trustAddRuleHint,
-            suffixIcon: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  onPressed: () => _addRule(TrustLevel.trusted),
-                  tooltip: l10n.trustAddToTrusted,
-                  icon: const Icon(Icons.verified_outlined, color: AppColors.success),
-                ),
-                IconButton(
-                  onPressed: () => _addRule(TrustLevel.grey),
-                  tooltip: l10n.trustAddToGrey,
-                  icon: const Icon(Icons.blur_on, color: AppColors.disabled),
-                ),
-              ],
+        AppFieldFocusPulse(
+          child: ReactiveTextField<String>(
+            formControl: _ruleInputControl,
+            keyboardType: TextInputType.url,
+            autocorrect: false,
+            decoration: InputDecoration(
+              hintText: l10n.trustAddRuleHint,
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    onPressed: () => _addRule(TrustLevel.trusted),
+                    tooltip: l10n.trustAddToTrusted,
+                    icon: const Icon(Icons.verified_outlined, color: AppColors.success),
+                  ),
+                  IconButton(
+                    onPressed: () => _addRule(TrustLevel.grey),
+                    tooltip: l10n.trustAddToGrey,
+                    icon: const Icon(Icons.blur_on, color: AppColors.disabled),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

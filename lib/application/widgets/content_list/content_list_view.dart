@@ -1,7 +1,7 @@
 import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
-import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/content_tile/content_widget.dart';
+import 'package:bedbug/application/widgets/separators/app_list_separator.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/extensions/content_urls_extension.dart';
 import 'package:bedbug/features/content/domain/object_values/trust_settings.dart';
@@ -77,9 +77,7 @@ class ContentListView extends ConsumerWidget {
       physics: onRefresh == null ? null : const AlwaysScrollableScrollPhysics(),
       itemCount: visibleContents.length,
       // Séparateurs en retrait des bords, comme ceux de la page de détail.
-      separatorBuilder: (context, index) {
-        return const Divider(height: 1, thickness: 1, indent: 16, endIndent: 16, color: AppColors.border);
-      },
+      separatorBuilder: (context, index) => const AppListSeparator(),
       itemBuilder: (context, index) {
         return InkWell(
           onTap: () => context.push(contentDetailPath, extra: visibleContents[index]),

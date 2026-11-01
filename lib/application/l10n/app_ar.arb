@@ -232,5 +232,20 @@
   "exchangePermissionDenied": "يحتاج التبادل إلى إذن الوصول إلى البلوتوث.",
   "exchangeBluetoothOff": "فعّل البلوتوث للتبادل.",
   "exchangeUnavailable": "التبادل غير متاح على هذا الهاتف.",
-  "exchangeStats": "عمليات تبادل ناجحة: {successCount}\nعمليات تبادل فاشلة: {failureCount}\nالمحتوى المستلم: {contentCount}"
+  "exchangeStats": "عمليات تبادل ناجحة: {successCount}\nعمليات تبادل فاشلة: {failureCount}\nالمحتوى المستلم: {contentCount}",
+  "signatureSetupTitle": "أنشئ توقيعك",
+  "signatureSetupSubtitle": "سيرافق توقيعك محتوياتك من هاتف إلى آخر. يمكنك تغييره في أي وقت من الإعدادات.",
+  "signatureSetupSubmit": "لنبدأ",
+  "settingsPseudoHint": "pink-bedbug",
+  "createTitleHint": "وصفتي المفضلة",
+  "createTextBodyHint": "اكتب ما تريد مشاركته…",
+  "createImageBodyHint": "بضع كلمات عن هذا المحتوى",
+  "createLinkUrlHint": "https://example.com/article",
+  "createMediaUrlHint": "https://example.com/image.png",
+  "reactionBubbleHint": "رائع!",
+  "settingsStorageCustomHint": "500",
+  "selectFilterHint": "تصفية…",
+  "selectNoResult": "لا توجد نتائج",
+  "settingsSocialAddLabel": "إضافة شبكة",
+  "settingsSocialDialogTitle": "حسابك على {network}"
 }

@@ -232,5 +232,20 @@
   "exchangePermissionDenied": "交换需要蓝牙访问权限。",
   "exchangeBluetoothOff": "请开启蓝牙以进行交换。",
   "exchangeUnavailable": "此手机无法使用交换功能。",
-  "exchangeStats": "成功交换:{successCount}\n失败交换:{failureCount}\n已接收内容:{contentCount}"
+  "exchangeStats": "成功交换:{successCount}\n失败交换:{failureCount}\n已接收内容:{contentCount}",
+  "signatureSetupTitle": "创建你的签名",
+  "signatureSetupSubtitle": "它将随你的内容在手机之间传递。你可以随时在设置中更改。",
+  "signatureSetupSubmit": "开始吧",
+  "settingsPseudoHint": "pink-bedbug",
+  "createTitleHint": "我最爱的食谱",
+  "createTextBodyHint": "写下你想分享的内容…",
+  "createImageBodyHint": "简单描述一下这个内容",
+  "createLinkUrlHint": "https://example.com/article",
+  "createMediaUrlHint": "https://example.com/image.png",
+  "reactionBubbleHint": "太棒了！",
+  "settingsStorageCustomHint": "500",
+  "selectFilterHint": "筛选…",
+  "selectNoResult": "没有结果",
+  "settingsSocialAddLabel": "添加网络",
+  "settingsSocialDialogTitle": "你的 {network} 账号"
 }

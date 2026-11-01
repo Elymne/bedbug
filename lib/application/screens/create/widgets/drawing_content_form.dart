@@ -3,6 +3,7 @@ import 'package:bedbug/application/notifiers/drawing_draft_notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/drawing/app_drawing_image.dart';
+import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,11 +36,13 @@ class DrawingContentForm extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 16,
       children: [
-        ReactiveTextField<String>(
-          formControl: titleControl,
-          textCapitalization: TextCapitalization.sentences,
-          validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
-          decoration: InputDecoration(labelText: l10n.createTextTitleLabel),
+        AppFieldFocusPulse(
+          child: ReactiveTextField<String>(
+            formControl: titleControl,
+            textCapitalization: TextCapitalization.sentences,
+            validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
+            decoration: InputDecoration(labelText: l10n.createTextTitleLabel, hintText: l10n.createTitleHint),
+          ),
         ),
         ReactiveValueListenableBuilder<Drawing>(
           formControl: drawingControl,

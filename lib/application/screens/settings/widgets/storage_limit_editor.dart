@@ -1,6 +1,7 @@
 import 'package:bedbug/application/screens/settings/storage_limit_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/validators/app_validators.dart';
+import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
 import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
@@ -62,22 +63,25 @@ class _State extends ConsumerState<StorageLimitEditor> {
             trailing: preset == widget.limitInBytes ? const Icon(Icons.check, color: AppColors.primary) : null,
             onTap: () => ref.read(storageLimitNotifierProvider.notifier).setLimit(preset),
           ),
-        ReactiveTextField<String>(
-          formControl: _customLimitControl,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          decoration: InputDecoration(
-            labelText: l10n.settingsStorageCustomLabel,
-            suffixIcon: IconButton(
-              onPressed: _applyCustomLimit,
-              tooltip: l10n.settingsStorageCustomApply,
-              icon: Icon(Icons.check, color: _isCustomLimit ? AppColors.primary : AppColors.onLight),
+        AppFieldFocusPulse(
+          child: ReactiveTextField<String>(
+            formControl: _customLimitControl,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            decoration: InputDecoration(
+              labelText: l10n.settingsStorageCustomLabel,
+              hintText: l10n.settingsStorageCustomHint,
+              suffixIcon: IconButton(
+                onPressed: _applyCustomLimit,
+                tooltip: l10n.settingsStorageCustomApply,
+                icon: Icon(Icons.check, color: _isCustomLimit ? AppColors.primary : AppColors.onLight),
+              ),
             ),
+            validationMessages: {
+              ValidationMessage.required: (_) => _invalidMessage,
+              'storageLimit': (_) => _invalidMessage,
+            },
           ),
-          validationMessages: {
-            ValidationMessage.required: (_) => _invalidMessage,
-            'storageLimit': (_) => _invalidMessage,
-          },
         ),
       ],
     );

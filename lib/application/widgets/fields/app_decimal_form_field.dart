@@ -1,4 +1,5 @@
 import 'package:bedbug/application/validators/app_validators.dart';
+import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -34,12 +35,14 @@ class ReactiveAppDecimalFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ReactiveTextField<String>(
-      formControlName: formControlName,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      inputFormatters: const [_DecimalInputFormatter()],
-      decoration: InputDecoration(labelText: labelText),
-      validationMessages: {'decimal': (_) => invalidErrorText, 'notNegative': (_) => negativeErrorText},
+    return AppFieldFocusPulse(
+      child: ReactiveTextField<String>(
+        formControlName: formControlName,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: const [_DecimalInputFormatter()],
+        decoration: InputDecoration(labelText: labelText),
+        validationMessages: {'decimal': (_) => invalidErrorText, 'notNegative': (_) => negativeErrorText},
+      ),
     );
   }
 }

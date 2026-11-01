@@ -232,5 +232,20 @@
   "exchangePermissionDenied": "Lo scambio richiede l'accesso al Bluetooth.",
   "exchangeBluetoothOff": "Attiva il Bluetooth per scambiare.",
   "exchangeUnavailable": "Lo scambio non è disponibile su questo telefono.",
-  "exchangeStats": "Scambi riusciti: {successCount}\nScambi non riusciti: {failureCount}\nContenuti ricevuti: {contentCount}"
+  "exchangeStats": "Scambi riusciti: {successCount}\nScambi non riusciti: {failureCount}\nContenuti ricevuti: {contentCount}",
+  "signatureSetupTitle": "Crea la tua firma",
+  "signatureSetupSubtitle": "Accompagnerà i tuoi contenuti di telefono in telefono. Potrai cambiarla in qualsiasi momento nelle impostazioni.",
+  "signatureSetupSubmit": "Iniziamo",
+  "settingsPseudoHint": "cimice-rosa",
+  "createTitleHint": "La mia ricetta del tiramisù",
+  "createTextBodyHint": "Scrivi ciò che vuoi condividere…",
+  "createImageBodyHint": "Qualche parola su questo contenuto",
+  "createLinkUrlHint": "https://esempio.com/articolo",
+  "createMediaUrlHint": "https://esempio.com/immagine.png",
+  "reactionBubbleHint": "Fantastico!",
+  "settingsStorageCustomHint": "500",
+  "selectFilterHint": "Filtra…",
+  "selectNoResult": "Nessun risultato",
+  "settingsSocialAddLabel": "Aggiungi una rete",
+  "settingsSocialDialogTitle": "Il tuo account {network}"
 }
