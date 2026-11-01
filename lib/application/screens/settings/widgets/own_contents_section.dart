@@ -64,7 +64,7 @@ class OwnContentsSection extends ConsumerWidget {
                       ),
                     ),
                     if (content.signatureId == anonymousSignatureId)
-                      AppTag(label: anonymousSignature.pseudo, color: AppColors.onLighter),
+                      AppTag(label: anonymousSignature.pseudo, colors: const [AppColors.onLighter]),
                   ],
                 ),
                 trailing: IconButton(

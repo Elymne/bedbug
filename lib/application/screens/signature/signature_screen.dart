@@ -102,7 +102,7 @@ class SignatureScreen extends ConsumerWidget {
                           runSpacing: 8,
                           children: [
                             for (final network in signature.socialLinks.keys)
-                              AppTag(label: network.displayName, color: ghostColor),
+                              AppTag(label: network.displayName, colors: [ghostColor]),
                           ],
                         ),
                       ],

@@ -84,7 +84,7 @@ class ContentWidget extends ConsumerWidget {
               ContentStats(contentId: content.id, bounce: content.bounce),
               // Un seul tag sur une tuile : la place manque pour les afficher tous.
               if (content.tags.isNotEmpty)
-                AppTag(label: content.tags.first.text, color: content.tags.first.color.flutterColor),
+                AppTag(label: content.tags.first.text, colors: content.tags.first.flutterColors),
             ],
           ),
         ],

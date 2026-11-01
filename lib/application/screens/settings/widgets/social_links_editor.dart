@@ -71,7 +71,7 @@ class _State extends ConsumerState<SocialLinksEditor> {
               Row(
                 spacing: 8,
                 children: [
-                  AppTag(label: entry.key.displayName, color: widget.accentColor),
+                  AppTag(label: entry.key.displayName, colors: [widget.accentColor]),
                   Expanded(
                     child: Text(
                       entry.key.profileUrl(entry.value).replaceFirst(RegExp(r'^https://(www\.)?'), ''),

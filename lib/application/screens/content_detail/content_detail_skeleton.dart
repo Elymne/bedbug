@@ -195,7 +195,7 @@ class ContentDetailSkeleton extends ConsumerWidget {
                               crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 ContentStats(contentId: contentId, bounce: bounce),
-                                for (final tag in tags) AppTag(label: tag.text, color: tag.color.flutterColor),
+                                for (final tag in tags) AppTag(label: tag.text, colors: tag.flutterColors),
                               ],
                             ),
                             const SizedBox(height: 16),
