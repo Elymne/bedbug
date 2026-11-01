@@ -1,4 +1,5 @@
 import 'package:bedbug/features/exchange/domain/gateways/exchange_transport_gateway.dart';
+import 'package:bedbug/features/exchange/domain/object_values/peer_attempt.dart';
 
 /// Résultat d'une demande de démarrage de [PeerLinkGateway].
 enum PeerLinkStartStatus {
@@ -22,6 +23,11 @@ enum PeerLinkStartStatus {
 abstract class PeerLinkGateway {
   /// Connexions établies avec des pairs, à mesure qu'elles arrivent.
   Stream<ExchangeTransportGateway> get connections;
+
+  /// Pairs vus sans qu'un échange ait pu commencer, à mesure qu'ils arrivent.
+  ///
+  /// Sans eux, le journal des échanges ne dirait rien des rencontres qui n'aboutissent pas.
+  Stream<PeerAttempt> get attempts;
 
   /// Signale que la recherche s'est arrêtée, y compris sans que l'app l'ait demandé.
   ///

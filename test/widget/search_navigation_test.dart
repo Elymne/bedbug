@@ -3,7 +3,7 @@ import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/screens/search/search_screen.dart';
 import 'package:bedbug/application/widgets/fields/content_search_input.dart';
-import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/object_values/home_feed.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
@@ -15,7 +15,9 @@ import 'package:go_router/go_router.dart';
 /// Fake [GetHomeFeedUsecase] retournant toujours une liste vide.
 class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
   @override
-  Future<Either<GetHomeFeedFailure, List<Content>>> call(NoParams params) async => const Right([]);
+  Future<Either<GetHomeFeedFailure, HomeFeed>> call(NoParams params) async {
+    return const Right(HomeFeed(contents: [], unviewedContentIds: {}));
+  }
 }
 
 void main() {

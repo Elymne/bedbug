@@ -49,10 +49,8 @@ class UrlTrustService extends Service {
 
   /// Indique si un contenu pointant vers ces URLs doit disparaître du fil.
   ///
-  /// Un contenu est masqué dès qu'une seule de ses URLs est piégée
-  /// ([UrlTrust.invalid]), quel que soit le réglage : il ne doit jamais
-  /// rien charger. Il l'est aussi dès qu'une URL vise un domaine inconnu,
-  /// si l'utilisateur a choisi de masquer ces contenus.
+  /// Il suffit d'une seule URL piégée ([UrlTrust.invalid]) ou visant un domaine absent des listes
+  /// ([UrlTrust.unknown]) : seuls les domaines choisis par l'utilisateur ont leur place sur son téléphone.
   ///
   /// - [settings] : réglages de confiance de l'utilisateur.
   /// - [mediaUrls] : URLs des médias du contenu.
@@ -62,9 +60,6 @@ class UrlTrustService extends Service {
       for (final url in mediaUrls) evaluate(settings.mediaPolicy, url),
       for (final url in linkUrls) evaluate(settings.linkPolicy, url),
     ];
-    if (trusts.contains(UrlTrust.invalid)) {
-      return true;
-    }
-    return settings.unknownDomainBehavior == UnknownDomainBehavior.hidden && trusts.contains(UrlTrust.unknown);
+    return trusts.contains(UrlTrust.invalid) || trusts.contains(UrlTrust.unknown);
   }
 }

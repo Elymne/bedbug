@@ -1,4 +1,6 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -28,7 +30,7 @@ class AppImageCountBadge extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         spacing: 4,
         children: [
-          const Icon(Icons.collections_outlined, size: 14, color: AppColors.onDark),
+          const AppIcon(AppIcons.collections, size: 14, color: AppColors.onDark),
           Text(label, style: const TextStyle(fontSize: 12, color: AppColors.onDark)),
         ],
       ),

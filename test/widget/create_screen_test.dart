@@ -113,6 +113,7 @@ Future<void> _fillAndSaveTextContent(WidgetTester tester) async {
   await tester.enterText(find.widgetWithText(TextField, l10n.createFlairLabel), 'france');
   await tester.enterText(find.widgetWithText(TextField, l10n.createTextTitleLabel), 'Mon titre');
   await tester.enterText(find.widgetWithText(TextField, l10n.createTextBodyLabel), 'Mon corps');
+  await tester.pump();
   await tester.tap(find.text(l10n.createSaveButton));
   await tester.pump();
   await tester.pump();
@@ -182,6 +183,7 @@ void main() {
     await tester.enterText(find.widgetWithText(TextField, l10n.createFlairLabel), '/France ');
     await tester.enterText(find.widgetWithText(TextField, l10n.createTextTitleLabel), 'Mon titre');
     await tester.enterText(find.widgetWithText(TextField, l10n.createTextBodyLabel), 'Mon corps');
+    await tester.pump();
     await tester.tap(find.text(l10n.createSaveButton));
     await tester.pump();
     await tester.pump();
@@ -238,6 +240,7 @@ void main() {
     await tester.enterText(find.widgetWithText(TextField, l10n.createFlairLabel), '/');
     await tester.enterText(find.widgetWithText(TextField, l10n.createTextTitleLabel), 'Mon titre');
     await tester.enterText(find.widgetWithText(TextField, l10n.createTextBodyLabel), 'Mon corps');
+    await tester.pump();
     await tester.tap(find.text(l10n.createSaveButton));
     await tester.pump();
     await tester.pump();
@@ -289,6 +292,7 @@ void main() {
     await tester.enterText(find.widgetWithText(TextField, l10n.createFlairLabel), 'test');
     await tester.tap(find.widgetWithText(AppTag, Tag.alert.text));
     await tester.tap(find.widgetWithText(AppTag, Tag.question.text));
+    await tester.pump();
     await tester.tap(find.text(l10n.createSaveButton));
     await tester.pump();
     await tester.pump();

@@ -1,7 +1,9 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/widgets/buttons/app_close_button.dart';
 import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/features/content/domain/extensions/drawing_dimensions_extension.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
@@ -11,9 +13,9 @@ import 'package:go_router/go_router.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Icône de chaque orientation de la surface.
-const Map<DrawingOrientation, IconData> _kOrientationIcons = {
-  DrawingOrientation.landscape: Icons.crop_landscape,
-  DrawingOrientation.portrait: Icons.crop_portrait,
+const Map<DrawingOrientation, AppIcons> _kOrientationIcons = {
+  DrawingOrientation.landscape: AppIcons.landscape,
+  DrawingOrientation.portrait: AppIcons.portrait,
 };
 
 /// Page de choix de la surface d'un nouveau dessin : sa taille et son orientation.
@@ -118,7 +120,7 @@ class _State extends ConsumerState<DrawingFormatScreen> {
                       children: [
                         for (final orientation in DrawingOrientation.values)
                           ChoiceChip(
-                            avatar: Icon(_kOrientationIcons[orientation]),
+                            avatar: AppIcon(_kOrientationIcons[orientation]!),
                             label: Text(orientationLabels[orientation]!),
                             selected: orientation == _orientationControl.value,
                             onSelected: (_) => _orientationControl.value = orientation,

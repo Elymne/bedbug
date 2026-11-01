@@ -1,5 +1,7 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/drawing/app_drawing_image.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +58,7 @@ class DrawingViewerScreen extends ConsumerWidget {
             child: IconButton(
               onPressed: context.pop,
               tooltip: context.loc.close,
-              icon: const Icon(Icons.close_rounded, color: AppColors.onDark),
+              icon: const AppIcon(AppIcons.close, color: AppColors.onDark),
             ),
           ),
         ],

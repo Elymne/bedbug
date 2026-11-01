@@ -6,5 +6,5 @@ class AppConst {
   static const double homeSearchBarHeight = 84;
 
   /// Hauteur fixe de la navbar, hors zone de sécurité du bas.
-  static const double homeNavBarBaseHeight = 46;
+  static const double homeNavBarBaseHeight = 60;
 }

@@ -28,7 +28,7 @@ class _State extends ConsumerState<SplashScreen> {
 
     ref.listen(splashNotifierProvider, (previous, next) {
       if (next.isLoading) return;
-      if (next.hasValue) context.go(homePath);
+      if (next.hasValue) context.go(next.requireValue.isSignatureMissing ? signatureSetupPath : homePath);
     });
 
     return Scaffold(

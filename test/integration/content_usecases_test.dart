@@ -35,7 +35,7 @@ void main() {
 
     final getResult = await getUsecase(const NoParams());
     expect(getResult.isSuccess, isTrue);
-    final contents = getResult.right!;
+    final contents = getResult.right!.contents;
     expect(contents, hasLength(1));
     expect((contents.single as TextContent).title, 'Titre a');
   });
@@ -52,7 +52,7 @@ void main() {
     expect(clearResult.isSuccess, isTrue);
 
     final getResult = await getUsecase(const NoParams());
-    expect(getResult.right, isEmpty);
+    expect(getResult.right!.contents, isEmpty);
   });
 
   test('seed insère le nombre de contenus demandé', () async {
@@ -63,7 +63,7 @@ void main() {
     expect(seedResult.isSuccess, isTrue);
 
     final getResult = await getUsecase(const NoParams());
-    expect(getResult.right, hasLength(7));
+    expect(getResult.right!.contents, hasLength(7));
   });
 }
 

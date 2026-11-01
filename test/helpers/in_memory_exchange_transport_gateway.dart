@@ -17,6 +17,16 @@ class InMemoryExchangeTransportGateway implements ExchangeTransportGateway {
     return (first, second);
   }
 
+  @override
+  String get peerAddress {
+    return 'AA:BB:CC:DD:EE:FF';
+  }
+
+  @override
+  bool get isInitiator {
+    return true;
+  }
+
   /// Extrémité opposée.
   late final InMemoryExchangeTransportGateway _peer;
 

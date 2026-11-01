@@ -2,7 +2,9 @@ import 'package:bedbug/application/notifiers/content_author_notifier.dart';
 import 'package:bedbug/application/notifiers/content_reactions_notifier.dart';
 import 'package:bedbug/application/screens/content_detail/widgets/reaction_composer_sheet.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/reactions/app_reaction_bubble.dart';
 import 'package:bedbug/application/widgets/scatter/app_scatter.dart';
 import 'package:bedbug/application/widgets/scroll/app_scroll_reveal.dart';
@@ -61,7 +63,7 @@ class ContentReactionsSection extends ConsumerWidget {
             const Spacer(),
             TextButton.icon(
               onPressed: onReact,
-              icon: const Icon(Icons.add_reaction_outlined),
+              icon: const AppIcon(AppIcons.reaction),
               label: Text(hasReacted ? l10n.contentEditReactionButton : l10n.contentReactButton),
             ),
           ],

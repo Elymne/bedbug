@@ -18,6 +18,7 @@ import 'package:bedbug/features/content/infrastructure/models/content_hive_model
 import 'package:bedbug/features/content/infrastructure/models/reaction_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/storage_hive_model.dart';
 import 'package:bedbug/features/exchange/domain/enums/exchange_frame_type.dart';
+import 'package:bedbug/features/exchange/domain/enums/exchange_log_outcome.dart';
 import 'package:bedbug/features/exchange/domain/gateways/exchange_frame_decoder_gateway.dart';
 import 'package:bedbug/features/exchange/domain/gateways/exchange_transport_gateway.dart';
 import 'package:bedbug/features/exchange/domain/gateways/peer_link_gateway.dart';
@@ -25,14 +26,17 @@ import 'package:bedbug/features/exchange/domain/object_values/exchange_bundle.da
 import 'package:bedbug/features/exchange/domain/object_values/exchange_frame.dart';
 import 'package:bedbug/features/exchange/domain/object_values/exchange_offer.dart';
 import 'package:bedbug/features/exchange/domain/object_values/exchange_request.dart';
+import 'package:bedbug/features/exchange/domain/object_values/peer_attempt.dart';
 import 'package:bedbug/features/exchange/domain/usecases/build_exchange_bundle_usecase.dart';
 import 'package:bedbug/features/exchange/domain/usecases/build_exchange_offer_usecase.dart';
 import 'package:bedbug/features/exchange/domain/usecases/import_exchange_bundle_usecase.dart';
 import 'package:bedbug/features/exchange/domain/usecases/select_from_exchange_offer_usecase.dart';
+import 'package:bedbug/features/exchange/infrastructure/datasources/hive_exchange_log_repository.dart';
 import 'package:bedbug/features/exchange/infrastructure/gateways/binary_exchange_frame_codec_gateway.dart';
 import 'package:bedbug/features/exchange/infrastructure/gateways/binary_exchange_frame_decoder_gateway.dart';
 import 'package:bedbug/features/exchange/infrastructure/gateways/ble_peer_link_gateway.dart';
 import 'package:bedbug/features/exchange/infrastructure/gateways/json_zlib_exchange_codec_gateway.dart';
+import 'package:bedbug/features/exchange/infrastructure/models/exchange_log_hive_model.dart';
 import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
 import 'package:bedbug/features/signature/infrastructure/datasources/hive_signature_repository.dart';
@@ -97,6 +101,7 @@ Future<ProviderContainer> _openDevice(String prefix, {List<Override> overrides =
   final seen = await Hive.openBox<int>('${prefix}_seen');
   final signatures = await Hive.openBox<SignatureHiveModel>('${prefix}_signatures');
   final storage = await Hive.openBox<StorageHiveModel>('${prefix}_storage');
+  final logs = await Hive.openBox<ExchangeLogHiveModel>('${prefix}_exchange_logs');
   return ProviderContainer(
     overrides: [
       hiveContentBoxProvider.overrideWithValue(contents),
@@ -104,6 +109,7 @@ Future<ProviderContainer> _openDevice(String prefix, {List<Override> overrides =
       hiveSeenContentBoxProvider.overrideWithValue(seen),
       hiveSignatureBoxProvider.overrideWithValue(signatures),
       hiveStorageBoxProvider.overrideWithValue(storage),
+      hiveExchangeLogBoxProvider.overrideWithValue(logs),
       ...overrides,
     ],
   );
@@ -138,9 +144,17 @@ class _FakePeerLinkGateway implements PeerLinkGateway {
   /// Connexions livrées au reste de l'app.
   final StreamController<ExchangeTransportGateway> controller = StreamController.broadcast();
 
+  /// Pairs vus sans échange, livrés au reste de l'app.
+  final StreamController<PeerAttempt> attemptController = StreamController.broadcast();
+
   @override
   Stream<ExchangeTransportGateway> get connections {
     return controller.stream;
+  }
+
+  @override
+  Stream<PeerAttempt> get attempts {
+    return attemptController.stream;
   }
 
   @override
@@ -162,8 +176,9 @@ class _FakePeerLinkGateway implements PeerLinkGateway {
   Future<void> stop() async {}
 
   /// Ferme le flux des connexions.
-  Future<void> close() {
-    return controller.close();
+  Future<void> close() async {
+    await attemptController.close();
+    await controller.close();
   }
 }
 
@@ -539,6 +554,34 @@ void main() {
       final stats = passiveDevice.read(exchangeStatsNotifierProvider);
       expect(stats.failureCount, 0);
       expect(stats.contentCount, 1);
+    });
+
+    test('une session réussie et un pair ignoré sont notés dans le journal', () async {
+      final gateway = _FakePeerLinkGateway();
+      addTearDown(gateway.close);
+      final passiveDevice = await _openDevice('c', overrides: [peerLinkGatewayProvider.overrideWithValue(gateway)]);
+      addTearDown(passiveDevice.dispose);
+      await deviceB.read(contentRepositoryProvider).addOne(_text('de-b'));
+      await passiveDevice.read(passiveExchangeNotifierProvider.future);
+
+      gateway.controller.add(transportA);
+      await _session(deviceB, transportB).run();
+      while ((await passiveDevice.read(exchangeLogRepositoryProvider).getAllNewestFirst()).isEmpty) {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
+      gateway.attemptController.add(
+        const PeerAttempt(peerAddress: 'pair-ignore', outcome: ExchangeLogOutcome.peerDelayed),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      final logs = await passiveDevice.read(exchangeLogRepositoryProvider).getAllNewestFirst();
+      final session = logs.firstWhere((log) => log.outcome == ExchangeLogOutcome.success);
+      expect(logs.map((log) => log.outcome), contains(ExchangeLogOutcome.peerDelayed));
+      expect(session.peerAddress, transportA.peerAddress);
+      expect(session.isInitiator, isTrue);
+      expect(session.importedContents, 1);
+      expect(session.sentBytes, greaterThan(0));
+      expect(session.receivedBytes, greaterThan(0));
     });
 
     test('la limite de stockage est appliquée après la session', () async {

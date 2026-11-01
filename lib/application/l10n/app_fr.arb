@@ -6,11 +6,11 @@
   },
   "navHomeLabel": "Accueil",
   "@navHomeLabel": {
-    "description": "Label sémantique de l'item Home dans la barre de navigation"
+    "description": "Texte de l'item Home dans la barre de navigation"
   },
   "navCreateLabel": "Créer",
   "@navCreateLabel": {
-    "description": "Label sémantique de l'item Créer dans la barre de navigation"
+    "description": "Texte de l'item Créer dans la barre de navigation"
   },
   "navExchangeLabel": "Échange",
   "@navExchangeLabel": {
@@ -18,7 +18,7 @@
   },
   "navSettingsLabel": "Paramètres",
   "@navSettingsLabel": {
-    "description": "Label sémantique de l'item Paramètres dans la barre de navigation"
+    "description": "Texte de l'item Paramètres dans la barre de navigation"
   },
   "homeGetContentsInvalidData": "Les données sont corrompues ou invalides.",
   "@homeGetContentsInvalidData": {
@@ -35,6 +35,10 @@
   "homeEmptyList": "Aucun contenu disponible.",
   "@homeEmptyList": {
     "description": "Message affiché sur l'accueil quand la liste de contenus est vide"
+  },
+  "homeEmptyExchangeHint": "Active l'échange dans l'onglet Échange pour récupérer les contenus des téléphones autour de toi.",
+  "@homeEmptyExchangeHint": {
+    "description": "Conseil affiché sur l'accueil vide quand l'échange avec les téléphones proches est coupé. Reprendre le nom de l'onglet navExchangeLabel"
   },
   "createTitle": "Créer",
   "@createTitle": {
@@ -258,6 +262,142 @@
   "settingsSaveError": "Échec de l'enregistrement du réglage.",
   "@settingsSaveError": {
     "description": "Message snackbar d'erreur affiché quand un réglage ne peut pas être enregistré"
+  },
+  "settingsDebugTitle": "Debug",
+  "@settingsDebugTitle": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "settingsDebugSubtitle": "Comprendre ce qui se passe dans l'app",
+  "@settingsDebugSubtitle": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsTitle": "Journal des échanges",
+  "@exchangeLogsTitle": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsEmpty": "Aucune rencontre pour le moment.",
+  "@exchangeLogsEmpty": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsPeer": "Pair : {peer}",
+  "@exchangeLogsPeer": {
+    "description": "Texte de la page de debug du journal des échanges",
+    "placeholders": {
+      "peer": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeLogsInitiator": "Ce téléphone a appelé",
+  "@exchangeLogsInitiator": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsResponder": "Ce téléphone a été appelé",
+  "@exchangeLogsResponder": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsDuration": "Durée : {seconds} s",
+  "@exchangeLogsDuration": {
+    "description": "Texte de la page de debug du journal des échanges",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeLogsAwaitedFrame": "Arrêté en attendant : {frame}",
+  "@exchangeLogsAwaitedFrame": {
+    "description": "Texte de la page de debug du journal des échanges",
+    "placeholders": {
+      "frame": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeLogsBytes": "Octets envoyés : {sent}, reçus : {received}",
+  "@exchangeLogsBytes": {
+    "description": "Texte de la page de debug du journal des échanges",
+    "placeholders": {
+      "sent": {
+        "type": "int"
+      },
+      "received": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeLogsContents": "Contenus reçus : {imported}, écartés : {rejected}",
+  "@exchangeLogsContents": {
+    "description": "Texte de la page de debug du journal des échanges",
+    "placeholders": {
+      "imported": {
+        "type": "int"
+      },
+      "rejected": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeLogsReactions": "Réactions reçues : {imported}, écartées : {rejected}",
+  "@exchangeLogsReactions": {
+    "description": "Texte de la page de debug du journal des échanges",
+    "placeholders": {
+      "imported": {
+        "type": "int"
+      },
+      "rejected": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeLogsRemoved": "Contenus supprimés (limite de stockage) : {count}",
+  "@exchangeLogsRemoved": {
+    "description": "Texte de la page de debug du journal des échanges",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeLogsOutcomeSuccess": "Échange réussi",
+  "@exchangeLogsOutcomeSuccess": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomeIncompatibleVersion": "Version incompatible",
+  "@exchangeLogsOutcomeIncompatibleVersion": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomeProtocolViolation": "Données incohérentes du pair",
+  "@exchangeLogsOutcomeProtocolViolation": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomeLocalError": "Erreur locale",
+  "@exchangeLogsOutcomeLocalError": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomePeerError": "Abandon du pair",
+  "@exchangeLogsOutcomePeerError": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomeTransportClosed": "Connexion perdue",
+  "@exchangeLogsOutcomeTransportClosed": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomeTimeout": "Délai dépassé",
+  "@exchangeLogsOutcomeTimeout": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomeCancelled": "Interrompu",
+  "@exchangeLogsOutcomeCancelled": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomeConnectionFailed": "Connexion impossible",
+  "@exchangeLogsOutcomeConnectionFailed": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomePeerDelayed": "Pair ignoré : échange trop récent",
+  "@exchangeLogsOutcomePeerDelayed": {
+    "description": "Texte de la page de debug du journal des échanges"
   },
   "settingsStorageTitle": "Stockage",
   "@settingsStorageTitle": {
@@ -875,17 +1015,9 @@
   "@trustSettingsSubtitle": {
     "description": "Sous-titre de la section des domaines autorisés"
   },
-  "trustUnknownLabel": "Domaines inconnus",
-  "@trustUnknownLabel": {
-    "description": "Titre du choix du sort des contenus pointant vers un domaine inconnu"
-  },
-  "trustUnknownHidden": "Masquer le contenu",
-  "@trustUnknownHidden": {
-    "description": "Option : masquer les contenus pointant vers un domaine inconnu"
-  },
-  "trustUnknownBlurred": "Afficher sur confirmation",
-  "@trustUnknownBlurred": {
-    "description": "Option : garder les contenus d'un domaine inconnu, média affiché sur confirmation"
+  "trustUnknownDeletedHint": "Les contenus reçus d'un domaine absent de ces listes sont supprimés du téléphone.",
+  "@trustUnknownDeletedHint": {
+    "description": "Rappel, en tête de la page des domaines, du sort des contenus d'un domaine absent des listes"
   },
   "trustMediaTitle": "Médias (images, gifs, vidéos)",
   "@trustMediaTitle": {
@@ -918,14 +1050,6 @@
   "trustAddToGrey": "Ajouter en greylist",
   "@trustAddToGrey": {
     "description": "Infobulle du bouton ajoutant le domaine saisi à la greylist"
-  },
-  "trustMoveToGrey": "Passer en greylist",
-  "@trustMoveToGrey": {
-    "description": "Infobulle du bouton faisant passer un domaine de la whitelist à la greylist"
-  },
-  "trustMoveToTrusted": "Passer en confiance",
-  "@trustMoveToTrusted": {
-    "description": "Infobulle du bouton faisant passer un domaine de la greylist à la whitelist"
   },
   "trustRuleInvalidError": "Domaine invalide.",
   "@trustRuleInvalidError": {
@@ -963,5 +1087,74 @@
       "failureCount": { "type": "int" },
       "contentCount": { "type": "int" }
     }
+  },
+  "signatureSetupTitle": "Crée ta signature",
+  "@signatureSetupTitle": {
+    "description": "Titre de la page de création de la signature, affichée après la première installation"
+  },
+  "signatureSetupSubtitle": "C'est elle qui accompagnera tes contenus de téléphone en téléphone. Tu pourras la changer à tout moment dans les paramètres.",
+  "@signatureSetupSubtitle": {
+    "description": "Texte expliquant le rôle de la signature sur la page de création"
+  },
+  "signatureSetupSubmit": "C'est parti",
+  "@signatureSetupSubmit": {
+    "description": "Bouton enregistrant la signature et menant à l'accueil depuis la page de création"
+  },
+  "settingsPseudoHint": "punaise-rose",
+  "@settingsPseudoHint": {
+    "description": "Exemple de pseudo affiché dans le champ vide : lettres sans accent et tirets uniquement"
+  },
+  "createTitleHint": "Ma recette de crêpes",
+  "@createTitleHint": {
+    "description": "Exemple de titre affiché dans le champ vide d'un formulaire de création"
+  },
+  "createTextBodyHint": "Écris ce que tu veux partager…",
+  "@createTextBodyHint": {
+    "description": "Texte d'invite affiché dans le champ vide du corps d'un contenu texte"
+  },
+  "createImageBodyHint": "Quelques mots sur ce média",
+  "@createImageBodyHint": {
+    "description": "Texte d'invite affiché dans le champ vide de la description d'un média"
+  },
+  "createLinkUrlHint": "https://exemple.com/article",
+  "@createLinkUrlHint": {
+    "description": "Exemple d'adresse affiché dans le champ vide d'un contenu lien"
+  },
+  "createMediaUrlHint": "https://exemple.com/image.png",
+  "@createMediaUrlHint": {
+    "description": "Exemple d'adresse affiché dans le champ vide d'ajout d'un média"
+  },
+  "reactionBubbleHint": "Trop bien !",
+  "@reactionBubbleHint": {
+    "description": "Exemple de texte affiché dans le champ vide de la bulle d'une réaction"
+  },
+  "settingsStorageCustomHint": "500",
+  "@settingsStorageCustomHint": {
+    "description": "Exemple de limite de stockage en Mo affiché dans le champ vide"
+  },
+  "selectFilterHint": "Filtrer…",
+  "@selectFilterHint": {
+    "description": "Texte indicatif du champ de filtrage de la page des options"
+  },
+  "selectNoResult": "Aucun résultat",
+  "@selectNoResult": {
+    "description": "Message affiché sur la page des options quand le filtre n'en laisse aucune"
+  },
+  "settingsSocialAddLabel": "Ajouter un réseau",
+  "@settingsSocialAddLabel": {
+    "description": "Label de la selectbox d'ajout d'un réseau, repris en titre de la page des réseaux"
+  },
+  "settingsSocialDialogTitle": "Ton compte {network}",
+  "@settingsSocialDialogTitle": {
+    "description": "Titre de la popup de saisie de l'identifiant sur le réseau choisi",
+    "placeholders": {"network":{"type":"String"}}
+  },
+  "settingsPublishingSubtitle": "Comment tes contenus sont publiés",
+  "@settingsPublishingSubtitle": {
+    "description": "Description de la ligne Publication dans le menu des paramètres"
+  },
+  "settingsStorageCustomOption": "Personnalisée",
+  "@settingsStorageCustomOption": {
+    "description": "Option de la page Stockage activant le champ de limite personnalisée"
   }
 }

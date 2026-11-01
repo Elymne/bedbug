@@ -2,10 +2,15 @@ import 'package:bedbug/application/style/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// Durée de la transition entre les états du bouton.
+const Duration _kTransitionDuration = Duration(milliseconds: 200);
+
 /// Bouton générique avec fond uni (couleur `onSurface` de l'app) et coins arrondis.
 ///
-/// Affiche [child] en état normal. Quand [isLoading] est `true`,
-/// le bouton est désactivé et affiche un [CircularProgressIndicator].
+/// Affiche [child] en état normal. Quand [isLoading] est `true`, le bouton est
+/// désactivé et affiche un [CircularProgressIndicator]. Sans [onTap], il prend
+/// un fond gris clair et un texte gris : l'action n'est pas encore possible,
+/// typiquement sur un formulaire incomplet.
 class AppGradientButton extends ConsumerWidget {
   /// Crée un [AppGradientButton].
   ///
@@ -25,24 +30,30 @@ class AppGradientButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDisabled = isLoading || onTap == null;
+    final isDisabled = onTap == null;
+    final foregroundColor = isDisabled ? AppColors.disabled : AppColors.onDark;
 
     return GestureDetector(
-      onTap: isDisabled ? null : onTap,
+      onTap: isLoading ? null : onTap,
       child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 200),
-        opacity: isDisabled ? 0.5 : 1.0,
-        child: Container(
+        duration: _kTransitionDuration,
+        opacity: isLoading ? 0.5 : 1.0,
+        child: AnimatedContainer(
+          duration: _kTransitionDuration,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: AppColors.onLight),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: isDisabled ? AppColors.border : AppColors.onLight,
+          ),
           child: isLoading
-              ? const SizedBox(
+              ? SizedBox(
                   width: 16,
                   height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.onDark),
+                  child: CircularProgressIndicator(strokeWidth: 2, color: foregroundColor),
                 )
-              : DefaultTextStyle(
-                  style: const TextStyle(color: AppColors.onDark, fontWeight: FontWeight.w600, fontSize: 14),
+              : AnimatedDefaultTextStyle(
+                  duration: _kTransitionDuration,
+                  style: TextStyle(color: foregroundColor, fontWeight: FontWeight.w600, fontSize: 14),
                   child: child,
                 ),
         ),

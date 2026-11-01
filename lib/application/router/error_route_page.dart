@@ -1,4 +1,6 @@
 import 'package:bedbug/application/router/app_router.dart';
+import 'package:bedbug/application/style/app_icons.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,7 +26,7 @@ class ErrorRoutePage extends StatelessWidget {
             const SizedBox(height: 16),
             TextButton.icon(
               onPressed: () => context.go(homePath),
-              icon: const Icon(Icons.arrow_back),
+              icon: const AppIcon(AppIcons.arrowBack),
               label: const Text('context.loc.errorRouteBackButton'),
             ),
           ],

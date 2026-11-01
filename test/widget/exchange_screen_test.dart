@@ -3,10 +3,11 @@ import 'dart:async';
 import 'package:bedbug/application/screens/exchange/exchange_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/widgets/ghost/app_ghost_effect.dart';
-import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/object_values/home_feed.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/features/exchange/domain/gateways/exchange_transport_gateway.dart';
 import 'package:bedbug/features/exchange/domain/gateways/peer_link_gateway.dart';
+import 'package:bedbug/features/exchange/domain/object_values/peer_attempt.dart';
 import 'package:bedbug/features/exchange/infrastructure/gateways/ble_peer_link_gateway.dart';
 import 'package:bedbug/features/settings/domain/usecases/get_settings_usecase.dart';
 import 'package:bedbug/features/settings/domain/usecases/save_settings_usecase.dart';
@@ -16,6 +17,7 @@ import 'package:bedbug/shared/domain/params.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/find_app_icon.dart';
 import '../helpers/pump_app.dart';
 
 /// Fausse recherche de pairs, dont les réponses sont fixées par le test.
@@ -30,6 +32,11 @@ class _FakePeerLinkGateway implements PeerLinkGateway {
 
   @override
   Stream<ExchangeTransportGateway> get connections {
+    return const Stream.empty();
+  }
+
+  @override
+  Stream<PeerAttempt> get attempts {
     return const Stream.empty();
   }
 
@@ -87,7 +94,9 @@ class _FakeSaveSettingsUsecase implements SaveSettingsUsecase {
 /// Fake [GetHomeFeedUsecase] retournant un fil vide.
 class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
   @override
-  Future<Either<GetHomeFeedFailure, List<Content>>> call(NoParams params) async => const Right([]);
+  Future<Either<GetHomeFeedFailure, HomeFeed>> call(NoParams params) async {
+    return const Right(HomeFeed(contents: [], unviewedContentIds: {}));
+  }
 }
 
 /// Retourne la valeur affichée par la case à cocher.
@@ -213,7 +222,7 @@ void main() {
     await tester.pump();
 
     AppGhostEffect exchangeIcon() {
-      final finder = find.ancestor(of: find.byIcon(Icons.bluetooth), matching: find.byType(AppGhostEffect));
+      final finder = find.ancestor(of: findAppIcon(AppIcons.bluetooth), matching: find.byType(AppGhostEffect));
       return tester.widget<AppGhostEffect>(finder.first);
     }
 

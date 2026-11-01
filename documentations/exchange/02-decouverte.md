@@ -14,15 +14,18 @@ répartie en deux :
 La réponse au scan arrive parfois après l'annonce. Une annonce sans ces données est ignorée, et le résultat suivant les
 portera.
 
-## Écouter par cycles
+## Écouter en continu
 
-Scanner est ce qui consomme le plus. Le scan tourne donc par cycles : **10 secondes d'écoute, 50 secondes de pause**.
-L'annonce, elle, reste permanente.
+Le scan et l'annonce sont permanents. Il n'y a volontairement **aucun minuteur** : `Handler.postDelayed` s'arrête quand
+le processeur dort, et un scan programmé ne démarrerait jamais écran éteint. Les premières versions scannaient 10 secondes
+par minute, et un téléphone endormi pendant la pause restait sourd jusqu'à son réveil.
 
-Il suffit qu'un téléphone écoute pendant que l'autre s'annonce. Comme l'annonce ne s'arrête jamais, deux téléphones se
-trouvent en une minute au pire. La consommation réelle n'a pas encore été mesurée.
+Le scan tourne en basse consommation et il est filtré sur l'UUID BedBug. Sans filtre, Android le coupe quand l'écran
+s'éteint. Avec lui, c'est la puce Bluetooth qui écoute, et elle ne réveille le processeur que si elle voit un BedBug. Le
+journal Android indique si le téléphone sait le faire (`Filtrage par la puce Bluetooth`).
 
-Le scan est filtré sur l'UUID BedBug : sans filtre, Android le coupe quand l'écran s'éteint.
+Dès qu'un pair est vu, le processeur est maintenu éveillé jusqu'à la fin de l'échange. La consommation réelle n'a pas
+encore été mesurée. Elle dépend surtout du nombre de BedBug autour : chacun réveille le téléphone quelques instants.
 
 ## Qui appelle qui
 
@@ -46,7 +49,8 @@ en mémoire, et vidée à l'arrêt de la radio.
 ## L'identifiant éphémère
 
 Il est aléatoire et remplacé toutes les 15 minutes, pour qu'un observateur ne puisse pas suivre un téléphone dans la
-durée. Pendant un échange, la découverte étant coupée, le nouvel identifiant sert à la reprise.
+durée. Pendant un échange, la découverte étant coupée, le nouvel identifiant sert à la reprise. Ce remplacement passe par
+un minuteur : pendant une longue veille, il attend le réveil suivant.
 
 Conséquence : l'identifiant change plus vite que certains délais. Un pair au nouvel identifiant est vu comme inconnu et
 peut être recontacté avant les 10 minutes. Ce n'est pas gênant : il n'y aura rien à transférer, et l'échange sera court.

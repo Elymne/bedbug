@@ -1,4 +1,6 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,7 +24,7 @@ class AppGhostIcon extends ConsumerStatefulWidget {
   });
 
   /// Icône affichée.
-  final IconData icon;
+  final AppIcons icon;
 
   /// Taille de l'icône.
   final double size;
@@ -92,7 +94,7 @@ class _State extends ConsumerState<AppGhostIcon> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     if (!widget.isAnimating) {
-      return Icon(widget.icon, color: AppColors.onLight, size: widget.size);
+      return AppIcon(widget.icon, color: AppColors.onLight, size: widget.size);
     }
 
     return AnimatedBuilder(
@@ -110,11 +112,11 @@ class _State extends ConsumerState<AppGhostIcon> with TickerProviderStateMixin {
             children: [
               Transform.scale(
                 scale: ghostFactor,
-                child: Icon(widget.icon, color: AppColors.primary, size: widget.size),
+                child: AppIcon(widget.icon, color: AppColors.primary, size: widget.size),
               ),
               Transform.scale(
                 scale: mainFactor,
-                child: Icon(widget.icon, color: AppColors.onLight, size: widget.size),
+                child: AppIcon(widget.icon, color: AppColors.onLight, size: widget.size),
               ),
             ],
           ),

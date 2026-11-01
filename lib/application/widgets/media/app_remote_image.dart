@@ -1,4 +1,5 @@
 import 'package:bedbug/application/providers/trusted_media_loader_provider.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/media/app_media_placeholder.dart';
 import 'package:bedbug/application/widgets/media/trusted_network_image.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
@@ -46,10 +47,10 @@ class AppRemoteImage extends ConsumerWidget {
         if (wasSynchronouslyLoaded || frame != null) {
           return child;
         }
-        return const AppMediaPlaceholder(icon: Icons.image_outlined);
+        return const AppMediaPlaceholder(icon: AppIcons.image);
       },
       errorBuilder: (context, error, stackTrace) {
-        return AppMediaPlaceholder(icon: Icons.broken_image_outlined, label: context.loc.mediaUnavailable);
+        return AppMediaPlaceholder(icon: AppIcons.brokenImage, label: context.loc.mediaUnavailable);
       },
     );
   }

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:bedbug/application/style/app_icons.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:flutter/material.dart';
 
 /// Taille par défaut du widget image ronde.
@@ -43,7 +45,7 @@ class AppRoundImage extends StatelessWidget {
   Widget _buildPlaceholder() {
     return const ColoredBox(
       color: Color(0xFFE0E0E0),
-      child: Center(child: Icon(Icons.public, color: Color(0xFF9E9E9E))),
+      child: Center(child: AppIcon(AppIcons.globe, color: Color(0xFF9E9E9E))),
     );
   }
 }

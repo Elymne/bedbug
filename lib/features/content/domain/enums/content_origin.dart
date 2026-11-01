@@ -60,6 +60,7 @@ enum ContentOrigin {
   /// favori que l'utilisateur veut continuer à voir en haut de son fil.
   ///
   /// Sans effet pour [owned], dont le score reste fixe à `1.0` : le contenu
-  /// de l'utilisateur reste toujours en tête de son propre fil.
+  /// de l'utilisateur reste en tête de son propre fil, juste après les
+  /// contenus reçus qu'il n'a pas encore vus.
   final double displayHalfLifeDays;
 }

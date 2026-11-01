@@ -1,3 +1,4 @@
+import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/router/error_route_page.dart';
 import 'package:bedbug/application/screens/avatar_picker/avatar_picker_screen.dart';
 import 'package:bedbug/application/screens/content_detail/drawing_content_detail_screen.dart';
@@ -9,13 +10,24 @@ import 'package:bedbug/application/screens/drawing_editor/drawing_editor_screen.
 import 'package:bedbug/application/screens/drawing_format/drawing_format_screen.dart';
 import 'package:bedbug/application/screens/drawing_viewer/drawing_viewer_screen.dart';
 import 'package:bedbug/application/screens/exchange/exchange_screen.dart';
+import 'package:bedbug/application/screens/exchange_logs/exchange_logs_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/screens/media_viewer/media_viewer_screen.dart';
 import 'package:bedbug/application/screens/search/search_screen.dart';
 import 'package:bedbug/application/screens/search_results/search_criteria.dart';
 import 'package:bedbug/application/screens/search_results/search_results_screen.dart';
+import 'package:bedbug/application/screens/select_options/select_options_screen.dart';
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
+import 'package:bedbug/application/screens/settings/settings_section_screen.dart';
+import 'package:bedbug/application/screens/settings/widgets/debug_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/language_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/own_contents_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/publishing_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/signature_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/storage_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/trust_section.dart';
 import 'package:bedbug/application/screens/signature/signature_screen.dart';
+import 'package:bedbug/application/screens/signature_setup/signature_setup_screen.dart';
 import 'package:bedbug/application/screens/splash/splash_screen.dart';
 import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
@@ -43,18 +55,52 @@ const String exchangePath = '/exchange';
 /// Chemin vers la page des paramètres.
 const String settingsPath = '/settings';
 
+/// Chemin vers la page de modification de la signature.
+const String settingsSignaturePath = '/settings/signature';
+
+/// Chemin vers la page de choix de la langue.
+const String settingsLanguagePath = '/settings/language';
+
+/// Chemin vers la page des réglages de publication.
+const String settingsPublishingPath = '/settings/publishing';
+
+/// Chemin vers la page des domaines autorisés.
+const String settingsTrustPath = '/settings/trust';
+
+/// Chemin vers la page de la limite de stockage.
+const String settingsStoragePath = '/settings/storage';
+
+/// Chemin vers la page des posts de l'utilisateur.
+const String settingsOwnContentsPath = '/settings/own-contents';
+
+/// Chemin vers la page des outils de debug.
+const String settingsDebugPath = '/settings/debug';
+
+/// Chemin vers la page de debug du journal des échanges.
+const String exchangeLogsPath = '/settings/exchange-logs';
+
+/// Chemin vers la page de création de la signature, proposée tant que l'appareil n'en a aucune.
+const String signatureSetupPath = '/signature-setup';
+
 /// Chemin vers la page de choix d'une icône de profil.
 ///
-/// La page renvoie le kaomoji choisi via `context.pop`, à récupérer avec
-/// `context.push<String>(avatarPickerPath)`.
-const String avatarPickerPath = '/settings/avatar';
+/// Déclarée au premier niveau : le formulaire de signature l'ouvre aussi bien
+/// depuis les paramètres que depuis la création de la signature, qui ne doit
+/// pas empiler la page des paramètres. La page renvoie le kaomoji choisi via
+/// `context.pop`, à récupérer avec `context.push<String>(avatarPickerPath)`.
+const String avatarPickerPath = '/avatar-picker';
+
+/// Chemin vers la page listant les options d'une `AppSelectBox`.
+///
+/// Les options sont transmises via `extra` (`SelectOptionsParams`), et la
+/// valeur choisie est retournée au `pop`.
+const String selectOptionsPath = '/select-options';
 
 /// Chemin vers la page de choix du bedbug d'une réaction.
 ///
-/// Même page que [avatarPickerPath], mais déclarée au premier niveau : la
-/// pousser depuis le détail d'un contenu ne doit pas empiler la page des
-/// paramètres. Le kaomoji choisi est renvoyé via `context.pop`, à récupérer
-/// avec `context.push<String>(reactionPickerPath)`.
+/// Même page que [avatarPickerPath], avec un titre propre aux réactions. Le
+/// kaomoji choisi est renvoyé via `context.pop`, à récupérer avec
+/// `context.push<String>(reactionPickerPath)`.
 const String reactionPickerPath = '/reaction-picker';
 
 /// Chemin vers la page de recherche dédiée.
@@ -126,6 +172,18 @@ CustomTransitionPage<void> _fadePage(Widget child) {
   );
 }
 
+/// Construit la route d'un réglage ouvert depuis le menu des paramètres.
+///
+/// - [path] : chemin relatif à [settingsPath].
+/// - [titleOf] : retourne le titre de la page dans la langue donnée.
+/// - [section] : réglage affiché par la page.
+GoRoute _settingsSectionRoute(String path, String Function(AppLocalizations l10n) titleOf, Widget section) {
+  return GoRoute(
+    path: path,
+    pageBuilder: (context, state) => _fadePage(SettingsSectionScreen(titleOf: titleOf, child: section)),
+  );
+}
+
 /// Provider du [GoRouter] de l'application.
 ///
 /// Le router se rafraîchit automatiquement lorsque [_RouterRefreshNotifier] le notifie, ce qui déclanche le redirect.
@@ -141,13 +199,28 @@ final routerProvider = Provider<GoRouter>((ref) {
     errorPageBuilder: (context, state) => const NoTransitionPage(child: ErrorRoutePage(message: 'Page not found')),
     routes: [
       GoRoute(path: splashPath, pageBuilder: (context, state) => _fadePage(const SplashScreen())),
+      GoRoute(path: signatureSetupPath, pageBuilder: (context, state) => _fadePage(const SignatureSetupScreen())),
       GoRoute(path: homePath, pageBuilder: (context, state) => _fadePage(const HomeScreen())),
       GoRoute(path: createPath, pageBuilder: (context, state) => _fadePage(const CreateScreen())),
       GoRoute(path: exchangePath, pageBuilder: (context, state) => _fadePage(const ExchangeScreen())),
       GoRoute(
         path: settingsPath,
         pageBuilder: (context, state) => _fadePage(const SettingsScreen()),
-        routes: [GoRoute(path: 'avatar', pageBuilder: (context, state) => _fadePage(const AvatarPickerScreen()))],
+        routes: [
+          _settingsSectionRoute('signature', (l10n) => l10n.settingsProfileTitle, const SignatureSection()),
+          _settingsSectionRoute('language', (l10n) => l10n.settingsLanguageTitle, const LanguageSection()),
+          _settingsSectionRoute('publishing', (l10n) => l10n.settingsPublishingTitle, const PublishingSection()),
+          _settingsSectionRoute('trust', (l10n) => l10n.trustSettingsTitle, const TrustSection()),
+          _settingsSectionRoute('storage', (l10n) => l10n.settingsStorageTitle, const StorageSection()),
+          _settingsSectionRoute('own-contents', (l10n) => l10n.settingsOwnContentsTitle, const OwnContentsSection()),
+          _settingsSectionRoute('debug', (l10n) => l10n.settingsDebugTitle, const DebugSection()),
+          GoRoute(path: 'exchange-logs', pageBuilder: (context, state) => _fadePage(const ExchangeLogsScreen())),
+        ],
+      ),
+      GoRoute(path: avatarPickerPath, pageBuilder: (context, state) => _fadePage(const AvatarPickerScreen())),
+      GoRoute(
+        path: selectOptionsPath,
+        pageBuilder: (context, state) => _fadePage(SelectOptionsScreen(params: state.extra! as SelectOptionsParams)),
       ),
       GoRoute(
         path: reactionPickerPath,

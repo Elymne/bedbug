@@ -16,6 +16,7 @@ import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:bedbug/application/widgets/buttons/app_close_button.dart';
 import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
+import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/texts/app_loading_text.dart';
 import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
@@ -144,6 +145,7 @@ class _State extends ConsumerState<CreateScreen> {
       _mediaFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
       _linkFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
       _drawingFormGroup.valueChanges.listen((_) => _formChangeTicker.value++),
+      _flairControl.valueChanges.listen((_) => _formChangeTicker.value++),
     ];
     ref.listenManual(createNotifierProvider, (previous, next) {
       final createState = next.value;
@@ -375,7 +377,16 @@ class _State extends ConsumerState<CreateScreen> {
                 children: [
                   const AppCloseButton(),
                   const Spacer(),
-                  AppGradientButton(isLoading: isPublishing, onTap: _onSave, child: Text(l10n.createSaveButton)),
+                  ListenableBuilder(
+                    listenable: _formChangeTicker,
+                    builder: (context, _) {
+                      return AppGradientButton(
+                        isLoading: isPublishing,
+                        onTap: _flairControl.valid && _activeFormGroup.valid ? _onSave : null,
+                        child: Text(l10n.createSaveButton),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -406,15 +417,17 @@ class _State extends ConsumerState<CreateScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 8,
                       children: [
-                        ReactiveTextField<String>(
-                          formControl: _flairControl,
-                          maxLength: maxFlairLength,
-                          validationMessages: {'required': (_) => l10n.createFlairRequiredError},
-                          decoration: InputDecoration(
-                            labelText: l10n.createFlairLabel,
-                            hintText: l10n.createFlairHint,
-                            prefixText: AppPrefixes.flair,
-                            prefixStyle: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800),
+                        AppFieldFocusPulse(
+                          child: ReactiveTextField<String>(
+                            formControl: _flairControl,
+                            maxLength: maxFlairLength,
+                            validationMessages: {'required': (_) => l10n.createFlairRequiredError},
+                            decoration: InputDecoration(
+                              labelText: l10n.createFlairLabel,
+                              hintText: l10n.createFlairHint,
+                              prefixText: AppPrefixes.flair,
+                              prefixStyle: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800),
+                            ),
                           ),
                         ),
                         Text(l10n.createTagsLabel),

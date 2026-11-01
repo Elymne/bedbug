@@ -1,4 +1,6 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,7 +18,7 @@ class AppCloseButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return IconButton(
       onPressed: onTap ?? () => Navigator.of(context).pop(),
-      icon: const Icon(Icons.close, color: AppColors.onLight),
+      icon: const AppIcon(AppIcons.close, color: AppColors.onLight),
     );
   }
 }

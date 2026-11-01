@@ -1,4 +1,5 @@
 import 'package:bedbug/application/validators/app_validators.dart';
+import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -34,11 +35,13 @@ class ReactiveAppNameFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ReactiveTextField<String>(
-      formControlName: formControlName,
-      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[a-zA-ZÀ-ÿ\s'\-]"))],
-      decoration: InputDecoration(labelText: labelText),
-      validationMessages: {'required': (_) => requiredErrorText, 'noDigits': (_) => containsDigitsErrorText},
+    return AppFieldFocusPulse(
+      child: ReactiveTextField<String>(
+        formControlName: formControlName,
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[a-zA-ZÀ-ÿ\s'\-]"))],
+        decoration: InputDecoration(labelText: labelText),
+        validationMessages: {'required': (_) => requiredErrorText, 'noDigits': (_) => containsDigitsErrorText},
+      ),
     );
   }
 }

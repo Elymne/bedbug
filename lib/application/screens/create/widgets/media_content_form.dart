@@ -1,6 +1,9 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/validators/app_validators.dart';
+import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/media/app_remote_media.dart';
 import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/services/media_kind_service.dart';
@@ -76,19 +79,22 @@ class _State extends ConsumerState<MediaContentForm> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               spacing: 8,
               children: [
-                ReactiveTextField<String>(
-                  formControl: _urlInputControl,
-                  readOnly: isFull,
-                  keyboardType: TextInputType.url,
-                  onSubmitted: (_) => _addUrl(),
-                  validationMessages: {'safeUrl': (_) => l10n.urlInvalidError},
-                  decoration: InputDecoration(
-                    labelText: l10n.createMediaUrlLabel,
-                    helperText: l10n.createMediaCount(mediaUrls.length, maxMediaPerContent),
-                    suffixIcon: IconButton(
-                      onPressed: isFull ? null : _addUrl,
-                      tooltip: l10n.createMediaAddButton,
-                      icon: const Icon(Icons.add_circle, color: AppColors.primary),
+                AppFieldFocusPulse(
+                  child: ReactiveTextField<String>(
+                    formControl: _urlInputControl,
+                    readOnly: isFull,
+                    keyboardType: TextInputType.url,
+                    onSubmitted: (_) => _addUrl(),
+                    validationMessages: {'safeUrl': (_) => l10n.urlInvalidError},
+                    decoration: InputDecoration(
+                      labelText: l10n.createMediaUrlLabel,
+                      hintText: l10n.createMediaUrlHint,
+                      helperText: l10n.createMediaCount(mediaUrls.length, maxMediaPerContent),
+                      suffixIcon: IconButton(
+                        onPressed: isFull ? null : _addUrl,
+                        tooltip: l10n.createMediaAddButton,
+                        icon: const AppIcon(AppIcons.addCircle, color: AppColors.primary),
+                      ),
                     ),
                   ),
                 ),
@@ -123,7 +129,7 @@ class _State extends ConsumerState<MediaContentForm> {
                       IconButton(
                         onPressed: () => widget.mediaUrlsControl.value = [...mediaUrls]..removeAt(index),
                         tooltip: l10n.settingsSocialRemove,
-                        icon: const Icon(Icons.close_rounded, color: AppColors.onLight),
+                        icon: const AppIcon(AppIcons.close, color: AppColors.onLight),
                       ),
                     ],
                   ),
@@ -131,17 +137,21 @@ class _State extends ConsumerState<MediaContentForm> {
             );
           },
         ),
-        ReactiveTextField<String>(
-          formControl: widget.titleControl,
-          textCapitalization: TextCapitalization.sentences,
-          validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
-          decoration: InputDecoration(labelText: l10n.createTextTitleLabel),
+        AppFieldFocusPulse(
+          child: ReactiveTextField<String>(
+            formControl: widget.titleControl,
+            textCapitalization: TextCapitalization.sentences,
+            validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
+            decoration: InputDecoration(labelText: l10n.createTextTitleLabel, hintText: l10n.createTitleHint),
+          ),
         ),
-        ReactiveTextField<String>(
-          formControl: widget.bodyControl,
-          textCapitalization: TextCapitalization.sentences,
-          maxLines: null,
-          decoration: InputDecoration(labelText: l10n.createImageBodyLabel),
+        AppFieldFocusPulse(
+          child: ReactiveTextField<String>(
+            formControl: widget.bodyControl,
+            textCapitalization: TextCapitalization.sentences,
+            maxLines: null,
+            decoration: InputDecoration(labelText: l10n.createImageBodyLabel, hintText: l10n.createImageBodyHint),
+          ),
         ),
       ],
     );

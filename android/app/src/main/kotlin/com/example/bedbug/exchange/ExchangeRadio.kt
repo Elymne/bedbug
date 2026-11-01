@@ -85,6 +85,9 @@ class ExchangeRadio(private val context: Context, private val onFailure: () -> U
     /** Prochain instant où chaque pair peut être recontacté. */
     private val nextAttemptAt = ConcurrentHashMap<String, Long>()
 
+    /** Fin du délai déjà signalée à Dart pour chaque pair : un pair vu sans cesse n'est noté qu'une fois par délai. */
+    private val reportedDelays = ConcurrentHashMap<String, Long>()
+
     /** Compteur des identifiants de connexion. */
     private val nextConnectionId = AtomicInteger(0)
 
@@ -146,6 +149,7 @@ class ExchangeRadio(private val context: Context, private val onFailure: () -> U
         runCatching { connectingSocket?.close() }
         activeConnection?.close()
         nextAttemptAt.clear()
+        reportedDelays.clear()
     }
 
     /**
@@ -204,12 +208,39 @@ class ExchangeRadio(private val context: Context, private val onFailure: () -> U
     private fun onPeerSeen(device: BluetoothDevice, peerId: ByteArray, peerPsm: Int) {
         val now = SystemClock.elapsedRealtime()
         val peerHex = peerId.joinToString("") { "%02x".format(it) }
-        if (now < (nextAttemptAt[peerHex] ?: 0L) || compareUnsigned(localId, peerId) >= 0 || !beginExchange()) {
+        if (compareUnsigned(localId, peerId) >= 0) {
+            return
+        }
+        val nextAttempt = nextAttemptAt[peerHex] ?: 0L
+        if (now < nextAttempt) {
+            reportDelayedPeer(device, peerHex, nextAttempt, now)
+            return
+        }
+        if (!beginExchange()) {
             return
         }
         nextAttemptAt.values.removeAll { it <= now }
+        reportedDelays.keys.retainAll(nextAttemptAt.keys)
         nextAttemptAt[peerHex] = now + RETRY_MILLIS
         Thread { connect(device, peerPsm, peerHex) }.start()
+    }
+
+    /**
+     * Signale à Dart un pair ignoré à cause du délai, une seule fois par délai.
+     *
+     * Le court délai entre deux tentatives n'est pas signalé : il remplirait le journal sans rien apprendre.
+     *
+     * @param device appareil du pair.
+     * @param peerHex identifiant du pair.
+     * @param nextAttempt fin du délai.
+     * @param now instant présent.
+     */
+    private fun reportDelayedPeer(device: BluetoothDevice, peerHex: String, nextAttempt: Long, now: Long) {
+        if (nextAttempt - now <= RETRY_MILLIS || reportedDelays[peerHex] == nextAttempt) {
+            return
+        }
+        reportedDelays[peerHex] = nextAttempt
+        ExchangeChannels.emit(mapOf("event" to "peerDelayed", "peer" to device.address))
     }
 
     /**
@@ -224,6 +255,7 @@ class ExchangeRadio(private val context: Context, private val onFailure: () -> U
             device.createInsecureL2capChannel(peerPsm)
         } catch (error: IOException) {
             Log.w(TAG, "Canal L2CAP impossible", error)
+            reportConnectionFailure(device)
             endExchange()
             return
         }
@@ -235,9 +267,21 @@ class ExchangeRadio(private val context: Context, private val onFailure: () -> U
         } catch (error: IOException) {
             Log.w(TAG, "Connexion L2CAP impossible", error)
             runCatching { socket.close() }
+            reportConnectionFailure(device)
             endExchange()
         } finally {
             connectingSocket = null
+        }
+    }
+
+    /**
+     * Signale à Dart une connexion impossible. Un arrêt de la radio n'en est pas une : il ferme lui-même le socket.
+     *
+     * @param device appareil du pair.
+     */
+    private fun reportConnectionFailure(device: BluetoothDevice) {
+        if (isRunning.get()) {
+            ExchangeChannels.emit(mapOf("event" to "connectionFailed", "peer" to device.address))
         }
     }
 
@@ -258,9 +302,15 @@ class ExchangeRadio(private val context: Context, private val onFailure: () -> U
             connection.close()
             return
         }
-        wakeLock.acquire(WAKE_LOCK_TIMEOUT_MILLIS)
         activeConnection = connection
-        ExchangeChannels.emit(mapOf("event" to "connected", "id" to connection.id))
+        ExchangeChannels.emit(
+            mapOf(
+                "event" to "connected",
+                "id" to connection.id,
+                "peer" to socket.remoteDevice.address,
+                "isInitiator" to (peerHex != null),
+            ),
+        )
         connection.startReading()
     }
 
@@ -274,6 +324,8 @@ class ExchangeRadio(private val context: Context, private val onFailure: () -> U
         if (!isBusy.compareAndSet(false, true)) {
             return false
         }
+        // Dès la réservation : écran éteint, le processeur se rendormirait pendant la connexion.
+        wakeLock.acquire(WAKE_LOCK_TIMEOUT_MILLIS)
         mainHandler.post { discovery?.stop() }
         return true
     }

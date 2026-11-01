@@ -81,7 +81,7 @@ void main() {
       SeedContentsParams(count: 200, signatureIds: allSignatureIds, randomSeed: 7),
     );
 
-    final contents = (await container.read(getHomeFeedUsecaseProvider)(const NoParams())).right!;
+    final contents = (await container.read(getHomeFeedUsecaseProvider)(const NoParams())).right!.contents;
     final usedSignatureIds = contents.map((content) => content.signatureId).toSet();
     expect(usedSignatureIds, allSignatureIds.toSet());
   });

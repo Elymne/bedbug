@@ -15,7 +15,10 @@ enum TagColor {
   purple(2),
 
   /// Couleur associée aux tags de type divulgâchage.
-  orange(3);
+  orange(3),
+
+  /// Couleur discrète des tags de catégorie, pour laisser ressortir ceux qui signalent quelque chose.
+  neutral(4);
 
   const TagColor(this.value);
 

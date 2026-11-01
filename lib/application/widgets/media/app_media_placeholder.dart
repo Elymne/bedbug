@@ -1,4 +1,6 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,7 +17,7 @@ class AppMediaPlaceholder extends ConsumerWidget {
   const AppMediaPlaceholder({super.key, required this.icon, this.label, this.isDark = false});
 
   /// Icône centrale.
-  final IconData icon;
+  final AppIcons icon;
 
   /// Texte optionnel sous l'icône.
   final String? label;
@@ -36,7 +38,7 @@ class AppMediaPlaceholder extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             spacing: 6,
             children: [
-              Icon(icon, color: foregroundColor),
+              AppIcon(icon, color: foregroundColor),
               if (label != null)
                 Text(
                   label!,

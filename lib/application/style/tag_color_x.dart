@@ -1,4 +1,5 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/features/content/domain/enums/tag.dart';
 import 'package:bedbug/features/content/domain/enums/tag_color.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,15 @@ extension TagColorX on TagColor {
       TagColor.red => AppColors.failure,
       TagColor.purple => AppColors.purple,
       TagColor.orange => AppColors.orange,
+      TagColor.neutral => AppColors.onLighter,
     };
+  }
+}
+
+/// Couleurs concrètes d'un [Tag], à passer telles quelles à `AppTag`.
+extension TagColorsX on Tag {
+  /// Couleurs [AppColors] de ce tag, dans l'ordre de son dégradé.
+  List<Color> get flutterColors {
+    return [for (final color in colors) color.flutterColor];
   }
 }

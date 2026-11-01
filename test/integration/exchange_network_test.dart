@@ -57,6 +57,16 @@ class _CuttingTransport implements ExchangeTransportGateway {
   int _remainingSends;
 
   @override
+  String get peerAddress {
+    return _inner.peerAddress;
+  }
+
+  @override
+  bool get isInitiator {
+    return _inner.isInitiator;
+  }
+
+  @override
   Stream<Uint8List> get incoming {
     return _inner.incoming;
   }

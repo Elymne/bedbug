@@ -19,14 +19,13 @@ class TrustSettingsHiveModelAdapter extends TypeAdapter<TrustSettingsHiveModel> 
       mediaGreyPatterns: fields[1] == null ? [] : (fields[1] as List).cast<String>(),
       linkTrustedPatterns: fields[2] == null ? [] : (fields[2] as List).cast<String>(),
       linkGreyPatterns: fields[3] == null ? [] : (fields[3] as List).cast<String>(),
-      unknownDomainBehavior: fields[4] == null ? 0 : (fields[4] as num).toInt(),
     );
   }
 
   @override
   void write(BinaryWriter writer, TrustSettingsHiveModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.mediaTrustedPatterns)
       ..writeByte(1)
@@ -34,9 +33,7 @@ class TrustSettingsHiveModelAdapter extends TypeAdapter<TrustSettingsHiveModel> 
       ..writeByte(2)
       ..write(obj.linkTrustedPatterns)
       ..writeByte(3)
-      ..write(obj.linkGreyPatterns)
-      ..writeByte(4)
-      ..write(obj.unknownDomainBehavior);
+      ..write(obj.linkGreyPatterns);
   }
 
   @override

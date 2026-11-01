@@ -1,4 +1,5 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
+import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -28,21 +29,25 @@ class TextContentForm extends ConsumerWidget {
     return Column(
       spacing: 16,
       children: [
-        ReactiveTextField<String>(
-          formControl: titleControl,
-          textCapitalization: TextCapitalization.sentences,
-          validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
-          decoration: InputDecoration(labelText: l10n.createTextTitleLabel),
+        AppFieldFocusPulse(
+          child: ReactiveTextField<String>(
+            formControl: titleControl,
+            textCapitalization: TextCapitalization.sentences,
+            validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
+            decoration: InputDecoration(labelText: l10n.createTextTitleLabel, hintText: l10n.createTitleHint),
+          ),
         ),
-        ReactiveTextField<String>(
-          formControl: bodyControl,
-          textCapitalization: TextCapitalization.sentences,
-          validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
-          // Démarre sur une ligne et grandit avec le texte : la barre du bas
-          // descend à chaque nouvelle ligne (c'est la page qui défile).
-          minLines: 1,
-          maxLines: null,
-          decoration: InputDecoration(labelText: l10n.createTextBodyLabel),
+        AppFieldFocusPulse(
+          child: ReactiveTextField<String>(
+            formControl: bodyControl,
+            textCapitalization: TextCapitalization.sentences,
+            validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
+            // Démarre sur une ligne et grandit avec le texte : la barre du bas
+            // descend à chaque nouvelle ligne (c'est la page qui défile).
+            minLines: 1,
+            maxLines: null,
+            decoration: InputDecoration(labelText: l10n.createTextBodyLabel, hintText: l10n.createTextBodyHint),
+          ),
         ),
       ],
     );

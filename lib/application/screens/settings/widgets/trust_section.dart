@@ -1,19 +1,21 @@
 import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/screens/settings/widgets/trust_policy_editor.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/features/content/domain/object_values/trust_settings.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Réglages des domaines que l'app peut contacter : sort des domaines inconnus, listes des médias et des liens.
+/// Réglages des domaines que l'app peut contacter : listes des médias et des liens.
 ///
 /// L'utilisateur garde la main sur tout ce que son téléphone charge : il
-/// choisit ce que deviennent les contenus d'un domaine qu'il n'a classé
-/// nulle part, et range chaque domaine en whitelist (affiché directement)
-/// ou en greylist (flouté, affiché sur confirmation). Chaque changement est
-/// enregistré et appliqué aussitôt.
+/// range chaque domaine en whitelist (affiché directement) ou en greylist
+/// (flouté, affiché sur confirmation), et les contenus reçus d'un domaine
+/// classé nulle part sont supprimés. Chaque changement est enregistré et
+/// appliqué aussitôt.
 class TrustSection extends ConsumerWidget {
   /// Crée un [TrustSection].
   const TrustSection({super.key});
@@ -30,25 +32,7 @@ class TrustSection extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              l10n.trustUnknownLabel,
-              style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.onLight),
-            ),
-            for (final behavior in UnknownDomainBehavior.values)
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(switch (behavior) {
-                  UnknownDomainBehavior.hidden => l10n.trustUnknownHidden,
-                  UnknownDomainBehavior.blurred => l10n.trustUnknownBlurred,
-                }),
-                trailing: Visibility(
-                  visible: behavior == trustSettings.unknownDomainBehavior,
-                  child: const Icon(Icons.check, color: AppColors.primary),
-                ),
-                onTap: () {
-                  _run(context, ref.read(trustSettingsNotifierProvider.notifier).setUnknownDomainBehavior(behavior));
-                },
-              ),
+            Text(l10n.trustUnknownDeletedHint, style: const TextStyle(fontSize: 13, color: AppColors.disabled)),
             const SizedBox(height: 16),
             Text(l10n.trustMediaTitle, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
             const SizedBox(height: 8),
@@ -60,7 +44,7 @@ class TrustSection extends ConsumerWidget {
             const SizedBox(height: 16),
             TextButton.icon(
               onPressed: () => _run(context, ref.read(trustSettingsNotifierProvider.notifier).resetToDefaults()),
-              icon: const Icon(Icons.restore),
+              icon: const AppIcon(AppIcons.restore),
               label: Text(l10n.trustResetButton),
             ),
           ],

@@ -232,6 +232,8 @@ shared/
 - `State` / `ConsumerState` classes are always private and named `_State`.
 - Never use color literals (`Color(0xFF…)`) in widgets: always use `AppColors`, adding the color there first if needed.
 - Before creating a widget, check `application/widgets/` for an existing one.
+- Never use `Icon` or `Icons`: always `AppIcon` with a value of `AppIcons`. A new icon is an SVG in `assets/icons/` (24×24
+  grid, stroke width 2, round caps and joins, no fill), declared in `AppIcons` under the same name as the file.
 
 ## Libraries
 
@@ -243,6 +245,7 @@ shared/
 | Local persistence     | `hive_ce` (+ `hive_ce_generator`), `shared_preferences` |
 | Localization          | `flutter_localizations`, `intl`                         |
 | HTTP                  | `dio`                                                   |
+| Icons                 | `flutter_svg`                                           |
 
 ### Riverpod
 

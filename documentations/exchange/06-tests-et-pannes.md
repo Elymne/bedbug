@@ -27,13 +27,32 @@ recontacter un pair ne se vérifient que sur de vrais téléphones.
 1. Installer l'app sur les deux, Bluetooth activé. Sur Android 10 et 11, activer aussi la localisation.
 2. Créer un contenu différent sur chacun.
 3. Cocher la case de l'onglet Échange sur les deux, et accepter les permissions.
-4. Poser les téléphones côte à côte. Compter jusqu'à une minute.
+4. Poser les téléphones côte à côte. Compter quelques secondes.
 5. Regarder les compteurs, puis tirer le fil d'accueil vers le bas.
 
 Pour relancer un essai sans attendre les 10 minutes, décocher puis recocher la case : cela vide la table des délais et
 change l'identifiant.
 
 Pour repartir d'un téléphone vierge, vider les données de l'app dans les réglages Android.
+
+## Le journal des échanges
+
+Paramètres > Debug > Journal des échanges garde les 300 dernières rencontres, sans ordinateur et même après un
+redémarrage de l'app. C'est le premier endroit où regarder.
+
+| Ligne du journal | Ce qu'elle veut dire |
+| ---------------------------------- | -------------------------------------------------- |
+| Échange réussi | Durée, octets, contenus reçus et écartés, réactions |
+| Échec, avec « Arrêté en attendant » | La session a commencé : la trame citée n'est jamais arrivée |
+| Connexion impossible | Le pair a été vu, le canal L2CAP n'a pas pu s'ouvrir |
+| Pair ignoré : échange trop récent | Le délai de 10 minutes est en cours. Noté une fois par délai |
+| Rien du tout | Personne n'a été vu, ou ce téléphone attendait d'être appelé |
+
+Seul l'appelant note « Pair ignoré » et « Connexion impossible » : l'autre téléphone ne sait rien d'une tentative
+qui n'aboutit pas. Il faut donc regarder le journal des deux téléphones.
+
+Le pair est désigné par son adresse Bluetooth, renouvelée régulièrement : le même téléphone peut apparaître sous
+plusieurs adresses. Le journal reste sur l'appareil et ne voyage jamais.
 
 ## Lire les compteurs
 

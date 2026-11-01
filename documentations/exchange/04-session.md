@@ -66,5 +66,6 @@ Le lot voyage d'un bloc : une connexion perdue pendant son transfert ne laisse a
 
 ## Après la session
 
-`PassiveExchangeNotifier` recalcule les trois scores, puis met à jour `ExchangeStatsNotifier`, affiché sur l'onglet
-Échange. Ces compteurs repartent de zéro au redémarrage de l'app.
+`PassiveExchangeNotifier` recalcule les trois scores, applique la limite de stockage, met à jour `ExchangeStatsNotifier`,
+affiché sur l'onglet Échange, puis note la rencontre dans le journal des échanges. Les compteurs repartent de zéro au
+redémarrage de l'app, pas le journal.

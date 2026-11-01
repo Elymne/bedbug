@@ -1,4 +1,5 @@
 import 'package:bedbug/application/notifiers/revealed_urls_notifier.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/dialogs/trust_confirm_dialog.dart';
 import 'package:bedbug/application/widgets/media/app_media_placeholder.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
@@ -31,7 +32,7 @@ class AppMediaVeil extends ConsumerWidget {
       label: l10n.mediaRevealTitle,
       child: GestureDetector(
         onTap: () => _confirmReveal(context, ref),
-        child: AppMediaPlaceholder(icon: Icons.visibility_off_outlined, label: l10n.mediaHiddenLabel(host)),
+        child: AppMediaPlaceholder(icon: AppIcons.eyeOff, label: l10n.mediaHiddenLabel(host)),
       ),
     );
   }

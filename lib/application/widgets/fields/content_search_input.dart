@@ -1,5 +1,7 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -125,8 +127,8 @@ class _State extends ConsumerState<ContentSearchInput> {
             builder: (context, child) {
               return Row(
                 children: [
-                  Icon(
-                    Icons.search,
+                  AppIcon(
+                    AppIcons.search,
                     size: 20,
                     color: _focusNotifier.isFocused && !widget.isDark ? AppColors.primary : iconColor,
                   ),
@@ -163,7 +165,7 @@ class _State extends ConsumerState<ContentSearchInput> {
                         _controller.clear();
                         widget.onChanged?.call('');
                       },
-                      child: Icon(Icons.close, size: 18, color: widget.isDark ? iconColor : AppColors.disabled),
+                      child: AppIcon(AppIcons.close, size: 18, color: widget.isDark ? iconColor : AppColors.disabled),
                     ),
                 ],
               );

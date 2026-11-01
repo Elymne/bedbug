@@ -2,8 +2,10 @@ import 'package:bedbug/application/notifiers/delete_own_content_notifier.dart';
 import 'package:bedbug/application/notifiers/own_contents_notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/widgets/dialogs/delete_content_dialog.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
@@ -62,13 +64,13 @@ class OwnContentsSection extends ConsumerWidget {
                       ),
                     ),
                     if (content.signatureId == anonymousSignatureId)
-                      AppTag(label: anonymousSignature.pseudo, color: AppColors.onLighter),
+                      AppTag(label: anonymousSignature.pseudo, colors: const [AppColors.onLighter]),
                   ],
                 ),
                 trailing: IconButton(
                   onPressed: deleteOwnContentNotifierWatcher.isLoading ? null : () => _onDelete(context, ref, content),
                   tooltip: l10n.deleteContentButton,
-                  icon: const Icon(Icons.delete_outline_rounded, color: AppColors.failure),
+                  icon: const AppIcon(AppIcons.delete, color: AppColors.failure),
                 ),
               ),
           ],
