@@ -9,6 +9,7 @@ import 'package:bedbug/application/screens/drawing_editor/drawing_editor_screen.
 import 'package:bedbug/application/screens/drawing_format/drawing_format_screen.dart';
 import 'package:bedbug/application/screens/drawing_viewer/drawing_viewer_screen.dart';
 import 'package:bedbug/application/screens/exchange/exchange_screen.dart';
+import 'package:bedbug/application/screens/exchange_logs/exchange_logs_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/screens/media_viewer/media_viewer_screen.dart';
 import 'package:bedbug/application/screens/search/search_screen.dart';
@@ -42,6 +43,9 @@ const String exchangePath = '/exchange';
 
 /// Chemin vers la page des paramètres.
 const String settingsPath = '/settings';
+
+/// Chemin vers la page de debug du journal des échanges.
+const String exchangeLogsPath = '/settings/exchange-logs';
 
 /// Chemin vers la page de choix d'une icône de profil.
 ///
@@ -147,7 +151,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: settingsPath,
         pageBuilder: (context, state) => _fadePage(const SettingsScreen()),
-        routes: [GoRoute(path: 'avatar', pageBuilder: (context, state) => _fadePage(const AvatarPickerScreen()))],
+        routes: [
+          GoRoute(path: 'avatar', pageBuilder: (context, state) => _fadePage(const AvatarPickerScreen())),
+          GoRoute(path: 'exchange-logs', pageBuilder: (context, state) => _fadePage(const ExchangeLogsScreen())),
+        ],
       ),
       GoRoute(
         path: reactionPickerPath,

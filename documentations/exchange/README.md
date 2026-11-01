@@ -53,10 +53,10 @@ continuent de tourner. Voir [01-android.md](01-android.md).
 ### 2. Les deux téléphones se trouvent
 
 Le téléphone d'Alice diffuse en continu une petite annonce : « je suis un BedBug, mon identifiant temporaire est
-`a1b2c3d4`, mon canal est le 137 ». Il écoute aussi les annonces des autres, 10 secondes par minute pour économiser la
-batterie.
+`a1b2c3d4`, mon canal est le 137 ». Il écoute aussi les annonces des autres, en continu et en basse consommation : c'est la
+puce Bluetooth qui filtre, et elle ne réveille le téléphone que si elle voit un BedBug.
 
-Bob fait la même chose. L'un finit par entendre l'autre, en une minute au pire.
+Bob fait la même chose. L'un entend l'autre en quelques secondes, même écran éteint.
 
 Pour éviter que les deux se connectent en même temps, **c'est toujours celui qui a le plus petit identifiant qui
 appelle**. L'autre attend. Disons que c'est Alice. Voir [02-decouverte.md](02-decouverte.md).

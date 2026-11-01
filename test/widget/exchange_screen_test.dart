@@ -7,6 +7,7 @@ import 'package:bedbug/features/content/domain/entities/content.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/features/exchange/domain/gateways/exchange_transport_gateway.dart';
 import 'package:bedbug/features/exchange/domain/gateways/peer_link_gateway.dart';
+import 'package:bedbug/features/exchange/domain/object_values/peer_attempt.dart';
 import 'package:bedbug/features/exchange/infrastructure/gateways/ble_peer_link_gateway.dart';
 import 'package:bedbug/features/settings/domain/usecases/get_settings_usecase.dart';
 import 'package:bedbug/features/settings/domain/usecases/save_settings_usecase.dart';
@@ -30,6 +31,11 @@ class _FakePeerLinkGateway implements PeerLinkGateway {
 
   @override
   Stream<ExchangeTransportGateway> get connections {
+    return const Stream.empty();
+  }
+
+  @override
+  Stream<PeerAttempt> get attempts {
     return const Stream.empty();
   }
 

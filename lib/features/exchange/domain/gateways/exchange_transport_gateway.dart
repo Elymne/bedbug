@@ -8,6 +8,12 @@ import 'dart:typed_data';
 ///
 /// Une instance correspond à une connexion : elle n'est pas fournie par un provider, mais passée à la session.
 abstract class ExchangeTransportGateway {
+  /// Adresse Bluetooth du pair, notée dans le journal des échanges.
+  String get peerAddress;
+
+  /// Indique si ce téléphone a appelé le pair, pour le journal des échanges.
+  bool get isInitiator;
+
   /// Octets reçus du pair, dans l'ordre d'envoi. Le flux se termine quand la connexion se ferme.
   ///
   /// Écoutable une seule fois. Il doit continuer à livrer pendant qu'un [send] est en attente : les deux appareils

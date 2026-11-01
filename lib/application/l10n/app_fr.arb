@@ -259,6 +259,142 @@
   "@settingsSaveError": {
     "description": "Message snackbar d'erreur affiché quand un réglage ne peut pas être enregistré"
   },
+  "settingsDebugTitle": "Debug",
+  "@settingsDebugTitle": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "settingsDebugSubtitle": "Comprendre ce qui se passe dans l'app",
+  "@settingsDebugSubtitle": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsTitle": "Journal des échanges",
+  "@exchangeLogsTitle": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsEmpty": "Aucune rencontre pour le moment.",
+  "@exchangeLogsEmpty": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsPeer": "Pair : {peer}",
+  "@exchangeLogsPeer": {
+    "description": "Texte de la page de debug du journal des échanges",
+    "placeholders": {
+      "peer": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeLogsInitiator": "Ce téléphone a appelé",
+  "@exchangeLogsInitiator": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsResponder": "Ce téléphone a été appelé",
+  "@exchangeLogsResponder": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsDuration": "Durée : {seconds} s",
+  "@exchangeLogsDuration": {
+    "description": "Texte de la page de debug du journal des échanges",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeLogsAwaitedFrame": "Arrêté en attendant : {frame}",
+  "@exchangeLogsAwaitedFrame": {
+    "description": "Texte de la page de debug du journal des échanges",
+    "placeholders": {
+      "frame": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeLogsBytes": "Octets envoyés : {sent}, reçus : {received}",
+  "@exchangeLogsBytes": {
+    "description": "Texte de la page de debug du journal des échanges",
+    "placeholders": {
+      "sent": {
+        "type": "int"
+      },
+      "received": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeLogsContents": "Contenus reçus : {imported}, écartés : {rejected}",
+  "@exchangeLogsContents": {
+    "description": "Texte de la page de debug du journal des échanges",
+    "placeholders": {
+      "imported": {
+        "type": "int"
+      },
+      "rejected": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeLogsReactions": "Réactions reçues : {imported}, écartées : {rejected}",
+  "@exchangeLogsReactions": {
+    "description": "Texte de la page de debug du journal des échanges",
+    "placeholders": {
+      "imported": {
+        "type": "int"
+      },
+      "rejected": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeLogsRemoved": "Contenus supprimés (limite de stockage) : {count}",
+  "@exchangeLogsRemoved": {
+    "description": "Texte de la page de debug du journal des échanges",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeLogsOutcomeSuccess": "Échange réussi",
+  "@exchangeLogsOutcomeSuccess": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomeIncompatibleVersion": "Version incompatible",
+  "@exchangeLogsOutcomeIncompatibleVersion": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomeProtocolViolation": "Données incohérentes du pair",
+  "@exchangeLogsOutcomeProtocolViolation": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomeLocalError": "Erreur locale",
+  "@exchangeLogsOutcomeLocalError": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomePeerError": "Abandon du pair",
+  "@exchangeLogsOutcomePeerError": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomeTransportClosed": "Connexion perdue",
+  "@exchangeLogsOutcomeTransportClosed": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomeTimeout": "Délai dépassé",
+  "@exchangeLogsOutcomeTimeout": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomeCancelled": "Interrompu",
+  "@exchangeLogsOutcomeCancelled": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomeConnectionFailed": "Connexion impossible",
+  "@exchangeLogsOutcomeConnectionFailed": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
+  "exchangeLogsOutcomePeerDelayed": "Pair ignoré : échange trop récent",
+  "@exchangeLogsOutcomePeerDelayed": {
+    "description": "Texte de la page de debug du journal des échanges"
+  },
   "settingsStorageTitle": "Stockage",
   "@settingsStorageTitle": {
     "description": "Titre de la section Stockage des paramètres"

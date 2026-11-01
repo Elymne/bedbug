@@ -3,18 +3,24 @@ import 'dart:async';
 import 'package:bedbug/application/exchange/exchange_session.dart';
 import 'package:bedbug/application/exchange/exchange_stats_notifier.dart';
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
+import 'package:bedbug/application/screens/exchange_logs/exchange_logs_notifier.dart';
 import 'package:bedbug/application/screens/settings/user_settings_notifier.dart';
 import 'package:bedbug/features/content/domain/usecases/enforce_storage_limit_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/recalculate_broadcast_scores_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/recalculate_display_scores_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/recalculate_survival_scores_usecase.dart';
+import 'package:bedbug/features/exchange/domain/entities/exchange_log.dart';
+import 'package:bedbug/features/exchange/domain/enums/exchange_log_outcome.dart';
 import 'package:bedbug/features/exchange/domain/gateways/exchange_transport_gateway.dart';
+import 'package:bedbug/features/exchange/domain/object_values/peer_attempt.dart';
+import 'package:bedbug/features/exchange/domain/usecases/save_exchange_log_usecase.dart';
 import 'package:bedbug/features/exchange/domain/usecases/start_peer_link_usecase.dart';
 import 'package:bedbug/features/exchange/domain/usecases/stop_peer_link_usecase.dart';
 import 'package:bedbug/features/exchange/infrastructure/gateways/ble_peer_link_gateway.dart';
 import 'package:bedbug/features/settings/domain/usecases/get_settings_usecase.dart';
 import 'package:bedbug/features/settings/domain/usecases/save_settings_usecase.dart';
 import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/shared/extensions/string_uuid_x.dart';
 import 'package:bedbug/shared/logger/app_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -55,6 +61,9 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
   /// Cas d'usage de nettoyage du stockage.
   late final _enforceStorageLimitUsecase = ref.read(enforceStorageLimitUsecaseProvider);
 
+  /// Cas d'usage d'ajout au journal des échanges.
+  late final _saveExchangeLogUsecase = ref.read(saveExchangeLogUsecaseProvider);
+
   /// Recherche de pairs, dont sont écoutés les connexions et les arrêts.
   late final _peerLinkGateway = ref.read(peerLinkGatewayProvider);
 
@@ -64,9 +73,11 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
   @override
   Future<bool> build() async {
     final connections = _peerLinkGateway.connections.listen((transport) => unawaited(_runSession(transport)));
+    final attempts = _peerLinkGateway.attempts.listen((attempt) => unawaited(_logAttempt(attempt)));
     final stopped = _peerLinkGateway.stopped.listen((_) => unawaited(_onStopped()));
     ref.onDispose(() {
       unawaited(connections.cancel());
+      unawaited(attempts.cancel());
       unawaited(stopped.cancel());
     });
 
@@ -132,6 +143,30 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
     ref.invalidate(userSettingsNotifierProvider);
   }
 
+  /// Note dans le journal un pair vu sans qu'un échange ait pu commencer.
+  ///
+  /// - [attempt] : pair concerné.
+  Future<void> _logAttempt(PeerAttempt attempt) async {
+    final now = DateTime.now();
+    await _saveLog(
+      ExchangeLog(
+        id: UuidX.generate(),
+        createdAt: now,
+        updatedAt: now,
+        peerAddress: attempt.peerAddress,
+        outcome: attempt.outcome,
+      ),
+    );
+  }
+
+  /// Enregistre [log] et rafraîchit la page du journal.
+  ///
+  /// - [log] : trace à enregistrer.
+  Future<void> _saveLog(ExchangeLog log) async {
+    await _saveExchangeLogUsecase(SaveExchangeLogParams(log: log));
+    ref.invalidate(exchangeLogsNotifierProvider);
+  }
+
   /// Déroule un échange sur [transport], recalcule les scores, puis fait respecter la limite de stockage.
   ///
   /// Les scores vieillissent et les contenus reçus arrivent avec ceux du pair : sans ce recalcul, ils resteraient
@@ -141,17 +176,56 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
   /// - [transport] : connexion avec le pair, fermée par la session à la fin.
   Future<void> _runSession(ExchangeTransportGateway transport) async {
     final session = ref.read(exchangeSessionProvider(transport));
+    final startedAt = DateTime.now();
+    final stopwatch = Stopwatch()..start();
     _session = session;
     final result = await session.run();
     _session = null;
+    stopwatch.stop();
     await _recalculateBroadcastScoresUsecase(const NoParams());
     await _recalculateDisplayScoresUsecase(const NoParams());
     await _recalculateSurvivalScoresUsecase(const NoParams());
-    await _enforceStorageLimitUsecase(const NoParams());
+    final removedContents = (await _enforceStorageLimitUsecase(const NoParams())).right ?? 0;
+    final report = result.report;
+    await _saveLog(
+      ExchangeLog(
+        id: UuidX.generate(),
+        createdAt: startedAt,
+        updatedAt: DateTime.now(),
+        peerAddress: transport.peerAddress,
+        outcome: _outcomeOf(result.failure),
+        isInitiator: transport.isInitiator,
+        duration: stopwatch.elapsed,
+        awaitedFrame: result.awaitedFrame,
+        sentBytes: result.sentBytes,
+        receivedBytes: result.receivedBytes,
+        importedContents: report?.importedContents ?? 0,
+        rejectedContents: report?.rejectedContents ?? 0,
+        importedReactions: report?.importedReactions ?? 0,
+        rejectedReactions: report?.rejectedReactions ?? 0,
+        removedContents: removedContents,
+      ),
+    );
     ref.read(exchangeStatsNotifierProvider.notifier).addResult(result);
     final failure = result.failure;
     if (failure != null) {
       AppLogger.warning('Échange interrompu : ${failure.name}');
     }
+  }
+
+  /// Traduit l'issue d'une session pour le journal.
+  ///
+  /// - [failure] : cause de l'échec, `null` si l'échange a réussi.
+  ExchangeLogOutcome _outcomeOf(ExchangeSessionFailure? failure) {
+    return switch (failure) {
+      null => ExchangeLogOutcome.success,
+      ExchangeSessionFailure.incompatibleVersion => ExchangeLogOutcome.incompatibleVersion,
+      ExchangeSessionFailure.protocolViolation => ExchangeLogOutcome.protocolViolation,
+      ExchangeSessionFailure.localError => ExchangeLogOutcome.localError,
+      ExchangeSessionFailure.peerError => ExchangeLogOutcome.peerError,
+      ExchangeSessionFailure.transportClosed => ExchangeLogOutcome.transportClosed,
+      ExchangeSessionFailure.timeout => ExchangeLogOutcome.timeout,
+      ExchangeSessionFailure.cancelled => ExchangeLogOutcome.cancelled,
+    };
   }
 }

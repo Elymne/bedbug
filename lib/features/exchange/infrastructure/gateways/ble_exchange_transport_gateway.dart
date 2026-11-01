@@ -12,7 +12,15 @@ class BleExchangeTransportGateway implements ExchangeTransportGateway {
   ///
   /// - [_id] : identifiant de la connexion côté Android.
   /// - [_channel] : canal des appels vers Android.
-  BleExchangeTransportGateway(this._id, this._channel);
+  /// - [peerAddress] : adresse Bluetooth du pair.
+  /// - [isInitiator] : `true` si ce téléphone a appelé le pair.
+  BleExchangeTransportGateway(this._id, this._channel, {required this.peerAddress, required this.isInitiator});
+
+  @override
+  final String peerAddress;
+
+  @override
+  final bool isInitiator;
 
   /// Identifiant de la connexion côté Android.
   final int _id;

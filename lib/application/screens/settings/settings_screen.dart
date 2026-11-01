@@ -1,6 +1,7 @@
 import 'package:bedbug/application/l10n/locale_display_name_x.dart';
 import 'package:bedbug/application/l10n/locale_notifier.dart';
 import 'package:bedbug/application/screens/settings/local_signature_notifier.dart';
+import 'package:bedbug/application/screens/settings/widgets/debug_section.dart';
 import 'package:bedbug/application/screens/settings/widgets/language_section.dart';
 import 'package:bedbug/application/screens/settings/widgets/own_contents_section.dart';
 import 'package:bedbug/application/screens/settings/widgets/publishing_section.dart';
@@ -89,6 +90,13 @@ class SettingsScreen extends ConsumerWidget {
                     subtitle: l10n.settingsOwnContentsSubtitle,
                     icon: Icons.article_outlined,
                     child: const OwnContentsSection(),
+                  ),
+                  const SizedBox(height: 12),
+                  AppExpandableSection(
+                    title: l10n.settingsDebugTitle,
+                    subtitle: l10n.settingsDebugSubtitle,
+                    icon: Icons.bug_report_outlined,
+                    child: const DebugSection(),
                   ),
                 ],
               ),

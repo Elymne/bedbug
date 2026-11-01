@@ -7,6 +7,8 @@ import 'package:bedbug/features/content/infrastructure/models/comment_hive_model
 import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/reaction_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/storage_hive_model.dart';
+import 'package:bedbug/features/exchange/infrastructure/datasources/hive_exchange_log_repository.dart';
+import 'package:bedbug/features/exchange/infrastructure/models/exchange_log_hive_model.dart';
 import 'package:bedbug/features/exchange/infrastructure/models/keychain_hive_model.dart';
 import 'package:bedbug/features/settings/infrastructure/models/settings_hive_model.dart';
 import 'package:bedbug/features/signature/infrastructure/models/signature_hive_model.dart';
@@ -37,6 +39,7 @@ Future<Directory> openTestHive() async {
     Hive.openBox<SettingsHiveModel>('settings'),
     Hive.openBox<Uint8List>(drawingDraftBoxName),
     Hive.openBox<int>(seenContentBoxName),
+    Hive.openBox<ExchangeLogHiveModel>(exchangeLogBoxName),
   ]);
   return tempDir;
 }

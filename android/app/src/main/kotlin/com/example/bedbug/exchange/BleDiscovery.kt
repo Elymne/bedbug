@@ -10,8 +10,6 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
-import android.os.Handler
-import android.os.Looper
 import android.os.ParcelUuid
 import android.util.Log
 import java.util.UUID
@@ -24,9 +22,9 @@ import java.util.UUID
  * canal L2CAP, un peu comme un port réseau) vont dans la réponse au scan, que le téléphone qui scanne récupère
  * automatiquement.
  *
- * Scanner est ce qui consomme le plus. Le scan tourne donc par cycles ([SCAN_WINDOW_MILLIS] de scan puis
- * [SCAN_PAUSE_MILLIS] de pause), alors que l'annonce reste permanente : un téléphone qui scanne au moment où l'autre
- * se repose le voit quand même. Deux téléphones se trouvent ainsi en une minute au pire.
+ * Le scan et l'annonce sont permanents, sans aucun minuteur : un minuteur Android s'arrête quand le processeur dort,
+ * et un scan programmé ne démarrerait jamais écran éteint. Le scan reste donc actif en mode basse consommation, et
+ * c'est la puce Bluetooth qui filtre sur l'UUID BedBug : elle ne réveille le téléphone que si elle voit un pair.
  *
  * Toutes les méthodes s'utilisent sur le thread principal.
  *
@@ -48,33 +46,12 @@ class BleDiscovery(
         /** Taille du PSM annoncé, en octets. */
         private const val PSM_SIZE = 2
 
-        /** Durée d'une période de scan. Assez longue pour voir un téléphone qui s'annonce en mode équilibré. */
-        private const val SCAN_WINDOW_MILLIS = 10 * 1000L
-
-        /** Durée de la pause entre deux périodes de scan. */
-        private const val SCAN_PAUSE_MILLIS = 50 * 1000L
-
         /** Étiquette des journaux Android. */
         private const val TAG = "BleDiscovery"
     }
 
-    /** File du thread principal, qui rythme les cycles de scan. */
-    private val handler = Handler(Looper.getMainLooper())
-
     /** Indique si la découverte tourne. */
     private var isRunning = false
-
-    /** Termine une période de scan et programme la suivante. */
-    private val endScanWindow = Runnable {
-        stopScan()
-        handler.postDelayed(beginScanWindow, SCAN_PAUSE_MILLIS)
-    }
-
-    /** Commence une période de scan et programme sa fin. */
-    private val beginScanWindow: Runnable = Runnable {
-        startScan()
-        handler.postDelayed(endScanWindow, SCAN_WINDOW_MILLIS)
-    }
 
     /** Callback de l'annonce en cours, nécessaire pour l'arrêter. */
     private var advertiseCallback: AdvertiseCallback? = null
@@ -94,24 +71,17 @@ class BleDiscovery(
         }
         isRunning = true
         startAdvertising(localId, psm)
-        beginScanWindow.run()
+        startScan()
     }
 
     /** Arrête l'annonce et le scan. La puce partage sa radio : les garder pendant un échange diviserait le débit. */
     fun stop() {
         isRunning = false
-        handler.removeCallbacks(beginScanWindow)
-        handler.removeCallbacks(endScanWindow)
-        stopScan()
+        scanCallback?.let { adapter.bluetoothLeScanner?.stopScan(it) }
+        scanCallback = null
         // `bluetoothLeAdvertiser` vaut `null` si le Bluetooth vient d'être coupé : il n'y a alors plus rien à arrêter.
         advertiseCallback?.let { adapter.bluetoothLeAdvertiser?.stopAdvertising(it) }
         advertiseCallback = null
-    }
-
-    /** Arrête le scan en cours, s'il y en a un. */
-    private fun stopScan() {
-        scanCallback?.let { adapter.bluetoothLeScanner?.stopScan(it) }
-        scanCallback = null
     }
 
     /**
@@ -157,8 +127,9 @@ class BleDiscovery(
             return
         }
         val filter = ScanFilter.Builder().setServiceUuid(ParcelUuid(SERVICE_UUID)).build()
-        // Période courte : autant écouter à fond, la moyenne reste faible grâce aux pauses.
-        val settings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build()
+        Log.i(TAG, "Filtrage par la puce Bluetooth : ${adapter.isOffloadedFilteringSupported}")
+        // Basse consommation : le scan ne s'arrête jamais, un pair est tout de même vu en quelques secondes.
+        val settings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_POWER).build()
         val callback = object : ScanCallback() {
             override fun onScanResult(callbackType: Int, result: ScanResult) {
                 readAdvertisement(result)
