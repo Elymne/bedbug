@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:bedbug/application/notifiers/revealed_urls_notifier.dart';
 import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/media/app_media_placeholder.dart';
 import 'package:bedbug/application/widgets/media/app_media_veil.dart';
 import 'package:bedbug/application/widgets/media/app_remote_image.dart';
@@ -72,7 +74,7 @@ class AppRemoteMedia extends ConsumerWidget {
     final revealedUrls = ref.watch(revealedUrlsNotifierProvider);
     final trustSettings = trustSettingsNotifierWatcher.value;
     if (trustSettings == null) {
-      return const AppMediaPlaceholder(icon: Icons.image_outlined);
+      return const AppMediaPlaceholder(icon: AppIcons.image);
     }
 
     final isRevealed = revealedUrls.contains(media.url);
@@ -83,7 +85,7 @@ class AppRemoteMedia extends ConsumerWidget {
       if (isOmittedWhenNotAllowed) {
         return const SizedBox.shrink();
       }
-      return AppMediaPlaceholder(icon: Icons.broken_image_outlined, label: context.loc.mediaUnavailable);
+      return AppMediaPlaceholder(icon: AppIcons.brokenImage, label: context.loc.mediaUnavailable);
     }
     if (trust == UrlTrust.unknown && !isRevealed) {
       if (isOmittedWhenNotAllowed) {
@@ -95,7 +97,7 @@ class AppRemoteMedia extends ConsumerWidget {
       // Pas de geste propre : un tap revient au parent (ouverture du contenu, ou de la visionneuse).
       // Une vidéo n'est pas chargée pour être floutée : seule sa vignette l'est.
       if (media.kind == MediaKind.video) {
-        return _blurred(const AppMediaPlaceholder(icon: Icons.play_circle_outline, isDark: true));
+        return _blurred(const AppMediaPlaceholder(icon: AppIcons.playCircle, isDark: true));
       }
       return _blurred(AppRemoteImage(url: media.url, isConfirmed: false, fit: fit));
     }
@@ -124,7 +126,7 @@ class AppRemoteMedia extends ConsumerWidget {
             decoration: BoxDecoration(color: AppColors.barrier, shape: BoxShape.circle),
             child: Padding(
               padding: EdgeInsets.all(10),
-              child: Icon(Icons.visibility_outlined, color: AppColors.onDark),
+              child: AppIcon(AppIcons.eye, color: AppColors.onDark),
             ),
           ),
         ),

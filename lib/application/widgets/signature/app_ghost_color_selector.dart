@@ -1,4 +1,6 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,7 +59,7 @@ class AppGhostColorSelector extends ConsumerWidget {
               child: _buildSwatch(
                 color: isCustom ? selectedColor : AppColors.surface,
                 isSelected: isCustom,
-                child: Icon(Icons.colorize, size: 18, color: isCustom ? AppColors.onDark : AppColors.onLight),
+                child: AppIcon(AppIcons.eyedropper, size: 18, color: isCustom ? AppColors.onDark : AppColors.onLight),
               ),
             ),
           ],

@@ -4,11 +4,14 @@ import 'dart:typed_data';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_drawing_draft_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_seen_content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/datasources/hive_trust_settings_repository.dart';
+import 'package:bedbug/features/content/infrastructure/datasources/hive_viewed_content_repository.dart';
 import 'package:bedbug/features/content/infrastructure/models/comment_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/reaction_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/storage_hive_model.dart';
 import 'package:bedbug/features/content/infrastructure/models/trust_settings_hive_model.dart';
+import 'package:bedbug/features/exchange/infrastructure/datasources/hive_exchange_log_repository.dart';
+import 'package:bedbug/features/exchange/infrastructure/models/exchange_log_hive_model.dart';
 import 'package:bedbug/features/exchange/infrastructure/models/keychain_hive_model.dart';
 import 'package:bedbug/features/settings/infrastructure/models/settings_hive_model.dart';
 import 'package:bedbug/features/signature/infrastructure/models/signature_hive_model.dart';
@@ -37,6 +40,8 @@ Future<void> initHive() async {
     Hive.openBox<Uint8List>(drawingDraftBoxName),
     Hive.openBox<TrustSettingsHiveModel>(trustSettingsBoxName),
     Hive.openBox<int>(seenContentBoxName),
+    Hive.openBox<int>(viewedContentBoxName),
+    Hive.openBox<ExchangeLogHiveModel>(exchangeLogBoxName),
   ]);
   await _purgeLegacyImageContents();
 }

@@ -34,7 +34,7 @@ class TagSelector extends ConsumerWidget {
                 onTap: () => _toggle(tag),
                 child: Opacity(
                   opacity: selectedTags.contains(tag) ? 1 : 0.4,
-                  child: AppTag(label: tag.text, color: tag.color.flutterColor),
+                  child: AppTag(label: tag.text, colors: tag.flutterColors),
                 ),
               ),
           ],

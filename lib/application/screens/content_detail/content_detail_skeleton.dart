@@ -3,11 +3,13 @@ import 'package:bedbug/application/notifiers/delete_own_content_notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/content_detail/widgets/content_reactions_section.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/style/tag_color_x.dart';
 import 'package:bedbug/application/widgets/buttons/app_close_button.dart';
 import 'package:bedbug/application/widgets/dialogs/delete_content_dialog.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/signature/app_signature_avatar.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/stats/content_stats.dart';
@@ -119,7 +121,7 @@ class ContentDetailSkeleton extends ConsumerWidget {
                     IconButton(
                       onPressed: onDelete,
                       tooltip: context.loc.deleteContentButton,
-                      icon: const Icon(Icons.delete_outline_rounded, color: AppColors.failure),
+                      icon: const AppIcon(AppIcons.delete, color: AppColors.failure),
                     ),
                 ],
               ),
@@ -141,7 +143,7 @@ class ContentDetailSkeleton extends ConsumerWidget {
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.signal_wifi_connected_no_internet_4),
+                                const AppIcon(AppIcons.wifiOff),
                                 const SizedBox(width: 10),
                                 Column(
                                   crossAxisAlignment: .start,
@@ -193,7 +195,7 @@ class ContentDetailSkeleton extends ConsumerWidget {
                               crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 ContentStats(contentId: contentId, bounce: bounce),
-                                for (final tag in tags) AppTag(label: tag.text, color: tag.color.flutterColor),
+                                for (final tag in tags) AppTag(label: tag.text, colors: tag.flutterColors),
                               ],
                             ),
                             const SizedBox(height: 16),

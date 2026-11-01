@@ -5,6 +5,8 @@ import 'package:bedbug/application/screens/drawing_editor/drawing_tool_notifier.
 import 'package:bedbug/application/screens/drawing_editor/widgets/drawing_canvas.dart';
 import 'package:bedbug/application/screens/drawing_editor/widgets/drawing_editor_menu.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
@@ -78,7 +80,7 @@ class _State extends ConsumerState<DrawingEditorScreen> {
                           BorderSide(color: Color(palette[colorIndex]), width: _kColorRingWidth),
                         ),
                       ),
-                      icon: const Icon(Icons.palette_outlined),
+                      icon: const AppIcon(AppIcons.palette),
                     ),
                     // Le zoom change au rythme des doigts : seul son bouton se reconstruit.
                     Consumer(
@@ -94,7 +96,7 @@ class _State extends ConsumerState<DrawingEditorScreen> {
                             backgroundColor: WidgetStatePropertyAll(isZoomMode ? AppColors.primary : AppColors.surface),
                             foregroundColor: WidgetStatePropertyAll(isZoomMode ? AppColors.onDark : AppColors.onLight),
                           ),
-                          icon: const Icon(Icons.zoom_in),
+                          icon: const AppIcon(AppIcons.zoomIn),
                         );
                       },
                     ),
@@ -102,7 +104,7 @@ class _State extends ConsumerState<DrawingEditorScreen> {
                       onPressed: canUndo ? () => ref.read(drawingEditorNotifierProvider(_args).notifier).undo() : null,
                       tooltip: l10n.drawingUndo,
                       style: buttonStyle,
-                      icon: const Icon(Icons.undo),
+                      icon: const AppIcon(AppIcons.undo),
                     ),
                   ],
                 ),

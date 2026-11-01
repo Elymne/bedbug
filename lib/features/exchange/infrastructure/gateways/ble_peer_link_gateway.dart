@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:bedbug/features/exchange/domain/enums/exchange_log_outcome.dart';
 import 'package:bedbug/features/exchange/domain/gateways/exchange_transport_gateway.dart';
 import 'package:bedbug/features/exchange/domain/gateways/peer_link_gateway.dart';
+import 'package:bedbug/features/exchange/domain/object_values/peer_attempt.dart';
 import 'package:bedbug/features/exchange/infrastructure/gateways/ble_exchange_transport_gateway.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,6 +30,9 @@ class BlePeerLinkGateway implements PeerLinkGateway {
   /// Connexions établies avec des pairs.
   final StreamController<ExchangeTransportGateway> _connections = StreamController.broadcast();
 
+  /// Pairs vus sans échange.
+  final StreamController<PeerAttempt> _attempts = StreamController.broadcast();
+
   /// Arrêts de la recherche.
   final StreamController<void> _stopped = StreamController.broadcast();
 
@@ -40,6 +45,11 @@ class BlePeerLinkGateway implements PeerLinkGateway {
   @override
   Stream<ExchangeTransportGateway> get connections {
     return _connections.stream;
+  }
+
+  @override
+  Stream<PeerAttempt> get attempts {
+    return _attempts.stream;
   }
 
   @override
@@ -75,19 +85,28 @@ class BlePeerLinkGateway implements PeerLinkGateway {
 
   /// Aiguille un événement Android vers la bonne connexion.
   ///
-  /// - [rawEvent] : événement reçu, de la forme `{event, id?, bytes?}`.
+  /// - [rawEvent] : événement reçu, de la forme `{event, id?, bytes?, peer?, isInitiator?}`.
   void _onEvent(dynamic rawEvent) {
     final event = rawEvent as Map<Object?, Object?>;
     final id = event['id'] as int?;
     switch (event['event']) {
       case 'connected':
-        final transport = BleExchangeTransportGateway(id!, exchangeMethodChannel);
+        final transport = BleExchangeTransportGateway(
+          id!,
+          exchangeMethodChannel,
+          peerAddress: event['peer']! as String,
+          isInitiator: event['isInitiator']! as bool,
+        );
         _transports[id] = transport;
         _connections.add(transport);
       case 'data':
         _transports[id]?.addReceived(event['bytes']! as Uint8List);
       case 'closed':
         _transports.remove(id)?.markClosed();
+      case 'connectionFailed':
+        _attempts.add(PeerAttempt(peerAddress: event['peer']! as String, outcome: ExchangeLogOutcome.connectionFailed));
+      case 'peerDelayed':
+        _attempts.add(PeerAttempt(peerAddress: event['peer']! as String, outcome: ExchangeLogOutcome.peerDelayed));
       case 'stopped':
         _stopped.add(null);
     }

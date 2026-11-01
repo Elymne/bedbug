@@ -1,9 +1,12 @@
 import 'package:bedbug/application/notifiers/save_reaction_notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/validators/app_validators.dart';
-import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
+import 'package:bedbug/application/widgets/buttons/app_form_submit_button.dart';
+import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/reactions/app_reaction_bubble.dart';
 import 'package:bedbug/application/widgets/signature/app_ghost_color_selector.dart';
 import 'package:bedbug/application/widgets/signature/app_ghost_speed_slider.dart';
@@ -141,36 +144,34 @@ class _State extends ConsumerState<ReactionComposerSheet> {
                   );
                 },
               ),
-              OutlinedButton.icon(
+              FilledButton.icon(
                 onPressed: _pickBedbug,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.onLight,
-                  side: const BorderSide(color: AppColors.onLight),
-                ),
-                icon: const Icon(Icons.grid_view_rounded, color: AppColors.onLight),
+                icon: const AppIcon(AppIcons.grid),
                 label: Text(l10n.reactionChangeBedbugButton),
               ),
               Text(l10n.settingsColorLabel),
               AppGhostColorSelector(control: _colorControl),
               Text(l10n.settingsGhostSpeedLabel),
               AppGhostSpeedSlider(formControl: _ghostSpeedControl),
-              ReactiveTextField<String>(
-                formControl: _bubbleTextControl,
-                textCapitalization: TextCapitalization.sentences,
-                maxLength: maxReactionBubbleLength,
-                maxLines: null,
-                textInputAction: TextInputAction.done,
-                decoration: InputDecoration(labelText: l10n.reactionBubbleLabel),
-                validationMessages: {
-                  ValidationMessage.required: (_) => l10n.createRequiredFieldError,
-                  'reactionBubble': (_) => l10n.reactionBubbleError(maxReactionBubbleLength),
-                },
+              AppFieldFocusPulse(
+                child: ReactiveTextField<String>(
+                  formControl: _bubbleTextControl,
+                  textCapitalization: TextCapitalization.sentences,
+                  maxLength: maxReactionBubbleLength,
+                  maxLines: null,
+                  textInputAction: TextInputAction.done,
+                  decoration: InputDecoration(labelText: l10n.reactionBubbleLabel, hintText: l10n.reactionBubbleHint),
+                  validationMessages: {
+                    ValidationMessage.required: (_) => l10n.createRequiredFieldError,
+                    'reactionBubble': (_) => l10n.reactionBubbleError(maxReactionBubbleLength),
+                  },
+                ),
               ),
-              Text(l10n.textFontLabel),
               AppTextFontSelector(control: _bubbleFontControl),
               Align(
                 alignment: AlignmentDirectional.centerEnd,
-                child: AppGradientButton(
+                child: AppFormSubmitButton(
+                  form: _form,
                   isLoading: saveReactionNotifierWatcher.isLoading,
                   onTap: _onSave,
                   child: Text(l10n.reactionSaveButton),

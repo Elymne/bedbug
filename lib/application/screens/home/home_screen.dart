@@ -4,6 +4,7 @@ import 'package:bedbug/application/screens/home/home_bars_offset_notifier.dart';
 import 'package:bedbug/application/screens/home/home_feed_notifier.dart';
 import 'package:bedbug/application/screens/home/widgets/home_empty_feed.dart';
 import 'package:bedbug/application/style/app_const.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/content_list/content_list_view.dart';
 import 'package:bedbug/application/widgets/fields/content_search_input.dart';
 import 'package:bedbug/application/widgets/navbar/app_nav_bar.dart';
@@ -75,6 +76,8 @@ class _State extends ConsumerState<HomeScreen> {
                     emptyChild: const HomeEmptyFeed(),
                     controller: _scrollController,
                     onRefresh: ref.read(homeFeedNotifierProvider.notifier).refresh,
+                    unviewedContentIds: state.unviewedContentIds,
+                    onContentViewed: ref.read(homeFeedNotifierProvider.notifier).markViewed,
                   );
                 },
               ),
@@ -95,14 +98,14 @@ class _State extends ConsumerState<HomeScreen> {
         child: AppNavBar(
           selectedIndex: 0,
           items: [
-            AppNavBarItem(icon: Icons.home, label: l10n.navHomeLabel),
-            AppNavBarItem(icon: Icons.add_circle, label: l10n.navCreateLabel),
+            AppNavBarItem(icon: AppIcons.home, label: l10n.navHomeLabel),
+            AppNavBarItem(icon: AppIcons.add, label: l10n.navCreateLabel),
             AppNavBarItem(
-              icon: Icons.bluetooth,
+              icon: AppIcons.bluetooth,
               label: l10n.navExchangeLabel,
               isGhosting: passiveExchangeNotifierWatcher.value ?? false,
             ),
-            AppNavBarItem(icon: Icons.settings, label: l10n.navSettingsLabel),
+            AppNavBarItem(icon: AppIcons.settings, label: l10n.navSettingsLabel),
           ],
           onTap: (index) {
             if (index == 1) {

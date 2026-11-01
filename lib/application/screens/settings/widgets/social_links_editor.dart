@@ -1,9 +1,13 @@
 import 'package:bedbug/application/screens/settings/linkedin_click_counter_notifier.dart';
 import 'package:bedbug/application/screens/settings/widgets/clown_bedbug_dialog.dart';
 import 'package:bedbug/application/screens/settings/widgets/linkedin_click_challenge_dialog.dart';
+import 'package:bedbug/application/screens/settings/widgets/social_handle_dialog.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/social_network_x.dart';
-import 'package:bedbug/application/validators/app_validators.dart';
+import 'package:bedbug/application/widgets/fields/app_select_box.dart';
+import 'package:bedbug/application/widgets/fields/app_select_option.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
 import 'package:bedbug/features/signature/domain/enums/social_network.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
@@ -12,11 +16,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
-/// Éditeur des liens vers les réseaux de l'utilisateur : liste des liens ajoutés et ligne d'ajout.
+/// Éditeur des liens vers les réseaux de l'utilisateur : liste des liens ajoutés et ajout en deux étapes.
 ///
-/// Les liens sont portés par [control], au plus un par réseau. La ligne
-/// d'ajout ne propose que les réseaux pas encore renseignés. Ajouter un lien
-/// LinkedIn demande une confirmation, parce que bon.
+/// Les liens sont portés par [control], au plus un par réseau. L'ajout commence
+/// par le choix d'un réseau, parmi ceux pas encore renseignés, puis se termine
+/// dans une popup de saisie de l'identifiant. Ajouter un lien LinkedIn demande
+/// une confirmation, parce que bon.
 class SocialLinksEditor extends ConsumerStatefulWidget {
   /// Crée un [SocialLinksEditor].
   ///
@@ -35,20 +40,11 @@ class SocialLinksEditor extends ConsumerStatefulWidget {
 }
 
 class _State extends ConsumerState<SocialLinksEditor> {
-  /// Contrôle du réseau choisi dans la ligne d'ajout.
-  late final _networkControl = FormControl<SocialNetwork>(validators: [AppValidators.required]);
+  /// Contrôle du réseau en cours d'ajout, vidé dès la fin de l'ajout.
+  late final _networkControl = FormControl<SocialNetwork>();
 
-  /// Contrôle de l'identifiant saisi dans la ligne d'ajout.
-  late final _handleControl = FormControl<String>(validators: [AppValidators.required]);
-
-  /// Formulaire de la ligne d'ajout.
-  ///
-  /// La validité de l'identifiant dépend du réseau choisi : elle est vérifiée
-  /// au niveau du groupe par [AppValidators.socialHandle].
-  late final FormGroup _addForm = FormGroup(
-    {'network': _networkControl, 'handle': _handleControl},
-    validators: [AppValidators.socialHandle('network', 'handle')],
-  );
+  /// Formulaire du choix du réseau.
+  late final FormGroup _addForm = FormGroup({'network': _networkControl});
 
   @override
   void dispose() {
@@ -65,7 +61,7 @@ class _State extends ConsumerState<SocialLinksEditor> {
       initialData: widget.control.value,
       builder: (context, _) {
         final links = widget.control.value ?? const {};
-        final availableNetworks = SocialNetwork.values.where((network) => !links.containsKey(network)).toList();
+        final availableNetworks = SocialNetwork.values.where((network) => !links.containsKey(network));
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -75,7 +71,7 @@ class _State extends ConsumerState<SocialLinksEditor> {
               Row(
                 spacing: 8,
                 children: [
-                  AppTag(label: entry.key.displayName, color: widget.accentColor),
+                  AppTag(label: entry.key.displayName, colors: [widget.accentColor]),
                   Expanded(
                     child: Text(
                       entry.key.profileUrl(entry.value).replaceFirst(RegExp(r'^https://(www\.)?'), ''),
@@ -86,126 +82,49 @@ class _State extends ConsumerState<SocialLinksEditor> {
                   IconButton(
                     onPressed: () => _remove(entry.key),
                     tooltip: l10n.settingsSocialRemove,
-                    icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.disabled),
+                    icon: const AppIcon(AppIcons.close, size: 18, color: AppColors.disabled),
                   ),
                 ],
               ),
-            if (availableNetworks.isNotEmpty) ...[
-              ReactiveDropdownField<SocialNetwork>(
-                formControl: _networkControl,
-                isExpanded: true,
-                hint: Text(l10n.settingsSocialNetworkHint),
-                validationMessages: {ValidationMessage.required: (_) => l10n.createRequiredFieldError},
-                items: [
-                  for (final network in availableNetworks)
-                    DropdownMenuItem(value: network, child: Text(network.displayName)),
+            if (availableNetworks.isNotEmpty)
+              AppSelectBox<SocialNetwork>(
+                control: _networkControl,
+                label: l10n.settingsSocialAddLabel,
+                hintText: l10n.settingsSocialNetworkHint,
+                options: [
+                  for (final network in availableNetworks) AppSelectOption(value: network, label: network.displayName),
                 ],
+                onSelected: _onNetworkSelected,
               ),
-              StreamBuilder<Map<String, Object?>?>(
-                stream: _addForm.valueChanges,
-                initialData: _addForm.value,
-                builder: (context, _) {
-                  final network = _networkControl.value;
-                  final handleInput = _handleControl.value?.trim() ?? '';
-                  Widget? urlPrefix;
-                  if (network != null) {
-                    urlPrefix = Padding(
-                      padding: const EdgeInsets.only(right: 2),
-                      child: Text(
-                        network.displayPrefix,
-                        style: const TextStyle(fontSize: 15, color: AppColors.disabled),
-                      ),
-                    );
-                  }
-
-                  // Une URL se lit toujours de gauche à droite, même dans une
-                  // langue écrite de droite à gauche : sans ça, l'identifiant
-                  // saisi s'afficherait avant le début de l'URL.
-                  return Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      spacing: 4,
-                      children: [
-                        ReactiveTextField<String>(
-                          formControl: _handleControl,
-                          decoration: InputDecoration(
-                            hintText: l10n.settingsSocialHandleHint,
-                            // `prefixIcon` plutôt que `prefixText` : le début
-                            // de l'URL reste affiché même champ vide et non focus.
-                            prefixIcon: urlPrefix,
-                            prefixIconConstraints: const BoxConstraints(),
-                            suffixIcon: IconButton(
-                              onPressed: _add,
-                              tooltip: l10n.settingsSocialAdd,
-                              icon: const Icon(Icons.add_circle, color: AppColors.primary),
-                            ),
-                          ),
-                          validationMessages: {
-                            ValidationMessage.required: (_) => l10n.createRequiredFieldError,
-                            'socialHandle': (_) => l10n.settingsSocialHandleError,
-                          },
-                        ),
-                        if (network != null && handleInput.isNotEmpty) _buildUrlPreview(network, handleInput),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ],
           ],
         );
       },
     );
   }
 
-  /// Ajoute le lien saisi dans la ligne d'ajout à [SocialLinksEditor.control].
+  /// Demande l'identifiant sur [network] et ajoute le lien à [SocialLinksEditor.control].
   ///
   /// LinkedIn n'est jamais ajouté : il déclenche à la place le parcours de moquerie.
-  Future<void> _add() async {
-    if (!_addForm.valid) {
-      _addForm.markAllAsTouched();
+  ///
+  /// - [network] : réseau tout juste choisi.
+  Future<void> _onNetworkSelected(SocialNetwork network) async {
+    final handle = await SocialHandleDialog.show(context, network);
+    if (!mounted) {
+      return;
+    }
+    _networkControl.reset();
+    if (handle == null) {
       return;
     }
 
-    final network = _networkControl.value!;
     // LinkedIn n'est jamais ajouté : l'utilisateur a droit au parcours de
     // moquerie, puis repart les mains vides.
     if (network == SocialNetwork.linkedin) {
       await _mockLinkedin();
-      _addForm.reset();
       return;
     }
 
-    final handle = network.normalizeHandle(_handleControl.value!)!;
     widget.control.value = {...?widget.control.value, network: handle};
-    _addForm.reset();
-  }
-
-  /// Aperçu en direct de l'URL construite à partir de [handleInput] sur [network].
-  ///
-  /// Une coche verte et l'URL complète si l'identifiant est valide, une croix
-  /// rouge sinon : l'utilisateur voit l'URL se construire pendant qu'il tape.
-  Widget _buildUrlPreview(SocialNetwork network, String handleInput) {
-    final handle = network.normalizeHandle(handleInput);
-    final isValid = handle != null;
-    return Row(
-      spacing: 6,
-      children: [
-        Icon(
-          isValid ? Icons.check_circle_rounded : Icons.cancel_rounded,
-          size: 16,
-          color: isValid ? AppColors.success : AppColors.failure,
-        ),
-        Expanded(
-          child: Text(
-            network.profileUrl(handle ?? handleInput),
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 13, color: isValid ? AppColors.onLight : AppColors.disabled),
-          ),
-        ),
-      ],
-    );
   }
 
   /// Retire le lien du réseau [network].

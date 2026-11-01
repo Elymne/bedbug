@@ -8,16 +8,27 @@ import 'package:bedbug/application/screens/create/create_screen.dart';
 import 'package:bedbug/application/screens/exchange/exchange_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/screens/search/search_screen.dart';
+import 'package:bedbug/application/screens/select_options/select_options_screen.dart';
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
+import 'package:bedbug/application/screens/settings/widgets/debug_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/language_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/own_contents_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/publishing_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/signature_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/storage_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/trust_section.dart';
 import 'package:bedbug/application/screens/splash/splash_screen.dart';
-import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/application/widgets/fields/app_select_option.dart';
 import 'package:bedbug/features/content/domain/entities/link_content.dart';
 import 'package:bedbug/features/content/domain/entities/media_content.dart';
 import 'package:bedbug/features/content/domain/entities/text_content.dart';
 import 'package:bedbug/features/content/domain/enums/content_origin.dart';
 import 'package:bedbug/features/content/domain/object_values/content_media.dart';
-import 'package:bedbug/features/content/domain/usecases/clear_contents_usecase.dart';
+import 'package:bedbug/features/content/domain/object_values/home_feed.dart';
+import 'package:bedbug/features/content/domain/usecases/delete_untrusted_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
+import 'package:bedbug/features/signature/domain/entities/signature.dart';
+import 'package:bedbug/features/signature/domain/usecases/get_local_signature_usecase.dart';
 import 'package:bedbug/shared/domain/either.dart';
 import 'package:bedbug/shared/domain/params.dart';
 import 'package:flutter/material.dart';
@@ -25,16 +36,30 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../helpers/find_app_icon.dart';
+
 /// Fake [GetHomeFeedUsecase] retournant toujours une liste vide.
 class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
   @override
-  Future<Either<GetHomeFeedFailure, List<Content>>> call(NoParams params) async => const Right([]);
+  Future<Either<GetHomeFeedFailure, HomeFeed>> call(NoParams params) async {
+    return const Right(HomeFeed(contents: [], unviewedContentIds: {}));
+  }
 }
 
-/// Fake [ClearContentsUsecase] ne touchant à aucune infrastructure réelle.
-class _FakeClearContentsUsecase implements ClearContentsUsecase {
+/// Fake [DeleteUntrustedContentsUsecase] sans effet.
+class _FakeDeleteUntrustedContentsUsecase implements DeleteUntrustedContentsUsecase {
   @override
-  Future<Either<ClearContentsFailure, void>> call(NoParams params) async => const Right(null);
+  Future<Either<DeleteUntrustedContentsFailure, int>> call(NoParams params) async {
+    return const Right(0);
+  }
+}
+
+/// Fake [GetLocalSignatureUsecase] simulant un appareil déjà doté d'une signature.
+class _FakeGetLocalSignatureUsecase implements GetLocalSignatureUsecase {
+  @override
+  Future<Either<GetLocalSignatureFailure, Signature?>> call(NoParams params) async {
+    return Right(Signature(id: 'local', createdAt: DateTime(2026), updatedAt: DateTime(2026), pseudo: 'punaise'));
+  }
 }
 
 TextContent _buildTextContent() {
@@ -117,7 +142,8 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         getHomeFeedUsecaseProvider.overrideWithValue(_FakeGetHomeFeedUsecase()),
-        clearContentsUsecaseProvider.overrideWithValue(_FakeClearContentsUsecase()),
+        getLocalSignatureUsecaseProvider.overrideWithValue(_FakeGetLocalSignatureUsecase()),
+        deleteUntrustedContentsUsecaseProvider.overrideWithValue(_FakeDeleteUntrustedContentsUsecase()),
       ],
     );
     addTearDown(container.dispose);
@@ -186,6 +212,72 @@ void main() {
     router.pop();
     await settleRoute(tester);
     expect(find.byType(HomeScreen), findsOneWidget);
+  });
+
+  testWidgets('la page des options renvoie à l\'appelant la valeur choisie, avec son type', (tester) async {
+    final router = await pumpAppOnHome(tester);
+
+    final result = router.push<int>(
+      selectOptionsPath,
+      extra: const SelectOptionsParams(
+        label: 'Choix',
+        options: [
+          AppSelectOption(value: 1, label: 'Un'),
+          AppSelectOption(value: 2, label: 'Deux'),
+        ],
+        selectedValue: 1,
+      ),
+    );
+    await settleRoute(tester);
+    expect(find.byType(SelectOptionsScreen), findsOneWidget);
+
+    await tester.tap(find.text('Deux'));
+    await settleRoute(tester);
+
+    expect(await result, 2);
+    expect(find.byType(HomeScreen), findsOneWidget);
+  });
+
+  testWidgets('chaque ligne du menu des paramètres ouvre sa page, et le retour ramène au menu', (tester) async {
+    final router = await pumpAppOnHome(tester);
+    router.push(settingsPath);
+    await settleRoute(tester);
+
+    for (final entry in <String, Type>{
+      'Ma signature': SignatureSection,
+      'Langue': LanguageSection,
+      'Publication': PublishingSection,
+      'Domaines autorisés': TrustSection,
+      'Stockage': StorageSection,
+      'Mes posts': OwnContentsSection,
+      'Debug': DebugSection,
+    }.entries) {
+      await tester.tap(find.text(entry.key));
+      await settleRoute(tester);
+      expect(find.byType(entry.value), findsOneWidget, reason: 'échec en ouvrant ${entry.key}');
+      expect(find.text(entry.key), findsOneWidget, reason: 'titre absent sur ${entry.key}');
+      expect(find.byType(SettingsScreen, skipOffstage: true), findsNothing);
+
+      await tester.tap(findAppIcon(AppIcons.arrowBack));
+      await settleRoute(tester);
+      expect(find.byType(SettingsScreen), findsOneWidget, reason: 'échec en revenant de ${entry.key}');
+    }
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('le journal des échanges se referme sur la page debug', (tester) async {
+    final router = await pumpAppOnHome(tester);
+    router.push(settingsPath);
+    await settleRoute(tester);
+    router.push(settingsDebugPath);
+    await settleRoute(tester);
+    router.push(exchangeLogsPath);
+    await settleRoute(tester);
+
+    router.pop();
+    await settleRoute(tester);
+
+    expect(find.byType(DebugSection), findsOneWidget);
   });
 
   testWidgets('naviguer vers une route inconnue affiche la page d\'erreur, pas un crash', (tester) async {

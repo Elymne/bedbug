@@ -1,5 +1,7 @@
 import 'package:bedbug/application/notifiers/remote_video_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/media/app_media_placeholder.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +32,7 @@ class AppRemoteVideo extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.loc;
     if (!isPlayable) {
-      return const AppMediaPlaceholder(icon: Icons.play_circle_outline, isDark: true);
+      return const AppMediaPlaceholder(icon: AppIcons.playCircle, isDark: true);
     }
 
     final remoteVideoNotifierWatcher = ref.watch(remoteVideoNotifierProvider(url));
@@ -43,7 +45,7 @@ class AppRemoteVideo extends ConsumerWidget {
         );
       },
       error: (error, stackTrace) {
-        return AppMediaPlaceholder(icon: Icons.videocam_off_outlined, label: l10n.mediaUnavailable, isDark: true);
+        return AppMediaPlaceholder(icon: AppIcons.videoOff, label: l10n.mediaUnavailable, isDark: true);
       },
       data: (controller) {
         if (controller == null) {
@@ -52,7 +54,7 @@ class AppRemoteVideo extends ConsumerWidget {
             label: l10n.videoPlayLabel,
             child: GestureDetector(
               onTap: () => ref.read(remoteVideoNotifierProvider(url).notifier).play(),
-              child: const AppMediaPlaceholder(icon: Icons.play_circle_outline, isDark: true),
+              child: const AppMediaPlaceholder(icon: AppIcons.playCircle, isDark: true),
             ),
           );
         }
@@ -74,7 +76,7 @@ class AppRemoteVideo extends ConsumerWidget {
                         if (controller.value.isPlaying) {
                           return const SizedBox.shrink();
                         }
-                        return const Center(child: Icon(Icons.play_arrow_rounded, size: 56, color: AppColors.onDark));
+                        return const Center(child: AppIcon(AppIcons.play, size: 56, color: AppColors.onDark));
                       },
                     ),
                   ],

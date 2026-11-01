@@ -2,7 +2,7 @@ import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
-import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/features/content/domain/object_values/home_feed.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
 import 'package:bedbug/features/settings/domain/usecases/get_settings_usecase.dart';
 import 'package:bedbug/features/settings/domain/value_objects/user_settings.dart';
@@ -15,10 +15,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../helpers/find_app_icon.dart';
+
 /// Fake [GetHomeFeedUsecase] retournant toujours une liste vide.
 class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
   @override
-  Future<Either<GetHomeFeedFailure, List<Content>>> call(NoParams params) async => const Right([]);
+  Future<Either<GetHomeFeedFailure, HomeFeed>> call(NoParams params) async {
+    return const Right(HomeFeed(contents: [], unviewedContentIds: {}));
+  }
 }
 
 /// Fake [GetLocalSignatureUsecase] simulant une signature jamais configurée.
@@ -61,12 +65,12 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.settings));
+    await tester.tap(findAppIcon(AppIcons.settings));
     await tester.pumpAndSettle();
     expect(find.byType(SettingsScreen), findsOneWidget);
     expect(router.canPop(), isTrue);
 
-    await tester.tap(find.byIcon(Icons.arrow_back));
+    await tester.tap(findAppIcon(AppIcons.arrowBack));
     await tester.pumpAndSettle();
     expect(find.byType(SettingsScreen), findsNothing);
     expect(find.byType(HomeScreen), findsOneWidget);

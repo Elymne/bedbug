@@ -48,7 +48,7 @@ void main() {
     gateway.connections.listen(connections.add);
     await gateway.start();
 
-    events.success({'event': 'connected', 'id': 7});
+    events.success({'event': 'connected', 'id': 7, 'peer': 'AA:BB', 'isInitiator': true});
     await Future<void>.delayed(Duration.zero);
     final received = <int>[];
     final isDone = Completer<void>();
@@ -75,8 +75,8 @@ void main() {
     gateway.connections.listen(connections.add);
     await gateway.start();
 
-    events.success({'event': 'connected', 'id': 1});
-    events.success({'event': 'connected', 'id': 2});
+    events.success({'event': 'connected', 'id': 1, 'peer': 'AA:BB', 'isInitiator': true});
+    events.success({'event': 'connected', 'id': 2, 'peer': 'AA:BB', 'isInitiator': true});
     await Future<void>.delayed(Duration.zero);
     final first = <int>[];
     connections.first.incoming.listen(first.addAll);
@@ -95,7 +95,7 @@ void main() {
     final connections = <ExchangeTransportGateway>[];
     gateway.connections.listen(connections.add);
     await gateway.start();
-    events.success({'event': 'connected', 'id': 3});
+    events.success({'event': 'connected', 'id': 3, 'peer': 'AA:BB', 'isInitiator': true});
     await Future<void>.delayed(Duration.zero);
 
     await connections.single.send(Uint8List.fromList([5]));
@@ -113,7 +113,7 @@ void main() {
     final connections = <ExchangeTransportGateway>[];
     gateway.connections.listen(connections.add);
     await gateway.start();
-    events.success({'event': 'connected', 'id': 5});
+    events.success({'event': 'connected', 'id': 5, 'peer': 'AA:BB', 'isInitiator': true});
     await Future<void>.delayed(Duration.zero);
 
     await connections.single.confirmSuccess();
@@ -127,7 +127,7 @@ void main() {
     final connections = <ExchangeTransportGateway>[];
     gateway.connections.listen(connections.add);
     await gateway.start();
-    events.success({'event': 'connected', 'id': 4});
+    events.success({'event': 'connected', 'id': 4, 'peer': 'AA:BB', 'isInitiator': true});
     await Future<void>.delayed(Duration.zero);
     messenger.setMockMethodCallHandler(exchangeMethodChannel, (call) async {
       throw PlatformException(code: 'closed');

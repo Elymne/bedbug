@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
+import '../helpers/find_app_icon.dart';
 import '../helpers/pump_app.dart';
 
 void main() {
@@ -25,7 +26,7 @@ void main() {
     final control = FormControl<Color>(value: AppColors.primary);
     await pumpApp(tester, Scaffold(body: AppGhostColorSelector(control: control)));
 
-    await tester.tap(find.byIcon(Icons.colorize));
+    await tester.tap(findAppIcon(AppIcons.eyedropper));
     await tester.pumpAndSettle();
     expect(find.byType(ColorPicker), findsOneWidget);
 

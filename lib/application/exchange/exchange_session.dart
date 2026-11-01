@@ -164,6 +164,12 @@ class ExchangeSession {
   /// Bilan de l'import, `null` tant que le lot du pair n'a pas été traité.
   ExchangeImportReport? _report;
 
+  /// Octets envoyés au pair.
+  int _sentBytes = 0;
+
+  /// Octets reçus du pair.
+  int _receivedBytes = 0;
+
   /// Vrai quand une trame est en train de partir : une autre trame s'y mêlerait.
   bool _isSending = false;
 
@@ -198,6 +204,7 @@ class ExchangeSession {
   ///
   /// - [bytes] : morceau reçu.
   void _onBytes(Uint8List bytes) {
+    _receivedBytes += bytes.length;
     _restartInactivityTimer();
     final List<ExchangeFrame> frames;
     try {
@@ -352,7 +359,9 @@ class ExchangeSession {
     final bytes = _exchangeFrameCodecGateway.encode(ExchangeFrame(type, payload));
     _isSending = true;
     for (var offset = 0; offset < bytes.length && !_isFinished; offset += exchangeChunkBytes) {
-      await _transport.send(Uint8List.sublistView(bytes, offset, min(offset + exchangeChunkBytes, bytes.length)));
+      final chunk = Uint8List.sublistView(bytes, offset, min(offset + exchangeChunkBytes, bytes.length));
+      await _transport.send(chunk);
+      _sentBytes += chunk.length;
       _restartInactivityTimer();
     }
     _isSending = false;
@@ -406,7 +415,13 @@ class ExchangeSession {
         failure == ExchangeSessionFailure.transportClosed || failure == ExchangeSessionFailure.timeout;
     final report = _report;
     _result.complete(
-      ExchangeSessionResult(failure: report != null && isConnectionLoss ? null : failure, report: report),
+      ExchangeSessionResult(
+        failure: report != null && isConnectionLoss ? null : failure,
+        report: report,
+        awaitedFrame: _expectedFrame,
+        sentBytes: _sentBytes,
+        receivedBytes: _receivedBytes,
+      ),
     );
   }
 }
@@ -441,7 +456,16 @@ class ExchangeSessionResult {
   ///
   /// - [failure] : cause de l'échec, `null` si l'échange a réussi.
   /// - [report] : bilan de l'import, `null` si le lot du pair n'a pas été traité.
-  const ExchangeSessionResult({required this.failure, required this.report});
+  /// - [awaitedFrame] : trame attendue à la fin de la session.
+  /// - [sentBytes] : octets envoyés au pair.
+  /// - [receivedBytes] : octets reçus du pair.
+  const ExchangeSessionResult({
+    required this.failure,
+    required this.report,
+    required this.awaitedFrame,
+    required this.sentBytes,
+    required this.receivedBytes,
+  });
 
   /// Cause de l'échec, `null` si l'échange a réussi.
   final ExchangeSessionFailure? failure;
@@ -450,6 +474,15 @@ class ExchangeSessionResult {
   ///
   /// Peut être renseigné malgré un échec : ce qui a été importé avant l'abandon du pair reste acquis.
   final ExchangeImportReport? report;
+
+  /// Trame attendue à la fin de la session, qui indique où elle s'est arrêtée.
+  final ExchangeFrameType awaitedFrame;
+
+  /// Octets envoyés au pair.
+  final int sentBytes;
+
+  /// Octets reçus du pair.
+  final int receivedBytes;
 
   /// Indique si l'échange a réussi.
   bool get isSuccess {

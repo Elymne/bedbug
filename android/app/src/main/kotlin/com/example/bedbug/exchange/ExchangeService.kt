@@ -125,7 +125,7 @@ class ExchangeService : Service() {
             PendingIntent.FLAG_IMMUTABLE,
         )
         return Notification.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(getString(R.string.exchange_notification_title))
             .setContentText(getString(R.string.exchange_notification_text))
             .setContentIntent(openIntent)
