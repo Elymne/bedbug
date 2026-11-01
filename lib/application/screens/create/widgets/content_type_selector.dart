@@ -1,16 +1,24 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/ghost/app_ghost_icon.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/features/content/domain/enums/content_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Icône associée à chaque [ContentType].
 const _kTypeIcons = {
-  ContentType.text: Icons.notes,
-  ContentType.media: Icons.perm_media_outlined,
-  ContentType.link: Icons.link,
-  ContentType.drawing: Icons.brush_outlined,
+  ContentType.text: AppIcons.notes,
+  ContentType.media: AppIcons.media,
+  ContentType.link: AppIcons.link,
+  ContentType.drawing: AppIcons.brush,
 };
+
+/// Côté d'une icône du sélecteur.
+const double _kIconSize = 32;
+
+/// Marge autour d'une icône du sélecteur.
+const double _kIconPadding = 16;
 
 /// Sélecteur de type de contenu affiché sous forme d'icônes toggleables.
 class ContentTypeSelector extends ConsumerWidget {
@@ -66,7 +74,7 @@ class _TypeIconButton extends ConsumerWidget {
   const _TypeIconButton({required this.icon, required this.isSelected, required this.isDisabled, required this.onTap});
 
   /// Icône affichée.
-  final IconData icon;
+  final AppIcons icon;
 
   /// Indique si ce bouton est sélectionné.
   final bool isSelected;
@@ -80,12 +88,14 @@ class _TypeIconButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
+      // Toute la case réagit, pas seulement les traits de l'icône.
+      behavior: HitTestBehavior.opaque,
       onTap: isDisabled ? null : onTap,
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(_kIconPadding),
         child: isSelected
-            ? AppGhostIcon(icon: icon, size: 24, isAnimating: true, speed: 1.4, intensity: 2)
-            : Icon(icon, size: 24, color: isDisabled ? AppColors.disabled : AppColors.onLight),
+            ? AppGhostIcon(icon: icon, size: _kIconSize, isAnimating: true, speed: 1.4, intensity: 2)
+            : AppIcon(icon, size: _kIconSize, color: isDisabled ? AppColors.disabled : AppColors.onLight),
       ),
     );
   }

@@ -1,6 +1,8 @@
 import 'package:bedbug/application/l10n/locale_display_name_x.dart';
 import 'package:bedbug/application/l10n/locale_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,7 +24,7 @@ class LanguageSection extends ConsumerWidget {
           ListTile(
             contentPadding: EdgeInsets.zero,
             title: Text(Locale(code).displayName, style: const TextStyle(fontSize: 15, color: AppColors.onLight)),
-            trailing: code == locale.languageCode ? const Icon(Icons.check, color: AppColors.primary) : null,
+            trailing: code == locale.languageCode ? const AppIcon(AppIcons.check, color: AppColors.primary) : null,
             onTap: () => ref.read(localeNotifierProvider.notifier).setLocale(Locale(code)),
           ),
       ],

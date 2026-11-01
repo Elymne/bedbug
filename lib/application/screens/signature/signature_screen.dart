@@ -2,10 +2,12 @@ import 'package:bedbug/application/notifiers/content_author_notifier.dart';
 import 'package:bedbug/application/screens/search_results/search_criteria.dart';
 import 'package:bedbug/application/screens/search_results/search_results_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/style/social_network_x.dart';
 import 'package:bedbug/application/widgets/content_list/content_list_view.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/signature/app_signature_avatar.dart';
 import 'package:bedbug/application/widgets/signature/app_signature_bio.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
@@ -62,7 +64,7 @@ class SignatureScreen extends ConsumerWidget {
                         alignment: AlignmentDirectional.centerStart,
                         child: IconButton(
                           onPressed: context.pop,
-                          icon: const Icon(Icons.arrow_back, color: AppColors.onLight),
+                          icon: const AppIcon(AppIcons.arrowBack, color: AppColors.onLight),
                         ),
                       ),
                       const SizedBox(height: 8),

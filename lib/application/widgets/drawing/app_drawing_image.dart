@@ -1,4 +1,5 @@
 import 'package:bedbug/application/providers/drawing_image_provider.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/media/app_media_placeholder.dart';
 import 'package:bedbug/features/content/domain/extensions/drawing_dimensions_extension.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing.dart';
@@ -29,9 +30,9 @@ class AppDrawingImage extends ConsumerWidget {
     return AspectRatio(
       aspectRatio: drawing.width / drawing.height,
       child: drawingImageWatcher.when(
-        loading: () => const AppMediaPlaceholder(icon: Icons.brush_outlined),
+        loading: () => const AppMediaPlaceholder(icon: AppIcons.brush),
         error: (error, stackTrace) {
-          return AppMediaPlaceholder(icon: Icons.broken_image_outlined, label: context.loc.mediaUnavailable);
+          return AppMediaPlaceholder(icon: AppIcons.brokenImage, label: context.loc.mediaUnavailable);
         },
         data: (image) {
           return Semantics(

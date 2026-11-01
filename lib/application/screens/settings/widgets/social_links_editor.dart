@@ -3,9 +3,11 @@ import 'package:bedbug/application/screens/settings/widgets/clown_bedbug_dialog.
 import 'package:bedbug/application/screens/settings/widgets/linkedin_click_challenge_dialog.dart';
 import 'package:bedbug/application/screens/settings/widgets/social_handle_dialog.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/social_network_x.dart';
 import 'package:bedbug/application/widgets/fields/app_select_box.dart';
 import 'package:bedbug/application/widgets/fields/app_select_option.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
 import 'package:bedbug/features/signature/domain/enums/social_network.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
@@ -80,7 +82,7 @@ class _State extends ConsumerState<SocialLinksEditor> {
                   IconButton(
                     onPressed: () => _remove(entry.key),
                     tooltip: l10n.settingsSocialRemove,
-                    icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.disabled),
+                    icon: const AppIcon(AppIcons.close, size: 18, color: AppColors.disabled),
                   ),
                 ],
               ),

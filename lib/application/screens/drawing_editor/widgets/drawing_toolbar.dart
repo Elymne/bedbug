@@ -1,18 +1,21 @@
 import 'package:bedbug/application/screens/drawing_editor/drawing_tool_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
-import 'package:bedbug/application/widgets/icons/app_eraser_icon.dart';
+import 'package:bedbug/application/style/app_icons.dart';
+
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Icône de chaque outil de l'éditeur, sauf la gomme, dessinée par [AppEraserIcon].
-const Map<DrawingTool, IconData> _kToolIcons = {
-  DrawingTool.pen: Icons.edit,
-  DrawingTool.marker: Icons.brush,
-  DrawingTool.pencil: Icons.draw,
-  DrawingTool.spray: Icons.blur_on,
-  DrawingTool.fill: Icons.format_color_fill,
+/// Icône de chaque outil de l'éditeur.
+const Map<DrawingTool, AppIcons> _kToolIcons = {
+  DrawingTool.pen: AppIcons.edit,
+  DrawingTool.marker: AppIcons.brush,
+  DrawingTool.pencil: AppIcons.pen,
+  DrawingTool.spray: AppIcons.blur,
+  DrawingTool.eraser: AppIcons.eraser,
+  DrawingTool.fill: AppIcons.fill,
 };
 
 /// Diamètre affiché de chaque taille de pinceau, en pixels.
@@ -53,7 +56,7 @@ class DrawingToolbar extends ConsumerWidget {
                   backgroundColor: tool == toolState.tool ? AppColors.primary : AppColors.backgroundLight,
                   foregroundColor: tool == toolState.tool ? AppColors.onDark : AppColors.onLight,
                 ),
-                icon: tool == DrawingTool.eraser ? const AppEraserIcon() : Icon(_kToolIcons[tool]),
+                icon: AppIcon(_kToolIcons[tool]!),
               ),
           ],
         ),
@@ -88,7 +91,7 @@ class DrawingToolbar extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 8,
           children: [
-            const Icon(Icons.layers_outlined, color: AppColors.onLight),
+            const AppIcon(AppIcons.layers, color: AppColors.onLight),
             // Du calque du dessus au fond, dans l'ordre où on les voit empilés.
             for (var layer = drawingLayerCount - 1; layer >= 0; layer--)
               ChoiceChip(

@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../helpers/find_app_icon.dart';
+
 /// Monte la [LanguageSection] dans une app dont la locale suit le [LocaleNotifier], comme `AppRoot`.
 Future<void> _pumpLanguageSection(WidgetTester tester) async {
   await tester.pumpWidget(
@@ -83,6 +85,6 @@ void main() {
     await _pumpLanguageSection(tester);
 
     expect(Directionality.of(tester.element(find.byType(LanguageSection))), TextDirection.ltr);
-    expect(find.byIcon(Icons.check), findsOneWidget);
+    expect(findAppIcon(AppIcons.check), findsOneWidget);
   });
 }

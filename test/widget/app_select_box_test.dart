@@ -10,6 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
+import '../helpers/find_app_icon.dart';
+
 /// Options communes aux tests.
 const List<AppSelectOption<String>> _kOptions = [
   AppSelectOption(value: 'molle', label: 'Molle'),
@@ -71,7 +73,7 @@ void main() {
     expect(find.text('Filtrer…'), findsOneWidget);
     expect(find.byType(ListTile), findsNWidgets(3));
     expect(find.byType(AppListSeparator), findsNWidgets(2));
-    expect(find.byIcon(Icons.check), findsOneWidget);
+    expect(findAppIcon(AppIcons.check), findsOneWidget);
   });
 
   testWidgets('choisir une option met à jour le contrôle et referme la page', (tester) async {
@@ -92,7 +94,7 @@ void main() {
     await _pumpSelectBox(tester, control);
     await _openOptions(tester, 'Gugi');
 
-    await tester.tap(find.byIcon(Icons.arrow_back));
+    await tester.tap(findAppIcon(AppIcons.arrowBack));
     await tester.pumpAndSettle();
 
     expect(control.value, 'gugi');
@@ -133,7 +135,7 @@ void main() {
     await _openOptions(tester, 'Gugi');
 
     await tester.enterText(find.byType(TextField), 'ro');
-    await tester.tap(find.byIcon(Icons.arrow_back));
+    await tester.tap(findAppIcon(AppIcons.arrowBack));
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
 

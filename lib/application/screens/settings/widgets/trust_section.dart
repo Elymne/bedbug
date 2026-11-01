@@ -1,6 +1,8 @@
 import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/screens/settings/widgets/trust_policy_editor.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/features/content/domain/object_values/trust_settings.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
@@ -43,7 +45,7 @@ class TrustSection extends ConsumerWidget {
                 }),
                 trailing: Visibility(
                   visible: behavior == trustSettings.unknownDomainBehavior,
-                  child: const Icon(Icons.check, color: AppColors.primary),
+                  child: const AppIcon(AppIcons.check, color: AppColors.primary),
                 ),
                 onTap: () {
                   _run(context, ref.read(trustSettingsNotifierProvider.notifier).setUnknownDomainBehavior(behavior));
@@ -60,7 +62,7 @@ class TrustSection extends ConsumerWidget {
             const SizedBox(height: 16),
             TextButton.icon(
               onPressed: () => _run(context, ref.read(trustSettingsNotifierProvider.notifier).resetToDefaults()),
-              icon: const Icon(Icons.restore),
+              icon: const AppIcon(AppIcons.restore),
               label: Text(l10n.trustResetButton),
             ),
           ],

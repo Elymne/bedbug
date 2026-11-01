@@ -6,11 +6,11 @@
   },
   "navHomeLabel": "Accueil",
   "@navHomeLabel": {
-    "description": "Label sémantique de l'item Home dans la barre de navigation"
+    "description": "Texte de l'item Home dans la barre de navigation"
   },
   "navCreateLabel": "Créer",
   "@navCreateLabel": {
-    "description": "Label sémantique de l'item Créer dans la barre de navigation"
+    "description": "Texte de l'item Créer dans la barre de navigation"
   },
   "navExchangeLabel": "Échange",
   "@navExchangeLabel": {
@@ -18,7 +18,7 @@
   },
   "navSettingsLabel": "Paramètres",
   "@navSettingsLabel": {
-    "description": "Label sémantique de l'item Paramètres dans la barre de navigation"
+    "description": "Texte de l'item Paramètres dans la barre de navigation"
   },
   "homeGetContentsInvalidData": "Les données sont corrompues ou invalides.",
   "@homeGetContentsInvalidData": {

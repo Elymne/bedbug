@@ -30,12 +30,14 @@ class AppTheme {
         ),
       ),
 
-      /// Outlined Button style.
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primary,
+      /// * Filled Buttons style : les actions secondaires d'un formulaire, avec leur icône.
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColors.surfaceDark,
+          foregroundColor: AppColors.onDark,
+          disabledBackgroundColor: AppColors.border,
+          disabledForegroundColor: AppColors.disabled,
           minimumSize: const Size(double.infinity, 48),
-          side: const BorderSide(color: AppColors.primary),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),

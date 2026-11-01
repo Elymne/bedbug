@@ -1,9 +1,11 @@
 import 'package:bedbug/application/screens/select_options/select_options_filter_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
 import 'package:bedbug/application/widgets/fields/app_select_option.dart';
 import 'package:bedbug/application/widgets/headers/app_page_header.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/separators/app_list_separator.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
@@ -78,7 +80,7 @@ class _State extends ConsumerState<SelectOptionsScreen> {
                         final isSelected = option.value == widget.params.selectedValue;
                         return ListTile(
                           title: Text(option.label, style: option.style),
-                          trailing: isSelected ? const Icon(Icons.check, color: AppColors.primary) : null,
+                          trailing: isSelected ? const AppIcon(AppIcons.check, color: AppColors.primary) : null,
                           onTap: () => context.pop(option.value),
                         );
                       },

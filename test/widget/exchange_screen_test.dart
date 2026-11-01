@@ -17,6 +17,7 @@ import 'package:bedbug/shared/domain/params.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/find_app_icon.dart';
 import '../helpers/pump_app.dart';
 
 /// Fausse recherche de pairs, dont les réponses sont fixées par le test.
@@ -219,7 +220,7 @@ void main() {
     await tester.pump();
 
     AppGhostEffect exchangeIcon() {
-      final finder = find.ancestor(of: find.byIcon(Icons.bluetooth), matching: find.byType(AppGhostEffect));
+      final finder = find.ancestor(of: findAppIcon(AppIcons.bluetooth), matching: find.byType(AppGhostEffect));
       return tester.widget<AppGhostEffect>(finder.first);
     }
 

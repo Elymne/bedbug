@@ -46,6 +46,7 @@ dependencies:
   url_launcher: ^6.3.3
   gal: ^2.3.3
   perfect_freehand: ^2.5.2+1
+  flutter_svg: ^2.3.2
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +61,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/config/
+    - assets/icons/
     # Public Suffix List de Mozilla (MPL 2.0), pour refuser les règles de
     # domaine trop larges (`co.uk`, `github.io`). Voir `PublicSuffixGateway`.
     - assets/data/

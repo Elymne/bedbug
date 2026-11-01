@@ -35,6 +35,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../helpers/find_app_icon.dart';
+
 /// Fake [GetHomeFeedUsecase] retournant toujours une liste vide.
 class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
   @override
@@ -244,7 +246,7 @@ void main() {
       expect(find.text(entry.key), findsOneWidget, reason: 'titre absent sur ${entry.key}');
       expect(find.byType(SettingsScreen, skipOffstage: true), findsNothing);
 
-      await tester.tap(find.byIcon(Icons.arrow_back));
+      await tester.tap(findAppIcon(AppIcons.arrowBack));
       await settleRoute(tester);
       expect(find.byType(SettingsScreen), findsOneWidget, reason: 'échec en revenant de ${entry.key}');
     }

@@ -4,11 +4,13 @@ import 'package:bedbug/application/notifiers/save_signature_notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/settings/widgets/social_links_editor.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:bedbug/application/widgets/buttons/app_form_submit_button.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/scroll/app_sticky_top.dart';
 import 'package:bedbug/application/widgets/signature/app_ghost_color_selector.dart';
 import 'package:bedbug/application/widgets/signature/app_ghost_speed_slider.dart';
@@ -180,7 +182,7 @@ class _State extends ConsumerState<AppSignatureForm> {
                   suffixIcon: IconButton(
                     onPressed: _pickAvatarFromCatalog,
                     tooltip: l10n.settingsAvatarBrowse,
-                    icon: const Icon(Icons.grid_view_rounded, color: AppColors.primary),
+                    icon: const AppIcon(AppIcons.grid, color: AppColors.primary),
                   ),
                 ),
                 validationMessages: {

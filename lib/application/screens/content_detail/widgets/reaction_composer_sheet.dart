@@ -1,10 +1,12 @@
 import 'package:bedbug/application/notifiers/save_reaction_notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:bedbug/application/widgets/buttons/app_form_submit_button.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/reactions/app_reaction_bubble.dart';
 import 'package:bedbug/application/widgets/signature/app_ghost_color_selector.dart';
 import 'package:bedbug/application/widgets/signature/app_ghost_speed_slider.dart';
@@ -142,13 +144,9 @@ class _State extends ConsumerState<ReactionComposerSheet> {
                   );
                 },
               ),
-              OutlinedButton.icon(
+              FilledButton.icon(
                 onPressed: _pickBedbug,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.onLight,
-                  side: const BorderSide(color: AppColors.onLight),
-                ),
-                icon: const Icon(Icons.grid_view_rounded, color: AppColors.onLight),
+                icon: const AppIcon(AppIcons.grid),
                 label: Text(l10n.reactionChangeBedbugButton),
               ),
               Text(l10n.settingsColorLabel),

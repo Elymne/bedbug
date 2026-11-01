@@ -1,7 +1,9 @@
 import 'package:bedbug/application/screens/settings/storage_limit_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +62,7 @@ class _State extends ConsumerState<StorageLimitEditor> {
   Widget build(BuildContext context) {
     final l10n = context.loc;
     const optionStyle = TextStyle(fontSize: 15, color: AppColors.onLight);
-    const selectedIcon = Icon(Icons.check, color: AppColors.primary);
+    const selectedIcon = AppIcon(AppIcons.check, color: AppColors.primary);
 
     return StreamBuilder<ControlStatus>(
       stream: _customLimitControl.statusChanged,
@@ -99,7 +101,7 @@ class _State extends ConsumerState<StorageLimitEditor> {
                   suffixIcon: IconButton(
                     onPressed: isCustomSelected ? _applyCustomLimit : null,
                     tooltip: l10n.settingsStorageCustomApply,
-                    icon: const Icon(Icons.check),
+                    icon: const AppIcon(AppIcons.check),
                     color: AppColors.primary,
                     disabledColor: AppColors.disabled,
                   ),

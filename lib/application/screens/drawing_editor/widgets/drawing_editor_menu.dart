@@ -2,8 +2,10 @@ import 'package:bedbug/application/screens/drawing_editor/drawing_canvas_zoom_no
 import 'package:bedbug/application/screens/drawing_editor/drawing_editor_notifier.dart';
 import 'package:bedbug/application/screens/drawing_editor/widgets/drawing_palette.dart';
 import 'package:bedbug/application/screens/drawing_editor/widgets/drawing_toolbar.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,23 +54,23 @@ class DrawingEditorMenu extends ConsumerWidget {
                 IconButton(
                   onPressed: () => Navigator.of(context).pop(DrawingEditorMenuAction.close),
                   tooltip: l10n.close,
-                  icon: const Icon(Icons.close),
+                  icon: const AppIcon(AppIcons.close),
                 ),
                 const Spacer(),
                 IconButton(
                   onPressed: editorState.future.isEmpty ? null : () => ref.read(editorNotifier).redo(),
                   tooltip: l10n.drawingRedo,
-                  icon: const Icon(Icons.redo),
+                  icon: const AppIcon(AppIcons.redo),
                 ),
                 IconButton(
                   onPressed: isDrawingEmpty ? null : () => ref.read(editorNotifier).clear(),
                   tooltip: l10n.drawingClear,
-                  icon: const Icon(Icons.delete_sweep_outlined),
+                  icon: const AppIcon(AppIcons.deleteAll),
                 ),
                 IconButton(
                   onPressed: isZoomed ? () => ref.read(drawingCanvasZoomNotifierProvider.notifier).reset() : null,
                   tooltip: l10n.drawingZoomReset,
-                  icon: const Icon(Icons.fit_screen),
+                  icon: const AppIcon(AppIcons.fitScreen),
                 ),
                 const SizedBox(width: 8),
                 AppGradientButton(

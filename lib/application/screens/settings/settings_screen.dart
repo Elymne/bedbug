@@ -3,6 +3,7 @@ import 'package:bedbug/application/l10n/locale_notifier.dart';
 import 'package:bedbug/application/notifiers/local_signature_notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/settings/widgets/settings_menu_tile.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/widgets/headers/app_page_header.dart';
 import 'package:bedbug/application/widgets/separators/app_list_separator.dart';
@@ -29,44 +30,44 @@ class SettingsScreen extends ConsumerWidget {
 
     final menuTiles = [
       SettingsMenuTile(
-        icon: Icons.person_outline,
+        icon: AppIcons.person,
         title: l10n.settingsProfileTitle,
         subtitle: pseudo ?? l10n.settingsProfileNotConfigured,
         subtitlePrefix: pseudo == null ? null : AppPrefixes.signature,
         path: settingsSignaturePath,
       ),
       SettingsMenuTile(
-        icon: Icons.translate,
+        icon: AppIcons.translate,
         title: l10n.settingsLanguageTitle,
         subtitle: locale.displayName,
         path: settingsLanguagePath,
       ),
       SettingsMenuTile(
-        icon: Icons.edit_note_outlined,
+        icon: AppIcons.editNote,
         title: l10n.settingsPublishingTitle,
         subtitle: l10n.settingsPublishingSubtitle,
         path: settingsPublishingPath,
       ),
       SettingsMenuTile(
-        icon: Icons.shield_outlined,
+        icon: AppIcons.shield,
         title: l10n.trustSettingsTitle,
         subtitle: l10n.trustSettingsSubtitle,
         path: settingsTrustPath,
       ),
       SettingsMenuTile(
-        icon: Icons.storage_outlined,
+        icon: AppIcons.storage,
         title: l10n.settingsStorageTitle,
         subtitle: l10n.settingsStorageSubtitle,
         path: settingsStoragePath,
       ),
       SettingsMenuTile(
-        icon: Icons.article_outlined,
+        icon: AppIcons.article,
         title: l10n.settingsOwnContentsTitle,
         subtitle: l10n.settingsOwnContentsSubtitle,
         path: settingsOwnContentsPath,
       ),
       SettingsMenuTile(
-        icon: Icons.bug_report_outlined,
+        icon: AppIcons.bug,
         title: l10n.settingsDebugTitle,
         subtitle: l10n.settingsDebugSubtitle,
         path: settingsDebugPath,

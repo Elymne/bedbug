@@ -1,6 +1,8 @@
 import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/features/content/domain/object_values/domain_rule.dart';
 import 'package:bedbug/features/content/domain/object_values/trust_settings.dart';
@@ -75,12 +77,12 @@ class _State extends ConsumerState<TrustPolicyEditor> {
                   IconButton(
                     onPressed: () => _addRule(TrustLevel.trusted),
                     tooltip: l10n.trustAddToTrusted,
-                    icon: const Icon(Icons.verified_outlined, color: AppColors.success),
+                    icon: const AppIcon(AppIcons.verified, color: AppColors.success),
                   ),
                   IconButton(
                     onPressed: () => _addRule(TrustLevel.grey),
                     tooltip: l10n.trustAddToGrey,
-                    icon: const Icon(Icons.blur_on, color: AppColors.disabled),
+                    icon: const AppIcon(AppIcons.blur, color: AppColors.disabled),
                   ),
                 ],
               ),
@@ -117,13 +119,13 @@ class _State extends ConsumerState<TrustPolicyEditor> {
                     .moveRule(family: widget.family, rule: rule, level: otherLevel),
               ),
               tooltip: level == TrustLevel.trusted ? l10n.trustMoveToGrey : l10n.trustMoveToTrusted,
-              icon: const Icon(Icons.swap_vert, color: AppColors.onLight),
+              icon: const AppIcon(AppIcons.swapVertical, color: AppColors.onLight),
             ),
             IconButton(
               onPressed: () =>
                   _run(ref.read(trustSettingsNotifierProvider.notifier).removeRule(family: widget.family, rule: rule)),
               tooltip: l10n.settingsSocialRemove,
-              icon: const Icon(Icons.close_rounded, color: AppColors.onLight),
+              icon: const AppIcon(AppIcons.close, color: AppColors.onLight),
             ),
           ],
         ),

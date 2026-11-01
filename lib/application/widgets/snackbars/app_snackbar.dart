@@ -1,7 +1,9 @@
 import 'package:bedbug/application/app_root.dart';
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_values.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/snackbars/snackbar_bedbug_background.dart';
 import 'package:bedbug/application/widgets/snackbars/snackbar_pulse_border.dart';
 import 'package:flutter/material.dart';
@@ -110,7 +112,7 @@ class AppSnackbar {
                     IconButton(
                       onPressed: messenger.hideCurrentSnackBar,
                       tooltip: AppLocalizations.of(context)!.close,
-                      icon: const Icon(Icons.close_rounded),
+                      icon: const AppIcon(AppIcons.close),
                       iconSize: 18,
                       color: AppColors.onDark,
                       padding: const EdgeInsets.all(4),

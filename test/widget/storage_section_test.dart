@@ -10,6 +10,7 @@ import 'package:bedbug/shared/domain/params.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/find_app_icon.dart';
 import '../helpers/pump_app.dart';
 
 /// Construit un [Storage] de limite [limitInBytes].
@@ -100,7 +101,7 @@ void main() {
     expect(find.text('100 Mo'), findsOneWidget);
     expect(find.text('250 Mo'), findsOneWidget);
     final selected = find.ancestor(of: find.text('100 Mo'), matching: find.byType(ListTile));
-    expect(find.descendant(of: selected, matching: find.byIcon(Icons.check)), findsOneWidget);
+    expect(find.descendant(of: selected, matching: findAppIcon(AppIcons.check)), findsOneWidget);
   });
 
   testWidgets('un tap sur une limite proposée l\'enregistre et nettoie le stockage', (tester) async {
@@ -117,7 +118,12 @@ void main() {
     await pumpSection(tester, defaultMaxStorageSizeInBytes);
 
     expect(tester.widget<TextField>(find.byType(TextField)).enabled, isFalse);
-    expect(tester.widget<IconButton>(find.widgetWithIcon(IconButton, Icons.check)).onPressed, isNull);
+    expect(
+      tester
+          .widget<IconButton>(find.ancestor(of: findAppIcon(AppIcons.check), matching: find.byType(IconButton)))
+          .onPressed,
+      isNull,
+    );
   });
 
   testWidgets('l\'option personnalisée active le champ, y place le curseur et n\'enregistre rien', (tester) async {
@@ -128,9 +134,9 @@ void main() {
     expect(tester.widget<TextField>(find.byType(TextField)).enabled, isTrue);
     expect(tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus, isTrue);
     final customOption = find.ancestor(of: find.text('Personnalisée'), matching: find.byType(ListTile));
-    expect(find.descendant(of: customOption, matching: find.byIcon(Icons.check)), findsOneWidget);
+    expect(find.descendant(of: customOption, matching: findAppIcon(AppIcons.check)), findsOneWidget);
     final previousOption = find.ancestor(of: find.text('100 Mo'), matching: find.byType(ListTile));
-    expect(find.descendant(of: previousOption, matching: find.byIcon(Icons.check)), findsNothing);
+    expect(find.descendant(of: previousOption, matching: findAppIcon(AppIcons.check)), findsNothing);
     expect(saveUsecase.savedLimits, isEmpty);
   });
 
@@ -144,7 +150,7 @@ void main() {
     expect(tester.widget<TextField>(find.byType(TextField)).enabled, isFalse);
     expect(saveUsecase.savedLimits, [50 * bytesPerMegabyte]);
     final selected = find.ancestor(of: find.text('50 Mo'), matching: find.byType(ListTile));
-    expect(find.descendant(of: selected, matching: find.byIcon(Icons.check)), findsOneWidget);
+    expect(find.descendant(of: selected, matching: findAppIcon(AppIcons.check)), findsOneWidget);
   });
 
   testWidgets('une limite personnalisée s\'applique à la validation, pas à la frappe', (tester) async {
@@ -181,6 +187,6 @@ void main() {
     expect(find.widgetWithText(TextField, '75'), findsOneWidget);
     expect(tester.widget<TextField>(find.byType(TextField)).enabled, isTrue);
     final customOption = find.ancestor(of: find.text('Personnalisée'), matching: find.byType(ListTile));
-    expect(find.descendant(of: customOption, matching: find.byIcon(Icons.check)), findsOneWidget);
+    expect(find.descendant(of: customOption, matching: findAppIcon(AppIcons.check)), findsOneWidget);
   });
 }

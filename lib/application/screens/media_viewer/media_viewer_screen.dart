@@ -1,5 +1,7 @@
 import 'package:bedbug/application/screens/media_viewer/save_media_to_gallery_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/images/app_image_count_badge.dart';
 import 'package:bedbug/application/widgets/media/app_remote_media.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
@@ -104,7 +106,7 @@ class _State extends ConsumerState<MediaViewerScreen> {
                 IconButton(
                   onPressed: context.pop,
                   tooltip: l10n.close,
-                  icon: const Icon(Icons.close_rounded, color: AppColors.onDark),
+                  icon: const AppIcon(AppIcons.close, color: AppColors.onDark),
                 ),
                 const Spacer(),
                 if (saveMediaToGalleryNotifierWatcher.isLoading)
@@ -119,7 +121,7 @@ class _State extends ConsumerState<MediaViewerScreen> {
                   IconButton(
                     onPressed: _download,
                     tooltip: l10n.mediaViewerDownload,
-                    icon: const Icon(Icons.download_rounded, color: AppColors.onDark),
+                    icon: const AppIcon(AppIcons.download, color: AppColors.onDark),
                   ),
               ],
             ),

@@ -1,8 +1,10 @@
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/select_options/select_options_screen.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/widgets/fields/app_select_option.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -66,7 +68,7 @@ class AppSelectBox<T> extends ConsumerWidget {
             decoration: InputDecoration(
               labelText: label,
               hintText: hintText,
-              suffixIcon: const Icon(Icons.expand_more, color: AppColors.onLight),
+              suffixIcon: const AppIcon(AppIcons.expandMore, color: AppColors.onLight),
             ),
             child: Text(selectedOption?.label ?? '', style: selectedOption?.style),
           ),

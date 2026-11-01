@@ -1,4 +1,6 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,7 +25,7 @@ class SettingsMenuTile extends ConsumerWidget {
   });
 
   /// Icône affichée devant le titre.
-  final IconData icon;
+  final AppIcons icon;
 
   /// Nom du réglage.
   final String title;
@@ -40,7 +42,7 @@ class SettingsMenuTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
-      leading: Icon(icon, color: AppColors.onLight),
+      leading: AppIcon(icon, color: AppColors.onLight),
       title: Text(
         title,
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.onLight),

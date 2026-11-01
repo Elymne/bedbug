@@ -2,8 +2,10 @@ import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/notifiers/drawing_draft_notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/drawing/app_drawing_image.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/features/content/domain/object_values/drawing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,9 +62,9 @@ class DrawingContentForm extends ConsumerWidget {
                   ),
                 if (control.invalid && control.touched)
                   Text(l10n.createDrawingRequiredError, style: const TextStyle(color: AppColors.failure)),
-                OutlinedButton.icon(
+                FilledButton.icon(
                   onPressed: () => _openEditor(context, ref, drawing),
-                  icon: const Icon(Icons.brush_outlined),
+                  icon: const AppIcon(AppIcons.brush),
                   label: Text(drawing == null ? l10n.createDrawingButton : l10n.createDrawingEditButton),
                 ),
               ],

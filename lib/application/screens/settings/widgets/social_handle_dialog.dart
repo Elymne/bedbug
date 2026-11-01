@@ -1,8 +1,10 @@
 import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/social_network_x.dart';
 import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:bedbug/application/widgets/buttons/app_form_submit_button.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/features/signature/domain/enums/social_network.dart';
 import 'package:bedbug/shared/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
@@ -138,8 +140,8 @@ class _State extends ConsumerState<SocialHandleDialog> {
     return Row(
       spacing: 6,
       children: [
-        Icon(
-          isValid ? Icons.check_circle_rounded : Icons.cancel_rounded,
+        AppIcon(
+          isValid ? AppIcons.checkCircle : AppIcons.cancel,
           size: 16,
           color: isValid ? AppColors.success : AppColors.failure,
         ),
