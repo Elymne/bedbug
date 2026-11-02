@@ -3,22 +3,6 @@ import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
 import 'package:bedbug/resources/signature/signature/text_font.enum.dart';
 
-/// Signature anonyme, identique pour tout le monde.
-///
-/// Codée en dur dans l'app et jamais stockée en base : un contenu anonyme ne
-/// doit rien révéler de son auteur, pas même une signature qu'il aurait pu
-/// modifier. Sert aussi de repli pour tout auteur dont la signature est
-/// inconnue de l'appareil.
-/// Icône « agent secret », couleur et vitesse du ghost par défaut, aucun
-/// réseau.
-final Signature anonymousSignature = Signature(
-  id: anonymousSignatureId,
-  createdAt: DateTime.fromMillisecondsSinceEpoch(0),
-  updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
-  pseudo: 'anonyme',
-  avatarText: '(⌐■_■)',
-);
-
 /// Signature apposée sur un contenu : un pseudo, une icône texte animée d'un effet ghost, une courte description et des réseaux.
 ///
 /// Ce n'est pas une identité : sans serveur, rien ne la vérifie, et

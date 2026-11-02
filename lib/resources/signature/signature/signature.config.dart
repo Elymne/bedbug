@@ -1,3 +1,5 @@
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+
 /// Icône texte d'une signature dont l'auteur n'en a pas encore choisi.
 const String defaultSignatureAvatarText = '(◕‿◕)';
 
@@ -41,3 +43,19 @@ final RegExp pseudoAllowedCharacter = RegExp('[A-Za-z-]');
 
 /// Nom de la box Hive des signatures.
 const String signatureBoxName = 'signatures';
+
+/// Signature anonyme, identique pour tout le monde.
+///
+/// Codée en dur dans l'app et jamais stockée en base : un contenu anonyme ne
+/// doit rien révéler de son auteur, pas même une signature qu'il aurait pu
+/// modifier. Sert aussi de repli pour tout auteur dont la signature est
+/// inconnue de l'appareil.
+/// Icône « agent secret », couleur et vitesse du ghost par défaut, aucun
+/// réseau.
+final Signature anonymousSignature = Signature(
+  id: anonymousSignatureId,
+  createdAt: DateTime.fromMillisecondsSinceEpoch(0),
+  updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
+  pseudo: 'anonyme',
+  avatarText: '(⌐■_■)',
+);

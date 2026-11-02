@@ -1,3 +1,4 @@
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/usecases/signature/get_signature/get_signature.failure.dart';
 import 'package:bedbug/usecases/signature/get_signature/get_signature.params.dart';

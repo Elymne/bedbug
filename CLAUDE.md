@@ -69,7 +69,8 @@ plus the value objects, enums, exceptions and `<gateway>.config.dart` of that ga
 
 ### Constants
 
-Public top-level constants never sit in an entity, repository, gateway, service or use case file: they go in the
+Public top-level constants and default values (`const`, or `final` when they cannot be `const`, like `anonymousSignature`)
+never sit in an entity, repository, gateway, service or use case file: they go in the
 `.config.dart` of their folder (`storage.config.dart`, `fetch_media.config.dart`). Private constants (`_name`) stay in
 the file that uses them.
 
