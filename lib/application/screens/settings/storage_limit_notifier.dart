@@ -3,7 +3,7 @@ import 'package:bedbug/application/screens/home/home_feed_notifier.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/notifier/notifier_state.dart';
 import 'package:bedbug/resources/content/storage/storage.config.dart';
-import 'package:bedbug/resources/content/storage/storage.entity.dart';
+import 'package:bedbug/resources/content/storage/storage.value_object.dart';
 import 'package:bedbug/usecases/storage/enforce_storage_limit/enforce_storage_limit.usecase.dart';
 import 'package:bedbug/usecases/storage/get_storage/get_storage.failure.dart';
 import 'package:bedbug/usecases/storage/get_storage/get_storage.usecase.dart';

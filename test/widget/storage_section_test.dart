@@ -2,7 +2,7 @@ import 'package:bedbug/application/screens/settings/widgets/storage_section.dart
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/content/storage/storage.config.dart';
-import 'package:bedbug/resources/content/storage/storage.entity.dart';
+import 'package:bedbug/resources/content/storage/storage.value_object.dart';
 import 'package:bedbug/usecases/storage/enforce_storage_limit/enforce_storage_limit.failure.dart';
 import 'package:bedbug/usecases/storage/enforce_storage_limit/enforce_storage_limit.usecase.dart';
 import 'package:bedbug/usecases/storage/get_storage/get_storage.failure.dart';
@@ -22,8 +22,7 @@ import '../helpers/pump_app.dart';
 ///
 /// - [limitInBytes] : limite, en octets.
 Storage _buildStorage(int limitInBytes) {
-  final date = DateTime(2026, 10);
-  return Storage(id: 'storage', createdAt: date, updatedAt: date, maxSizeInBytes: limitInBytes);
+  return Storage(maxSizeInBytes: limitInBytes);
 }
 
 /// Fake [GetStorageUsecase] retournant une limite fixe.

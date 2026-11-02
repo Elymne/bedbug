@@ -84,8 +84,8 @@ void main() {
 
     await saveUsecase(SaveContentParams(content: _buildContent(id: 'a', bodyByteLength: 100)));
 
-    final drifted = (await storageRepository.getUnique(''))!;
-    await storageRepository.updateOne(drifted.copyWithCurrentSizeInBytes(999999));
+    final drifted = (await storageRepository.get())!;
+    await storageRepository.save(drifted.copyWithCurrentSizeInBytes(999999));
 
     final result = await usecase(const NoParams());
     expect(result.right, 100);

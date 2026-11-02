@@ -57,7 +57,7 @@ class EnforceStorageLimitUsecase extends Usecase<NoParams, EnforceStorageLimitFa
   @override
   Future<Either<EnforceStorageLimitFailure, int>> call(NoParams params) async {
     try {
-      final storage = await _storageRepository.getUnique('');
+      final storage = await _storageRepository.get();
       final limit = storage?.maxSizeInBytes ?? defaultMaxStorageSizeInBytes;
       final contents = await _contentRepository.getAll();
 
@@ -85,7 +85,7 @@ class EnforceStorageLimitUsecase extends Usecase<NoParams, EnforceStorageLimitFa
 
       // Le service a déjà retiré le poids des contenus supprimés du compteur : il ne reste qu'à corriger un éventuel
       // décalage entre ce compteur, relu après la suppression, et le poids réel des contenus restants.
-      final storageAfterDeletion = await _storageRepository.getUnique('');
+      final storageAfterDeletion = await _storageRepository.get();
       final drift = totalBytes - (storageAfterDeletion?.currentSizeInBytes ?? 0);
       if (drift != 0) {
         await _storageRepository.adjustCurrentSizeInBytes(drift);

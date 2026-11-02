@@ -15,30 +15,21 @@ class StorageHiveModelAdapter extends TypeAdapter<StorageHiveModel> {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read()};
     return StorageHiveModel(
-      id: fields[0] as String,
-      createdAt: (fields[1] as num).toInt(),
-      updatedAt: (fields[2] as num).toInt(),
-      maxSizeInBytes: (fields[3] as num).toInt(),
-      currentSizeInBytes: (fields[5] as num).toInt(),
-      strategy: (fields[4] as num).toInt(),
+      maxSizeInBytes: (fields[0] as num).toInt(),
+      currentSizeInBytes: (fields[2] as num).toInt(),
+      strategy: (fields[1] as num).toInt(),
     );
   }
 
   @override
   void write(BinaryWriter writer, StorageHiveModel obj) {
     writer
-      ..writeByte(6)
-      ..writeByte(0)
-      ..write(obj.id)
-      ..writeByte(1)
-      ..write(obj.createdAt)
-      ..writeByte(2)
-      ..write(obj.updatedAt)
       ..writeByte(3)
+      ..writeByte(0)
       ..write(obj.maxSizeInBytes)
-      ..writeByte(4)
+      ..writeByte(1)
       ..write(obj.strategy)
-      ..writeByte(5)
+      ..writeByte(2)
       ..write(obj.currentSizeInBytes);
   }
 

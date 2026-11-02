@@ -1,12 +1,11 @@
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/domain/usecase.dart';
-import 'package:bedbug/core/extensions/string_uuid_x.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/resources/content/storage/storage.config.dart';
-import 'package:bedbug/resources/content/storage/storage.entity.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
+import 'package:bedbug/resources/content/storage/storage.value_object.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
@@ -40,7 +39,7 @@ class GetStorageUsecase extends Usecase<NoParams, GetStorageFailure, Storage> {
   @override
   Future<Either<GetStorageFailure, Storage>> call(NoParams params) async {
     try {
-      final existing = await _storageRepository.getUnique('');
+      final existing = await _storageRepository.get();
 
       final count = await _storageRepository.countAll();
       if (count > 1) {
@@ -51,15 +50,8 @@ class GetStorageUsecase extends Usecase<NoParams, GetStorageFailure, Storage> {
         return Right(existing);
       }
 
-      final now = DateTime.now();
-      final defaults = Storage(
-        id: UuidX.generate(),
-        createdAt: now,
-        updatedAt: now,
-        maxSizeInBytes: defaultMaxStorageSizeInBytes,
-      );
-      await _storageRepository.addOne(defaults);
-      return Right(defaults);
+      await _storageRepository.save(defaultStorage);
+      return const Right(defaultStorage);
     } on DataException catch (error, stackTrace) {
       AppLogger.error('GetStorageUsecase', error, stackTrace);
       return const Left(GetStorageFailure.invalidData);

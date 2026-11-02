@@ -1,3 +1,5 @@
+import 'package:bedbug/resources/content/storage/storage.value_object.dart';
+
 /// Nombre d'octets dans un mégaoctet, l'unité des limites de stockage présentées à l'utilisateur.
 const int bytesPerMegabyte = 1024 * 1024;
 
@@ -22,3 +24,6 @@ const int maxStorageLimitInMegabytes = 1000;
 
 /// Nom de la box Hive de la configuration de stockage.
 const String storageBoxName = 'storage';
+
+/// Configuration d'un appareil qui n'a encore rien réglé : limite par défaut, rien de stocké.
+const Storage defaultStorage = Storage(maxSizeInBytes: defaultMaxStorageSizeInBytes);

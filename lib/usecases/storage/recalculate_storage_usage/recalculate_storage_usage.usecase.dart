@@ -1,12 +1,10 @@
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/domain/usecase.dart';
-import 'package:bedbug/core/extensions/string_uuid_x.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/resources/content/content/content.repository.dart';
 import 'package:bedbug/resources/content/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/storage/storage.config.dart';
-import 'package:bedbug/resources/content/storage/storage.entity.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
@@ -52,21 +50,8 @@ class RecalculateStorageUsageUsecase extends Usecase<NoParams, RecalculateStorag
       final contents = await _contentRepository.getAll();
       final totalBytes = contents.fold<int>(0, (total, content) => total + content.sizeInBytes);
 
-      final existing = await _storageRepository.getUnique('');
-      if (existing != null) {
-        await _storageRepository.updateOne(existing.copyWithCurrentSizeInBytes(totalBytes));
-      } else {
-        final now = DateTime.now();
-        await _storageRepository.addOne(
-          Storage(
-            id: UuidX.generate(),
-            createdAt: now,
-            updatedAt: now,
-            maxSizeInBytes: defaultMaxStorageSizeInBytes,
-            currentSizeInBytes: totalBytes,
-          ),
-        );
-      }
+      final storage = await _storageRepository.get() ?? defaultStorage;
+      await _storageRepository.save(storage.copyWithCurrentSizeInBytes(totalBytes));
 
       return Right(totalBytes);
     } on DataException catch (error, stackTrace) {

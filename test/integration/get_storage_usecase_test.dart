@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/content/storage/storage.config.dart';
-import 'package:bedbug/resources/content/storage/storage.entity.dart';
 import 'package:bedbug/resources/content/storage/storage.model.hive.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
+import 'package:bedbug/resources/content/storage/storage.value_object.dart';
 import 'package:bedbug/usecases/storage/get_storage/get_storage.usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,7 +42,8 @@ void main() {
     final first = await usecase(const NoParams());
     final second = await usecase(const NoParams());
 
-    expect(second.right!.id, first.right!.id);
+    expect(second.right, first.right);
+    expect(await container.read(storageRepositoryProvider).countAll(), 1);
   });
 
   test('journalise un warning si plusieurs entrées sont trouvées dans le stockage sous-jacent', () async {
@@ -50,14 +51,10 @@ void main() {
     final box = container.read(hiveStorageBoxProvider);
     final usecase = container.read(getStorageUsecaseProvider);
 
-    final now = DateTime.now();
-    await repository.addOne(Storage(id: 'a', createdAt: now, updatedAt: now, maxSizeInBytes: 1000));
+    await repository.save(const Storage(maxSizeInBytes: 1000));
     // Simule une écriture buguée sous une mauvaise clé, en plus de l'entrée
     // singleton attendue.
-    await box.put(
-      'rogue-entry',
-      StorageHiveModel.fromEntity(Storage(id: 'b', createdAt: now, updatedAt: now, maxSizeInBytes: 1000)),
-    );
+    await box.put('rogue-entry', StorageHiveModel.fromEntity(const Storage(maxSizeInBytes: 1000)));
 
     final logs = <String>[];
     final previousDebugPrint = debugPrint;

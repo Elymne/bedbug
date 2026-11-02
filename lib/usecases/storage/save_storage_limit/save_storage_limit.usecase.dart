@@ -1,11 +1,10 @@
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/usecase.dart';
-import 'package:bedbug/core/extensions/string_uuid_x.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/resources/content/storage/storage.config.dart';
-import 'package:bedbug/resources/content/storage/storage.entity.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
+import 'package:bedbug/resources/content/storage/storage.value_object.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
@@ -40,19 +39,10 @@ class SaveStorageLimitUsecase extends Usecase<SaveStorageLimitParams, SaveStorag
     }
 
     try {
-      final existing = await _storageRepository.getUnique('');
-      if (existing != null) {
-        return Right(await _storageRepository.updateOne(existing.copyWithMaxSizeInBytes(params.maxSizeInBytes)));
-      }
-
-      final now = DateTime.now();
-      final created = Storage(
-        id: UuidX.generate(),
-        createdAt: now,
-        updatedAt: now,
-        maxSizeInBytes: params.maxSizeInBytes,
-      );
-      return Right(await _storageRepository.addOne(created));
+      final storage = await _storageRepository.get() ?? defaultStorage;
+      final updated = storage.copyWithMaxSizeInBytes(params.maxSizeInBytes);
+      await _storageRepository.save(updated);
+      return Right(updated);
     } on DataException catch (error, stackTrace) {
       AppLogger.error('SaveStorageLimitUsecase', error, stackTrace);
       return const Left(SaveStorageLimitFailure.storageError);

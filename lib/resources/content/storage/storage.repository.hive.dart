@@ -1,8 +1,7 @@
-import 'package:bedbug/core/extensions/string_uuid_x.dart';
 import 'package:bedbug/resources/content/storage/storage.config.dart';
-import 'package:bedbug/resources/content/storage/storage.entity.dart';
 import 'package:bedbug/resources/content/storage/storage.model.hive.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.dart';
+import 'package:bedbug/resources/content/storage/storage.value_object.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -25,10 +24,10 @@ class HiveStorageRepository implements StorageRepository {
 
   final Box<StorageHiveModel> _box;
 
-  /// Lit l'entrée Hive stockée sous la clé fixe [_storageKey], la seule clé
-  /// jamais utilisée par les écritures de ce repository.
+  /// Lit l'entrée Hive stockée sous la clé fixe [_storageKey], la seule clé jamais utilisée par les écritures de ce
+  /// repository.
   @override
-  Future<Storage?> getUnique(String id) async {
+  Future<Storage?> get() async {
     try {
       return _box.get(_storageKey)?.toEntity();
     } on HiveError catch (error) {
@@ -36,11 +35,9 @@ class HiveStorageRepository implements StorageRepository {
     }
   }
 
-  /// Compte le nombre brut d'entrées de la box, sans filtrer sur
-  /// [_storageKey] : c'est justement ce comptage non filtré qui permet à
-  /// `GetStorageUsecase` de détecter une entrée écrite par erreur sous une
-  /// autre clé, cas que [getUnique] ne peut pas voir puisqu'il ne regarde
-  /// que [_storageKey].
+  /// Compte le nombre brut d'entrées de la box, sans filtrer sur [_storageKey] : c'est justement ce comptage non
+  /// filtré qui permet à `GetStorageUsecase` de détecter une entrée écrite par erreur sous une autre clé, cas que
+  /// [get] ne peut pas voir puisqu'il ne regarde que [_storageKey].
   @override
   Future<int> countAll() async {
     try {
@@ -50,79 +47,38 @@ class HiveStorageRepository implements StorageRepository {
     }
   }
 
-  /// Écrit toujours sous la clé fixe [_storageKey], quel que soit
-  /// `entity.id` : ce repository ne gère qu'un singleton, il n'y a donc
-  /// qu'un seul emplacement possible en base.
+  /// Écrit toujours sous la clé fixe [_storageKey] : ce repository ne gère qu'une configuration, il n'y a donc qu'un
+  /// seul emplacement possible en base.
   @override
-  Future<Storage> addOne(Storage entity) async {
+  Future<void> save(Storage storage) async {
     try {
-      await _box.put(_storageKey, StorageHiveModel.fromEntity(entity));
-      return entity;
+      await _box.put(_storageKey, StorageHiveModel.fromEntity(storage));
     } on HiveError catch (error) {
       throw DatasourceException('HiveStorageRepository', error);
     }
   }
 
-  /// Refuse la mise à jour si aucune configuration n'a encore été créée
-  /// via [addOne], pour éviter de silencieusement faire apparaître une
-  /// configuration jamais initialisée.
-  @override
-  Future<Storage> updateOne(Storage entity) async {
-    try {
-      if (!_box.containsKey(_storageKey)) {
-        throw const DatasourceException('HiveStorageRepository', 'storage not found — call addOne first');
-      }
-      await _box.put(_storageKey, StorageHiveModel.fromEntity(entity));
-      return entity;
-    } on DatasourceException {
-      rethrow;
-    } on HiveError catch (error) {
-      throw DatasourceException('HiveStorageRepository', error);
-    }
-  }
-
-  /// Crée la configuration avec les valeurs par défaut si elle n'existe pas
-  /// encore, sinon ajoute [deltaBytes] (positif ou négatif) à
-  /// `currentSizeInBytes` existant.
+  /// Part de la configuration par défaut si elle n'existe pas encore, puis ajoute [deltaBytes] (positif ou négatif)
+  /// à `currentSizeInBytes`.
   ///
-  /// Le résultat est toujours plafonné à `0` au minimum : `deltaBytes`
-  /// négatif ne doit jamais faire passer le compteur sous zéro, même en cas
-  /// de décalage entre ce compteur incrémental et le contenu réellement
-  /// stocké (voir `RecalculateStorageUsageUsecase` pour la réconciliation
-  /// complète).
+  /// Le résultat est toujours plafonné à `0` au minimum : `deltaBytes` négatif ne doit jamais faire passer le
+  /// compteur sous zéro, même en cas de décalage entre ce compteur incrémental et le contenu réellement stocké (voir
+  /// `RecalculateStorageUsageUsecase` pour la réconciliation complète).
   @override
   Future<void> adjustCurrentSizeInBytes(int deltaBytes) async {
-    final existing = await getUnique('');
-
-    if (existing == null) {
-      final now = DateTime.now();
-      await addOne(
-        Storage(
-          id: UuidX.generate(),
-          createdAt: now,
-          updatedAt: now,
-          maxSizeInBytes: defaultMaxStorageSizeInBytes,
-          currentSizeInBytes: deltaBytes < 0 ? 0 : deltaBytes,
-        ),
-      );
-      return;
-    }
-
-    final newSize = existing.currentSizeInBytes + deltaBytes;
-    await updateOne(existing.copyWithCurrentSizeInBytes(newSize < 0 ? 0 : newSize));
+    final storage = await get() ?? defaultStorage;
+    final newSize = storage.currentSizeInBytes + deltaBytes;
+    await save(storage.copyWithCurrentSizeInBytes(newSize < 0 ? 0 : newSize));
   }
 
-  /// Ne fait rien si la configuration n'existe pas encore : il n'y a alors
-  /// rien à réinitialiser, `currentSizeInBytes` vaudra `0` par défaut dès sa
-  /// création.
+  /// Ne fait rien si la configuration n'existe pas encore : il n'y a alors rien à réinitialiser,
+  /// `currentSizeInBytes` vaudra `0` par défaut dès sa création.
   @override
   Future<void> resetCurrentSizeInBytes() async {
-    final existing = await getUnique('');
-
-    if (existing == null) {
+    final storage = await get();
+    if (storage == null) {
       return;
     }
-
-    await updateOne(existing.copyWithCurrentSizeInBytes(0));
+    await save(storage.copyWithCurrentSizeInBytes(0));
   }
 }
