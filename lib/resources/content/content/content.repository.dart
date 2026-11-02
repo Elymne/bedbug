@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/flair_suggestion/flair_suggestion.value_object.dart';
 
 /// Contrat du repository gérant les [Content].
 abstract class ContentRepository {
@@ -63,9 +62,9 @@ abstract class ContentRepository {
   /// Supprime les contenus dont l'identifiant fait partie de [ids].
   Future<void> deleteMany(List<String> ids);
 
-  /// Retourne les flairs commençant par [prefix] (déjà normalisé), avec leur nombre de contenus.
+  /// Retourne le flair de chaque contenu dont le flair commence par [prefix] (déjà normalisé), un par contenu.
   ///
-  /// Les flairs sont triés du plus utilisé au moins utilisé, puis par ordre
-  /// alphabétique à égalité, et limités aux [limit] premiers.
-  Future<List<FlairSuggestion>> getFlairsStartingWith(String prefix, {required int limit});
+  /// Un même flair revient autant de fois que de contenus le portent : le regroupement et le classement reviennent
+  /// à l'appelant.
+  Future<List<String>> getFlairsStartingWith(String prefix);
 }

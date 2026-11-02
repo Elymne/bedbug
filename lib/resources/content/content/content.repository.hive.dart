@@ -7,7 +7,6 @@ import 'package:bedbug/resources/content/content/content.repository.dart';
 import 'package:bedbug/resources/content/content/content_origin.enum.dart';
 import 'package:bedbug/resources/content/content/content_title.extension.dart';
 import 'package:bedbug/resources/content/content/flair.extension.dart';
-import 'package:bedbug/resources/content/flair_suggestion/flair_suggestion.value_object.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -207,28 +206,14 @@ class HiveContentRepository implements ContentRepository {
   }
 
   @override
-  Future<List<FlairSuggestion>> getFlairsStartingWith(String prefix, {required int limit}) async {
+  Future<List<String>> getFlairsStartingWith(String prefix) async {
     try {
       // Appelée à chaque frappe : on ne lit que le flair des modèles, sans
       // jamais les convertir en entités.
-      final countsByFlair = <String, int>{};
-      for (final model in _box.values) {
-        if (model.flair.startsWith(prefix)) {
-          countsByFlair.update(model.flair, (count) => count + 1, ifAbsent: () => 1);
-        }
-      }
-
-      final suggestions = [
-        for (final entry in countsByFlair.entries) FlairSuggestion(flair: entry.key, contentCount: entry.value),
+      return [
+        for (final model in _box.values)
+          if (model.flair.startsWith(prefix)) model.flair,
       ];
-      suggestions.sort((first, second) {
-        final countComparison = second.contentCount.compareTo(first.contentCount);
-        if (countComparison != 0) {
-          return countComparison;
-        }
-        return first.flair.compareTo(second.flair);
-      });
-      return suggestions.take(limit).toList();
     } on HiveError catch (error) {
       throw DatasourceException('HiveContentRepository', error);
     }

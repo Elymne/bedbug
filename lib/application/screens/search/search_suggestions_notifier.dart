@@ -1,7 +1,7 @@
 import 'package:bedbug/core/notifier/notifier_state.dart';
-import 'package:bedbug/resources/content/flair_suggestion/flair_suggestion.value_object.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.params.dart';
+import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.result.dart';
 import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.usecase.dart';
 import 'package:bedbug/usecases/signature/get_signature_suggestions/get_signature_suggestions.params.dart';
 import 'package:bedbug/usecases/signature/get_signature_suggestions/get_signature_suggestions.usecase.dart';
