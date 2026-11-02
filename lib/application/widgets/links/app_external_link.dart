@@ -5,7 +5,7 @@ import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:bedbug/resources/content/safe_url/safe_url.value_object.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.config.dart';
-import 'package:bedbug/resources/content/url_trust_policy/url_trust_policy.value_object.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:bedbug/services/trust/url_trust.service.dart';
 import 'package:flutter/material.dart';

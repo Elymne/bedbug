@@ -11,7 +11,6 @@ import 'package:bedbug/resources/content/seen_content/seen_content.repository.hi
 import 'package:bedbug/resources/content/trust_settings/trust_settings.repository.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.repository.hive.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
-import 'package:bedbug/resources/content/url_trust_policy/url_trust_policy.value_object.dart';
 import 'package:bedbug/resources/content/viewed_content/viewed_content.repository.hive.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
