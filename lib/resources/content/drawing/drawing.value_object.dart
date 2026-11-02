@@ -1,11 +1,14 @@
+import 'dart:math';
+
 import 'package:bedbug/core/domain/value_object.dart';
 import 'package:bedbug/resources/content/drawing/drawing.config.dart';
+import 'package:bedbug/resources/content/drawing/drawing.extension.dart';
 
 /// Dessin vectoriel : une taille et une orientation de surface, une palette, et la liste des opérations qui le
 /// composent.
 ///
 /// Les limites (couleurs, opérations, points) sont vérifiées par
-/// `DrawingValidationService`, à la création comme à la réception. La taille
+/// `Drawing.isValid`, à la création comme à la réception. La taille
 /// du repère qui en découle est donnée par `DrawingDimensionsExtension`.
 class Drawing extends ValueObject {
   /// Crée un [Drawing].
@@ -72,6 +75,131 @@ class Drawing extends ValueObject {
   @override
   int get hashCode {
     return Object.hash(size, orientation, Object.hashAll(palette), Object.hashAll(operations));
+  }
+
+  /// Indique si [drawing] respecte toutes les limites d'un dessin.
+  ///
+  /// Un dessin reçu d'un pair peut avoir été fabriqué à la main : des milliers de couleurs pour reproduire une photo,
+  /// des millions de points pour saturer le téléphone, des positions hors du repère. Chaque limite est vérifiée, et le
+  /// dessin entier est refusé dès qu'une seule est dépassée, plutôt que d'essayer de le corriger.
+  ///
+  /// - [drawing] : dessin à vérifier.
+  static bool isValid(Drawing drawing) {
+    if (drawing.palette.length != drawingPaletteSize) {
+      return false;
+    }
+    // Couleurs opaques uniquement : la transparence ne sert qu'au feutre, géré par l'app.
+    if (drawing.palette.any((color) => color < 0xFF000000 || color > 0xFFFFFFFF)) {
+      return false;
+    }
+    if (drawing.operations.length > maxDrawingOperations) {
+      return false;
+    }
+
+    var fillCount = 0;
+    var pointCount = 0;
+    for (final operation in drawing.operations) {
+      if (operation.layer < 0 || operation.layer >= drawingLayerCount) {
+        return false;
+      }
+      if (operation.colorIndex < 0 || operation.colorIndex >= drawingPaletteSize) {
+        return false;
+      }
+      switch (operation) {
+        case DrawingFill(:final point):
+          fillCount++;
+          if (fillCount > maxDrawingFills || !isInside(point, drawing)) {
+            return false;
+          }
+        case DrawingStroke(:final size, :final seed, :final points):
+          pointCount += points.length;
+          if (size < 0 || size >= drawingBrushSizeCount || seed < 0 || seed > maxDrawingSeed) {
+            return false;
+          }
+          if (points.isEmpty || points.length > maxDrawingStrokePoints || pointCount > maxDrawingPoints) {
+            return false;
+          }
+          if (!points.every((point) => isInside(point, drawing))) {
+            return false;
+          }
+      }
+    }
+    return true;
+  }
+
+  /// Indique si [point] est dans le repère de [drawing].
+  ///
+  /// - [point] : point à vérifier.
+  /// - [drawing] : dessin, dont la taille et l'orientation fixent le repère.
+  static bool isInside(DrawingPoint point, Drawing drawing) {
+    return point.x >= 0 && point.x < drawing.width && point.y >= 0 && point.y < drawing.height;
+  }
+
+  /// Retourne [points] sans ceux qui s'écartent de moins de [tolerance] du trait simplifié.
+  ///
+  /// Le doigt envoie un point à chaque image, même en ligne droite : la plupart sont inutiles. Les retirer allège le
+  /// dessin à transmettre et laisse plus de place sous les limites de points. Algorithme de Ramer-Douglas-Peucker : un
+  /// point n'est gardé que s'il s'écarte assez de la droite qui relie ses voisins gardés. Le premier et le dernier
+  /// point sont toujours gardés, et les points identiques qui se suivent sont fusionnés.
+  ///
+  /// - [points] : points du trait, dans l'ordre du tracé.
+  /// - [tolerance] : écart toléré, en points du repère.
+  static List<DrawingPoint> simplifyStroke(List<DrawingPoint> points, {double tolerance = defaultStrokeTolerance}) {
+    final distinct = <DrawingPoint>[
+      for (var index = 0; index < points.length; index++)
+        if (index == 0 || points[index] != points[index - 1]) points[index],
+    ];
+    if (distinct.length <= 2) {
+      return distinct;
+    }
+
+    final isKept = List<bool>.filled(distinct.length, false);
+    isKept[0] = true;
+    isKept[distinct.length - 1] = true;
+    // Pile de segments à examiner, plutôt qu'une récursion : un long trait ne fait pas déborder la pile d'appels.
+    final segments = <(int, int)>[(0, distinct.length - 1)];
+    while (segments.isNotEmpty) {
+      final (start, end) = segments.removeLast();
+      var farthestIndex = -1;
+      var farthestDistance = 0.0;
+      for (var index = start + 1; index < end; index++) {
+        final distance = _distanceToSegment(distinct[index], distinct[start], distinct[end]);
+        if (distance > farthestDistance) {
+          farthestDistance = distance;
+          farthestIndex = index;
+        }
+      }
+      if (farthestIndex == -1 || farthestDistance <= tolerance) {
+        continue;
+      }
+      isKept[farthestIndex] = true;
+      segments
+        ..add((start, farthestIndex))
+        ..add((farthestIndex, end));
+    }
+
+    return [
+      for (var index = 0; index < distinct.length; index++)
+        if (isKept[index]) distinct[index],
+    ];
+  }
+
+  /// Retourne la distance entre [point] et le segment [start]-[end].
+  ///
+  /// - [point] : point mesuré.
+  /// - [start] : début du segment.
+  /// - [end] : fin du segment.
+  static double _distanceToSegment(DrawingPoint point, DrawingPoint start, DrawingPoint end) {
+    final segmentX = (end.x - start.x).toDouble();
+    final segmentY = (end.y - start.y).toDouble();
+    final lengthSquared = segmentX * segmentX + segmentY * segmentY;
+    final pointX = (point.x - start.x).toDouble();
+    final pointY = (point.y - start.y).toDouble();
+    if (lengthSquared == 0) {
+      return sqrt(pointX * pointX + pointY * pointY);
+    }
+    final ratio = ((pointX * segmentX + pointY * segmentY) / lengthSquared).clamp(0.0, 1.0);
+    return sqrt(pow(pointX - ratio * segmentX, 2) + pow(pointY - ratio * segmentY, 2));
   }
 }
 

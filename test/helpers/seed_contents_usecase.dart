@@ -20,16 +20,11 @@ import 'package:bedbug/resources/content/storage/storage.repository.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
-import 'package:bedbug/services/content/media_kind.service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SeedContentsUsecase].
 final seedContentsUsecaseProvider = Provider<SeedContentsUsecase>((ref) {
-  return SeedContentsUsecase(
-    ref.read(contentRepositoryProvider),
-    ref.read(storageRepositoryProvider),
-    ref.read(mediaKindServiceProvider),
-  );
+  return SeedContentsUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider));
 });
 
 /// Liens factices, avec leur image d'aperçu, couvrant chaque niveau de confiance des listes par défaut.
@@ -116,11 +111,10 @@ const List<String> _longBodies = [
 /// Génère une grande quantité de contenus factices pour les tests de charge et d'affichage.
 class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailure, void> {
   /// Crée un [SeedContentsUsecase].
-  SeedContentsUsecase(this._contentRepository, this._storageRepository, this._mediaKindService);
+  SeedContentsUsecase(this._contentRepository, this._storageRepository);
 
   final ContentRepository _contentRepository;
   final StorageRepository _storageRepository;
-  final MediaKindService _mediaKindService;
 
   /// Nombre d'items écrits en une seule opération Hive.
   static const int _batchSize = 500;
@@ -295,7 +289,7 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       sizeInBytes: mediaUrls.fold(0, (total, url) => total + url.length),
       flair: flair,
       tags: tags,
-      media: [for (final url in mediaUrls) _mediaKindService.mediaOf(url)],
+      media: [for (final url in mediaUrls) ContentMedia.fromUrl(url)],
       title: 'Média #${index + 1}',
       body: hasBody ? _shortBodies[index % _shortBodies.length] : null,
     );

@@ -1,4 +1,6 @@
-/// Format réel d'un fichier média, tel que reconnu par `MediaFormatService`.
+import 'dart:typed_data';
+
+/// Format réel d'un fichier média, tel que reconnu par [MediaFileFormat.detect].
 enum MediaFileFormat {
   /// Image JPEG.
   jpeg(extension: 'jpg', isVideo: false),
@@ -32,4 +34,62 @@ enum MediaFileFormat {
 
   /// Indique si le format est une vidéo.
   final bool isVideo;
+
+  /// Marques de conteneur ISO réservées aux images (HEIF, AVIF) : elles ne sont pas des vidéos.
+  static const List<String> _isoImageBrands = ['heic', 'heix', 'mif1', 'msf1', 'avif', 'avis'];
+
+  /// Retourne le format reconnu dans [bytes], ou `null` si ce n'est pas un format accepté.
+  ///
+  /// L'extension d'une adresse et le type annoncé par le serveur sont choisis par celui qui héberge le fichier : un
+  /// « .jpg » peut contenir une page web ou un exécutable. Avant d'écrire un fichier téléchargé dans la galerie du
+  /// téléphone, son format est donc vérifié sur ses premiers octets, et seuls les formats d'image et de vidéo courants
+  /// sont acceptés.
+  ///
+  /// - [bytes] : contenu du fichier.
+  static MediaFileFormat? detect(Uint8List bytes) {
+    if (_startsWith(bytes, 0, const [0xFF, 0xD8, 0xFF])) {
+      return MediaFileFormat.jpeg;
+    }
+    if (_startsWith(bytes, 0, const [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])) {
+      return MediaFileFormat.png;
+    }
+    if (_startsWith(bytes, 0, 'GIF87a'.codeUnits) || _startsWith(bytes, 0, 'GIF89a'.codeUnits)) {
+      return MediaFileFormat.gif;
+    }
+    if (_startsWith(bytes, 0, 'RIFF'.codeUnits) && _startsWith(bytes, 8, 'WEBP'.codeUnits)) {
+      return MediaFileFormat.webp;
+    }
+    if (_startsWith(bytes, 0, const [0x1A, 0x45, 0xDF, 0xA3])) {
+      return MediaFileFormat.webm;
+    }
+    // Conteneur ISO : la boîte `ftyp` suit la taille de la première boîte, et la marque la suit.
+    if (_startsWith(bytes, 4, 'ftyp'.codeUnits) && bytes.length >= 12) {
+      if (_startsWith(bytes, 8, 'qt  '.codeUnits)) {
+        return MediaFileFormat.quickTime;
+      }
+      // Les images HEIF/AVIF partagent ce conteneur : elles ne sont pas des vidéos.
+      if (_isoImageBrands.any((brand) => _startsWith(bytes, 8, brand.codeUnits))) {
+        return null;
+      }
+      return MediaFileFormat.mp4;
+    }
+    return null;
+  }
+
+  /// Indique si [bytes] contient [signature] à partir de la position [offset].
+  ///
+  /// - [bytes] : contenu du fichier.
+  /// - [offset] : position du premier octet comparé.
+  /// - [signature] : octets attendus.
+  static bool _startsWith(Uint8List bytes, int offset, List<int> signature) {
+    if (bytes.length < offset + signature.length) {
+      return false;
+    }
+    for (var index = 0; index < signature.length; index++) {
+      if (bytes[offset + index] != signature[index]) {
+        return false;
+      }
+    }
+    return true;
+  }
 }

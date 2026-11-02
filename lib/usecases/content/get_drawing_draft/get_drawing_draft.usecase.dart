@@ -9,17 +9,12 @@ import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
-import 'package:bedbug/services/content/drawing_validation.service.dart';
 import 'package:bedbug/usecases/content/get_drawing_draft/get_drawing_draft.failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetDrawingDraftUsecase].
 final getDrawingDraftUsecaseProvider = Provider<GetDrawingDraftUsecase>((ref) {
-  return GetDrawingDraftUsecase(
-    ref.read(drawingDraftRepositoryProvider),
-    ref.read(drawingValidationServiceProvider),
-    ref.read(errorLogRepositoryProvider),
-  );
+  return GetDrawingDraftUsecase(ref.read(drawingDraftRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Récupère le dessin laissé en cours, pour le reprendre là où il en était.
@@ -32,20 +27,18 @@ final getDrawingDraftUsecaseProvider = Provider<GetDrawingDraftUsecase>((ref) {
 /// de l'app, fichier abîmé) est écarté plutôt que de bloquer l'éditeur.
 class GetDrawingDraftUsecase extends Usecase<NoParams, DrawingDraftFailure, Drawing?> {
   /// Crée un [GetDrawingDraftUsecase].
-  GetDrawingDraftUsecase(this._drawingDraftRepository, this._drawingValidationService, this._errorLogRepository);
+  GetDrawingDraftUsecase(this._drawingDraftRepository, this._errorLogRepository);
 
   /// Stockage du brouillon.
   final DrawingDraftRepository _drawingDraftRepository;
 
-  /// Service de vérification des limites d'un dessin.
-  final DrawingValidationService _drawingValidationService;
   final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<DrawingDraftFailure, Drawing?>> call(NoParams params) async {
     try {
       final draft = await _drawingDraftRepository.get();
-      if (draft == null || !_drawingValidationService.isValid(draft)) {
+      if (draft == null || !Drawing.isValid(draft)) {
         return const Right(null);
       }
       return Right(draft);

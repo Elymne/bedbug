@@ -6,8 +6,8 @@ import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/media/app_remote_media.dart';
 import 'package:bedbug/resources/content/content/content.config.dart';
+import 'package:bedbug/resources/content/content/media_content.entity.dart';
 import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
-import 'package:bedbug/services/content/media_kind.service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -115,7 +115,7 @@ class _State extends ConsumerState<MediaContentForm> {
                         borderRadius: BorderRadius.circular(8),
                         child: SizedBox.square(
                           dimension: _kThumbnailSize,
-                          child: AppRemoteMedia(media: ref.read(mediaKindServiceProvider).mediaOf(url)),
+                          child: AppRemoteMedia(media: ContentMedia.fromUrl(url)),
                         ),
                       ),
                       Expanded(

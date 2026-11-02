@@ -1,8 +1,8 @@
-import 'package:bedbug/services/content/content_size.service.dart';
+import 'package:bedbug/resources/content/content/content.entity.dart';
 
 /// Poids maximal d'un contenu reçu d'un pair, en octets.
 ///
-/// Un dessin au maximum de ses limites pèse environ 90 Ko selon le calcul de [ContentSizeService] ; au-delà,
+/// Un dessin au maximum de ses limites pèse environ 90 Ko selon le calcul de [Content.sizeInBytesOf] ; au-delà,
 /// un contenu reçu n'a rien de légitime et ne sert qu'à remplir le stockage.
 const int maxReceivedContentBytes = 128 * 1024;
 

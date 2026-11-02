@@ -5,13 +5,12 @@ import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/content.repository.dart';
 import 'package:bedbug/resources/content/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
+import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
-import 'package:bedbug/services/content/content_size.service.dart';
-import 'package:bedbug/services/content/drawing_validation.service.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.failure.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,8 +20,6 @@ final saveContentUsecaseProvider = Provider<SaveContentUsecase>((ref) {
   return SaveContentUsecase(
     ref.read(contentRepositoryProvider),
     ref.read(storageRepositoryProvider),
-    ref.read(drawingValidationServiceProvider),
-    ref.read(contentSizeServiceProvider),
     ref.read(errorLogRepositoryProvider),
   );
 });
@@ -30,21 +27,13 @@ final saveContentUsecaseProvider = Provider<SaveContentUsecase>((ref) {
 /// Persiste un contenu dans le stockage local.
 ///
 /// Le poids (`sizeInBytes`) fourni par l'appelant n'est pas fiable : ce use case le fait recalculer par
-/// [ContentSizeService] avant persistance, pour que le suivi du stockage reste juste.
+/// [Content.sizeInBytesOf] avant persistance, pour que le suivi du stockage reste juste.
 class SaveContentUsecase extends Usecase<SaveContentParams, SaveContentFailure, Content> {
   /// Crée un [SaveContentUsecase].
-  SaveContentUsecase(
-    this._contentRepository,
-    this._storageRepository,
-    this._drawingValidationService,
-    this._contentSizeService,
-    this._errorLogRepository,
-  );
+  SaveContentUsecase(this._contentRepository, this._storageRepository, this._errorLogRepository);
 
   final ContentRepository _contentRepository;
   final StorageRepository _storageRepository;
-  final DrawingValidationService _drawingValidationService;
-  final ContentSizeService _contentSizeService;
   final ErrorLogRepository _errorLogRepository;
 
   @override
@@ -52,10 +41,10 @@ class SaveContentUsecase extends Usecase<SaveContentParams, SaveContentFailure, 
     try {
       final content = params.content;
       // Un dessin hors limites (trop de couleurs, de points, de traits) n'est jamais enregistré.
-      if (content is DrawingContent && !_drawingValidationService.isValid(content.drawing)) {
+      if (content is DrawingContent && !Drawing.isValid(content.drawing)) {
         return const Left(SaveContentFailure.invalidContent);
       }
-      final resized = content.copyWithSizeInBytes(_contentSizeService.sizeInBytes(content));
+      final resized = content.copyWithSizeInBytes(Content.sizeInBytesOf(content));
 
       final saved = await _contentRepository.addOne(resized);
       await _storageRepository.adjustCurrentSizeInBytes(saved.sizeInBytes);

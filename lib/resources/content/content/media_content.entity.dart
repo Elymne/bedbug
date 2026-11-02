@@ -146,6 +146,33 @@ class ContentMedia {
   int get hashCode {
     return Object.hash(url, kind);
   }
+
+  /// Extensions des fichiers vidéo reconnus dans une adresse.
+  static const List<String> _videoExtensions = ['.mp4', '.webm', '.mov', '.m4v'];
+
+  /// Retourne la nature du média d'adresse [url], [MediaKind.image] par défaut.
+  ///
+  /// Les hébergeurs servent leurs fichiers sous leur vraie extension (`.gif`, `.mp4`) : c'est ce qui décide du lecteur
+  /// à utiliser pour afficher le média. Le fichier lui-même n'est jamais téléchargé pour ça.
+  ///
+  /// - [url] : adresse du média.
+  static MediaKind kindOf(String url) {
+    final path = (Uri.tryParse(url)?.path ?? '').toLowerCase();
+    if (_videoExtensions.any(path.endsWith)) {
+      return MediaKind.video;
+    }
+    if (path.endsWith('.gif')) {
+      return MediaKind.gif;
+    }
+    return MediaKind.image;
+  }
+
+  /// Retourne le média d'adresse [url], avec sa nature déduite de son extension (voir [kindOf]).
+  ///
+  /// - [url] : adresse du média.
+  static ContentMedia fromUrl(String url) {
+    return ContentMedia(url: url, kind: kindOf(url));
+  }
 }
 
 /// Nature d'un [ContentMedia].

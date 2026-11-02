@@ -32,7 +32,6 @@ import 'package:bedbug/resources/content/content/tag.enum.dart';
 import 'package:bedbug/resources/content/content/text_content.entity.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/services/content/media_kind.service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -277,7 +276,7 @@ class _State extends ConsumerState<CreateScreen> {
       // Placeholder : SaveContentUsecase détermine et corrige le poids réel
       // avant persistance.
       sizeInBytes: 0,
-      media: [for (final url in _mediaUrlsControl.value!) ref.read(mediaKindServiceProvider).mediaOf(url)],
+      media: [for (final url in _mediaUrlsControl.value!) ContentMedia.fromUrl(url)],
       title: _mediaTitleControl.value!,
       body: _mediaBodyControl.value?.isEmpty == true ? null : _mediaBodyControl.value,
       flair: flair,

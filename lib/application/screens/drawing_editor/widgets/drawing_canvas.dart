@@ -12,7 +12,6 @@ import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:bedbug/resources/content/drawing/drawing.config.dart';
 import 'package:bedbug/resources/content/drawing/drawing.extension.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
-import 'package:bedbug/services/content/stroke_simplification.service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -182,7 +181,7 @@ class DrawingCanvas extends ConsumerWidget {
     if (liveStroke == null || liveStroke.pointer != pointer || liveStroke.committedRevision != null) {
       return;
     }
-    final points = ref.read(strokeSimplificationServiceProvider).simplify(liveStroke.points);
+    final points = Drawing.simplifyStroke(liveStroke.points);
     final stroke = _buildStroke(ref.read(drawingToolNotifierProvider), points, liveStroke.seed);
     final editorNotifier = ref.read(drawingEditorNotifierProvider(args).notifier);
     if (!editorNotifier.addOperation(stroke)) {

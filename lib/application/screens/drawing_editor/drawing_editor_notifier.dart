@@ -1,6 +1,5 @@
 import 'package:bedbug/application/notifiers/drawing_draft_notifier.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
-import 'package:bedbug/services/content/drawing_validation.service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Nombre maximal d'étapes gardées pour annuler.
@@ -12,7 +11,7 @@ final drawingEditorNotifierProvider = NotifierProvider.autoDispose
 
 /// Notifier portant le dessin en cours d'édition, et son historique pour annuler et rétablir.
 ///
-/// Chaque modification passe par `DrawingValidationService` : un trait qui
+/// Chaque modification passe par `Drawing.isValid` : un trait qui
 /// ferait dépasser une limite (points, traits, remplissages) est refusé
 /// tout de suite, pour que le dessin publié soit toujours accepté par les
 /// autres téléphones.
@@ -24,9 +23,6 @@ class DrawingEditorNotifier extends Notifier<DrawingEditorState> {
 
   /// Ouverture de l'éditeur, avec le dessin de départ.
   final DrawingEditorArgs args;
-
-  /// Service de vérification des limites d'un dessin.
-  late final _drawingValidationService = ref.read(drawingValidationServiceProvider);
 
   /// Brouillon du dessin en cours, mis à jour à chaque modification.
   late final _drawingDraftNotifier = ref.read(drawingDraftNotifierProvider.notifier);
@@ -41,7 +37,7 @@ class DrawingEditorNotifier extends Notifier<DrawingEditorState> {
   /// - [operation] : trait ou remplissage à ajouter.
   bool addOperation(DrawingOperation operation) {
     final drawing = state.drawing.copyWith(operations: [...state.drawing.operations, operation]);
-    if (!_drawingValidationService.isValid(drawing)) {
+    if (!Drawing.isValid(drawing)) {
       return false;
     }
     _apply(drawing);

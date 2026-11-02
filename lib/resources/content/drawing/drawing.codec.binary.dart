@@ -31,7 +31,7 @@ const int _maxVarintBytes = 5;
 /// signature inconnue, ou un nombre d'opérations ou de points qui dépasse
 /// les limites d'un dessin, avant même de réserver la mémoire
 /// correspondante. Il lève alors une [FormatException]. Les autres limites
-/// sont vérifiées ensuite, par `DrawingValidationService`.
+/// sont vérifiées ensuite, par `Drawing.isValid`.
 class DrawingBinaryCodec {
   /// Crée un [DrawingBinaryCodec].
   const DrawingBinaryCodec();

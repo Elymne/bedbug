@@ -1,6 +1,13 @@
+import 'dart:convert';
+
 import 'package:bedbug/core/domain/entity.dart';
 import 'package:bedbug/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
+import 'package:bedbug/resources/content/content/link_content.entity.dart';
+import 'package:bedbug/resources/content/content/media_content.entity.dart';
 import 'package:bedbug/resources/content/content/tag.enum.dart';
+import 'package:bedbug/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 
 /// Classe abstraite représentant un contenu publié par un utilisateur.
@@ -130,4 +137,60 @@ abstract class Content extends Entity {
     required DateTime updatedAt,
     required String flair,
   });
+
+  /// Retourne le poids réel de [content], selon son type concret.
+  ///
+  /// Le poids ([sizeInBytes]) porté par un contenu n'est pas fiable : un contenu reçu d'un pair pourrait mentir sur sa
+  /// taille pour échapper aux limites de stockage. Tout enregistrement recalcule donc le poids avec cette méthode.
+  ///
+  /// Somme des octets UTF-8 de ses champs texte, calculable directement depuis les données du domaine. Un
+  /// [MediaContent] ne stocke que les adresses de ses médias, jamais les fichiers : son poids est celui de ces
+  /// adresses. Un [DrawingContent] pèse son titre et ses opérations.
+  ///
+  /// - [content] : contenu à peser.
+  static int sizeInBytesOf(Content content) {
+    if (content is TextContent) {
+      return utf8.encode(content.title).length + utf8.encode(content.body).length;
+    }
+
+    if (content is LinkContent) {
+      final fields = [
+        content.title,
+        content.url,
+        content.body,
+        content.ogTitle,
+        content.ogDescription,
+        content.ogImageUrl,
+      ];
+      return fields.whereType<String>().fold<int>(0, (total, field) => total + utf8.encode(field).length);
+    }
+
+    if (content is MediaContent) {
+      final fields = [content.title, content.body, for (final media in content.media) media.url];
+      return fields.whereType<String>().fold<int>(0, (total, field) => total + utf8.encode(field).length);
+    }
+
+    if (content is DrawingContent) {
+      return utf8.encode(content.title).length + _drawingSizeInBytes(content.drawing);
+    }
+
+    return content.sizeInBytes;
+  }
+
+  /// Retourne le poids maximal de [drawing] une fois stocké.
+  ///
+  /// Une borne haute plutôt que le poids exact de son encodage, qui dépend du stockage : 4 octets par couleur, 12 par
+  /// opération et 4 par point.
+  ///
+  /// - [drawing] : dessin à peser.
+  static int _drawingSizeInBytes(Drawing drawing) {
+    var total = drawing.palette.length * 4;
+    for (final operation in drawing.operations) {
+      total += 12;
+      if (operation is DrawingStroke) {
+        total += operation.points.length * 4;
+      }
+    }
+    return total;
+  }
 }

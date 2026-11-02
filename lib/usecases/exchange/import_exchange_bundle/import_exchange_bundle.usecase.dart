@@ -12,6 +12,7 @@ import 'package:bedbug/resources/content/content/content.repository.dart';
 import 'package:bedbug/resources/content/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
 import 'package:bedbug/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:bedbug/resources/content/reaction/reaction.config.dart';
 import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.dart';
@@ -29,8 +30,6 @@ import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
-import 'package:bedbug/services/content/content_size.service.dart';
-import 'package:bedbug/services/content/drawing_validation.service.dart';
 import 'package:bedbug/services/reaction/reaction_merge.service.dart';
 import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.config.dart';
 import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.failure.dart';
@@ -47,8 +46,6 @@ final importExchangeBundleUsecaseProvider = Provider<ImportExchangeBundleUsecase
     ref.read(signatureRepositoryProvider),
     ref.read(storageRepositoryProvider),
     ref.read(exchangeCodecGatewayProvider),
-    ref.read(contentSizeServiceProvider),
-    ref.read(drawingValidationServiceProvider),
     ref.read(reactionMergeServiceProvider),
     ref.read(errorLogRepositoryProvider),
   );
@@ -66,7 +63,7 @@ final importExchangeBundleUsecaseProvider = Provider<ImportExchangeBundleUsecase
 /// - L'auteur est déduit de la signature jointe : son identifiant local est une empreinte de ses champs, si bien
 ///   que deux contenus portant exactement la même signature se retrouvent sous la même page `s/pseudo`. Une
 ///   signature invalide est ignorée et le contenu s'affiche en anonyme.
-/// - Les limites de contenu sont celles d'un contenu local ([DrawingValidationService], [ContentSizeService]), avec
+/// - Les limites de contenu sont celles d'un contenu local ([Drawing.isValid], [Content.sizeInBytesOf]), avec
 ///   un plafond de poids ([maxReceivedContentBytes]) ; celles des réactions viennent de [ReactionMergeService].
 /// - Une réaction n'a pas d'auteur transmis : son identifiant en tient lieu, l'auteur réutilisant le même
 ///   identifiant quand il modifie sa réaction. Une réaction reçue ne remplace jamais celle de l'utilisateur.
@@ -82,8 +79,6 @@ class ImportExchangeBundleUsecase
     this._signatureRepository,
     this._storageRepository,
     this._exchangeCodecGateway,
-    this._contentSizeService,
-    this._drawingValidationService,
     this._reactionMergeService,
     this._errorLogRepository,
   );
@@ -94,8 +89,6 @@ class ImportExchangeBundleUsecase
   final SignatureRepository _signatureRepository;
   final StorageRepository _storageRepository;
   final ExchangeCodecGateway _exchangeCodecGateway;
-  final ContentSizeService _contentSizeService;
-  final DrawingValidationService _drawingValidationService;
   final ReactionMergeService _reactionMergeService;
   final ErrorLogRepository _errorLogRepository;
 
@@ -209,10 +202,10 @@ class ImportExchangeBundleUsecase
   /// - [content] : contenu reçu, avec ses champs propres à l'appareil.
   Future<bool> _saveReceivedContent(Content content) async {
     try {
-      if (content is DrawingContent && !_drawingValidationService.isValid(content.drawing)) {
+      if (content is DrawingContent && !Drawing.isValid(content.drawing)) {
         return false;
       }
-      final sizeInBytes = _contentSizeService.sizeInBytes(content);
+      final sizeInBytes = Content.sizeInBytesOf(content);
       if (sizeInBytes > maxReceivedContentBytes) {
         return false;
       }

@@ -6,7 +6,6 @@ import 'package:bedbug/gateways/media/media_http/media_http.gateway.dart';
 import 'package:bedbug/resources/content/content/media_file_format.enum.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
-import 'package:bedbug/services/content/media_format.service.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.failure.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.params.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.usecase.dart';
@@ -65,8 +64,6 @@ Uint8List _bytes(List<int> prefix) {
 }
 
 void main() {
-  const mediaFormatService = MediaFormatService();
-
   const policy = UrlTrustPolicy(
     trustedRules: [DomainRule(host: 'cdn.trusted.com', isIncludingSubdomains: false)],
     greyRules: [DomainRule(host: 'grey.com', isIncludingSubdomains: false)],
@@ -88,7 +85,7 @@ void main() {
     if (fetchedMedia == null) {
       return fetched.left;
     }
-    final result = await SaveMediaToGalleryUsecase(gallery, mediaFormatService, FakeErrorLogRepository())(
+    final result = await SaveMediaToGalleryUsecase(gallery, FakeErrorLogRepository())(
       SaveMediaToGalleryParams(bytes: fetchedMedia.bytes),
     );
     return result.left;
@@ -96,17 +93,17 @@ void main() {
 
   group('reconnaissance du format', () {
     test('reconnaît les images et vidéos courantes à leurs premiers octets', () {
-      expect(mediaFormatService.detect(_bytes([0xFF, 0xD8, 0xFF, 0xE0])), MediaFileFormat.jpeg);
-      expect(mediaFormatService.detect(png), MediaFileFormat.png);
-      expect(mediaFormatService.detect(_bytes('GIF89a'.codeUnits)), MediaFileFormat.gif);
-      expect(mediaFormatService.detect(_bytes('GIF87a'.codeUnits)), MediaFileFormat.gif);
+      expect(MediaFileFormat.detect(_bytes([0xFF, 0xD8, 0xFF, 0xE0])), MediaFileFormat.jpeg);
+      expect(MediaFileFormat.detect(png), MediaFileFormat.png);
+      expect(MediaFileFormat.detect(_bytes('GIF89a'.codeUnits)), MediaFileFormat.gif);
+      expect(MediaFileFormat.detect(_bytes('GIF87a'.codeUnits)), MediaFileFormat.gif);
       expect(
-        mediaFormatService.detect(_bytes([...'RIFF'.codeUnits, 1, 2, 3, 4, ...'WEBP'.codeUnits])),
+        MediaFileFormat.detect(_bytes([...'RIFF'.codeUnits, 1, 2, 3, 4, ...'WEBP'.codeUnits])),
         MediaFileFormat.webp,
       );
-      expect(mediaFormatService.detect(_bytes([0x1A, 0x45, 0xDF, 0xA3])), MediaFileFormat.webm);
-      expect(mediaFormatService.detect(_bytes([0, 0, 0, 0x20, ...'ftypisom'.codeUnits])), MediaFileFormat.mp4);
-      expect(mediaFormatService.detect(_bytes([0, 0, 0, 0x14, ...'ftypqt  '.codeUnits])), MediaFileFormat.quickTime);
+      expect(MediaFileFormat.detect(_bytes([0x1A, 0x45, 0xDF, 0xA3])), MediaFileFormat.webm);
+      expect(MediaFileFormat.detect(_bytes([0, 0, 0, 0x20, ...'ftypisom'.codeUnits])), MediaFileFormat.mp4);
+      expect(MediaFileFormat.detect(_bytes([0, 0, 0, 0x14, ...'ftypqt  '.codeUnits])), MediaFileFormat.quickTime);
     });
 
     test("refuse tout ce qui n'est pas une image ou une vidéo acceptée, même déguisé", () {
@@ -122,12 +119,12 @@ void main() {
         'texte commençant par des espaces puis un png': [0x20, 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A],
       };
       for (final MapEntry(:key, :value) in rejected.entries) {
-        expect(mediaFormatService.detect(_bytes(value)), isNull, reason: key);
+        expect(MediaFileFormat.detect(_bytes(value)), isNull, reason: key);
       }
-      expect(mediaFormatService.detect(Uint8List(0)), isNull, reason: 'fichier vide');
-      expect(mediaFormatService.detect(Uint8List.fromList([0xFF, 0xD8])), isNull, reason: 'jpeg tronqué');
+      expect(MediaFileFormat.detect(Uint8List(0)), isNull, reason: 'fichier vide');
+      expect(MediaFileFormat.detect(Uint8List.fromList([0xFF, 0xD8])), isNull, reason: 'jpeg tronqué');
       expect(
-        mediaFormatService.detect(Uint8List.fromList([0, 0, 0, 0, ...'ftyp'.codeUnits])),
+        MediaFileFormat.detect(Uint8List.fromList([0, 0, 0, 0, ...'ftyp'.codeUnits])),
         isNull,
         reason: 'ftyp sans marque',
       );

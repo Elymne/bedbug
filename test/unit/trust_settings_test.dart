@@ -2,12 +2,9 @@ import 'package:bedbug/resources/content/content/media_content.entity.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.config.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.model.hive.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
-import 'package:bedbug/services/content/media_kind.service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const mediaKindService = MediaKindService();
-
   const imgur = DomainRule(host: 'imgur.com', isIncludingSubdomains: true);
   const settings = TrustSettings(
     mediaPolicy: UrlTrustPolicy(
@@ -92,11 +89,11 @@ void main() {
   });
 
   test('déduit la nature d\'un média de son extension', () {
-    expect(mediaKindService.kindOf('https://a.io/x.MP4'), MediaKind.video);
-    expect(mediaKindService.kindOf('https://a.io/x.webm?t=1'), MediaKind.video);
-    expect(mediaKindService.kindOf('https://a.io/x.gif'), MediaKind.gif);
-    expect(mediaKindService.kindOf('https://a.io/x.jpg'), MediaKind.image);
-    expect(mediaKindService.kindOf('https://a.io/x.gif.exe'), MediaKind.image);
-    expect(mediaKindService.kindOf('pas une url'), MediaKind.image);
+    expect(ContentMedia.kindOf('https://a.io/x.MP4'), MediaKind.video);
+    expect(ContentMedia.kindOf('https://a.io/x.webm?t=1'), MediaKind.video);
+    expect(ContentMedia.kindOf('https://a.io/x.gif'), MediaKind.gif);
+    expect(ContentMedia.kindOf('https://a.io/x.jpg'), MediaKind.image);
+    expect(ContentMedia.kindOf('https://a.io/x.gif.exe'), MediaKind.image);
+    expect(ContentMedia.kindOf('pas une url'), MediaKind.image);
   });
 }
