@@ -1,6 +1,6 @@
-import 'package:bedbug/features/content/domain/enums/content_type.dart';
+import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/features/settings/domain/usecases/get_settings_usecase.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/resources/content/content_type.enum.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [CreateNotifier].

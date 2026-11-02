@@ -1,21 +1,21 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bedbug/features/content/infrastructure/datasources/hive_drawing_draft_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_seen_content_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_trust_settings_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_viewed_content_repository.dart';
-import 'package:bedbug/features/content/infrastructure/models/comment_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/reaction_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/storage_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/trust_settings_hive_model.dart';
-import 'package:bedbug/features/exchange/infrastructure/datasources/hive_exchange_log_repository.dart';
-import 'package:bedbug/features/exchange/infrastructure/models/exchange_log_hive_model.dart';
-import 'package:bedbug/features/exchange/infrastructure/models/keychain_hive_model.dart';
-import 'package:bedbug/features/settings/infrastructure/models/settings_hive_model.dart';
-import 'package:bedbug/features/signature/infrastructure/models/signature_hive_model.dart';
 import 'package:bedbug/hive_registrar.g.dart';
+import 'package:bedbug/resources/content/comment.model.hive.dart';
+import 'package:bedbug/resources/content/content.model.hive.dart';
+import 'package:bedbug/resources/content/drawing_draft.repository.hive.dart';
+import 'package:bedbug/resources/content/reaction.model.hive.dart';
+import 'package:bedbug/resources/content/seen_content.repository.hive.dart';
+import 'package:bedbug/resources/content/storage.model.hive.dart';
+import 'package:bedbug/resources/content/trust_settings.model.hive.dart';
+import 'package:bedbug/resources/content/trust_settings.repository.hive.dart';
+import 'package:bedbug/resources/content/viewed_content.repository.hive.dart';
+import 'package:bedbug/resources/exchange/exchange_log.model.hive.dart';
+import 'package:bedbug/resources/exchange/exchange_log.repository.hive.dart';
+import 'package:bedbug/resources/exchange/keychain.model.hive.dart';
+import 'package:bedbug/resources/settings/settings.model.hive.dart';
+import 'package:bedbug/resources/signature/signature.model.hive.dart';
 import 'package:hive_ce/hive.dart';
 
 /// Ouvre Hive sur un répertoire temporaire réel du disque, avec toutes les

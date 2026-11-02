@@ -3,15 +3,15 @@
 // Check in to version control
 
 import 'package:hive_ce/hive_ce.dart';
-import 'package:bedbug/features/content/infrastructure/models/comment_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/reaction_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/storage_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/trust_settings_hive_model.dart';
-import 'package:bedbug/features/exchange/infrastructure/models/exchange_log_hive_model.dart';
-import 'package:bedbug/features/exchange/infrastructure/models/keychain_hive_model.dart';
-import 'package:bedbug/features/settings/infrastructure/models/settings_hive_model.dart';
-import 'package:bedbug/features/signature/infrastructure/models/signature_hive_model.dart';
+import 'package:bedbug/resources/content/comment.model.hive.dart';
+import 'package:bedbug/resources/content/content.model.hive.dart';
+import 'package:bedbug/resources/content/reaction.model.hive.dart';
+import 'package:bedbug/resources/content/storage.model.hive.dart';
+import 'package:bedbug/resources/content/trust_settings.model.hive.dart';
+import 'package:bedbug/resources/exchange/exchange_log.model.hive.dart';
+import 'package:bedbug/resources/exchange/keychain.model.hive.dart';
+import 'package:bedbug/resources/settings/settings.model.hive.dart';
+import 'package:bedbug/resources/signature/signature.model.hive.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {

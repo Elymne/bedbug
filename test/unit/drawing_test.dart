@@ -1,17 +1,17 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/extensions/drawing_dimensions_extension.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing_point.dart';
-import 'package:bedbug/features/content/domain/services/drawing_validation_service.dart';
-import 'package:bedbug/features/content/domain/services/flood_fill_service.dart';
-import 'package:bedbug/features/content/domain/services/stroke_simplification_service.dart';
-import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/drawing_binary_codec.dart';
+import 'package:bedbug/resources/content/content.model.hive.dart';
+import 'package:bedbug/resources/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/drawing.codec.binary.dart';
+import 'package:bedbug/resources/content/drawing.value_object.dart';
+import 'package:bedbug/resources/content/drawing_content.entity.dart';
+import 'package:bedbug/resources/content/drawing_dimensions.extension.dart';
+import 'package:bedbug/resources/content/drawing_operation.value_object.dart';
+import 'package:bedbug/resources/content/drawing_point.value_object.dart';
+import 'package:bedbug/services/content/drawing_validation.service.dart';
+import 'package:bedbug/services/content/flood_fill.service.dart';
+import 'package:bedbug/services/content/stroke_simplification.service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Retourne un trait au stylo passant par [points], avec les réglages fournis.

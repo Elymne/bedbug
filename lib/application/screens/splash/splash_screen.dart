@@ -4,7 +4,7 @@ import 'package:bedbug/application/screens/splash/widgets/app_title_text.dart';
 import 'package:bedbug/application/screens/splash/widgets/splash_bedbug.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_values.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
+import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

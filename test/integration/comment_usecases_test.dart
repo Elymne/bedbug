@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:bedbug/features/content/domain/entities/comment.dart';
 import 'package:bedbug/features/content/domain/usecases/get_content_comments_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/save_comment_usecase.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_comment_repository.dart';
+import 'package:bedbug/resources/content/comment.entity.dart';
+import 'package:bedbug/resources/content/comment.repository.hive.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

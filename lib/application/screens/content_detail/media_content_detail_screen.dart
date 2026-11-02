@@ -1,7 +1,7 @@
 import 'package:bedbug/application/screens/content_detail/content_detail_skeleton.dart';
 import 'package:bedbug/application/screens/content_detail/widgets/content_media_view.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
-import 'package:bedbug/features/content/domain/entities/media_content.dart';
+import 'package:bedbug/resources/content/media_content.entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

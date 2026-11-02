@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:bedbug/features/content/domain/entities/reaction.dart';
-import 'package:bedbug/features/content/domain/extensions/reaction_text_extension.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
+import 'package:bedbug/resources/content/content.repository.hive.dart';
+import 'package:bedbug/resources/content/reaction.entity.dart';
+import 'package:bedbug/resources/content/reaction.repository.hive.dart';
+import 'package:bedbug/resources/content/reaction_text.extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

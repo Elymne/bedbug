@@ -1,7 +1,7 @@
 import 'package:bedbug/application/notifiers/local_signature_notifier.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/core/notifier/notifier_state.dart';
 import 'package:bedbug/features/content/domain/usecases/delete_untrusted_contents_usecase.dart';
-import 'package:bedbug/shared/domain/params.dart';
-import 'package:bedbug/shared/notifier/notifier_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SplashNotifier].

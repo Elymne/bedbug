@@ -1,7 +1,7 @@
 import 'package:bedbug/application/screens/drawing_editor/drawing_editor_notifier.dart';
 import 'package:bedbug/application/screens/drawing_editor/drawing_tool_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
+import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

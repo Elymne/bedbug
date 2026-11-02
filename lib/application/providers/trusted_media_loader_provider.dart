@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
-import 'package:bedbug/features/content/domain/object_values/trust_settings.dart';
 import 'package:bedbug/features/content/domain/usecases/fetch_media_usecase.dart';
+import 'package:bedbug/resources/content/trust_settings.value_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [TrustedMediaLoader].

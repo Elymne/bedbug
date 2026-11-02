@@ -1,7 +1,7 @@
-import 'package:bedbug/features/content/domain/object_values/drawing.dart';
+import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/features/content/domain/usecases/get_drawing_draft_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/save_drawing_draft_usecase.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/resources/content/drawing.value_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [DrawingDraftNotifier].

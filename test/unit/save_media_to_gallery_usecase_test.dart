@@ -1,18 +1,18 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/features/content/domain/gateways/media_gallery_gateway.dart';
-import 'package:bedbug/features/content/domain/gateways/media_http_gateway.dart';
-import 'package:bedbug/features/content/domain/object_values/domain_rule.dart';
-import 'package:bedbug/features/content/domain/object_values/media_file_format.dart';
-import 'package:bedbug/features/content/domain/object_values/safe_url.dart';
-import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
-import 'package:bedbug/features/content/domain/services/domain_rule_service.dart';
-import 'package:bedbug/features/content/domain/services/media_format_service.dart';
-import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
-import 'package:bedbug/features/content/domain/services/url_trust_service.dart';
 import 'package:bedbug/features/content/domain/usecases/fetch_media_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/save_media_to_gallery_usecase.dart';
-import 'package:bedbug/shared/exceptions/gallery_exception.dart';
+import 'package:bedbug/gateways/media/gallery.exception.dart';
+import 'package:bedbug/gateways/media/media_gallery.gateway.dart';
+import 'package:bedbug/gateways/media/media_http.gateway.dart';
+import 'package:bedbug/resources/content/domain_rule.value_object.dart';
+import 'package:bedbug/resources/content/media_file_format.enum.dart';
+import 'package:bedbug/resources/content/safe_url.value_object.dart';
+import 'package:bedbug/resources/content/url_trust_policy.value_object.dart';
+import 'package:bedbug/services/content/media_format.service.dart';
+import 'package:bedbug/services/trust/domain_rule.service.dart';
+import 'package:bedbug/services/trust/url_safety.service.dart';
+import 'package:bedbug/services/trust/url_trust.service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Faux serveur : une réponse par adresse, et le journal des tailles maximales demandées.

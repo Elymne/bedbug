@@ -1,13 +1,13 @@
 import 'dart:io';
 
+import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
-import 'package:bedbug/features/signature/domain/extensions/signature_text_extension.dart';
 import 'package:bedbug/features/signature/domain/usecases/get_local_signature_usecase.dart';
 import 'package:bedbug/features/signature/domain/usecases/get_signature_suggestions_usecase.dart';
 import 'package:bedbug/features/signature/domain/usecases/save_local_signature_usecase.dart';
-import 'package:bedbug/features/signature/infrastructure/datasources/hive_signature_repository.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/resources/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature.repository.hive.dart';
+import 'package:bedbug/resources/signature/signature_text.extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

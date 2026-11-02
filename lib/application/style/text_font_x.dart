@@ -1,4 +1,4 @@
-import 'package:bedbug/features/signature/domain/enums/text_font.dart';
+import 'package:bedbug/resources/signature/text_font.enum.dart';
 import 'package:flutter/material.dart';
 
 /// Correspondance entre une [TextFont] du domaine et la police embarquée dans l'application.

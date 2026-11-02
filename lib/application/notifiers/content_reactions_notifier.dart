@@ -1,7 +1,7 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
-import 'package:bedbug/features/content/domain/entities/reaction.dart';
 import 'package:bedbug/features/content/domain/usecases/get_content_reactions_usecase.dart';
-import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
+import 'package:bedbug/resources/content/reaction.entity.dart';
+import 'package:bedbug/resources/signature/signature.repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [ContentReactionsNotifier], un par identifiant de contenu.

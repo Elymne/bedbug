@@ -1,12 +1,12 @@
 import 'package:bedbug/application/screens/signature/signature_screen.dart';
-import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/entities/text_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_origin.dart';
+import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/features/content/domain/usecases/get_contents_by_signatures_usecase.dart';
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
-import 'package:bedbug/features/signature/domain/enums/social_network.dart';
 import 'package:bedbug/features/signature/domain/usecases/get_signature_usecase.dart';
-import 'package:bedbug/shared/domain/either.dart';
+import 'package:bedbug/resources/content/content.entity.dart';
+import 'package:bedbug/resources/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/text_content.entity.dart';
+import 'package:bedbug/resources/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/social_network.enum.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/pump_app.dart';

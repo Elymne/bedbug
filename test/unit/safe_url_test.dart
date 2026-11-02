@@ -1,4 +1,4 @@
-import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
+import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

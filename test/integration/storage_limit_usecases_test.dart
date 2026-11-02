@@ -1,17 +1,17 @@
 import 'dart:io';
 
-import 'package:bedbug/features/content/domain/entities/reaction.dart';
-import 'package:bedbug/features/content/domain/entities/text_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
+import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/features/content/domain/usecases/enforce_storage_limit_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_storage_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/save_storage_limit_usecase.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_seen_content_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_storage_repository.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/resources/content/content.repository.hive.dart';
+import 'package:bedbug/resources/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/reaction.entity.dart';
+import 'package:bedbug/resources/content/reaction.repository.hive.dart';
+import 'package:bedbug/resources/content/seen_content.repository.hive.dart';
+import 'package:bedbug/resources/content/storage.repository.dart';
+import 'package:bedbug/resources/content/storage.repository.hive.dart';
+import 'package:bedbug/resources/content/text_content.entity.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -1,12 +1,12 @@
-import 'package:bedbug/features/settings/domain/repositories/settings_repository.dart';
-import 'package:bedbug/features/settings/domain/value_objects/user_settings.dart';
-import 'package:bedbug/features/settings/infrastructure/datasources/hive_settings_repository.dart';
-import 'package:bedbug/shared/domain/either.dart';
-import 'package:bedbug/shared/domain/params.dart';
-import 'package:bedbug/shared/domain/usecase.dart';
-import 'package:bedbug/shared/exceptions/data_exception.dart';
-import 'package:bedbug/shared/exceptions/datasource_exception.dart';
-import 'package:bedbug/shared/logger/app_logger.dart';
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/core/domain/usecase.dart';
+import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/resources/data.exception.dart';
+import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/settings/settings.repository.dart';
+import 'package:bedbug/resources/settings/settings.repository.hive.dart';
+import 'package:bedbug/resources/settings/user_settings.value_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveSettingsUsecase].

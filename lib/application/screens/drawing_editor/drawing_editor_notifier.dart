@@ -1,7 +1,7 @@
 import 'package:bedbug/application/notifiers/drawing_draft_notifier.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
-import 'package:bedbug/features/content/domain/services/drawing_validation_service.dart';
+import 'package:bedbug/resources/content/drawing.value_object.dart';
+import 'package:bedbug/resources/content/drawing_operation.value_object.dart';
+import 'package:bedbug/services/content/drawing_validation.service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Nombre maximal d'étapes gardées pour annuler.

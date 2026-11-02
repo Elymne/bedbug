@@ -1,6 +1,6 @@
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/text_font_x.dart';
-import 'package:bedbug/features/signature/domain/enums/text_font.dart';
+import 'package:bedbug/resources/signature/text_font.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

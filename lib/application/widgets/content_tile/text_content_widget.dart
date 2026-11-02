@@ -1,5 +1,5 @@
 import 'package:bedbug/application/style/app_text_styles.dart';
-import 'package:bedbug/features/content/domain/entities/text_content.dart';
+import 'package:bedbug/resources/content/text_content.entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -1,10 +1,10 @@
 import 'package:bedbug/application/screens/exchange_logs/exchange_logs_screen.dart';
-import 'package:bedbug/features/exchange/domain/entities/exchange_log.dart';
-import 'package:bedbug/features/exchange/domain/enums/exchange_frame_type.dart';
-import 'package:bedbug/features/exchange/domain/enums/exchange_log_outcome.dart';
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/features/exchange/domain/usecases/get_exchange_logs_usecase.dart';
-import 'package:bedbug/shared/domain/either.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/gateways/exchange/exchange_frame_type.enum.dart';
+import 'package:bedbug/resources/exchange/exchange_log.entity.dart';
+import 'package:bedbug/resources/exchange/exchange_log_outcome.enum.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/pump_app.dart';

@@ -1,6 +1,6 @@
 import 'package:bedbug/application/screens/create/widgets/content_type_selector.dart';
 import 'package:bedbug/application/widgets/ghost/app_ghost_icon.dart';
-import 'package:bedbug/features/content/domain/enums/content_type.dart';
+import 'package:bedbug/resources/content/content_type.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

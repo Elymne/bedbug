@@ -7,7 +7,7 @@ import 'package:bedbug/application/widgets/fields/app_select_option.dart';
 import 'package:bedbug/application/widgets/headers/app_page_header.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/separators/app_list_separator.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
+import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

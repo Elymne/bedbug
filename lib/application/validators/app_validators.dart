@@ -1,9 +1,9 @@
-import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
-import 'package:bedbug/features/content/domain/extensions/reaction_text_extension.dart';
-import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
-import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
-import 'package:bedbug/features/signature/domain/enums/social_network.dart';
-import 'package:bedbug/features/signature/domain/extensions/signature_text_extension.dart';
+import 'package:bedbug/resources/content/flair.extension.dart';
+import 'package:bedbug/resources/content/reaction_text.extension.dart';
+import 'package:bedbug/resources/content/storage.repository.dart';
+import 'package:bedbug/resources/signature/signature_text.extension.dart';
+import 'package:bedbug/resources/signature/social_network.enum.dart';
+import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Validators personnalisés compatibles avec [ReactiveForm].

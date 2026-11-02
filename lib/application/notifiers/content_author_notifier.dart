@@ -1,5 +1,5 @@
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/usecases/get_signature_usecase.dart';
+import 'package:bedbug/resources/signature/signature.entity.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [ContentAuthorNotifier], un par identifiant de signature.

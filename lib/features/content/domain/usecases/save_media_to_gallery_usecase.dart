@@ -1,13 +1,13 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/features/content/domain/gateways/media_gallery_gateway.dart';
-import 'package:bedbug/features/content/domain/services/media_format_service.dart';
-import 'package:bedbug/features/content/infrastructure/gateways/gal_media_gallery_gateway.dart';
-import 'package:bedbug/shared/domain/either.dart';
-import 'package:bedbug/shared/domain/params.dart';
-import 'package:bedbug/shared/domain/usecase.dart';
-import 'package:bedbug/shared/exceptions/gallery_exception.dart';
-import 'package:bedbug/shared/logger/app_logger.dart';
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/core/domain/usecase.dart';
+import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/gateways/media/gallery.exception.dart';
+import 'package:bedbug/gateways/media/media_gallery.gateway.dart';
+import 'package:bedbug/gateways/media/media_gallery.gateway.gal.dart';
+import 'package:bedbug/services/content/media_format.service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Taille maximale d'un média enregistré dans la galerie, en octets.

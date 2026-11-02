@@ -7,8 +7,8 @@ import 'package:bedbug/application/screens/drawing_editor/widgets/drawing_editor
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
+import 'package:bedbug/core/extensions/build_context_x.dart';
+import 'package:bedbug/resources/content/drawing.value_object.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

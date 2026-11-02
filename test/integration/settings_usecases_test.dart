@@ -1,9 +1,9 @@
 import 'dart:io';
 
+import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/features/settings/domain/usecases/get_settings_usecase.dart';
 import 'package:bedbug/features/settings/domain/usecases/save_settings_usecase.dart';
-import 'package:bedbug/features/settings/domain/value_objects/user_settings.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/resources/settings/user_settings.value_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

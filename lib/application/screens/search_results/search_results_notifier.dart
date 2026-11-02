@@ -1,10 +1,10 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/screens/search_results/search_criteria.dart';
-import 'package:bedbug/features/content/domain/entities/content.dart';
+import 'package:bedbug/core/notifier/notifier_state.dart';
 import 'package:bedbug/features/content/domain/usecases/get_contents_by_flair_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_contents_by_signatures_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_filtered_contents_usecase.dart';
-import 'package:bedbug/shared/notifier/notifier_state.dart';
+import 'package:bedbug/resources/content/content.entity.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SearchResultsNotifier], un par [SearchCriteria].

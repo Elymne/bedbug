@@ -1,13 +1,13 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/screens/home/home_feed_notifier.dart';
-import 'package:bedbug/features/content/domain/object_values/domain_rule.dart';
-import 'package:bedbug/features/content/domain/object_values/trust_settings.dart';
-import 'package:bedbug/features/content/domain/services/trust_rules_service.dart';
+import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/features/content/domain/usecases/delete_untrusted_contents_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_trust_settings_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/parse_domain_rule_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/save_trust_settings_usecase.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/resources/content/domain_rule.value_object.dart';
+import 'package:bedbug/resources/content/trust_settings.value_object.dart';
+import 'package:bedbug/services/trust/trust_rules.service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [TrustSettingsNotifier].

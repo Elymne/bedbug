@@ -1,17 +1,17 @@
-import 'package:bedbug/features/content/domain/repositories/comment_repository.dart';
-import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
-import 'package:bedbug/features/content/domain/repositories/reaction_repository.dart';
-import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_comment_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_storage_repository.dart';
-import 'package:bedbug/shared/domain/either.dart';
-import 'package:bedbug/shared/domain/params.dart';
-import 'package:bedbug/shared/domain/usecase.dart';
-import 'package:bedbug/shared/exceptions/data_exception.dart';
-import 'package:bedbug/shared/exceptions/datasource_exception.dart';
-import 'package:bedbug/shared/logger/app_logger.dart';
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/core/domain/usecase.dart';
+import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/resources/content/comment.repository.dart';
+import 'package:bedbug/resources/content/comment.repository.hive.dart';
+import 'package:bedbug/resources/content/content.repository.dart';
+import 'package:bedbug/resources/content/content.repository.hive.dart';
+import 'package:bedbug/resources/content/reaction.repository.dart';
+import 'package:bedbug/resources/content/reaction.repository.hive.dart';
+import 'package:bedbug/resources/content/storage.repository.dart';
+import 'package:bedbug/resources/content/storage.repository.hive.dart';
+import 'package:bedbug/resources/data.exception.dart';
+import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [ClearContentsUsecase].

@@ -1,8 +1,8 @@
-import 'package:bedbug/features/content/domain/object_values/flair_suggestion.dart';
+import 'package:bedbug/core/notifier/notifier_state.dart';
 import 'package:bedbug/features/content/domain/usecases/get_flair_suggestions_usecase.dart';
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/usecases/get_signature_suggestions_usecase.dart';
-import 'package:bedbug/shared/notifier/notifier_state.dart';
+import 'package:bedbug/resources/content/flair_suggestion.value_object.dart';
+import 'package:bedbug/resources/signature/signature.entity.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SearchSuggestionsNotifier].

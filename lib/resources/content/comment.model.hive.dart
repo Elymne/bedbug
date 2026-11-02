@@ -1,0 +1,72 @@
+import 'package:bedbug/resources/content/comment.entity.dart';
+import 'package:bedbug/resources/data.exception.dart';
+import 'package:bedbug/resources/hive.type_ids.dart';
+import 'package:hive_ce/hive.dart';
+
+part 'comment.model.hive.g.dart';
+
+/// DTO Hive représentant un [Comment] persisté localement.
+@HiveType(typeId: HiveTypeIds.comment)
+class CommentHiveModel extends HiveObject {
+  /// Crée un [CommentHiveModel].
+  CommentHiveModel({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.contentId,
+    required this.signatureId,
+    required this.body,
+  });
+
+  /// Crée un [CommentHiveModel] depuis une entité [Comment].
+  factory CommentHiveModel.fromEntity(Comment entity) {
+    return CommentHiveModel(
+      id: entity.id,
+      createdAt: entity.createdAt.millisecondsSinceEpoch,
+      updatedAt: entity.updatedAt.millisecondsSinceEpoch,
+      contentId: entity.contentId,
+      signatureId: entity.signatureId,
+      body: entity.body,
+    );
+  }
+
+  /// Identifiant unique du commentaire.
+  @HiveField(0)
+  final String id;
+
+  /// Date de création en millisecondes depuis l'époque Unix.
+  @HiveField(1)
+  final int createdAt;
+
+  /// Date de mise à jour en millisecondes depuis l'époque Unix.
+  @HiveField(2)
+  final int updatedAt;
+
+  /// Identifiant de la signature de l'auteur du commentaire.
+  @HiveField(3)
+  final String signatureId;
+
+  /// Corps du commentaire.
+  @HiveField(4)
+  final String body;
+
+  /// Identifiant du contenu commenté.
+  @HiveField(5)
+  final String contentId;
+
+  /// Convertit ce modèle en entité [Comment].
+  Comment toEntity() {
+    try {
+      return Comment(
+        id: id,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
+        updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
+        contentId: contentId,
+        signatureId: signatureId,
+        body: body,
+      );
+    } catch (error) {
+      throw DataException('CommentHiveModel', error);
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import 'package:bedbug/application/widgets/ghost/app_ghost_animation.dart';
 import 'package:bedbug/application/widgets/reactions/reaction_bubble_layer.dart';
-import 'package:bedbug/features/signature/domain/enums/text_font.dart';
+import 'package:bedbug/resources/signature/text_font.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:bedbug/features/exchange/domain/gateways/exchange_transport_gateway.dart';
-import 'package:bedbug/features/exchange/domain/gateways/peer_link_gateway.dart';
-import 'package:bedbug/features/exchange/infrastructure/gateways/ble_peer_link_gateway.dart';
+import 'package:bedbug/gateways/exchange/exchange_transport.gateway.dart';
+import 'package:bedbug/gateways/exchange/peer_link.gateway.ble.dart';
+import 'package:bedbug/gateways/exchange/peer_link.gateway.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 

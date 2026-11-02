@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:bedbug/features/content/domain/entities/reaction.dart';
 import 'package:bedbug/features/content/domain/usecases/count_content_reactions_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/save_reaction_usecase.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
+import 'package:bedbug/resources/content/reaction.entity.dart';
+import 'package:bedbug/resources/content/reaction.repository.hive.dart';
+import 'package:bedbug/resources/signature/signature.entity.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

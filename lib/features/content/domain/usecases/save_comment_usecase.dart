@@ -1,13 +1,13 @@
-import 'package:bedbug/features/content/domain/entities/comment.dart';
-import 'package:bedbug/features/content/domain/extensions/comment_text_extension.dart';
-import 'package:bedbug/features/content/domain/repositories/comment_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_comment_repository.dart';
-import 'package:bedbug/shared/domain/either.dart';
-import 'package:bedbug/shared/domain/params.dart';
-import 'package:bedbug/shared/domain/usecase.dart';
-import 'package:bedbug/shared/exceptions/data_exception.dart';
-import 'package:bedbug/shared/exceptions/datasource_exception.dart';
-import 'package:bedbug/shared/logger/app_logger.dart';
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/core/domain/usecase.dart';
+import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/resources/content/comment.entity.dart';
+import 'package:bedbug/resources/content/comment.repository.dart';
+import 'package:bedbug/resources/content/comment.repository.hive.dart';
+import 'package:bedbug/resources/content/comment_text.extension.dart';
+import 'package:bedbug/resources/data.exception.dart';
+import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveCommentUsecase].

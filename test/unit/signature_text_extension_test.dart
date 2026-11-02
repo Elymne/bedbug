@@ -1,5 +1,5 @@
 import 'package:bedbug/application/screens/avatar_picker/kaomoji_catalog.dart';
-import 'package:bedbug/features/signature/domain/extensions/signature_text_extension.dart';
+import 'package:bedbug/resources/signature/signature_text.extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

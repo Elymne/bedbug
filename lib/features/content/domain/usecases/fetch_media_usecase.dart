@@ -1,15 +1,15 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/features/content/domain/gateways/media_http_gateway.dart';
-import 'package:bedbug/features/content/domain/object_values/safe_url.dart';
-import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
-import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
-import 'package:bedbug/features/content/domain/services/url_trust_service.dart';
-import 'package:bedbug/features/content/infrastructure/gateways/dio_media_http_gateway.dart';
-import 'package:bedbug/shared/domain/either.dart';
-import 'package:bedbug/shared/domain/params.dart';
-import 'package:bedbug/shared/domain/usecase.dart';
-import 'package:bedbug/shared/logger/app_logger.dart';
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/core/domain/usecase.dart';
+import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/gateways/media/media_http.gateway.dart';
+import 'package:bedbug/gateways/media/media_http.gateway.dio.dart';
+import 'package:bedbug/resources/content/safe_url.value_object.dart';
+import 'package:bedbug/resources/content/url_trust_policy.value_object.dart';
+import 'package:bedbug/services/trust/url_safety.service.dart';
+import 'package:bedbug/services/trust/url_trust.service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Nombre maximal de redirections suivies avant d'abandonner.

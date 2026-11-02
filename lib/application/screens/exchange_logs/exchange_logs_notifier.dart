@@ -1,8 +1,8 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
-import 'package:bedbug/features/exchange/domain/entities/exchange_log.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/core/notifier/notifier_state.dart';
 import 'package:bedbug/features/exchange/domain/usecases/get_exchange_logs_usecase.dart';
-import 'package:bedbug/shared/domain/params.dart';
-import 'package:bedbug/shared/notifier/notifier_state.dart';
+import 'package:bedbug/resources/exchange/exchange_log.entity.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [ExchangeLogsNotifier].

@@ -1,9 +1,9 @@
-import 'package:bedbug/features/exchange/domain/gateways/peer_link_gateway.dart';
-import 'package:bedbug/features/exchange/infrastructure/gateways/ble_peer_link_gateway.dart';
-import 'package:bedbug/shared/domain/either.dart';
-import 'package:bedbug/shared/domain/params.dart';
-import 'package:bedbug/shared/domain/usecase.dart';
-import 'package:bedbug/shared/logger/app_logger.dart';
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/core/domain/usecase.dart';
+import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/gateways/exchange/peer_link.gateway.ble.dart';
+import 'package:bedbug/gateways/exchange/peer_link.gateway.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [StartPeerLinkUsecase].

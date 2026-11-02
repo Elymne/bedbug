@@ -1,5 +1,5 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
-import 'package:bedbug/shared/extensions/datetime_x.dart';
+import 'package:bedbug/core/extensions/datetime_x.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 

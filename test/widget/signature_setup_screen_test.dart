@@ -1,12 +1,12 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/signature_setup/signature_setup_screen.dart';
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
-import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/features/signature/domain/usecases/get_local_signature_usecase.dart';
 import 'package:bedbug/features/signature/domain/usecases/save_local_signature_usecase.dart';
-import 'package:bedbug/shared/domain/either.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/resources/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature.repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

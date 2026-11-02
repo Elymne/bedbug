@@ -1,7 +1,7 @@
 import 'package:bedbug/application/notifiers/local_signature_notifier.dart';
 import 'package:bedbug/application/widgets/signature/app_signature_form.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
+import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

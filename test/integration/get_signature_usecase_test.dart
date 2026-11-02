@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
-import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
 import 'package:bedbug/features/signature/domain/usecases/get_signature_usecase.dart';
 import 'package:bedbug/features/signature/domain/usecases/save_local_signature_usecase.dart';
+import 'package:bedbug/resources/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature.repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

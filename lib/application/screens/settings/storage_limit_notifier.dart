@@ -1,13 +1,13 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/screens/home/home_feed_notifier.dart';
-import 'package:bedbug/features/content/domain/entities/storage.dart';
-import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/core/notifier/notifier_state.dart';
 import 'package:bedbug/features/content/domain/usecases/enforce_storage_limit_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/get_storage_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/recalculate_survival_scores_usecase.dart';
 import 'package:bedbug/features/content/domain/usecases/save_storage_limit_usecase.dart';
-import 'package:bedbug/shared/domain/params.dart';
-import 'package:bedbug/shared/notifier/notifier_state.dart';
+import 'package:bedbug/resources/content/storage.entity.dart';
+import 'package:bedbug/resources/content/storage.repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [StorageLimitNotifier].

@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:bedbug/features/content/domain/object_values/domain_rule.dart';
-import 'package:bedbug/features/content/domain/services/domain_rule_service.dart';
-import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
 import 'package:bedbug/features/content/domain/usecases/parse_domain_rule_usecase.dart';
-import 'package:bedbug/features/content/infrastructure/gateways/public_suffix_package_public_suffix_gateway.dart';
+import 'package:bedbug/gateways/public_suffix/public_suffix.gateway.package.dart';
+import 'package:bedbug/resources/content/domain_rule.value_object.dart';
+import 'package:bedbug/services/trust/domain_rule.service.dart';
+import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,8 +1,8 @@
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
-import 'package:bedbug/features/content/domain/object_values/flair_suggestion.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
+import 'package:bedbug/core/extensions/build_context_x.dart';
+import 'package:bedbug/resources/content/flair_suggestion.value_object.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -1,8 +1,8 @@
-import 'package:bedbug/features/content/domain/object_values/domain_rule.dart';
-import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
-import 'package:bedbug/features/content/domain/services/domain_rule_service.dart';
-import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
-import 'package:bedbug/features/content/domain/services/url_trust_service.dart';
+import 'package:bedbug/resources/content/domain_rule.value_object.dart';
+import 'package:bedbug/resources/content/url_trust_policy.value_object.dart';
+import 'package:bedbug/services/trust/domain_rule.service.dart';
+import 'package:bedbug/services/trust/url_safety.service.dart';
+import 'package:bedbug/services/trust/url_trust.service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,12 +1,12 @@
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
 import 'package:bedbug/application/screens/settings/widgets/settings_menu_tile.dart';
 import 'package:bedbug/application/widgets/separators/app_list_separator.dart';
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/features/settings/domain/usecases/get_settings_usecase.dart';
-import 'package:bedbug/features/settings/domain/value_objects/user_settings.dart';
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
 import 'package:bedbug/features/signature/domain/usecases/get_local_signature_usecase.dart';
-import 'package:bedbug/shared/domain/either.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/resources/settings/user_settings.value_object.dart';
+import 'package:bedbug/resources/signature/signature.entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/pump_app.dart';

@@ -1,12 +1,12 @@
-import 'package:bedbug/features/exchange/domain/entities/exchange_log.dart';
-import 'package:bedbug/features/exchange/domain/repositories/exchange_log_repository.dart';
-import 'package:bedbug/features/exchange/infrastructure/datasources/hive_exchange_log_repository.dart';
-import 'package:bedbug/shared/domain/either.dart';
-import 'package:bedbug/shared/domain/params.dart';
-import 'package:bedbug/shared/domain/usecase.dart';
-import 'package:bedbug/shared/exceptions/data_exception.dart';
-import 'package:bedbug/shared/exceptions/datasource_exception.dart';
-import 'package:bedbug/shared/logger/app_logger.dart';
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/core/domain/usecase.dart';
+import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/resources/data.exception.dart';
+import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/exchange/exchange_log.entity.dart';
+import 'package:bedbug/resources/exchange/exchange_log.repository.dart';
+import 'package:bedbug/resources/exchange/exchange_log.repository.hive.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Nombre maximal de traces conservées dans le journal des échanges.

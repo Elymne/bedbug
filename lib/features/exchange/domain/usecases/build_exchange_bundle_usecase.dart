@@ -1,24 +1,24 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/entities/reaction.dart';
-import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
-import 'package:bedbug/features/content/domain/repositories/reaction_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
-import 'package:bedbug/features/exchange/domain/gateways/exchange_codec_gateway.dart';
-import 'package:bedbug/features/exchange/domain/object_values/exchange_bundle.dart';
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/core/domain/usecase.dart';
+import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/features/exchange/domain/usecases/select_from_exchange_offer_usecase.dart';
-import 'package:bedbug/features/exchange/infrastructure/gateways/json_zlib_exchange_codec_gateway.dart';
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
-import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
-import 'package:bedbug/features/signature/infrastructure/datasources/hive_signature_repository.dart';
-import 'package:bedbug/shared/domain/either.dart';
-import 'package:bedbug/shared/domain/params.dart';
-import 'package:bedbug/shared/domain/usecase.dart';
-import 'package:bedbug/shared/exceptions/data_exception.dart';
-import 'package:bedbug/shared/exceptions/datasource_exception.dart';
-import 'package:bedbug/shared/logger/app_logger.dart';
+import 'package:bedbug/gateways/exchange/exchange_bundle.value_object.dart';
+import 'package:bedbug/gateways/exchange/exchange_codec.gateway.dart';
+import 'package:bedbug/gateways/exchange/exchange_codec.gateway.json_zlib.dart';
+import 'package:bedbug/resources/content/content.entity.dart';
+import 'package:bedbug/resources/content/content.repository.dart';
+import 'package:bedbug/resources/content/content.repository.hive.dart';
+import 'package:bedbug/resources/content/reaction.entity.dart';
+import 'package:bedbug/resources/content/reaction.repository.dart';
+import 'package:bedbug/resources/content/reaction.repository.hive.dart';
+import 'package:bedbug/resources/data.exception.dart';
+import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature.repository.dart';
+import 'package:bedbug/resources/signature/signature.repository.hive.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [BuildExchangeBundleUsecase].
