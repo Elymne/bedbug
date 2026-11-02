@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:bedbug/gateways/exchange/exchange_transport.gateway.dart';
+import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
 
 /// Transport en mémoire : relie deux extrémités sans radio, pour tester le protocole de session.
 class InMemoryExchangeTransportGateway implements ExchangeTransportGateway {

@@ -3,8 +3,8 @@ import 'package:bedbug/application/screens/settings/widgets/settings_menu_tile.d
 import 'package:bedbug/application/widgets/separators/app_list_separator.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/settings/user_settings.value_object.dart';
-import 'package:bedbug/resources/signature/signature.entity.dart';
+import 'package:bedbug/resources/settings/settings/user_settings.value_object.dart';
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/usecases/settings/get_settings/get_settings.failure.dart';
 import 'package:bedbug/usecases/settings/get_settings/get_settings.usecase.dart';
 import 'package:bedbug/usecases/signature/get_local_signature/get_local_signature.failure.dart';

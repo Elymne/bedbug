@@ -1,5 +1,5 @@
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/trust_settings.value_object.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:bedbug/usecases/trust/save_trust_settings/save_trust_settings.usecase.dart';
 
 /// Paramètres du [SaveTrustSettingsUsecase].

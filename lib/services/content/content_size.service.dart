@@ -1,13 +1,13 @@
 import 'dart:convert';
 
 import 'package:bedbug/core/domain/service.dart';
-import 'package:bedbug/resources/content/content.entity.dart';
-import 'package:bedbug/resources/content/drawing.value_object.dart';
-import 'package:bedbug/resources/content/drawing_content.entity.dart';
-import 'package:bedbug/resources/content/drawing_operation.value_object.dart';
-import 'package:bedbug/resources/content/link_content.entity.dart';
-import 'package:bedbug/resources/content/media_content.entity.dart';
-import 'package:bedbug/resources/content/text_content.entity.dart';
+import 'package:bedbug/resources/content/content/content.entity.dart';
+import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
+import 'package:bedbug/resources/content/content/link_content.entity.dart';
+import 'package:bedbug/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/resources/content/drawing/drawing_operation.value_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [ContentSizeService].

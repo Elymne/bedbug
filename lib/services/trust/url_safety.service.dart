@@ -1,5 +1,5 @@
 import 'package:bedbug/core/domain/service.dart';
-import 'package:bedbug/resources/content/safe_url.value_object.dart';
+import 'package:bedbug/resources/content/trust_settings/safe_url.value_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Longueur maximale, en caractères, d'une URL acceptée.

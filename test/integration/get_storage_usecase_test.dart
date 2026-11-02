@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/storage.entity.dart';
-import 'package:bedbug/resources/content/storage.model.hive.dart';
-import 'package:bedbug/resources/content/storage.repository.dart';
-import 'package:bedbug/resources/content/storage.repository.hive.dart';
+import 'package:bedbug/resources/content/storage/storage.entity.dart';
+import 'package:bedbug/resources/content/storage/storage.model.hive.dart';
+import 'package:bedbug/resources/content/storage/storage.repository.dart';
+import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
 import 'package:bedbug/usecases/storage/get_storage/get_storage.usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

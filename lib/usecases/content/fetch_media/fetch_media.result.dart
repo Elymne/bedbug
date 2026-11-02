@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/resources/content/safe_url.value_object.dart';
+import 'package:bedbug/resources/content/trust_settings/safe_url.value_object.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.usecase.dart';
 
 /// Média téléchargé par le [FetchMediaUsecase].

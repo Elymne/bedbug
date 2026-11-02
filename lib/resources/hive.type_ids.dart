@@ -1,13 +1,13 @@
-import 'package:bedbug/resources/content/comment.model.hive.dart';
-import 'package:bedbug/resources/content/content.model.hive.dart';
-import 'package:bedbug/resources/content/reaction.model.hive.dart';
-import 'package:bedbug/resources/content/storage.model.hive.dart';
-import 'package:bedbug/resources/content/trust_settings.model.hive.dart';
-import 'package:bedbug/resources/error_log/error_log.model.hive.dart';
-import 'package:bedbug/resources/exchange/exchange_log.model.hive.dart';
-import 'package:bedbug/resources/exchange/keychain.model.hive.dart';
-import 'package:bedbug/resources/settings/settings.model.hive.dart';
-import 'package:bedbug/resources/signature/signature.model.hive.dart';
+import 'package:bedbug/resources/content/comment/comment.model.hive.dart';
+import 'package:bedbug/resources/content/content/content.model.hive.dart';
+import 'package:bedbug/resources/content/reaction/reaction.model.hive.dart';
+import 'package:bedbug/resources/content/storage/storage.model.hive.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.model.hive.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.model.hive.dart';
+import 'package:bedbug/resources/exchange/exchange_log/exchange_log.model.hive.dart';
+import 'package:bedbug/resources/exchange/keychain/keychain.model.hive.dart';
+import 'package:bedbug/resources/settings/settings/settings.model.hive.dart';
+import 'package:bedbug/resources/signature/signature/signature.model.hive.dart';
 
 /// Registre centralisé des typeId Hive utilisés dans l'application.
 ///

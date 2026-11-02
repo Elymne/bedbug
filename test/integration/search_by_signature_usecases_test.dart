@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:bedbug/resources/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/text_content.entity.dart';
-import 'package:bedbug/resources/signature/signature.entity.dart';
-import 'package:bedbug/resources/signature/signature.repository.hive.dart';
+import 'package:bedbug/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
 import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.params.dart';

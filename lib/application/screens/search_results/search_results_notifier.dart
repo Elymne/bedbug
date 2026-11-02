@@ -1,7 +1,7 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/screens/search_results/search_criteria.dart';
 import 'package:bedbug/core/notifier/notifier_state.dart';
-import 'package:bedbug/resources/content/content.entity.dart';
+import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/usecases/feed/get_contents_by_flair/get_contents_by_flair.failure.dart';
 import 'package:bedbug/usecases/feed/get_contents_by_flair/get_contents_by_flair.params.dart';
 import 'package:bedbug/usecases/feed/get_contents_by_flair/get_contents_by_flair.usecase.dart';

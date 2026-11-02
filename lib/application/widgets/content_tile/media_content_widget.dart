@@ -1,7 +1,7 @@
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/widgets/images/app_image_count_badge.dart';
 import 'package:bedbug/application/widgets/media/app_remote_media.dart';
-import 'package:bedbug/resources/content/media_content.entity.dart';
+import 'package:bedbug/resources/content/content/media_content.entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

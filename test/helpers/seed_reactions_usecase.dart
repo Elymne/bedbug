@@ -5,15 +5,15 @@ import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/extensions/string_uuid_x.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/resources/content/content.repository.dart';
-import 'package:bedbug/resources/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/reaction.entity.dart';
-import 'package:bedbug/resources/content/reaction.repository.dart';
-import 'package:bedbug/resources/content/reaction.repository.hive.dart';
+import 'package:bedbug/resources/content/content/content.repository.dart';
+import 'package:bedbug/resources/content/content/content.repository.hive.dart';
+import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/resources/content/reaction/reaction.repository.dart';
+import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
-import 'package:bedbug/resources/signature/signature.entity.dart';
-import 'package:bedbug/resources/signature/text_font.enum.dart';
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature/text_font.enum.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SeedReactionsUsecase].

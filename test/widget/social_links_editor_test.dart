@@ -8,7 +8,7 @@ import 'package:bedbug/application/screens/settings/widgets/social_handle_dialog
 import 'package:bedbug/application/screens/settings/widgets/social_links_editor.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
-import 'package:bedbug/resources/signature/social_network.enum.dart';
+import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

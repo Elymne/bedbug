@@ -1,6 +1,6 @@
 import 'package:bedbug/application/style/app_colors.dart';
-import 'package:bedbug/resources/content/tag.enum.dart';
-import 'package:bedbug/resources/content/tag_color.enum.dart';
+import 'package:bedbug/resources/content/content/tag.enum.dart';
+import 'package:bedbug/resources/content/content/tag_color.enum.dart';
 import 'package:flutter/material.dart';
 
 /// Correspondance entre la clé sémantique [TagColor] du domaine et une

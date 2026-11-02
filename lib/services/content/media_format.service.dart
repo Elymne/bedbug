@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bedbug/core/domain/service.dart';
-import 'package:bedbug/resources/content/media_file_format.enum.dart';
+import 'package:bedbug/resources/content/content/media_file_format.enum.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Marques d'un conteneur ISO qui désignent des images (HEIF, AVIF), et non des vidéos.

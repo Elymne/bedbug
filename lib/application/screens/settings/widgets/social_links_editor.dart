@@ -10,7 +10,7 @@ import 'package:bedbug/application/widgets/fields/app_select_option.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
-import 'package:bedbug/resources/signature/social_network.enum.dart';
+import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

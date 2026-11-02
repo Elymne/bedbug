@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/error_log/error_log.model.hive.dart';
-import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
-import 'package:bedbug/resources/signature/signature.entity.dart';
-import 'package:bedbug/resources/signature/signature.repository.dart';
-import 'package:bedbug/resources/signature/signature.repository.hive.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.model.hive.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.repository.dart';
+import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
 import 'package:bedbug/usecases/signature/get_local_signature/get_local_signature.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

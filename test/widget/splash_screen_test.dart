@@ -3,7 +3,7 @@ import 'package:bedbug/application/screens/splash/splash_screen.dart';
 import 'package:bedbug/application/screens/splash/widgets/app_title_text.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/usecases/signature/get_local_signature/get_local_signature.failure.dart';
 import 'package:bedbug/usecases/signature/get_local_signature/get_local_signature.usecase.dart';
 import 'package:bedbug/usecases/trust/delete_untrusted_contents/delete_untrusted_contents.failure.dart';

@@ -1,4 +1,4 @@
-import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 
 /// Faux journal des erreurs imprévues, en mémoire, pour les tests qui construisent un use case à la main.
 class FakeErrorLogRepository implements ErrorLogRepository {

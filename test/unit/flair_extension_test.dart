@@ -1,4 +1,4 @@
-import 'package:bedbug/resources/content/flair.extension.dart';
+import 'package:bedbug/resources/content/content/flair.extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

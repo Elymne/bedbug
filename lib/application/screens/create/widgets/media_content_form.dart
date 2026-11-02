@@ -5,7 +5,7 @@ import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/media/app_remote_media.dart';
-import 'package:bedbug/resources/content/media_content.entity.dart';
+import 'package:bedbug/resources/content/content/media_content.entity.dart';
 import 'package:bedbug/services/content/media_kind.service.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:flutter/material.dart';

@@ -1,11 +1,11 @@
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/resources/content/viewed_content.repository.dart';
-import 'package:bedbug/resources/content/viewed_content.repository.hive.dart';
+import 'package:bedbug/resources/content/viewed_content/viewed_content.repository.dart';
+import 'package:bedbug/resources/content/viewed_content/viewed_content.repository.hive.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
-import 'package:bedbug/resources/error_log/error_log.repository.dart';
-import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.failure.dart';
 import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

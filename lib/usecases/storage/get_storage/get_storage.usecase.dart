@@ -3,13 +3,13 @@ import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/extensions/string_uuid_x.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/resources/content/storage.entity.dart';
-import 'package:bedbug/resources/content/storage.repository.dart';
-import 'package:bedbug/resources/content/storage.repository.hive.dart';
+import 'package:bedbug/resources/content/storage/storage.entity.dart';
+import 'package:bedbug/resources/content/storage/storage.repository.dart';
+import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
-import 'package:bedbug/resources/error_log/error_log.repository.dart';
-import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/storage/get_storage/get_storage.failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

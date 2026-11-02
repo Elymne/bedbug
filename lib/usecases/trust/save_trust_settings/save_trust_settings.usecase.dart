@@ -1,12 +1,12 @@
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/resources/content/trust_settings.repository.dart';
-import 'package:bedbug/resources/content/trust_settings.repository.hive.dart';
-import 'package:bedbug/resources/content/trust_settings.value_object.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.repository.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.repository.hive.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
-import 'package:bedbug/resources/error_log/error_log.repository.dart';
-import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/trust/get_trust_settings/get_trust_settings.failure.dart';
 import 'package:bedbug/usecases/trust/save_trust_settings/save_trust_settings.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

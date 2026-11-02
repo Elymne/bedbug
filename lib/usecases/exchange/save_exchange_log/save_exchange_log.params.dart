@@ -1,5 +1,5 @@
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/exchange/exchange_log.entity.dart';
+import 'package:bedbug/resources/exchange/exchange_log/exchange_log.entity.dart';
 import 'package:bedbug/usecases/exchange/save_exchange_log/save_exchange_log.usecase.dart';
 
 /// Paramètres du [SaveExchangeLogUsecase].

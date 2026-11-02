@@ -2,7 +2,7 @@ import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/ghost/app_ghost_icon.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.dart';
-import 'package:bedbug/resources/content/content_type.enum.dart';
+import 'package:bedbug/resources/content/content/content_type.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

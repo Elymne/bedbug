@@ -39,13 +39,14 @@ core → used by all
 ### Resources
 
 One folder per **data** scope (`content`, `exchange`, `settings`, `signature`, `error_log`…), not per business concern.
-A scope holds everything about its data, flat:
+Inside a scope, one folder per resource (`content/comment/`, `content/reaction/`, `exchange/exchange_log/`…), even when
+the scope holds a single one (`settings/settings/`). A resource folder holds everything about that data:
 
 ```
-resources/<scope>/
+resources/<scope>/<resource>/
   <name>.entity.dart            entity
   <name>.value_object.dart      value object
-  <name>.enum.dart              enum tied to the scope's data
+  <name>.enum.dart              enum tied to the resource
   <name>.extension.dart         extension tied to an entity or value object
   <name>.repository.dart        repository interface
   <name>.repository.hive.dart   repository implementation, suffixed with its technology
@@ -59,8 +60,8 @@ resources/
 
 ### Gateways
 
-One folder per external source (`media`, `public_suffix`, `og_metadata`, `exchange`…), same naming as resources:
-`<name>.gateway.dart` for the interface, `<name>.gateway.<technology>.dart` for each implementation
+One folder per external source (`media`, `public_suffix`, `og_metadata`, `exchange`…), then one folder per gateway
+(`media/media_http/`, `exchange/peer_link/`), same naming as resources: `<name>.gateway.dart` for the interface, `<name>.gateway.<technology>.dart` for each implementation
 (`media_http.gateway.dio.dart`, `peer_link.gateway.ble.dart`), plus the value objects, enums and exceptions of that
 source.
 
@@ -153,7 +154,7 @@ core/
 ### Enums and extensions
 
 - Tied to a single class → same file as the class.
-- Tied to an entity / value object or to a data scope → `resources/<scope>/` (or `gateways/<source>/`).
+- Tied to an entity / value object → its resource folder `resources/<scope>/<resource>/` (or its gateway folder).
 - Tied to a use case → that use case's folder.
 
 ### Repositories
@@ -349,7 +350,7 @@ Riverpod handles both state management and dependency injection.
 
 ### Hive
 
-- Hive models live in `resources/<scope>/<name>.model.hive.dart`, annotated with `@HiveType` / `@HiveField`.
+- Hive models live in `resources/<scope>/<resource>/<name>.model.hive.dart`, annotated with `@HiveType` / `@HiveField`.
 - Every `typeId` is declared in `HiveTypeIds`. Never reuse a removed `typeId`.
 - Regenerate with `build_runner` after each model change (see README).
 

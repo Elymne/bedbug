@@ -1,6 +1,6 @@
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/widgets/drawing/app_drawing_image.dart';
-import 'package:bedbug/resources/content/drawing_content.entity.dart';
+import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -1,6 +1,6 @@
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/signature/social_network.enum.dart';
-import 'package:bedbug/resources/signature/text_font.enum.dart';
+import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
+import 'package:bedbug/resources/signature/signature/text_font.enum.dart';
 import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.usecase.dart';
 
 /// Paramètres du [SaveLocalSignatureUsecase].

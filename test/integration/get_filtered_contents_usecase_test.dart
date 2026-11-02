@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:bedbug/resources/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/text_content.entity.dart';
+import 'package:bedbug/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/content/text_content.entity.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
 import 'package:bedbug/usecases/feed/get_filtered_contents/get_filtered_contents.params.dart';

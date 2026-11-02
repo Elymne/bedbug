@@ -1,5 +1,5 @@
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/content.entity.dart';
+import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
 
 /// Paramètres du [SaveContentUsecase].

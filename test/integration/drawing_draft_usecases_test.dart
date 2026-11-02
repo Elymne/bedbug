@@ -2,10 +2,10 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/drawing.value_object.dart';
-import 'package:bedbug/resources/content/drawing_draft.repository.hive.dart';
-import 'package:bedbug/resources/content/drawing_operation.value_object.dart';
-import 'package:bedbug/resources/content/drawing_point.value_object.dart';
+import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/resources/content/drawing/drawing_draft.repository.hive.dart';
+import 'package:bedbug/resources/content/drawing/drawing_operation.value_object.dart';
+import 'package:bedbug/resources/content/drawing/drawing_point.value_object.dart';
 import 'package:bedbug/usecases/content/get_drawing_draft/get_drawing_draft.failure.dart';
 import 'package:bedbug/usecases/content/get_drawing_draft/get_drawing_draft.usecase.dart';
 import 'package:bedbug/usecases/content/save_drawing_draft/save_drawing_draft.params.dart';

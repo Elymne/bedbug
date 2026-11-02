@@ -1,8 +1,8 @@
-import 'package:bedbug/resources/content/content_media.value_object.dart';
-import 'package:bedbug/resources/content/domain_rule.value_object.dart';
-import 'package:bedbug/resources/content/trust_settings.model.hive.dart';
-import 'package:bedbug/resources/content/trust_settings.value_object.dart';
-import 'package:bedbug/resources/content/url_trust_policy.value_object.dart';
+import 'package:bedbug/resources/content/content/content_media.value_object.dart';
+import 'package:bedbug/resources/content/trust_settings/domain_rule.value_object.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.model.hive.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
+import 'package:bedbug/resources/content/trust_settings/url_trust_policy.value_object.dart';
 import 'package:bedbug/services/content/media_kind.service.dart';
 import 'package:bedbug/services/trust/domain_rule.service.dart';
 import 'package:bedbug/services/trust/trust_rules.service.dart';

@@ -1,8 +1,8 @@
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/tag_color_x.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
-import 'package:bedbug/resources/content/tag.enum.dart';
-import 'package:bedbug/resources/content/tag_color.enum.dart';
+import 'package:bedbug/resources/content/content/tag.enum.dart';
+import 'package:bedbug/resources/content/content/tag_color.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

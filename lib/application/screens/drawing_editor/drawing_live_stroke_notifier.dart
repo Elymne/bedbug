@@ -1,5 +1,5 @@
-import 'package:bedbug/resources/content/drawing.value_object.dart';
-import 'package:bedbug/resources/content/drawing_point.value_object.dart';
+import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/resources/content/drawing/drawing_point.value_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [DrawingLiveStrokeNotifier].

@@ -1,5 +1,5 @@
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/reaction.entity.dart';
+import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
 import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.usecase.dart';
 
 /// Paramètres du [SaveReactionUsecase].

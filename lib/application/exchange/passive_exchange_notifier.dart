@@ -8,11 +8,11 @@ import 'package:bedbug/application/screens/settings/user_settings_notifier.dart'
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/extensions/string_uuid_x.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/gateways/exchange/exchange_transport.gateway.dart';
-import 'package:bedbug/gateways/exchange/peer_attempt.value_object.dart';
-import 'package:bedbug/gateways/exchange/peer_link.gateway.ble.dart';
-import 'package:bedbug/resources/exchange/exchange_log.entity.dart';
-import 'package:bedbug/resources/exchange/exchange_log_outcome.enum.dart';
+import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
+import 'package:bedbug/gateways/exchange/peer_link/peer_attempt.value_object.dart';
+import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.ble.dart';
+import 'package:bedbug/resources/exchange/exchange_log/exchange_log.entity.dart';
+import 'package:bedbug/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
 import 'package:bedbug/usecases/exchange/recalculate_broadcast_scores/recalculate_broadcast_scores.usecase.dart';
 import 'package:bedbug/usecases/exchange/save_exchange_log/save_exchange_log.params.dart';
 import 'package:bedbug/usecases/exchange/save_exchange_log/save_exchange_log.usecase.dart';

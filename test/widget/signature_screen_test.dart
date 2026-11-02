@@ -1,10 +1,10 @@
 import 'package:bedbug/application/screens/signature/signature_screen.dart';
 import 'package:bedbug/core/domain/either.dart';
-import 'package:bedbug/resources/content/content.entity.dart';
-import 'package:bedbug/resources/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/text_content.entity.dart';
-import 'package:bedbug/resources/signature/signature.entity.dart';
-import 'package:bedbug/resources/signature/social_network.enum.dart';
+import 'package:bedbug/resources/content/content/content.entity.dart';
+import 'package:bedbug/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
 import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.failure.dart';
 import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.params.dart';
 import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.usecase.dart';

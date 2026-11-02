@@ -1,5 +1,5 @@
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/content_type.enum.dart';
+import 'package:bedbug/resources/content/content/content_type.enum.dart';
 import 'package:bedbug/usecases/settings/get_settings/get_settings.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

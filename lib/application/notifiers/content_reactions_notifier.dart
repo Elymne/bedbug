@@ -1,6 +1,6 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
-import 'package:bedbug/resources/content/reaction.entity.dart';
-import 'package:bedbug/resources/signature/signature.repository.dart';
+import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.repository.dart';
 import 'package:bedbug/usecases/reaction/get_content_reactions/get_content_reactions.failure.dart';
 import 'package:bedbug/usecases/reaction/get_content_reactions/get_content_reactions.params.dart';
 import 'package:bedbug/usecases/reaction/get_content_reactions/get_content_reactions.usecase.dart';

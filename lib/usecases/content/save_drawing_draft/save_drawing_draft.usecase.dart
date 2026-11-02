@@ -1,11 +1,11 @@
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/resources/content/drawing_draft.repository.dart';
-import 'package:bedbug/resources/content/drawing_draft.repository.hive.dart';
+import 'package:bedbug/resources/content/drawing/drawing_draft.repository.dart';
+import 'package:bedbug/resources/content/drawing/drawing_draft.repository.hive.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
-import 'package:bedbug/resources/error_log/error_log.repository.dart';
-import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/content/get_drawing_draft/get_drawing_draft.failure.dart';
 import 'package:bedbug/usecases/content/save_drawing_draft/save_drawing_draft.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

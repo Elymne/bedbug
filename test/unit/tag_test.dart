@@ -1,4 +1,4 @@
-import 'package:bedbug/resources/content/tag.enum.dart';
+import 'package:bedbug/resources/content/content/tag.enum.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,11 +1,11 @@
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/gateways/media/gallery.exception.dart';
-import 'package:bedbug/gateways/media/media_gallery.gateway.dart';
-import 'package:bedbug/gateways/media/media_gallery.gateway.gal.dart';
-import 'package:bedbug/resources/error_log/error_log.repository.dart';
-import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
+import 'package:bedbug/gateways/media/media_gallery/gallery.exception.dart';
+import 'package:bedbug/gateways/media/media_gallery/media_gallery.gateway.dart';
+import 'package:bedbug/gateways/media/media_gallery/media_gallery.gateway.gal.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/services/content/media_format.service.dart';
 import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.failure.dart';
 import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.params.dart';

@@ -1,5 +1,5 @@
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/comment.entity.dart';
+import 'package:bedbug/resources/content/comment/comment.entity.dart';
 import 'package:bedbug/usecases/comment/save_comment/save_comment.usecase.dart';
 
 /// Paramètres du [SaveCommentUsecase].

@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/text_content.entity.dart';
+import 'package:bedbug/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/content/text_content.entity.dart';
 import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.failure.dart';
 import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.params.dart';
 import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.usecase.dart';

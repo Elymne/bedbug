@@ -1,5 +1,5 @@
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/url_trust_policy.value_object.dart';
+import 'package:bedbug/resources/content/trust_settings/url_trust_policy.value_object.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.usecase.dart';
 
 /// Paramètres du [FetchMediaUsecase].
