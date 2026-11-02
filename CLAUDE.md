@@ -40,8 +40,8 @@ core → used by all
 
 One folder per **data** scope (`content`, `exchange`, `settings`, `signature`, `error_log`…), not per business concern.
 Inside a scope, one folder per resource: every entity and every value object gets its own folder (`content/comment/`,
-`content/reaction_merge/`, `exchange/exchange_log/`…), even when
-the scope holds a single one (`settings/settings/`). A resource folder holds everything about that data:
+`content/reaction_merge/`, `exchange/exchange_log/`…), even when the scope holds a single one. A resource folder holds
+everything about that data:
 
 ```
 resources/<scope>/<resource>/
