@@ -11,6 +11,7 @@ import 'package:bedbug/resources/content/storage/storage.model.hive.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.config.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.model.hive.dart';
 import 'package:bedbug/resources/content/viewed_content/viewed_content.config.dart';
+import 'package:bedbug/resources/content/viewed_content/viewed_content.model.hive.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.config.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.model.hive.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log.config.dart';
@@ -45,7 +46,7 @@ Future<Directory> openTestHive() async {
     Hive.openBox<Uint8List>(drawingDraftBoxName),
     Hive.openBox<TrustSettingsHiveModel>(trustSettingsBoxName),
     Hive.openBox<int>(seenContentBoxName),
-    Hive.openBox<int>(viewedContentBoxName),
+    Hive.openBox<ViewedContentHiveModel>(viewedContentBoxName),
     Hive.openBox<ExchangeLogHiveModel>(exchangeLogBoxName),
     Hive.openBox<ErrorLogHiveModel>(errorLogBoxName),
   ]);

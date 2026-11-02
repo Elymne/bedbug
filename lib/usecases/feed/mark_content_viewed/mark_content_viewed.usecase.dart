@@ -1,6 +1,7 @@
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/resources/content/viewed_content/viewed_content.entity.dart';
 import 'package:bedbug/resources/content/viewed_content/viewed_content.repository.dart';
 import 'package:bedbug/resources/content/viewed_content/viewed_content.repository.hive.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
@@ -29,7 +30,8 @@ class MarkContentViewedUsecase extends Usecase<MarkContentViewedParams, MarkCont
   @override
   Future<Either<MarkContentViewedFailure, void>> call(MarkContentViewedParams params) async {
     try {
-      await _viewedContentRepository.add(params.contentId);
+      final now = DateTime.now();
+      await _viewedContentRepository.addOne(ViewedContent(id: params.contentId, createdAt: now, updatedAt: now));
       return const Right(null);
     } on DatasourceException catch (error, stackTrace) {
       AppLogger.error('MarkContentViewedUsecase', error, stackTrace);

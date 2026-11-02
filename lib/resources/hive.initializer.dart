@@ -11,6 +11,7 @@ import 'package:bedbug/resources/content/storage/storage.model.hive.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.config.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.model.hive.dart';
 import 'package:bedbug/resources/content/viewed_content/viewed_content.config.dart';
+import 'package:bedbug/resources/content/viewed_content/viewed_content.model.hive.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.config.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.model.hive.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log.config.dart';
@@ -42,11 +43,12 @@ Future<void> initHive() async {
     Hive.openBox<Uint8List>(drawingDraftBoxName),
     Hive.openBox<TrustSettingsHiveModel>(trustSettingsBoxName),
     Hive.openBox<int>(seenContentBoxName),
-    Hive.openBox<int>(viewedContentBoxName),
+    Hive.openBox<ViewedContentHiveModel>(viewedContentBoxName),
     Hive.openBox<ExchangeLogHiveModel>(exchangeLogBoxName),
     Hive.openBox<ErrorLogHiveModel>(errorLogBoxName),
   ]);
   await _purgeLegacyImageContents();
+  await migrateLegacyViewedContents();
 }
 
 /// Supprime les anciens contenus image et leurs fichiers.
@@ -68,4 +70,26 @@ Future<void> _purgeLegacyImageContents() async {
   if (legacyImagesDirectory.existsSync()) {
     await legacyImagesDirectory.delete(recursive: true);
   }
+}
+
+/// Recopie l'ancienne box des contenus vus dans la nouvelle, puis la supprime.
+///
+/// Les contenus vus étaient stockés en entiers bruts (identifiant → date de vue en millisecondes), sans modèle. Ils
+/// ont maintenant leur entité et leur modèle Hive, dans une autre box : sans cette recopie, chaque téléphone oublierait
+/// ce que l'utilisateur a déjà vu, et son fil d'accueil reprendrait de zéro. Sans effet si l'ancienne box n'existe plus.
+Future<void> migrateLegacyViewedContents() async {
+  if (!await Hive.boxExists(legacyViewedContentBoxName)) {
+    return;
+  }
+  final legacyBox = await Hive.openBox<int>(legacyViewedContentBoxName);
+  final box = Hive.box<ViewedContentHiveModel>(viewedContentBoxName);
+  await box.putAll({
+    for (final key in legacyBox.keys.cast<String>())
+      key: ViewedContentHiveModel(
+        id: key,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(legacyBox.get(key)!),
+        updatedAt: DateTime.fromMillisecondsSinceEpoch(legacyBox.get(key)!),
+      ),
+  });
+  await legacyBox.deleteFromDisk();
 }

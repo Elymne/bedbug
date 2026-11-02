@@ -1,11 +1,15 @@
 import 'package:bedbug/resources/content/viewed_content/viewed_content.config.dart';
+import 'package:bedbug/resources/content/viewed_content/viewed_content.entity.dart';
+import 'package:bedbug/resources/content/viewed_content/viewed_content.model.hive.dart';
 import 'package:bedbug/resources/content/viewed_content/viewed_content.repository.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
-/// Provider de la [Box] Hive des contenus vus : identifiant du contenu → date de vue en millisecondes.
-final hiveViewedContentBoxProvider = Provider<Box<int>>((ref) => Hive.box<int>(viewedContentBoxName));
+/// Provider de la [Box] Hive des contenus vus, indexée par identifiant du contenu.
+final hiveViewedContentBoxProvider = Provider<Box<ViewedContentHiveModel>>((ref) {
+  return Hive.box<ViewedContentHiveModel>(viewedContentBoxName);
+});
 
 /// Provider du [HiveViewedContentRepository].
 final viewedContentRepositoryProvider = Provider<ViewedContentRepository>((ref) {
@@ -13,14 +17,13 @@ final viewedContentRepositoryProvider = Provider<ViewedContentRepository>((ref) 
 });
 
 /// Implémentation de [ViewedContentRepository] utilisant Hive.
-///
-/// Une box à part plutôt qu'un champ du contenu : marquer un contenu comme vu arrive à chaque défilement, et ne doit
-/// pas réécrire le contenu entier.
 class HiveViewedContentRepository implements ViewedContentRepository {
   /// Crée un [HiveViewedContentRepository].
+  ///
+  /// - [_box] : box Hive des contenus vus.
   HiveViewedContentRepository(this._box);
 
-  final Box<int> _box;
+  final Box<ViewedContentHiveModel> _box;
 
   @override
   Future<Set<String>> getAllIds() async {
@@ -32,9 +35,9 @@ class HiveViewedContentRepository implements ViewedContentRepository {
   }
 
   @override
-  Future<void> add(String id) async {
+  Future<void> addOne(ViewedContent entity) async {
     try {
-      await _box.put(id, DateTime.now().millisecondsSinceEpoch);
+      await _box.put(entity.id, ViewedContentHiveModel.fromEntity(entity));
     } on HiveError catch (error) {
       throw DatasourceException('HiveViewedContentRepository', error);
     }
