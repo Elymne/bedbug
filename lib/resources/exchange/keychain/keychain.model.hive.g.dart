@@ -13,9 +13,7 @@ class KeychainHiveModelAdapter extends TypeAdapter<KeychainHiveModel> {
   @override
   KeychainHiveModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
+    final fields = <int, dynamic>{for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read()};
     return KeychainHiveModel(
       id: fields[0] as String,
       createdAt: (fields[1] as num).toInt(),
@@ -50,9 +48,7 @@ class KeychainHiveModelAdapter extends TypeAdapter<KeychainHiveModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is KeychainHiveModelAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+      other is KeychainHiveModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }
 
 class PrivateKeyHiveModelAdapter extends TypeAdapter<PrivateKeyHiveModel> {
@@ -62,13 +58,8 @@ class PrivateKeyHiveModelAdapter extends TypeAdapter<PrivateKeyHiveModel> {
   @override
   PrivateKeyHiveModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return PrivateKeyHiveModel(
-      value: fields[0] as String,
-      createdAt: (fields[1] as num).toInt(),
-    );
+    final fields = <int, dynamic>{for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read()};
+    return PrivateKeyHiveModel(value: fields[0] as String, createdAt: (fields[1] as num).toInt());
   }
 
   @override
@@ -87,7 +78,5 @@ class PrivateKeyHiveModelAdapter extends TypeAdapter<PrivateKeyHiveModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is PrivateKeyHiveModelAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+      other is PrivateKeyHiveModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }

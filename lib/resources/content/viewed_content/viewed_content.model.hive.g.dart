@@ -6,17 +6,14 @@ part of 'viewed_content.model.hive.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ViewedContentHiveModelAdapter
-    extends TypeAdapter<ViewedContentHiveModel> {
+class ViewedContentHiveModelAdapter extends TypeAdapter<ViewedContentHiveModel> {
   @override
   final typeId = 12;
 
   @override
   ViewedContentHiveModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
+    final fields = <int, dynamic>{for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read()};
     return ViewedContentHiveModel(
       id: fields[0] as String,
       createdAt: fields[1] as DateTime,
@@ -42,7 +39,5 @@ class ViewedContentHiveModelAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ViewedContentHiveModelAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+      other is ViewedContentHiveModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }

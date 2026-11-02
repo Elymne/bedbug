@@ -15,7 +15,6 @@ import 'package:hive_ce/hive.dart';
 
 part 'content.model.hive.g.dart';
 
-
 /// Flair attribué aux contenus persistés avant que le flair devienne obligatoire.
 const _legacyFlair = 'public';
 
