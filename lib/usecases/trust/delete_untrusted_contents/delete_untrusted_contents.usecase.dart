@@ -20,6 +20,8 @@ import 'package:bedbug/resources/content/viewed_content.repository.dart';
 import 'package:bedbug/resources/content/viewed_content.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/services/trust/url_trust.service.dart';
 import 'package:bedbug/usecases/trust/delete_untrusted_contents/delete_untrusted_contents.failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,6 +37,7 @@ final deleteUntrustedContentsUsecaseProvider = Provider<DeleteUntrustedContentsU
     ref.read(seenContentRepositoryProvider),
     ref.read(viewedContentRepositoryProvider),
     ref.read(urlTrustServiceProvider),
+    ref.read(errorLogRepositoryProvider),
   );
 });
 
@@ -63,6 +66,7 @@ class DeleteUntrustedContentsUsecase extends Usecase<NoParams, DeleteUntrustedCo
     this._seenContentRepository,
     this._viewedContentRepository,
     this._urlTrustService,
+    this._errorLogRepository,
   );
 
   final ContentRepository _contentRepository;
@@ -73,6 +77,7 @@ class DeleteUntrustedContentsUsecase extends Usecase<NoParams, DeleteUntrustedCo
   final SeenContentRepository _seenContentRepository;
   final ViewedContentRepository _viewedContentRepository;
   final UrlTrustService _urlTrustService;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<DeleteUntrustedContentsFailure, int>> call(NoParams params) async {
@@ -104,6 +109,7 @@ class DeleteUntrustedContentsUsecase extends Usecase<NoParams, DeleteUntrustedCo
       return const Left(DeleteUntrustedContentsFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('DeleteUntrustedContentsUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'DeleteUntrustedContentsUsecase', error: error, stackTrace: stackTrace);
       return const Left(DeleteUntrustedContentsFailure.unknown);
     }
   }

@@ -19,6 +19,8 @@ import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gall
 import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/fake_error_log_repository.dart';
+
 /// Faux serveur : une réponse par adresse, et le journal des tailles maximales demandées.
 class _FakeMediaHttpGateway implements MediaHttpGateway {
   _FakeMediaHttpGateway(this.responses);
@@ -85,14 +87,14 @@ void main() {
     String rawUrl, {
     bool isConfirmed = false,
   }) async {
-    final fetched = await FetchMediaUsecase(http, urlSafetyService, urlTrustService)(
+    final fetched = await FetchMediaUsecase(http, urlSafetyService, urlTrustService, FakeErrorLogRepository())(
       FetchMediaParams(rawUrl: rawUrl, policy: policy, isConfirmed: isConfirmed, maxBytes: maxGalleryMediaBytes),
     );
     final fetchedMedia = fetched.right;
     if (fetchedMedia == null) {
       return fetched.left;
     }
-    final result = await SaveMediaToGalleryUsecase(gallery, mediaFormatService)(
+    final result = await SaveMediaToGalleryUsecase(gallery, mediaFormatService, FakeErrorLogRepository())(
       SaveMediaToGalleryParams(bytes: fetchedMedia.bytes),
     );
     return result.left;

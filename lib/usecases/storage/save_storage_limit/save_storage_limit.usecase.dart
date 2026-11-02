@@ -7,13 +7,15 @@ import 'package:bedbug/resources/content/storage.repository.dart';
 import 'package:bedbug/resources/content/storage.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.failure.dart';
 import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveStorageLimitUsecase].
 final saveStorageLimitUsecaseProvider = Provider<SaveStorageLimitUsecase>((ref) {
-  return SaveStorageLimitUsecase(ref.read(storageRepositoryProvider));
+  return SaveStorageLimitUsecase(ref.read(storageRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Enregistre le poids maximal que les contenus peuvent occuper sur l'appareil.
@@ -23,9 +25,10 @@ final saveStorageLimitUsecaseProvider = Provider<SaveStorageLimitUsecase>((ref) 
 /// haute chargerait trop de contenus en mémoire.
 class SaveStorageLimitUsecase extends Usecase<SaveStorageLimitParams, SaveStorageLimitFailure, Storage> {
   /// Crée un [SaveStorageLimitUsecase].
-  SaveStorageLimitUsecase(this._storageRepository);
+  SaveStorageLimitUsecase(this._storageRepository, this._errorLogRepository);
 
   final StorageRepository _storageRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<SaveStorageLimitFailure, Storage>> call(SaveStorageLimitParams params) async {
@@ -57,6 +60,7 @@ class SaveStorageLimitUsecase extends Usecase<SaveStorageLimitParams, SaveStorag
       return const Left(SaveStorageLimitFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('SaveStorageLimitUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'SaveStorageLimitUsecase', error: error, stackTrace: stackTrace);
       return const Left(SaveStorageLimitFailure.unknown);
     }
   }

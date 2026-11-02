@@ -6,6 +6,8 @@ import 'package:bedbug/resources/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/flair.extension.dart';
 import 'package:bedbug/resources/content/flair_suggestion.value_object.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.failure.dart';
 import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +17,7 @@ const int maxFlairSuggestions = 6;
 
 /// Provider du [GetFlairSuggestionsUsecase].
 final getFlairSuggestionsUsecaseProvider = Provider<GetFlairSuggestionsUsecase>((ref) {
-  return GetFlairSuggestionsUsecase(ref.read(contentRepositoryProvider));
+  return GetFlairSuggestionsUsecase(ref.read(contentRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Propose les flairs existants correspondant au début de la saisie de l'utilisateur.
@@ -31,9 +33,10 @@ final getFlairSuggestionsUsecaseProvider = Provider<GetFlairSuggestionsUsecase>(
 class GetFlairSuggestionsUsecase
     extends Usecase<GetFlairSuggestionsParams, GetFlairSuggestionsFailure, List<FlairSuggestion>> {
   /// Crée un [GetFlairSuggestionsUsecase].
-  GetFlairSuggestionsUsecase(this._contentRepository);
+  GetFlairSuggestionsUsecase(this._contentRepository, this._errorLogRepository);
 
   final ContentRepository _contentRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<GetFlairSuggestionsFailure, List<FlairSuggestion>>> call(GetFlairSuggestionsParams params) async {
@@ -50,6 +53,7 @@ class GetFlairSuggestionsUsecase
       return const Left(GetFlairSuggestionsFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('GetFlairSuggestionsUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'GetFlairSuggestionsUsecase', error: error, stackTrace: stackTrace);
       return const Left(GetFlairSuggestionsFailure.unknown);
     }
   }

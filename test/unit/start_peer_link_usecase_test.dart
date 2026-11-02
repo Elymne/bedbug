@@ -6,6 +6,8 @@ import 'package:bedbug/usecases/exchange/start_peer_link/start_peer_link.params.
 import 'package:bedbug/usecases/exchange/start_peer_link/start_peer_link.usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/fake_error_log_repository.dart';
+
 /// Fausse recherche de pairs, dont les réponses sont fixées par le test.
 class _FakePeerLinkGateway implements PeerLinkGateway {
   _FakePeerLinkGateway({this.isPermissionGranted = true, this.status = PeerLinkStartStatus.started, this.error});
@@ -63,7 +65,9 @@ void main() {
   test('une reprise automatique ne demande pas les permissions et respecte le refus d\'Android', () async {
     final gateway = _FakePeerLinkGateway(isPermissionGranted: false, status: PeerLinkStartStatus.permissionDenied);
 
-    final result = await StartPeerLinkUsecase(gateway)(const StartPeerLinkParams(isPermissionRequested: false));
+    final result = await StartPeerLinkUsecase(gateway, FakeErrorLogRepository())(
+      const StartPeerLinkParams(isPermissionRequested: false),
+    );
 
     expect(result.left, StartPeerLinkFailure.permissionDenied);
     expect(gateway.startCount, 1);
@@ -72,7 +76,7 @@ void main() {
   test('démarre une fois les permissions accordées', () async {
     final gateway = _FakePeerLinkGateway();
 
-    final result = await StartPeerLinkUsecase(gateway)(_params);
+    final result = await StartPeerLinkUsecase(gateway, FakeErrorLogRepository())(_params);
 
     expect(result.isSuccess, isTrue);
     expect(gateway.startCount, 1);
@@ -81,7 +85,7 @@ void main() {
   test('ne touche pas à la radio sans les permissions', () async {
     final gateway = _FakePeerLinkGateway(isPermissionGranted: false);
 
-    final result = await StartPeerLinkUsecase(gateway)(_params);
+    final result = await StartPeerLinkUsecase(gateway, FakeErrorLogRepository())(_params);
 
     expect(result.left, StartPeerLinkFailure.permissionDenied);
     expect(gateway.startCount, 0);
@@ -91,13 +95,22 @@ void main() {
     final off = _FakePeerLinkGateway(status: PeerLinkStartStatus.bluetoothOff);
     final unavailable = _FakePeerLinkGateway(status: PeerLinkStartStatus.unavailable);
 
-    expect((await StartPeerLinkUsecase(off)(_params)).left, StartPeerLinkFailure.bluetoothOff);
-    expect((await StartPeerLinkUsecase(unavailable)(_params)).left, StartPeerLinkFailure.unavailable);
+    expect(
+      (await StartPeerLinkUsecase(off, FakeErrorLogRepository())(_params)).left,
+      StartPeerLinkFailure.bluetoothOff,
+    );
+    expect(
+      (await StartPeerLinkUsecase(unavailable, FakeErrorLogRepository())(_params)).left,
+      StartPeerLinkFailure.unavailable,
+    );
   });
 
   test('une erreur du service devient un échec typé', () async {
     final gateway = _FakePeerLinkGateway(error: StateError('canal indisponible'));
 
-    expect((await StartPeerLinkUsecase(gateway)(_params)).left, StartPeerLinkFailure.unavailable);
+    expect(
+      (await StartPeerLinkUsecase(gateway, FakeErrorLogRepository())(_params)).left,
+      StartPeerLinkFailure.unavailable,
+    );
   });
 }

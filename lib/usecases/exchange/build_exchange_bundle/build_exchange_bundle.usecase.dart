@@ -14,6 +14,8 @@ import 'package:bedbug/resources/content/reaction.repository.dart';
 import 'package:bedbug/resources/content/reaction.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/resources/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature.repository.dart';
 import 'package:bedbug/resources/signature/signature.repository.hive.dart';
@@ -29,6 +31,7 @@ final buildExchangeBundleUsecaseProvider = Provider<BuildExchangeBundleUsecase>(
     ref.read(reactionRepositoryProvider),
     ref.read(signatureRepositoryProvider),
     ref.read(exchangeCodecGatewayProvider),
+    ref.read(errorLogRepositoryProvider),
   );
 });
 
@@ -51,12 +54,14 @@ class BuildExchangeBundleUsecase extends Usecase<BuildExchangeBundleParams, Buil
     this._reactionRepository,
     this._signatureRepository,
     this._exchangeCodecGateway,
+    this._errorLogRepository,
   );
 
   final ContentRepository _contentRepository;
   final ReactionRepository _reactionRepository;
   final SignatureRepository _signatureRepository;
   final ExchangeCodecGateway _exchangeCodecGateway;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<BuildExchangeBundleFailure, Uint8List>> call(BuildExchangeBundleParams params) async {
@@ -91,6 +96,7 @@ class BuildExchangeBundleUsecase extends Usecase<BuildExchangeBundleParams, Buil
       return const Left(BuildExchangeBundleFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('BuildExchangeBundleUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'BuildExchangeBundleUsecase', error: error, stackTrace: stackTrace);
       return const Left(BuildExchangeBundleFailure.unknown);
     }
   }

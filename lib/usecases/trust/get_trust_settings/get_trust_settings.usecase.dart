@@ -7,12 +7,14 @@ import 'package:bedbug/resources/content/trust_settings.repository.hive.dart';
 import 'package:bedbug/resources/content/trust_settings.value_object.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/trust/get_trust_settings/get_trust_settings.failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetTrustSettingsUsecase].
 final getTrustSettingsUsecaseProvider = Provider<GetTrustSettingsUsecase>((ref) {
-  return GetTrustSettingsUsecase(ref.read(trustSettingsRepositoryProvider));
+  return GetTrustSettingsUsecase(ref.read(trustSettingsRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Récupère les réglages de confiance de l'utilisateur, ou les réglages par défaut s'il n'a rien modifié.
@@ -24,9 +26,10 @@ final getTrustSettingsUsecaseProvider = Provider<GetTrustSettingsUsecase>((ref) 
 /// touché.
 class GetTrustSettingsUsecase extends Usecase<NoParams, TrustSettingsFailure, TrustSettings> {
   /// Crée un [GetTrustSettingsUsecase].
-  GetTrustSettingsUsecase(this._trustSettingsRepository);
+  GetTrustSettingsUsecase(this._trustSettingsRepository, this._errorLogRepository);
 
   final TrustSettingsRepository _trustSettingsRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<TrustSettingsFailure, TrustSettings>> call(NoParams params) async {
@@ -40,6 +43,7 @@ class GetTrustSettingsUsecase extends Usecase<NoParams, TrustSettingsFailure, Tr
       return const Left(TrustSettingsFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('GetTrustSettingsUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'GetTrustSettingsUsecase', error: error, stackTrace: stackTrace);
       return const Left(TrustSettingsFailure.unknown);
     }
   }

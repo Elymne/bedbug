@@ -11,6 +11,8 @@ import 'package:bedbug/resources/content/storage.model.hive.dart';
 import 'package:bedbug/resources/content/trust_settings.model.hive.dart';
 import 'package:bedbug/resources/content/trust_settings.repository.hive.dart';
 import 'package:bedbug/resources/content/viewed_content.repository.hive.dart';
+import 'package:bedbug/resources/error_log/error_log.model.hive.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/resources/exchange/exchange_log.model.hive.dart';
 import 'package:bedbug/resources/exchange/exchange_log.repository.hive.dart';
 import 'package:bedbug/resources/exchange/keychain.model.hive.dart';
@@ -42,6 +44,7 @@ Future<void> initHive() async {
     Hive.openBox<int>(seenContentBoxName),
     Hive.openBox<int>(viewedContentBoxName),
     Hive.openBox<ExchangeLogHiveModel>(exchangeLogBoxName),
+    Hive.openBox<ErrorLogHiveModel>(errorLogBoxName),
   ]);
   await _purgeLegacyImageContents();
 }

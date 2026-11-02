@@ -3,6 +3,7 @@ import 'package:bedbug/resources/content/content.model.hive.dart';
 import 'package:bedbug/resources/content/reaction.model.hive.dart';
 import 'package:bedbug/resources/content/storage.model.hive.dart';
 import 'package:bedbug/resources/content/trust_settings.model.hive.dart';
+import 'package:bedbug/resources/error_log/error_log.model.hive.dart';
 import 'package:bedbug/resources/exchange/exchange_log.model.hive.dart';
 import 'package:bedbug/resources/exchange/keychain.model.hive.dart';
 import 'package:bedbug/resources/settings/settings.model.hive.dart';
@@ -45,4 +46,7 @@ class HiveTypeIds {
 
   /// TypeId de [ExchangeLogHiveModel].
   static const int exchangeLog = 10;
+
+  /// TypeId de [ErrorLogHiveModel].
+  static const int errorLog = 11;
 }

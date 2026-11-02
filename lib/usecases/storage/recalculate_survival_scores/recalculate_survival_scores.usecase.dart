@@ -10,12 +10,14 @@ import 'package:bedbug/resources/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/content_origin.enum.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/storage/recalculate_survival_scores/recalculate_survival_scores.failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [RecalculateSurvivalScoresUsecase].
 final recalculateSurvivalScoresUsecaseProvider = Provider<RecalculateSurvivalScoresUsecase>((ref) {
-  return RecalculateSurvivalScoresUsecase(ref.read(contentRepositoryProvider));
+  return RecalculateSurvivalScoresUsecase(ref.read(contentRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Nombre de rebonds au-delà duquel le bonus de `bounce` n'augmente plus.
@@ -47,9 +49,10 @@ const double _bounceBonusWeight = 0.2;
 /// (propre à chaque [ContentOrigin]) et un bonus lié au nombre de rebonds.
 class RecalculateSurvivalScoresUsecase extends Usecase<NoParams, RecalculateSurvivalScoresFailure, void> {
   /// Crée un [RecalculateSurvivalScoresUsecase].
-  RecalculateSurvivalScoresUsecase(this._contentRepository);
+  RecalculateSurvivalScoresUsecase(this._contentRepository, this._errorLogRepository);
 
   final ContentRepository _contentRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<RecalculateSurvivalScoresFailure, void>> call(NoParams params) async {
@@ -94,6 +97,11 @@ class RecalculateSurvivalScoresUsecase extends Usecase<NoParams, RecalculateSurv
       return const Left(RecalculateSurvivalScoresFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('RecalculateSurvivalScoresUsecase', error, stackTrace);
+      await _errorLogRepository.record(
+        source: 'RecalculateSurvivalScoresUsecase',
+        error: error,
+        stackTrace: stackTrace,
+      );
       return const Left(RecalculateSurvivalScoresFailure.unknown);
     }
   }

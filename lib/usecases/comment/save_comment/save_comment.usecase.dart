@@ -7,13 +7,15 @@ import 'package:bedbug/resources/content/comment.repository.hive.dart';
 import 'package:bedbug/resources/content/comment_text.extension.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/comment/save_comment/save_comment.failure.dart';
 import 'package:bedbug/usecases/comment/save_comment/save_comment.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveCommentUsecase].
 final saveCommentUsecaseProvider = Provider<SaveCommentUsecase>((ref) {
-  return SaveCommentUsecase(ref.read(commentRepositoryProvider));
+  return SaveCommentUsecase(ref.read(commentRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Enregistre un commentaire sur un contenu, en appliquant les règles qui bornent leur poids.
@@ -29,9 +31,10 @@ final saveCommentUsecaseProvider = Provider<SaveCommentUsecase>((ref) {
 ///   plus récents, pour que son poids reste borné quoi qu'envoient les pairs.
 class SaveCommentUsecase extends Usecase<SaveCommentParams, SaveCommentFailure, Comment> {
   /// Crée un [SaveCommentUsecase].
-  SaveCommentUsecase(this._commentRepository);
+  SaveCommentUsecase(this._commentRepository, this._errorLogRepository);
 
   final CommentRepository _commentRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<SaveCommentFailure, Comment>> call(SaveCommentParams params) async {
@@ -74,6 +77,7 @@ class SaveCommentUsecase extends Usecase<SaveCommentParams, SaveCommentFailure, 
       return const Left(SaveCommentFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('SaveCommentUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'SaveCommentUsecase', error: error, stackTrace: stackTrace);
       return const Left(SaveCommentFailure.unknown);
     }
   }

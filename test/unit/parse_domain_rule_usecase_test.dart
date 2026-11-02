@@ -9,12 +9,14 @@ import 'package:bedbug/usecases/trust/parse_domain_rule/parse_domain_rule.params
 import 'package:bedbug/usecases/trust/parse_domain_rule/parse_domain_rule.usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/fake_error_log_repository.dart';
+
 void main() {
   // La vraie liste embarquée, lue depuis le disque : c'est elle que l'app utilise.
   final gateway = PublicSuffixPackagePublicSuffixGateway(() => File(publicSuffixListAssetPath).readAsString());
   const urlSafetyService = UrlSafetyService();
   const domainRuleService = DomainRuleService(urlSafetyService);
-  final usecase = ParseDomainRuleUsecase(gateway, urlSafetyService, domainRuleService);
+  final usecase = ParseDomainRuleUsecase(gateway, urlSafetyService, domainRuleService, FakeErrorLogRepository());
 
   /// Analyse [input] avec le use case.
   Future<(ParseDomainRuleFailure?, DomainRule?)> parse(String input) async {
@@ -79,9 +81,12 @@ void main() {
 
   test('une liste illisible fait refuser la règle plutôt que de laisser passer', () async {
     final brokenGateway = PublicSuffixPackagePublicSuffixGateway(() => Future<String>.error(Exception('illisible')));
-    final result = await ParseDomainRuleUsecase(brokenGateway, urlSafetyService, domainRuleService)(
-      const ParseDomainRuleParams(input: 'imgur.com'),
-    );
+    final result = await ParseDomainRuleUsecase(
+      brokenGateway,
+      urlSafetyService,
+      domainRuleService,
+      FakeErrorLogRepository(),
+    )(const ParseDomainRuleParams(input: 'imgur.com'));
     expect(result.left, ParseDomainRuleFailure.publicSuffix);
   });
 }

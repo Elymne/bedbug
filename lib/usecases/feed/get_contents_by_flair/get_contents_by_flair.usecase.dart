@@ -7,13 +7,15 @@ import 'package:bedbug/resources/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/flair.extension.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/feed/get_contents_by_flair/get_contents_by_flair.failure.dart';
 import 'package:bedbug/usecases/feed/get_contents_by_flair/get_contents_by_flair.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetContentsByFlairUsecase].
 final getContentsByFlairUsecaseProvider = Provider<GetContentsByFlairUsecase>((ref) {
-  return GetContentsByFlairUsecase(ref.read(contentRepositoryProvider));
+  return GetContentsByFlairUsecase(ref.read(contentRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Récupère tous les contenus rattachés à un flair précis.
@@ -28,9 +30,10 @@ final getContentsByFlairUsecaseProvider = Provider<GetContentsByFlairUsecase>((r
 /// les contenus dans le même ordre de pertinence que la home page.
 class GetContentsByFlairUsecase extends Usecase<GetContentsByFlairParams, GetContentsByFlairFailure, List<Content>> {
   /// Crée un [GetContentsByFlairUsecase].
-  GetContentsByFlairUsecase(this._contentRepository);
+  GetContentsByFlairUsecase(this._contentRepository, this._errorLogRepository);
 
   final ContentRepository _contentRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<GetContentsByFlairFailure, List<Content>>> call(GetContentsByFlairParams params) async {
@@ -51,6 +54,7 @@ class GetContentsByFlairUsecase extends Usecase<GetContentsByFlairParams, GetCon
       return const Left(GetContentsByFlairFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('GetContentsByFlairUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'GetContentsByFlairUsecase', error: error, stackTrace: stackTrace);
       return const Left(GetContentsByFlairFailure.unknown);
     }
   }

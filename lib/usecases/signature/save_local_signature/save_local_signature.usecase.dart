@@ -3,6 +3,8 @@ import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/resources/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature.repository.dart';
 import 'package:bedbug/resources/signature/signature.repository.hive.dart';
@@ -14,7 +16,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveLocalSignatureUsecase].
 final saveLocalSignatureUsecaseProvider = Provider<SaveLocalSignatureUsecase>((ref) {
-  return SaveLocalSignatureUsecase(ref.read(signatureRepositoryProvider));
+  return SaveLocalSignatureUsecase(ref.read(signatureRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Enregistre le profil de l'utilisateur du téléphone.
@@ -30,9 +32,10 @@ final saveLocalSignatureUsecaseProvider = Provider<SaveLocalSignatureUsecase>((r
 /// enregistrement à l'autre.
 class SaveLocalSignatureUsecase extends Usecase<SaveLocalSignatureParams, SaveLocalSignatureFailure, Signature> {
   /// Crée un [SaveLocalSignatureUsecase].
-  SaveLocalSignatureUsecase(this._signatureRepository);
+  SaveLocalSignatureUsecase(this._signatureRepository, this._errorLogRepository);
 
   final SignatureRepository _signatureRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<SaveLocalSignatureFailure, Signature>> call(SaveLocalSignatureParams params) async {
@@ -77,6 +80,7 @@ class SaveLocalSignatureUsecase extends Usecase<SaveLocalSignatureParams, SaveLo
       return const Left(SaveLocalSignatureFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('SaveLocalSignatureUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'SaveLocalSignatureUsecase', error: error, stackTrace: stackTrace);
       return const Left(SaveLocalSignatureFailure.unknown);
     }
   }

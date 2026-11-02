@@ -3,6 +3,8 @@ import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/resources/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature.repository.dart';
 import 'package:bedbug/resources/signature/signature.repository.hive.dart';
@@ -12,7 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetSignatureUsecase].
 final getSignatureUsecaseProvider = Provider<GetSignatureUsecase>((ref) {
-  return GetSignatureUsecase(ref.read(signatureRepositoryProvider));
+  return GetSignatureUsecase(ref.read(signatureRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Retrouve le profil à afficher pour l'auteur d'un contenu.
@@ -25,9 +27,10 @@ final getSignatureUsecaseProvider = Provider<GetSignatureUsecase>((ref) {
 /// jamais un auteur qu'on ne connaît pas.
 class GetSignatureUsecase extends Usecase<GetSignatureParams, GetSignatureFailure, Signature> {
   /// Crée un [GetSignatureUsecase].
-  GetSignatureUsecase(this._signatureRepository);
+  GetSignatureUsecase(this._signatureRepository, this._errorLogRepository);
 
   final SignatureRepository _signatureRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<GetSignatureFailure, Signature>> call(GetSignatureParams params) async {
@@ -45,6 +48,7 @@ class GetSignatureUsecase extends Usecase<GetSignatureParams, GetSignatureFailur
       return const Left(GetSignatureFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('GetSignatureUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'GetSignatureUsecase', error: error, stackTrace: stackTrace);
       return const Left(GetSignatureFailure.unknown);
     }
   }

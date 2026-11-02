@@ -6,13 +6,15 @@ import 'package:bedbug/resources/content/content.repository.dart';
 import 'package:bedbug/resources/content/content.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.failure.dart';
 import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetContentsBySignaturesUsecase].
 final getContentsBySignaturesUsecaseProvider = Provider<GetContentsBySignaturesUsecase>((ref) {
-  return GetContentsBySignaturesUsecase(ref.read(contentRepositoryProvider));
+  return GetContentsBySignaturesUsecase(ref.read(contentRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Récupère tous les contenus signés par l'un des auteurs donnés.
@@ -29,9 +31,10 @@ final getContentsBySignaturesUsecaseProvider = Provider<GetContentsBySignaturesU
 class GetContentsBySignaturesUsecase
     extends Usecase<GetContentsBySignaturesParams, GetContentsBySignaturesFailure, List<Content>> {
   /// Crée un [GetContentsBySignaturesUsecase].
-  GetContentsBySignaturesUsecase(this._contentRepository);
+  GetContentsBySignaturesUsecase(this._contentRepository, this._errorLogRepository);
 
   final ContentRepository _contentRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<GetContentsBySignaturesFailure, List<Content>>> call(GetContentsBySignaturesParams params) async {
@@ -50,6 +53,7 @@ class GetContentsBySignaturesUsecase
       return const Left(GetContentsBySignaturesFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('GetContentsBySignaturesUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'GetContentsBySignaturesUsecase', error: error, stackTrace: stackTrace);
       return const Left(GetContentsBySignaturesFailure.unknown);
     }
   }

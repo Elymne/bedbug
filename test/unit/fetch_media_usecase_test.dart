@@ -13,6 +13,8 @@ import 'package:bedbug/usecases/content/fetch_media/fetch_media.result.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/fake_error_log_repository.dart';
+
 /// Faux serveur : une réponse par adresse, et le journal des adresses contactées.
 class _FakeMediaHttpGateway implements MediaHttpGateway {
   _FakeMediaHttpGateway(this.responses);
@@ -50,7 +52,7 @@ void main() {
     String rawUrl, {
     bool isConfirmed = false,
   }) async {
-    final result = await FetchMediaUsecase(gateway, urlSafetyService, urlTrustService)(
+    final result = await FetchMediaUsecase(gateway, urlSafetyService, urlTrustService, FakeErrorLogRepository())(
       FetchMediaParams(rawUrl: rawUrl, policy: policy, isConfirmed: isConfirmed),
     );
     return (result.left, result.right);

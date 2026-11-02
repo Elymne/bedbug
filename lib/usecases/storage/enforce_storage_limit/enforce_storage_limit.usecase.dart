@@ -17,6 +17,8 @@ import 'package:bedbug/resources/content/viewed_content.repository.dart';
 import 'package:bedbug/resources/content/viewed_content.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/storage/enforce_storage_limit/enforce_storage_limit.failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -29,6 +31,7 @@ final enforceStorageLimitUsecaseProvider = Provider<EnforceStorageLimitUsecase>(
     ref.read(commentRepositoryProvider),
     ref.read(seenContentRepositoryProvider),
     ref.read(viewedContentRepositoryProvider),
+    ref.read(errorLogRepositoryProvider),
   );
 });
 
@@ -52,6 +55,7 @@ class EnforceStorageLimitUsecase extends Usecase<NoParams, EnforceStorageLimitFa
     this._commentRepository,
     this._seenContentRepository,
     this._viewedContentRepository,
+    this._errorLogRepository,
   );
 
   final ContentRepository _contentRepository;
@@ -60,6 +64,7 @@ class EnforceStorageLimitUsecase extends Usecase<NoParams, EnforceStorageLimitFa
   final CommentRepository _commentRepository;
   final SeenContentRepository _seenContentRepository;
   final ViewedContentRepository _viewedContentRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<EnforceStorageLimitFailure, int>> call(NoParams params) async {
@@ -103,6 +108,7 @@ class EnforceStorageLimitUsecase extends Usecase<NoParams, EnforceStorageLimitFa
       return const Left(EnforceStorageLimitFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('EnforceStorageLimitUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'EnforceStorageLimitUsecase', error: error, stackTrace: stackTrace);
       return const Left(EnforceStorageLimitFailure.unknown);
     }
   }

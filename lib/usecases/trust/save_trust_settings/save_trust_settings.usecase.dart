@@ -5,13 +5,15 @@ import 'package:bedbug/resources/content/trust_settings.repository.dart';
 import 'package:bedbug/resources/content/trust_settings.repository.hive.dart';
 import 'package:bedbug/resources/content/trust_settings.value_object.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/trust/get_trust_settings/get_trust_settings.failure.dart';
 import 'package:bedbug/usecases/trust/save_trust_settings/save_trust_settings.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveTrustSettingsUsecase].
 final saveTrustSettingsUsecaseProvider = Provider<SaveTrustSettingsUsecase>((ref) {
-  return SaveTrustSettingsUsecase(ref.read(trustSettingsRepositoryProvider));
+  return SaveTrustSettingsUsecase(ref.read(trustSettingsRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Enregistre les réglages de confiance modifiés par l'utilisateur, ou revient aux réglages par défaut.
@@ -23,9 +25,10 @@ final saveTrustSettingsUsecaseProvider = Provider<SaveTrustSettingsUsecase>((ref
 /// s'appliquent de nouveau.
 class SaveTrustSettingsUsecase extends Usecase<SaveTrustSettingsParams, TrustSettingsFailure, TrustSettings> {
   /// Crée un [SaveTrustSettingsUsecase].
-  SaveTrustSettingsUsecase(this._trustSettingsRepository);
+  SaveTrustSettingsUsecase(this._trustSettingsRepository, this._errorLogRepository);
 
   final TrustSettingsRepository _trustSettingsRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<TrustSettingsFailure, TrustSettings>> call(SaveTrustSettingsParams params) async {
@@ -42,6 +45,7 @@ class SaveTrustSettingsUsecase extends Usecase<SaveTrustSettingsParams, TrustSet
       return const Left(TrustSettingsFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('SaveTrustSettingsUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'SaveTrustSettingsUsecase', error: error, stackTrace: stackTrace);
       return const Left(TrustSettingsFailure.unknown);
     }
   }

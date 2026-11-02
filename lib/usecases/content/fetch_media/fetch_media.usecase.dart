@@ -5,6 +5,8 @@ import 'package:bedbug/gateways/media/media_http.gateway.dart';
 import 'package:bedbug/gateways/media/media_http.gateway.dio.dart';
 import 'package:bedbug/resources/content/safe_url.value_object.dart';
 import 'package:bedbug/resources/content/url_trust_policy.value_object.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:bedbug/services/trust/url_trust.service.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.failure.dart';
@@ -29,6 +31,7 @@ final fetchMediaUsecaseProvider = Provider<FetchMediaUsecase>((ref) {
     ref.read(mediaHttpGatewayProvider),
     ref.read(urlSafetyServiceProvider),
     ref.read(urlTrustServiceProvider),
+    ref.read(errorLogRepositoryProvider),
   );
 });
 
@@ -45,13 +48,14 @@ final fetchMediaUsecaseProvider = Provider<FetchMediaUsecase>((ref) {
 /// demandé, le contenu du média.
 class FetchMediaUsecase extends Usecase<FetchMediaParams, FetchMediaFailure, FetchedMedia> {
   /// Crée un [FetchMediaUsecase].
-  FetchMediaUsecase(this._mediaHttpGateway, this._urlSafetyService, this._urlTrustService);
+  FetchMediaUsecase(this._mediaHttpGateway, this._urlSafetyService, this._urlTrustService, this._errorLogRepository);
 
   final MediaHttpGateway _mediaHttpGateway;
 
   final UrlSafetyService _urlSafetyService;
 
   final UrlTrustService _urlTrustService;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<FetchMediaFailure, FetchedMedia>> call(FetchMediaParams params) async {
@@ -87,6 +91,7 @@ class FetchMediaUsecase extends Usecase<FetchMediaParams, FetchMediaFailure, Fet
       return const Left(FetchMediaFailure.tooManyRedirects);
     } catch (error, stackTrace) {
       AppLogger.error('FetchMediaUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'FetchMediaUsecase', error: error, stackTrace: stackTrace);
       return const Left(FetchMediaFailure.unavailable);
     }
   }

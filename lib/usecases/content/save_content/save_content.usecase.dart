@@ -8,6 +8,8 @@ import 'package:bedbug/resources/content/drawing_content.entity.dart';
 import 'package:bedbug/resources/content/storage.repository.dart';
 import 'package:bedbug/resources/content/storage.repository.hive.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/services/content/content_size.service.dart';
 import 'package:bedbug/services/content/drawing_validation.service.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.failure.dart';
@@ -21,6 +23,7 @@ final saveContentUsecaseProvider = Provider<SaveContentUsecase>((ref) {
     ref.read(storageRepositoryProvider),
     ref.read(drawingValidationServiceProvider),
     ref.read(contentSizeServiceProvider),
+    ref.read(errorLogRepositoryProvider),
   );
 });
 
@@ -35,12 +38,14 @@ class SaveContentUsecase extends Usecase<SaveContentParams, SaveContentFailure, 
     this._storageRepository,
     this._drawingValidationService,
     this._contentSizeService,
+    this._errorLogRepository,
   );
 
   final ContentRepository _contentRepository;
   final StorageRepository _storageRepository;
   final DrawingValidationService _drawingValidationService;
   final ContentSizeService _contentSizeService;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<SaveContentFailure, Content>> call(SaveContentParams params) async {
@@ -60,6 +65,7 @@ class SaveContentUsecase extends Usecase<SaveContentParams, SaveContentFailure, 
       return const Left(SaveContentFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('SaveContentUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'SaveContentUsecase', error: error, stackTrace: stackTrace);
       return const Left(SaveContentFailure.unknown);
     }
   }

@@ -6,6 +6,8 @@ import 'package:bedbug/resources/content/reaction.repository.dart';
 import 'package:bedbug/resources/content/reaction.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/services/reaction/reaction_merge.service.dart';
 import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.failure.dart';
 import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.params.dart';
@@ -13,7 +15,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveReactionUsecase].
 final saveReactionUsecaseProvider = Provider<SaveReactionUsecase>((ref) {
-  return SaveReactionUsecase(ref.read(reactionRepositoryProvider), ref.read(reactionMergeServiceProvider));
+  return SaveReactionUsecase(
+    ref.read(reactionRepositoryProvider),
+    ref.read(reactionMergeServiceProvider),
+    ref.read(errorLogRepositoryProvider),
+  );
 });
 
 /// Enregistre une réaction de l'utilisateur sur un contenu.
@@ -24,10 +30,11 @@ final saveReactionUsecaseProvider = Provider<SaveReactionUsecase>((ref) {
 /// Retourne la réaction effectivement conservée pour cet auteur.
 class SaveReactionUsecase extends Usecase<SaveReactionParams, SaveReactionFailure, Reaction> {
   /// Crée un [SaveReactionUsecase].
-  SaveReactionUsecase(this._reactionRepository, this._reactionMergeService);
+  SaveReactionUsecase(this._reactionRepository, this._reactionMergeService, this._errorLogRepository);
 
   final ReactionRepository _reactionRepository;
   final ReactionMergeService _reactionMergeService;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<SaveReactionFailure, Reaction>> call(SaveReactionParams params) async {
@@ -58,6 +65,7 @@ class SaveReactionUsecase extends Usecase<SaveReactionParams, SaveReactionFailur
       return const Left(SaveReactionFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('SaveReactionUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'SaveReactionUsecase', error: error, stackTrace: stackTrace);
       return const Left(SaveReactionFailure.unknown);
     }
   }

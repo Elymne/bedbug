@@ -10,12 +10,14 @@ import 'package:bedbug/resources/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/content_origin.enum.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/feed/recalculate_display_scores/recalculate_display_scores.failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [RecalculateDisplayScoresUsecase].
 final recalculateDisplayScoresUsecaseProvider = Provider<RecalculateDisplayScoresUsecase>((ref) {
-  return RecalculateDisplayScoresUsecase(ref.read(contentRepositoryProvider));
+  return RecalculateDisplayScoresUsecase(ref.read(contentRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Nombre de rebonds au-delà duquel le bonus de `bounce` n'augmente plus.
@@ -49,9 +51,10 @@ const double _bounceBonusWeight = 0.2;
 /// de rebonds, signal d'intérêt indirect des pairs pour ce contenu.
 class RecalculateDisplayScoresUsecase extends Usecase<NoParams, RecalculateDisplayScoresFailure, void> {
   /// Crée un [RecalculateDisplayScoresUsecase].
-  RecalculateDisplayScoresUsecase(this._contentRepository);
+  RecalculateDisplayScoresUsecase(this._contentRepository, this._errorLogRepository);
 
   final ContentRepository _contentRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<RecalculateDisplayScoresFailure, void>> call(NoParams params) async {
@@ -96,6 +99,7 @@ class RecalculateDisplayScoresUsecase extends Usecase<NoParams, RecalculateDispl
       return const Left(RecalculateDisplayScoresFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('RecalculateDisplayScoresUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'RecalculateDisplayScoresUsecase', error: error, stackTrace: stackTrace);
       return const Left(RecalculateDisplayScoresFailure.unknown);
     }
   }

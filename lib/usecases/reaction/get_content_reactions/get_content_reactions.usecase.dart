@@ -8,13 +8,19 @@ import 'package:bedbug/resources/content/reaction.repository.dart';
 import 'package:bedbug/resources/content/reaction.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/reaction/get_content_reactions/get_content_reactions.failure.dart';
 import 'package:bedbug/usecases/reaction/get_content_reactions/get_content_reactions.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetContentReactionsUsecase].
 final getContentReactionsUsecaseProvider = Provider<GetContentReactionsUsecase>((ref) {
-  return GetContentReactionsUsecase(ref.read(reactionRepositoryProvider), Random());
+  return GetContentReactionsUsecase(
+    ref.read(reactionRepositoryProvider),
+    Random(),
+    ref.read(errorLogRepositoryProvider),
+  );
 });
 
 /// Retourne les réactions d'un contenu, dans un ordre aléatoire.
@@ -27,10 +33,11 @@ final getContentReactionsUsecaseProvider = Provider<GetContentReactionsUsecase>(
 class GetContentReactionsUsecase
     extends Usecase<GetContentReactionsParams, GetContentReactionsFailure, List<Reaction>> {
   /// Crée un [GetContentReactionsUsecase].
-  GetContentReactionsUsecase(this._reactionRepository, this._random);
+  GetContentReactionsUsecase(this._reactionRepository, this._random, this._errorLogRepository);
 
   final ReactionRepository _reactionRepository;
   final Random _random;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<GetContentReactionsFailure, List<Reaction>>> call(GetContentReactionsParams params) async {
@@ -45,6 +52,7 @@ class GetContentReactionsUsecase
       return const Left(GetContentReactionsFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('GetContentReactionsUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'GetContentReactionsUsecase', error: error, stackTrace: stackTrace);
       return const Left(GetContentReactionsFailure.unknown);
     }
   }

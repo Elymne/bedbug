@@ -20,6 +20,8 @@ import 'package:bedbug/resources/content/storage.repository.dart';
 import 'package:bedbug/resources/content/storage.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/resources/exchange/exchange_import_report.value_object.dart';
 import 'package:bedbug/resources/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature.repository.dart';
@@ -44,6 +46,7 @@ final importExchangeBundleUsecaseProvider = Provider<ImportExchangeBundleUsecase
     ref.read(contentSizeServiceProvider),
     ref.read(drawingValidationServiceProvider),
     ref.read(reactionMergeServiceProvider),
+    ref.read(errorLogRepositoryProvider),
   );
 });
 
@@ -102,6 +105,7 @@ class ImportExchangeBundleUsecase
     this._contentSizeService,
     this._drawingValidationService,
     this._reactionMergeService,
+    this._errorLogRepository,
   );
 
   final ContentRepository _contentRepository;
@@ -113,6 +117,7 @@ class ImportExchangeBundleUsecase
   final ContentSizeService _contentSizeService;
   final DrawingValidationService _drawingValidationService;
   final ReactionMergeService _reactionMergeService;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<ImportExchangeBundleFailure, ExchangeImportReport>> call(ImportExchangeBundleParams params) async {
@@ -185,6 +190,7 @@ class ImportExchangeBundleUsecase
       return const Left(ImportExchangeBundleFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('ImportExchangeBundleUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'ImportExchangeBundleUsecase', error: error, stackTrace: stackTrace);
       return const Left(ImportExchangeBundleFailure.unknown);
     }
   }
@@ -233,6 +239,7 @@ class ImportExchangeBundleUsecase
       return true;
     } catch (error, stackTrace) {
       AppLogger.error('ImportExchangeBundleUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'ImportExchangeBundleUsecase', error: error, stackTrace: stackTrace);
       return false;
     }
   }
@@ -407,6 +414,7 @@ class ImportExchangeBundleUsecase
       return true;
     } catch (error, stackTrace) {
       AppLogger.error('ImportExchangeBundleUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'ImportExchangeBundleUsecase', error: error, stackTrace: stackTrace);
       return false;
     }
   }

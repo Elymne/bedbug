@@ -16,6 +16,8 @@ import 'package:bedbug/resources/content/seen_content.repository.dart';
 import 'package:bedbug/resources/content/seen_content.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/exchange/build_exchange_offer/build_exchange_offer.usecase.dart';
 import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.failure.dart';
 import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.params.dart';
@@ -29,6 +31,7 @@ final selectFromExchangeOfferUsecaseProvider = Provider<SelectFromExchangeOfferU
     ref.read(seenContentRepositoryProvider),
     ref.read(exchangeCodecGatewayProvider),
     Random(),
+    ref.read(errorLogRepositoryProvider),
   );
 });
 
@@ -72,6 +75,7 @@ class SelectFromExchangeOfferUsecase
     this._seenContentRepository,
     this._exchangeCodecGateway,
     this._random,
+    this._errorLogRepository,
   );
 
   final ContentRepository _contentRepository;
@@ -79,6 +83,7 @@ class SelectFromExchangeOfferUsecase
   final SeenContentRepository _seenContentRepository;
   final ExchangeCodecGateway _exchangeCodecGateway;
   final Random _random;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<SelectFromExchangeOfferFailure, Uint8List>> call(SelectFromExchangeOfferParams params) async {
@@ -118,6 +123,7 @@ class SelectFromExchangeOfferUsecase
       return const Left(SelectFromExchangeOfferFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('SelectFromExchangeOfferUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'SelectFromExchangeOfferUsecase', error: error, stackTrace: stackTrace);
       return const Left(SelectFromExchangeOfferFailure.unknown);
     }
   }

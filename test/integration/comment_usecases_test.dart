@@ -11,6 +11,7 @@ import 'package:bedbug/usecases/comment/save_comment/save_comment.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/fake_error_log_repository.dart';
 import '../helpers/hive_test_helper.dart';
 
 /// Construit un commentaire de test sur le contenu `content`.
@@ -132,7 +133,11 @@ void main() {
         ),
       );
     }
-    final getUsecase = GetContentCommentsUsecase(container.read(commentRepositoryProvider), Random(42));
+    final getUsecase = GetContentCommentsUsecase(
+      container.read(commentRepositoryProvider),
+      Random(42),
+      FakeErrorLogRepository(),
+    );
 
     final result = await getUsecase(const GetContentCommentsParams(contentId: 'content'));
 

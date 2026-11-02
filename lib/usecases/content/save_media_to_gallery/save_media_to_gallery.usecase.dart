@@ -4,6 +4,8 @@ import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/gateways/media/gallery.exception.dart';
 import 'package:bedbug/gateways/media/media_gallery.gateway.dart';
 import 'package:bedbug/gateways/media/media_gallery.gateway.gal.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/services/content/media_format.service.dart';
 import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.failure.dart';
 import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.params.dart';
@@ -18,7 +20,11 @@ const int maxGalleryMediaBytes = 50 * 1024 * 1024;
 
 /// Provider du [SaveMediaToGalleryUsecase].
 final saveMediaToGalleryUsecaseProvider = Provider<SaveMediaToGalleryUsecase>((ref) {
-  return SaveMediaToGalleryUsecase(ref.read(mediaGalleryGatewayProvider), ref.read(mediaFormatServiceProvider));
+  return SaveMediaToGalleryUsecase(
+    ref.read(mediaGalleryGatewayProvider),
+    ref.read(mediaFormatServiceProvider),
+    ref.read(errorLogRepositoryProvider),
+  );
 });
 
 /// Enregistre un média déjà téléchargé dans la galerie du téléphone.
@@ -30,11 +36,12 @@ final saveMediaToGalleryUsecaseProvider = Provider<SaveMediaToGalleryUsecase>((r
 /// web ou un exécutable déguisé.
 class SaveMediaToGalleryUsecase extends Usecase<SaveMediaToGalleryParams, SaveMediaToGalleryFailure, void> {
   /// Crée un [SaveMediaToGalleryUsecase].
-  SaveMediaToGalleryUsecase(this._mediaGalleryGateway, this._mediaFormatService);
+  SaveMediaToGalleryUsecase(this._mediaGalleryGateway, this._mediaFormatService, this._errorLogRepository);
 
   final MediaGalleryGateway _mediaGalleryGateway;
 
   final MediaFormatService _mediaFormatService;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<SaveMediaToGalleryFailure, void>> call(SaveMediaToGalleryParams params) async {
@@ -54,6 +61,7 @@ class SaveMediaToGalleryUsecase extends Usecase<SaveMediaToGalleryParams, SaveMe
       return const Left(SaveMediaToGalleryFailure.saveError);
     } catch (error, stackTrace) {
       AppLogger.error('SaveMediaToGalleryUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'SaveMediaToGalleryUsecase', error: error, stackTrace: stackTrace);
       return const Left(SaveMediaToGalleryFailure.saveError);
     }
   }

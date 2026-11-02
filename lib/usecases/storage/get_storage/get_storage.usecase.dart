@@ -8,12 +8,14 @@ import 'package:bedbug/resources/content/storage.repository.dart';
 import 'package:bedbug/resources/content/storage.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/storage/get_storage/get_storage.failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetStorageUsecase].
 final getStorageUsecaseProvider = Provider<GetStorageUsecase>((ref) {
-  return GetStorageUsecase(ref.read(storageRepositoryProvider));
+  return GetStorageUsecase(ref.read(storageRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Récupère la configuration de stockage local.
@@ -29,9 +31,10 @@ final getStorageUsecaseProvider = Provider<GetStorageUsecase>((ref) {
 /// supprimer les entrées surnuméraires) plutôt qu'un simple log.
 class GetStorageUsecase extends Usecase<NoParams, GetStorageFailure, Storage> {
   /// Crée un [GetStorageUsecase].
-  GetStorageUsecase(this._storageRepository);
+  GetStorageUsecase(this._storageRepository, this._errorLogRepository);
 
   final StorageRepository _storageRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<GetStorageFailure, Storage>> call(NoParams params) async {
@@ -64,6 +67,7 @@ class GetStorageUsecase extends Usecase<NoParams, GetStorageFailure, Storage> {
       return const Left(GetStorageFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('GetStorageUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'GetStorageUsecase', error: error, stackTrace: stackTrace);
       return const Left(GetStorageFailure.unknown);
     }
   }

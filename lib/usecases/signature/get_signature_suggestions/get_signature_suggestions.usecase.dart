@@ -3,6 +3,8 @@ import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/resources/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature.repository.dart';
 import 'package:bedbug/resources/signature/signature.repository.hive.dart';
@@ -15,7 +17,7 @@ const int maxSignatureSuggestions = 4;
 
 /// Provider du [GetSignatureSuggestionsUsecase].
 final getSignatureSuggestionsUsecaseProvider = Provider<GetSignatureSuggestionsUsecase>((ref) {
-  return GetSignatureSuggestionsUsecase(ref.read(signatureRepositoryProvider));
+  return GetSignatureSuggestionsUsecase(ref.read(signatureRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Propose les signatures connues de l'appareil dont le pseudo commence par la saisie de l'utilisateur.
@@ -31,9 +33,10 @@ final getSignatureSuggestionsUsecaseProvider = Provider<GetSignatureSuggestionsU
 class GetSignatureSuggestionsUsecase
     extends Usecase<GetSignatureSuggestionsParams, GetSignatureSuggestionsFailure, List<Signature>> {
   /// Crée un [GetSignatureSuggestionsUsecase].
-  GetSignatureSuggestionsUsecase(this._signatureRepository);
+  GetSignatureSuggestionsUsecase(this._signatureRepository, this._errorLogRepository);
 
   final SignatureRepository _signatureRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<GetSignatureSuggestionsFailure, List<Signature>>> call(GetSignatureSuggestionsParams params) async {
@@ -56,6 +59,7 @@ class GetSignatureSuggestionsUsecase
       return const Left(GetSignatureSuggestionsFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('GetSignatureSuggestionsUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'GetSignatureSuggestionsUsecase', error: error, stackTrace: stackTrace);
       return const Left(GetSignatureSuggestionsFailure.unknown);
     }
   }

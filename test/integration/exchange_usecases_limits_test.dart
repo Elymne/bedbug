@@ -34,6 +34,7 @@ import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/fake_error_log_repository.dart';
 import '../helpers/hive_test_helper.dart';
 
 /// Codec utilisé pour fabriquer les messages d'un pair simulé et relire ceux de l'appareil.
@@ -209,6 +210,7 @@ void main() {
       container.read(seenContentRepositoryProvider),
       _codec,
       Random(1),
+      FakeErrorLogRepository(),
     );
     final result = await usecase(
       SelectFromExchangeOfferParams(

@@ -4,13 +4,15 @@ import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/resources/content/drawing_draft.repository.dart';
 import 'package:bedbug/resources/content/drawing_draft.repository.hive.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/content/get_drawing_draft/get_drawing_draft.failure.dart';
 import 'package:bedbug/usecases/content/save_drawing_draft/save_drawing_draft.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveDrawingDraftUsecase].
 final saveDrawingDraftUsecaseProvider = Provider<SaveDrawingDraftUsecase>((ref) {
-  return SaveDrawingDraftUsecase(ref.read(drawingDraftRepositoryProvider));
+  return SaveDrawingDraftUsecase(ref.read(drawingDraftRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Enregistre le dessin en cours comme brouillon, ou efface le brouillon une fois le dessin terminé ou abandonné.
@@ -22,10 +24,11 @@ final saveDrawingDraftUsecaseProvider = Provider<SaveDrawingDraftUsecase>((ref) 
 /// abandonné à la prochaine ouverture.
 class SaveDrawingDraftUsecase extends Usecase<SaveDrawingDraftParams, DrawingDraftFailure, void> {
   /// Crée un [SaveDrawingDraftUsecase].
-  SaveDrawingDraftUsecase(this._drawingDraftRepository);
+  SaveDrawingDraftUsecase(this._drawingDraftRepository, this._errorLogRepository);
 
   /// Stockage du brouillon.
   final DrawingDraftRepository _drawingDraftRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<DrawingDraftFailure, void>> call(SaveDrawingDraftParams params) async {
@@ -42,6 +45,7 @@ class SaveDrawingDraftUsecase extends Usecase<SaveDrawingDraftParams, DrawingDra
       return const Left(DrawingDraftFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('SaveDrawingDraftUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'SaveDrawingDraftUsecase', error: error, stackTrace: stackTrace);
       return const Left(DrawingDraftFailure.unknown);
     }
   }

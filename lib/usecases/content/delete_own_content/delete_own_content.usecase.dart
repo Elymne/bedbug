@@ -13,6 +13,8 @@ import 'package:bedbug/resources/content/storage.repository.dart';
 import 'package:bedbug/resources/content/storage.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.failure.dart';
 import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +27,7 @@ final deleteOwnContentUsecaseProvider = Provider<DeleteOwnContentUsecase>((ref) 
     ref.read(reactionRepositoryProvider),
     ref.read(commentRepositoryProvider),
     ref.read(seenContentRepositoryProvider),
+    ref.read(errorLogRepositoryProvider),
   );
 });
 
@@ -48,6 +51,7 @@ class DeleteOwnContentUsecase extends Usecase<DeleteOwnContentParams, DeleteOwnC
     this._reactionRepository,
     this._commentRepository,
     this._seenContentRepository,
+    this._errorLogRepository,
   );
 
   final ContentRepository _contentRepository;
@@ -55,6 +59,7 @@ class DeleteOwnContentUsecase extends Usecase<DeleteOwnContentParams, DeleteOwnC
   final ReactionRepository _reactionRepository;
   final CommentRepository _commentRepository;
   final SeenContentRepository _seenContentRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<DeleteOwnContentFailure, void>> call(DeleteOwnContentParams params) async {
@@ -81,6 +86,7 @@ class DeleteOwnContentUsecase extends Usecase<DeleteOwnContentParams, DeleteOwnC
       return const Left(DeleteOwnContentFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('DeleteOwnContentUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'DeleteOwnContentUsecase', error: error, stackTrace: stackTrace);
       return const Left(DeleteOwnContentFailure.unknown);
     }
   }

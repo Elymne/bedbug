@@ -8,13 +8,15 @@ import 'package:bedbug/resources/content/comment.repository.dart';
 import 'package:bedbug/resources/content/comment.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/comment/get_content_comments/get_content_comments.failure.dart';
 import 'package:bedbug/usecases/comment/get_content_comments/get_content_comments.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetContentCommentsUsecase].
 final getContentCommentsUsecaseProvider = Provider<GetContentCommentsUsecase>((ref) {
-  return GetContentCommentsUsecase(ref.read(commentRepositoryProvider), Random());
+  return GetContentCommentsUsecase(ref.read(commentRepositoryProvider), Random(), ref.read(errorLogRepositoryProvider));
 });
 
 /// Retourne les commentaires d'un contenu, dans un ordre aléatoire.
@@ -26,10 +28,11 @@ final getContentCommentsUsecaseProvider = Provider<GetContentCommentsUsecase>((r
 /// avant.
 class GetContentCommentsUsecase extends Usecase<GetContentCommentsParams, GetContentCommentsFailure, List<Comment>> {
   /// Crée un [GetContentCommentsUsecase].
-  GetContentCommentsUsecase(this._commentRepository, this._random);
+  GetContentCommentsUsecase(this._commentRepository, this._random, this._errorLogRepository);
 
   final CommentRepository _commentRepository;
   final Random _random;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<GetContentCommentsFailure, List<Comment>>> call(GetContentCommentsParams params) async {
@@ -44,6 +47,7 @@ class GetContentCommentsUsecase extends Usecase<GetContentCommentsParams, GetCon
       return const Left(GetContentCommentsFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('GetContentCommentsUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'GetContentCommentsUsecase', error: error, stackTrace: stackTrace);
       return const Left(GetContentCommentsFailure.unknown);
     }
   }

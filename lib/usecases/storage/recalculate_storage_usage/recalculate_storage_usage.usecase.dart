@@ -10,12 +10,18 @@ import 'package:bedbug/resources/content/storage.repository.dart';
 import 'package:bedbug/resources/content/storage.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/storage/recalculate_storage_usage/recalculate_storage_usage.failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [RecalculateStorageUsageUsecase].
 final recalculateStorageUsageUsecaseProvider = Provider<RecalculateStorageUsageUsecase>((ref) {
-  return RecalculateStorageUsageUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider));
+  return RecalculateStorageUsageUsecase(
+    ref.read(contentRepositoryProvider),
+    ref.read(storageRepositoryProvider),
+    ref.read(errorLogRepositoryProvider),
+  );
 });
 
 /// Recalcule `Storage.currentSizeInBytes` en additionnant `sizeInBytes` de
@@ -33,10 +39,11 @@ final recalculateStorageUsageUsecaseProvider = Provider<RecalculateStorageUsageU
 /// l'application) plutôt qu'à chaque lecture.
 class RecalculateStorageUsageUsecase extends Usecase<NoParams, RecalculateStorageUsageFailure, int> {
   /// Crée un [RecalculateStorageUsageUsecase].
-  RecalculateStorageUsageUsecase(this._contentRepository, this._storageRepository);
+  RecalculateStorageUsageUsecase(this._contentRepository, this._storageRepository, this._errorLogRepository);
 
   final ContentRepository _contentRepository;
   final StorageRepository _storageRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<RecalculateStorageUsageFailure, int>> call(NoParams params) async {
@@ -69,6 +76,7 @@ class RecalculateStorageUsageUsecase extends Usecase<NoParams, RecalculateStorag
       return const Left(RecalculateStorageUsageFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('RecalculateStorageUsageUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'RecalculateStorageUsageUsecase', error: error, stackTrace: stackTrace);
       return const Left(RecalculateStorageUsageFailure.unknown);
     }
   }

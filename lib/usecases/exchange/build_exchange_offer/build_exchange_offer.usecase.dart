@@ -13,6 +13,8 @@ import 'package:bedbug/resources/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/reaction.repository.dart';
 import 'package:bedbug/resources/content/reaction.repository.hive.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/exchange/build_exchange_offer/build_exchange_offer.failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,6 +25,7 @@ final buildExchangeOfferUsecaseProvider = Provider<BuildExchangeOfferUsecase>((r
     ref.read(reactionRepositoryProvider),
     ref.read(exchangeCodecGatewayProvider),
     Random(),
+    ref.read(errorLogRepositoryProvider),
   );
 });
 
@@ -54,12 +57,14 @@ class BuildExchangeOfferUsecase extends Usecase<NoParams, BuildExchangeOfferFail
     this._reactionRepository,
     this._exchangeCodecGateway,
     this._random,
+    this._errorLogRepository,
   );
 
   final ContentRepository _contentRepository;
   final ReactionRepository _reactionRepository;
   final ExchangeCodecGateway _exchangeCodecGateway;
   final Random _random;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<BuildExchangeOfferFailure, Uint8List>> call(NoParams params) async {
@@ -94,6 +99,7 @@ class BuildExchangeOfferUsecase extends Usecase<NoParams, BuildExchangeOfferFail
       return const Left(BuildExchangeOfferFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('BuildExchangeOfferUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'BuildExchangeOfferUsecase', error: error, stackTrace: stackTrace);
       return const Left(BuildExchangeOfferFailure.unknown);
     }
   }

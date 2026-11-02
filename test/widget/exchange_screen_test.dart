@@ -10,6 +10,7 @@ import 'package:bedbug/gateways/exchange/peer_attempt.value_object.dart';
 import 'package:bedbug/gateways/exchange/peer_link.gateway.ble.dart';
 import 'package:bedbug/gateways/exchange/peer_link.gateway.dart';
 import 'package:bedbug/resources/content/home_feed.value_object.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/resources/settings/user_settings.value_object.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
@@ -21,6 +22,7 @@ import 'package:bedbug/usecases/settings/save_settings/save_settings.usecase.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/fake_error_log_repository.dart';
 import '../helpers/find_app_icon.dart';
 import '../helpers/pump_app.dart';
 
@@ -124,6 +126,7 @@ void main() {
       const ExchangeScreen(),
       overrides: [
         peerLinkGatewayProvider.overrideWithValue(_FakePeerLinkGateway(isPermissionGranted: false)),
+        errorLogRepositoryProvider.overrideWithValue(FakeErrorLogRepository()),
         getSettingsUsecaseProvider.overrideWithValue(_FakeGetSettingsUsecase(store)),
         saveSettingsUsecaseProvider.overrideWithValue(_FakeSaveSettingsUsecase(store)),
       ],
@@ -147,6 +150,7 @@ void main() {
       const ExchangeScreen(),
       overrides: [
         peerLinkGatewayProvider.overrideWithValue(_FakePeerLinkGateway()),
+        errorLogRepositoryProvider.overrideWithValue(FakeErrorLogRepository()),
         getSettingsUsecaseProvider.overrideWithValue(_FakeGetSettingsUsecase(store)),
         saveSettingsUsecaseProvider.overrideWithValue(_FakeSaveSettingsUsecase(store)),
       ],
@@ -172,6 +176,7 @@ void main() {
       const ExchangeScreen(),
       overrides: [
         peerLinkGatewayProvider.overrideWithValue(_FakePeerLinkGateway(isPermissionGranted: false)),
+        errorLogRepositoryProvider.overrideWithValue(FakeErrorLogRepository()),
         getSettingsUsecaseProvider.overrideWithValue(_FakeGetSettingsUsecase(store)),
         saveSettingsUsecaseProvider.overrideWithValue(_FakeSaveSettingsUsecase(store)),
       ],
@@ -194,6 +199,7 @@ void main() {
       const ExchangeScreen(),
       overrides: [
         peerLinkGatewayProvider.overrideWithValue(gateway),
+        errorLogRepositoryProvider.overrideWithValue(FakeErrorLogRepository()),
         getSettingsUsecaseProvider.overrideWithValue(_FakeGetSettingsUsecase(store)),
         saveSettingsUsecaseProvider.overrideWithValue(_FakeSaveSettingsUsecase(store)),
       ],
@@ -217,6 +223,7 @@ void main() {
       const HomeScreen(),
       overrides: [
         peerLinkGatewayProvider.overrideWithValue(_FakePeerLinkGateway()),
+        errorLogRepositoryProvider.overrideWithValue(FakeErrorLogRepository()),
         getSettingsUsecaseProvider.overrideWithValue(_FakeGetSettingsUsecase(store)),
         saveSettingsUsecaseProvider.overrideWithValue(_FakeSaveSettingsUsecase(store)),
         getHomeFeedUsecaseProvider.overrideWithValue(_FakeGetHomeFeedUsecase()),

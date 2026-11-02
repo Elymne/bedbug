@@ -10,12 +10,14 @@ import 'package:bedbug/resources/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/content_origin.enum.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/exchange/recalculate_broadcast_scores/recalculate_broadcast_scores.failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [RecalculateBroadcastScoresUsecase].
 final recalculateBroadcastScoresUsecaseProvider = Provider<RecalculateBroadcastScoresUsecase>((ref) {
-  return RecalculateBroadcastScoresUsecase(ref.read(contentRepositoryProvider));
+  return RecalculateBroadcastScoresUsecase(ref.read(contentRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Nombre de rebonds au-delà duquel la pénalité de `bounce` n'augmente plus.
@@ -54,9 +56,10 @@ const double _bouncePenaltyWeight = 0.2;
 /// continuer à le pousser activement.
 class RecalculateBroadcastScoresUsecase extends Usecase<NoParams, RecalculateBroadcastScoresFailure, void> {
   /// Crée un [RecalculateBroadcastScoresUsecase].
-  RecalculateBroadcastScoresUsecase(this._contentRepository);
+  RecalculateBroadcastScoresUsecase(this._contentRepository, this._errorLogRepository);
 
   final ContentRepository _contentRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<RecalculateBroadcastScoresFailure, void>> call(NoParams params) async {
@@ -101,6 +104,11 @@ class RecalculateBroadcastScoresUsecase extends Usecase<NoParams, RecalculateBro
       return const Left(RecalculateBroadcastScoresFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('RecalculateBroadcastScoresUsecase', error, stackTrace);
+      await _errorLogRepository.record(
+        source: 'RecalculateBroadcastScoresUsecase',
+        error: error,
+        stackTrace: stackTrace,
+      );
       return const Left(RecalculateBroadcastScoresFailure.unknown);
     }
   }

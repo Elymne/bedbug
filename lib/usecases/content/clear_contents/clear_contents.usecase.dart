@@ -12,6 +12,8 @@ import 'package:bedbug/resources/content/storage.repository.dart';
 import 'package:bedbug/resources/content/storage.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/content/clear_contents/clear_contents.failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,6 +24,7 @@ final clearContentsUsecaseProvider = Provider<ClearContentsUsecase>((ref) {
     ref.read(storageRepositoryProvider),
     ref.read(reactionRepositoryProvider),
     ref.read(commentRepositoryProvider),
+    ref.read(errorLogRepositoryProvider),
   );
 });
 
@@ -36,12 +39,14 @@ class ClearContentsUsecase extends Usecase<NoParams, ClearContentsFailure, void>
     this._storageRepository,
     this._reactionRepository,
     this._commentRepository,
+    this._errorLogRepository,
   );
 
   final ContentRepository _contentRepository;
   final StorageRepository _storageRepository;
   final ReactionRepository _reactionRepository;
   final CommentRepository _commentRepository;
+  final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<ClearContentsFailure, void>> call(NoParams params) async {
@@ -59,6 +64,7 @@ class ClearContentsUsecase extends Usecase<NoParams, ClearContentsFailure, void>
       return const Left(ClearContentsFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('ClearContentsUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'ClearContentsUsecase', error: error, stackTrace: stackTrace);
       return const Left(ClearContentsFailure.unknown);
     }
   }
