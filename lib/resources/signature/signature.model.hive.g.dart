@@ -13,9 +13,7 @@ class SignatureHiveModelAdapter extends TypeAdapter<SignatureHiveModel> {
   @override
   SignatureHiveModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
+    final fields = <int, dynamic>{for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read()};
     return SignatureHiveModel(
       id: fields[0] as String,
       createdAt: (fields[1] as num).toInt(),
@@ -24,9 +22,7 @@ class SignatureHiveModelAdapter extends TypeAdapter<SignatureHiveModel> {
       avatarText: fields[5] == null ? '(◕‿◕)' : fields[5] as String,
       colorArgb: (fields[8] as num?)?.toInt(),
       ghostSpeed: fields[9] == null ? 1.0 : (fields[9] as num).toDouble(),
-      socialLinks: fields[7] == null
-          ? {}
-          : (fields[7] as Map).cast<int, String>(),
+      socialLinks: fields[7] == null ? {} : (fields[7] as Map).cast<int, String>(),
       bio: fields[10] as String?,
       bioFont: fields[11] == null ? 0 : (fields[11] as num).toInt(),
     );
@@ -64,7 +60,5 @@ class SignatureHiveModelAdapter extends TypeAdapter<SignatureHiveModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SignatureHiveModelAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+      other is SignatureHiveModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }

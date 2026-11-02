@@ -1,9 +1,6 @@
 import 'dart:io';
 
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/features/content/domain/usecases/enforce_storage_limit_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/get_storage_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/save_storage_limit_usecase.dart';
 import 'package:bedbug/resources/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/content_origin.enum.dart';
 import 'package:bedbug/resources/content/reaction.entity.dart';
@@ -12,6 +9,10 @@ import 'package:bedbug/resources/content/seen_content.repository.hive.dart';
 import 'package:bedbug/resources/content/storage.repository.dart';
 import 'package:bedbug/resources/content/storage.repository.hive.dart';
 import 'package:bedbug/resources/content/text_content.entity.dart';
+import 'package:bedbug/usecases/storage/enforce_storage_limit/enforce_storage_limit.usecase.dart';
+import 'package:bedbug/usecases/storage/get_storage/get_storage.usecase.dart';
+import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.params.dart';
+import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

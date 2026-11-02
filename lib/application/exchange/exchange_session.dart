@@ -4,10 +4,6 @@ import 'dart:typed_data';
 
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/features/exchange/domain/usecases/build_exchange_bundle_usecase.dart';
-import 'package:bedbug/features/exchange/domain/usecases/build_exchange_offer_usecase.dart';
-import 'package:bedbug/features/exchange/domain/usecases/import_exchange_bundle_usecase.dart';
-import 'package:bedbug/features/exchange/domain/usecases/select_from_exchange_offer_usecase.dart';
 import 'package:bedbug/gateways/exchange/exchange_frame.value_object.dart';
 import 'package:bedbug/gateways/exchange/exchange_frame_codec.gateway.binary.dart';
 import 'package:bedbug/gateways/exchange/exchange_frame_codec.gateway.dart';
@@ -16,6 +12,16 @@ import 'package:bedbug/gateways/exchange/exchange_frame_type.enum.dart';
 import 'package:bedbug/gateways/exchange/exchange_transport.gateway.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/exchange/exchange_import_report.value_object.dart';
+import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.failure.dart';
+import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.params.dart';
+import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.usecase.dart';
+import 'package:bedbug/usecases/exchange/build_exchange_offer/build_exchange_offer.usecase.dart';
+import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.failure.dart';
+import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.params.dart';
+import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.usecase.dart';
+import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.failure.dart';
+import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.params.dart';
+import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Version du protocole de session, annoncée dans [ExchangeFrameType.hello].

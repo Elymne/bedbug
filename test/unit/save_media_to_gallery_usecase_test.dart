@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/features/content/domain/usecases/fetch_media_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/save_media_to_gallery_usecase.dart';
 import 'package:bedbug/gateways/media/gallery.exception.dart';
 import 'package:bedbug/gateways/media/media_gallery.gateway.dart';
 import 'package:bedbug/gateways/media/media_http.gateway.dart';
@@ -13,6 +11,12 @@ import 'package:bedbug/services/content/media_format.service.dart';
 import 'package:bedbug/services/trust/domain_rule.service.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:bedbug/services/trust/url_trust.service.dart';
+import 'package:bedbug/usecases/content/fetch_media/fetch_media.failure.dart';
+import 'package:bedbug/usecases/content/fetch_media/fetch_media.params.dart';
+import 'package:bedbug/usecases/content/fetch_media/fetch_media.usecase.dart';
+import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.failure.dart';
+import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.params.dart';
+import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Faux serveur : une réponse par adresse, et le journal des tailles maximales demandées.

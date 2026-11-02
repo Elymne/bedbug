@@ -2,12 +2,14 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/features/content/domain/usecases/get_drawing_draft_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/save_drawing_draft_usecase.dart';
 import 'package:bedbug/resources/content/drawing.value_object.dart';
 import 'package:bedbug/resources/content/drawing_draft.repository.hive.dart';
 import 'package:bedbug/resources/content/drawing_operation.value_object.dart';
 import 'package:bedbug/resources/content/drawing_point.value_object.dart';
+import 'package:bedbug/usecases/content/get_drawing_draft/get_drawing_draft.failure.dart';
+import 'package:bedbug/usecases/content/get_drawing_draft/get_drawing_draft.usecase.dart';
+import 'package:bedbug/usecases/content/save_drawing_draft/save_drawing_draft.params.dart';
+import 'package:bedbug/usecases/content/save_drawing_draft/save_drawing_draft.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';

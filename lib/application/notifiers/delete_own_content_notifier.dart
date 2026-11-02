@@ -1,7 +1,9 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/notifiers/own_contents_notifier.dart';
 import 'package:bedbug/application/screens/home/home_feed_notifier.dart';
-import 'package:bedbug/features/content/domain/usecases/delete_own_content_usecase.dart';
+import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.failure.dart';
+import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.params.dart';
+import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [DeleteOwnContentNotifier].

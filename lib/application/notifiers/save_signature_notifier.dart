@@ -1,9 +1,11 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/core/notifier/notifier_state.dart';
-import 'package:bedbug/features/signature/domain/usecases/save_local_signature_usecase.dart';
 import 'package:bedbug/resources/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/social_network.enum.dart';
 import 'package:bedbug/resources/signature/text_font.enum.dart';
+import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.failure.dart';
+import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.params.dart';
+import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveSignatureNotifier].

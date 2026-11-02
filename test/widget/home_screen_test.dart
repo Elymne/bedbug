@@ -5,12 +5,15 @@ import 'package:bedbug/application/widgets/fields/content_search_input.dart';
 import 'package:bedbug/application/widgets/ghost/app_ghost_icon.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/mark_content_viewed_usecase.dart';
 import 'package:bedbug/resources/content/content.entity.dart';
 import 'package:bedbug/resources/content/content_origin.enum.dart';
 import 'package:bedbug/resources/content/home_feed.value_object.dart';
 import 'package:bedbug/resources/content/text_content.entity.dart';
+import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';
+import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
+import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.failure.dart';
+import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.params.dart';
+import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

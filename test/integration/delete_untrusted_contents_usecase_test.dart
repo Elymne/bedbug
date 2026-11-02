@@ -1,9 +1,6 @@
 import 'dart:io';
 
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/features/content/domain/usecases/delete_untrusted_contents_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/mark_content_viewed_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
 import 'package:bedbug/resources/content/content.entity.dart';
 import 'package:bedbug/resources/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/content_origin.enum.dart';
@@ -17,6 +14,11 @@ import 'package:bedbug/resources/content/trust_settings.value_object.dart';
 import 'package:bedbug/resources/content/url_trust_policy.value_object.dart';
 import 'package:bedbug/resources/content/viewed_content.repository.hive.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
+import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.params.dart';
+import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.usecase.dart';
+import 'package:bedbug/usecases/trust/delete_untrusted_contents/delete_untrusted_contents.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -1,6 +1,8 @@
 import 'package:bedbug/application/widgets/stats/content_stats.dart';
 import 'package:bedbug/core/domain/either.dart';
-import 'package:bedbug/features/content/domain/usecases/count_content_reactions_usecase.dart';
+import 'package:bedbug/usecases/reaction/count_content_reactions/count_content_reactions.failure.dart';
+import 'package:bedbug/usecases/reaction/count_content_reactions/count_content_reactions.params.dart';
+import 'package:bedbug/usecases/reaction/count_content_reactions/count_content_reactions.usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

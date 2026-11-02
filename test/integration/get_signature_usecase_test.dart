@@ -1,9 +1,11 @@
 import 'dart:io';
 
-import 'package:bedbug/features/signature/domain/usecases/get_signature_usecase.dart';
-import 'package:bedbug/features/signature/domain/usecases/save_local_signature_usecase.dart';
 import 'package:bedbug/resources/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature.repository.dart';
+import 'package:bedbug/usecases/signature/get_signature/get_signature.params.dart';
+import 'package:bedbug/usecases/signature/get_signature/get_signature.usecase.dart';
+import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.params.dart';
+import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

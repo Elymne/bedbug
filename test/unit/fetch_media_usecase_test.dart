@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/features/content/domain/usecases/fetch_media_usecase.dart';
 import 'package:bedbug/gateways/media/media_http.gateway.dart';
 import 'package:bedbug/resources/content/domain_rule.value_object.dart';
 import 'package:bedbug/resources/content/safe_url.value_object.dart';
@@ -8,6 +7,10 @@ import 'package:bedbug/resources/content/url_trust_policy.value_object.dart';
 import 'package:bedbug/services/trust/domain_rule.service.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:bedbug/services/trust/url_trust.service.dart';
+import 'package:bedbug/usecases/content/fetch_media/fetch_media.failure.dart';
+import 'package:bedbug/usecases/content/fetch_media/fetch_media.params.dart';
+import 'package:bedbug/usecases/content/fetch_media/fetch_media.result.dart';
+import 'package:bedbug/usecases/content/fetch_media/fetch_media.usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Faux serveur : une réponse par adresse, et le journal des adresses contactées.

@@ -2,11 +2,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/features/content/domain/usecases/delete_own_content_usecase.dart';
-import 'package:bedbug/features/exchange/domain/usecases/build_exchange_bundle_usecase.dart';
-import 'package:bedbug/features/exchange/domain/usecases/build_exchange_offer_usecase.dart';
-import 'package:bedbug/features/exchange/domain/usecases/import_exchange_bundle_usecase.dart';
-import 'package:bedbug/features/exchange/domain/usecases/select_from_exchange_offer_usecase.dart';
 import 'package:bedbug/gateways/exchange/exchange_bundle.value_object.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec.gateway.json_zlib.dart';
 import 'package:bedbug/gateways/exchange/exchange_offer.value_object.dart';
@@ -21,6 +16,15 @@ import 'package:bedbug/resources/content/text_content.entity.dart';
 import 'package:bedbug/resources/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature.repository.dart';
 import 'package:bedbug/resources/signature/signature.repository.hive.dart';
+import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.params.dart';
+import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.usecase.dart';
+import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.params.dart';
+import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.usecase.dart';
+import 'package:bedbug/usecases/exchange/build_exchange_offer/build_exchange_offer.usecase.dart';
+import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.params.dart';
+import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.usecase.dart';
+import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.params.dart';
+import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

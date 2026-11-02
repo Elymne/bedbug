@@ -1,0 +1,87 @@
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/usecase.dart';
+import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/resources/content/comment.repository.dart';
+import 'package:bedbug/resources/content/comment.repository.hive.dart';
+import 'package:bedbug/resources/content/content.repository.dart';
+import 'package:bedbug/resources/content/content.repository.hive.dart';
+import 'package:bedbug/resources/content/reaction.repository.dart';
+import 'package:bedbug/resources/content/reaction.repository.hive.dart';
+import 'package:bedbug/resources/content/seen_content.repository.dart';
+import 'package:bedbug/resources/content/seen_content.repository.hive.dart';
+import 'package:bedbug/resources/content/storage.repository.dart';
+import 'package:bedbug/resources/content/storage.repository.hive.dart';
+import 'package:bedbug/resources/data.exception.dart';
+import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.failure.dart';
+import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.params.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// Provider du [DeleteOwnContentUsecase].
+final deleteOwnContentUsecaseProvider = Provider<DeleteOwnContentUsecase>((ref) {
+  return DeleteOwnContentUsecase(
+    ref.read(contentRepositoryProvider),
+    ref.read(storageRepositoryProvider),
+    ref.read(reactionRepositoryProvider),
+    ref.read(commentRepositoryProvider),
+    ref.read(seenContentRepositoryProvider),
+  );
+});
+
+/// Supprime de l'appareil un contenu que son utilisateur a lui-même publié.
+///
+/// Permet de retirer un post regretté avant qu'il ne se propage. Seuls les
+/// contenus créés sur cet appareil (`isOwned`) peuvent être supprimés ainsi :
+/// un contenu reçu d'un pair n'appartient pas à l'utilisateur, il disparaîtra
+/// selon les règles de nettoyage du stockage. La suppression est locale : les
+/// copies déjà transmises à d'autres appareils ne peuvent pas être rappelées.
+///
+/// Les réactions et les commentaires du contenu sont supprimés avec lui, et
+/// le poids du contenu est retiré du compteur de stockage. Le contenu est
+/// mémorisé comme déjà vu : un pair qui en détient une copie ne pourra pas
+/// le faire revenir sur l'appareil.
+class DeleteOwnContentUsecase extends Usecase<DeleteOwnContentParams, DeleteOwnContentFailure, void> {
+  /// Crée un [DeleteOwnContentUsecase].
+  DeleteOwnContentUsecase(
+    this._contentRepository,
+    this._storageRepository,
+    this._reactionRepository,
+    this._commentRepository,
+    this._seenContentRepository,
+  );
+
+  final ContentRepository _contentRepository;
+  final StorageRepository _storageRepository;
+  final ReactionRepository _reactionRepository;
+  final CommentRepository _commentRepository;
+  final SeenContentRepository _seenContentRepository;
+
+  @override
+  Future<Either<DeleteOwnContentFailure, void>> call(DeleteOwnContentParams params) async {
+    try {
+      final content = await _contentRepository.getById(params.contentId);
+      if (content == null) {
+        return const Left(DeleteOwnContentFailure.notFound);
+      }
+      if (!content.isOwned) {
+        return const Left(DeleteOwnContentFailure.notOwned);
+      }
+
+      await _contentRepository.deleteOne(content.id);
+      await _storageRepository.adjustCurrentSizeInBytes(-content.sizeInBytes);
+      await _reactionRepository.deleteAllByContentId(content.id);
+      await _commentRepository.deleteAllByContentId(content.id);
+      await _seenContentRepository.addMany([content.id], DateTime.now());
+      return const Right(null);
+    } on DataException catch (error, stackTrace) {
+      AppLogger.error('DeleteOwnContentUsecase', error, stackTrace);
+      return const Left(DeleteOwnContentFailure.storageError);
+    } on DatasourceException catch (error, stackTrace) {
+      AppLogger.error('DeleteOwnContentUsecase', error, stackTrace);
+      return const Left(DeleteOwnContentFailure.storageError);
+    } catch (error, stackTrace) {
+      AppLogger.error('DeleteOwnContentUsecase', error, stackTrace);
+      return const Left(DeleteOwnContentFailure.unknown);
+    }
+  }
+}

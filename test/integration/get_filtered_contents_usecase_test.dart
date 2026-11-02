@@ -1,9 +1,11 @@
 import 'dart:io';
 
-import 'package:bedbug/features/content/domain/usecases/get_filtered_contents_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
 import 'package:bedbug/resources/content/content_origin.enum.dart';
 import 'package:bedbug/resources/content/text_content.entity.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
+import 'package:bedbug/usecases/feed/get_filtered_contents/get_filtered_contents.params.dart';
+import 'package:bedbug/usecases/feed/get_filtered_contents/get_filtered_contents.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -1,7 +1,9 @@
-import 'package:bedbug/features/exchange/domain/usecases/start_peer_link_usecase.dart';
 import 'package:bedbug/gateways/exchange/exchange_transport.gateway.dart';
 import 'package:bedbug/gateways/exchange/peer_attempt.value_object.dart';
 import 'package:bedbug/gateways/exchange/peer_link.gateway.dart';
+import 'package:bedbug/usecases/exchange/start_peer_link/start_peer_link.failure.dart';
+import 'package:bedbug/usecases/exchange/start_peer_link/start_peer_link.params.dart';
+import 'package:bedbug/usecases/exchange/start_peer_link/start_peer_link.usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Fausse recherche de pairs, dont les réponses sont fixées par le test.

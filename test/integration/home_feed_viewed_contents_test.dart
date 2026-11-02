@@ -1,16 +1,19 @@
 import 'dart:io';
 
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/features/content/domain/usecases/enforce_storage_limit_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/mark_content_viewed_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/save_storage_limit_usecase.dart';
 import 'package:bedbug/resources/content/content.entity.dart';
 import 'package:bedbug/resources/content/content_origin.enum.dart';
 import 'package:bedbug/resources/content/storage.repository.dart';
 import 'package:bedbug/resources/content/text_content.entity.dart';
 import 'package:bedbug/resources/content/viewed_content.repository.hive.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
+import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
+import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.params.dart';
+import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.usecase.dart';
+import 'package:bedbug/usecases/storage/enforce_storage_limit/enforce_storage_limit.usecase.dart';
+import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.params.dart';
+import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

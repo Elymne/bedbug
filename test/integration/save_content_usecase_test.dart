@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
 import 'package:bedbug/resources/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/content_media.value_object.dart';
 import 'package:bedbug/resources/content/content_origin.enum.dart';
@@ -11,6 +10,9 @@ import 'package:bedbug/resources/content/drawing_point.value_object.dart';
 import 'package:bedbug/resources/content/link_content.entity.dart';
 import 'package:bedbug/resources/content/media_content.entity.dart';
 import 'package:bedbug/resources/content/text_content.entity.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.failure.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

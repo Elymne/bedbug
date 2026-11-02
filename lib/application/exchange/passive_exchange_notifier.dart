@@ -8,21 +8,25 @@ import 'package:bedbug/application/screens/settings/user_settings_notifier.dart'
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/extensions/string_uuid_x.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/features/content/domain/usecases/delete_untrusted_contents_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/enforce_storage_limit_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/recalculate_broadcast_scores_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/recalculate_display_scores_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/recalculate_survival_scores_usecase.dart';
-import 'package:bedbug/features/exchange/domain/usecases/save_exchange_log_usecase.dart';
-import 'package:bedbug/features/exchange/domain/usecases/start_peer_link_usecase.dart';
-import 'package:bedbug/features/exchange/domain/usecases/stop_peer_link_usecase.dart';
-import 'package:bedbug/features/settings/domain/usecases/get_settings_usecase.dart';
-import 'package:bedbug/features/settings/domain/usecases/save_settings_usecase.dart';
 import 'package:bedbug/gateways/exchange/exchange_transport.gateway.dart';
 import 'package:bedbug/gateways/exchange/peer_attempt.value_object.dart';
 import 'package:bedbug/gateways/exchange/peer_link.gateway.ble.dart';
 import 'package:bedbug/resources/exchange/exchange_log.entity.dart';
 import 'package:bedbug/resources/exchange/exchange_log_outcome.enum.dart';
+import 'package:bedbug/usecases/exchange/recalculate_broadcast_scores/recalculate_broadcast_scores.usecase.dart';
+import 'package:bedbug/usecases/exchange/save_exchange_log/save_exchange_log.params.dart';
+import 'package:bedbug/usecases/exchange/save_exchange_log/save_exchange_log.usecase.dart';
+import 'package:bedbug/usecases/exchange/start_peer_link/start_peer_link.failure.dart';
+import 'package:bedbug/usecases/exchange/start_peer_link/start_peer_link.params.dart';
+import 'package:bedbug/usecases/exchange/start_peer_link/start_peer_link.usecase.dart';
+import 'package:bedbug/usecases/exchange/stop_peer_link/stop_peer_link.usecase.dart';
+import 'package:bedbug/usecases/feed/recalculate_display_scores/recalculate_display_scores.usecase.dart';
+import 'package:bedbug/usecases/settings/get_settings/get_settings.usecase.dart';
+import 'package:bedbug/usecases/settings/save_settings/save_settings.params.dart';
+import 'package:bedbug/usecases/settings/save_settings/save_settings.usecase.dart';
+import 'package:bedbug/usecases/storage/enforce_storage_limit/enforce_storage_limit.usecase.dart';
+import 'package:bedbug/usecases/storage/recalculate_survival_scores/recalculate_survival_scores.usecase.dart';
+import 'package:bedbug/usecases/trust/delete_untrusted_contents/delete_untrusted_contents.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [PassiveExchangeNotifier].

@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/features/signature/domain/usecases/get_local_signature_usecase.dart';
-import 'package:bedbug/features/signature/domain/usecases/save_local_signature_usecase.dart';
 import 'package:bedbug/resources/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/social_network.enum.dart';
+import 'package:bedbug/usecases/signature/get_local_signature/get_local_signature.usecase.dart';
+import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.failure.dart';
+import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.params.dart';
+import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

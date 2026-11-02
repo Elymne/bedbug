@@ -3,13 +3,15 @@ import 'package:bedbug/application/notifiers/own_contents_notifier.dart';
 import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/screens/home/home_feed_notifier.dart';
 import 'package:bedbug/core/domain/either.dart';
-import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
 import 'package:bedbug/gateways/og_metadata/og_metadata.service.dio.dart';
 import 'package:bedbug/resources/content/content.entity.dart';
 import 'package:bedbug/resources/content/link_content.entity.dart';
 import 'package:bedbug/resources/content/url_trust_policy.value_object.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:bedbug/services/trust/url_trust.service.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.failure.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [PublishContentNotifier].
