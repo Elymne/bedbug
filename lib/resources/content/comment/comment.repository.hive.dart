@@ -1,3 +1,4 @@
+import 'package:bedbug/resources/content/comment/comment.config.dart';
 import 'package:bedbug/resources/content/comment/comment.entity.dart';
 import 'package:bedbug/resources/content/comment/comment.model.hive.dart';
 import 'package:bedbug/resources/content/comment/comment.repository.dart';
@@ -6,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
 /// Provider de la [Box] Hive des commentaires.
-final hiveCommentBoxProvider = Provider<Box<CommentHiveModel>>((ref) => Hive.box<CommentHiveModel>('comments'));
+final hiveCommentBoxProvider = Provider<Box<CommentHiveModel>>((ref) => Hive.box<CommentHiveModel>(commentBoxName));
 
 /// Provider du [HiveCommentRepository].
 final commentRepositoryProvider = Provider<CommentRepository>((ref) {

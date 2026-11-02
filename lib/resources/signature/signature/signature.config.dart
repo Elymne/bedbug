@@ -38,3 +38,6 @@ const int maxPseudoLength = 24;
 
 /// Caractères autorisés dans un pseudo : lettres non accentuées et tiret.
 final RegExp pseudoAllowedCharacter = RegExp('[A-Za-z-]');
+
+/// Nom de la box Hive des signatures.
+const String signatureBoxName = 'signatures';

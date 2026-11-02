@@ -11,7 +11,7 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 const String _storageKey = 'storage_config';
 
 /// Provider de la [Box] Hive de la configuration de stockage.
-final hiveStorageBoxProvider = Provider<Box<StorageHiveModel>>((ref) => Hive.box<StorageHiveModel>('storage'));
+final hiveStorageBoxProvider = Provider<Box<StorageHiveModel>>((ref) => Hive.box<StorageHiveModel>(storageBoxName));
 
 /// Provider du [HiveStorageRepository].
 final storageRepositoryProvider = Provider<StorageRepository>((ref) {

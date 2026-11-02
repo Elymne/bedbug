@@ -7,3 +7,6 @@ const int maxFlairLength = 32;
 
 /// Nombre maximal de médias regroupés dans un même [MediaContent].
 const int maxMediaPerContent = 10;
+
+/// Nom de la box Hive des contenus.
+const String contentBoxName = 'contents';

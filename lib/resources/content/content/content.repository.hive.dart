@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:bedbug/resources/content/content/content.config.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/content.model.hive.dart';
 import 'package:bedbug/resources/content/content/content.repository.dart';
@@ -17,7 +18,7 @@ final contentRepositoryProvider = Provider<ContentRepository>((ref) {
 });
 
 /// Provider de la [Box] Hive des contenus.
-final hiveContentBoxProvider = Provider<Box<ContentHiveModel>>((ref) => Hive.box<ContentHiveModel>('contents'));
+final hiveContentBoxProvider = Provider<Box<ContentHiveModel>>((ref) => Hive.box<ContentHiveModel>(contentBoxName));
 
 /// Implémentation de [ContentRepository] utilisant Hive comme stockage local.
 class HiveContentRepository implements ContentRepository {

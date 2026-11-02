@@ -14,3 +14,6 @@ const int maxReactionBubbleLength = 250;
 /// nombre. Au-delà, les plus anciennes sont écartées, ce qui plafonne le
 /// poids des réactions d'un contenu à ~200 Ko.
 const int maxReactionsPerContent = 200;
+
+/// Nom de la box Hive des réactions.
+const String reactionBoxName = 'reactions';

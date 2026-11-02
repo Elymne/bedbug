@@ -12,3 +12,6 @@ const int maxCommentLength = 500;
 /// commentaires en masse : au-delà, les plus anciens sont écartés, ce qui
 /// plafonne le poids des commentaires d'un contenu à ~200 Ko.
 const int maxCommentsPerContent = 100;
+
+/// Nom de la box Hive des commentaires.
+const String commentBoxName = 'comments';

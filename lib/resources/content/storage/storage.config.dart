@@ -19,3 +19,6 @@ const int minStorageLimitInMegabytes = 1;
 
 /// Plus grande limite qu'un utilisateur peut définir, en mégaoctets.
 const int maxStorageLimitInMegabytes = 1000;
+
+/// Nom de la box Hive de la configuration de stockage.
+const String storageBoxName = 'storage';

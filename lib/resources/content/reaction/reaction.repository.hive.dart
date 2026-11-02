@@ -1,3 +1,4 @@
+import 'package:bedbug/resources/content/reaction/reaction.config.dart';
 import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
 import 'package:bedbug/resources/content/reaction/reaction.model.hive.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.dart';
@@ -11,7 +12,7 @@ final reactionRepositoryProvider = Provider<ReactionRepository>((ref) {
 });
 
 /// Provider de la [Box] Hive des réactions.
-final hiveReactionBoxProvider = Provider<Box<ReactionHiveModel>>((ref) => Hive.box<ReactionHiveModel>('reactions'));
+final hiveReactionBoxProvider = Provider<Box<ReactionHiveModel>>((ref) => Hive.box<ReactionHiveModel>(reactionBoxName));
 
 /// Implémentation de [ReactionRepository] utilisant Hive comme stockage local.
 class HiveReactionRepository implements ReactionRepository {

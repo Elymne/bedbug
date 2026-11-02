@@ -7,7 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
 /// Provider de la [Box] Hive des utilisateurs.
-final hiveSignatureBoxProvider = Provider<Box<SignatureHiveModel>>((ref) => Hive.box<SignatureHiveModel>('signatures'));
+final hiveSignatureBoxProvider = Provider<Box<SignatureHiveModel>>(
+  (ref) => Hive.box<SignatureHiveModel>(signatureBoxName),
+);
 
 /// Provider du [HiveSignatureRepository].
 final signatureRepositoryProvider = Provider<SignatureRepository>((ref) {

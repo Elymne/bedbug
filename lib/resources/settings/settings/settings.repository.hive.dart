@@ -1,4 +1,5 @@
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/settings/settings/settings.config.dart';
 import 'package:bedbug/resources/settings/settings/settings.model.hive.dart';
 import 'package:bedbug/resources/settings/settings/settings.repository.dart';
 import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
@@ -9,7 +10,7 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 const String _settingsKey = 'user_settings';
 
 /// Provider de la [Box] Hive des settings.
-final hiveSettingsBoxProvider = Provider<Box<SettingsHiveModel>>((ref) => Hive.box<SettingsHiveModel>('settings'));
+final hiveSettingsBoxProvider = Provider<Box<SettingsHiveModel>>((ref) => Hive.box<SettingsHiveModel>(settingsBoxName));
 
 /// Provider du [HiveSettingsRepository].
 final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
