@@ -10,7 +10,7 @@ import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.ble.dart';
 import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';
-import 'package:bedbug/resources/settings/user_settings/user_settings.entity.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.result.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';

@@ -167,8 +167,11 @@ core/
 
 ### Entities and value objects
 
-- `Entity`: persisted object with `id`, `createdAt`, `updatedAt`.
-- `ValueObject`: computed data, composite structure or concept without identity. It lives in `resources` (or in
+- `Entity`: object with its own identity, followed over time (`id`, `createdAt`, `updatedAt`): it is found again by
+  its `id` even when its values change (a content, a signature, a reaction).
+- `ValueObject`: object defined only by its values, without identity: two value objects with the same values are
+  interchangeable. It may be persisted, on its own (a single setting always replaced as a whole: `UserSettings`,
+  `TrustSettings`, `Storage`) or inside an entity (`Drawing` in `DrawingContent`). It lives in `resources` (or in
   `gateways` when it belongs to an external source), never in `usecases` or `services`, except for a type returned by a
   single use case or service (`<name>.result.dart`).
 - Both are immutable (`final` fields, `const` constructor) with value-based equality.

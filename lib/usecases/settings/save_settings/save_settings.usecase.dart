@@ -5,9 +5,9 @@ import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
-import 'package:bedbug/resources/settings/user_settings/user_settings.entity.dart';
 import 'package:bedbug/resources/settings/user_settings/user_settings.repository.dart';
 import 'package:bedbug/resources/settings/user_settings/user_settings.repository.hive.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
 import 'package:bedbug/usecases/settings/save_settings/save_settings.failure.dart';
 import 'package:bedbug/usecases/settings/save_settings/save_settings.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,15 +30,8 @@ class SaveSettingsUsecase extends Usecase<SaveSettingsParams, SaveSettingsFailur
   @override
   Future<Either<SaveSettingsFailure, UserSettings>> call(SaveSettingsParams params) async {
     try {
-      final existing = await _settingsRepository.getUnique('');
-
-      if (existing != null) {
-        final updated = await _settingsRepository.updateOne(params.settings);
-        return Right(updated);
-      }
-
-      final created = await _settingsRepository.addOne(params.settings);
-      return Right(created);
+      await _settingsRepository.save(params.settings);
+      return Right(params.settings);
     } on DataException catch (error, stackTrace) {
       AppLogger.error('SaveSettingsUsecase', error, stackTrace);
       return const Left(SaveSettingsFailure.invalidData);

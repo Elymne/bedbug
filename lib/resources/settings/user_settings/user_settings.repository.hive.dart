@@ -1,8 +1,8 @@
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';
-import 'package:bedbug/resources/settings/user_settings/user_settings.entity.dart';
 import 'package:bedbug/resources/settings/user_settings/user_settings.model.hive.dart';
 import 'package:bedbug/resources/settings/user_settings/user_settings.repository.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
@@ -27,7 +27,7 @@ class HiveUserSettingsRepository implements UserSettingsRepository {
   final Box<UserSettingsHiveModel> _box;
 
   @override
-  Future<UserSettings?> getUnique(String id) async {
+  Future<UserSettings?> get() async {
     try {
       return _box.get(_settingsKey)?.toEntity();
     } on HiveError catch (error) {
@@ -36,25 +36,9 @@ class HiveUserSettingsRepository implements UserSettingsRepository {
   }
 
   @override
-  Future<UserSettings> addOne(UserSettings entity) async {
+  Future<void> save(UserSettings settings) async {
     try {
-      await _box.put(_settingsKey, UserSettingsHiveModel.fromEntity(entity));
-      return entity;
-    } on HiveError catch (error) {
-      throw DatasourceException('HiveUserSettingsRepository', error);
-    }
-  }
-
-  @override
-  Future<UserSettings> updateOne(UserSettings entity) async {
-    try {
-      if (!_box.containsKey(_settingsKey)) {
-        throw const DatasourceException('HiveUserSettingsRepository', 'settings not found — call addOne first');
-      }
-      await _box.put(_settingsKey, UserSettingsHiveModel.fromEntity(entity));
-      return entity;
-    } on DatasourceException {
-      rethrow;
+      await _box.put(_settingsKey, UserSettingsHiveModel.fromEntity(settings));
     } on HiveError catch (error) {
       throw DatasourceException('HiveUserSettingsRepository', error);
     }

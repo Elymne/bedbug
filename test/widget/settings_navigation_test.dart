@@ -5,7 +5,7 @@ import 'package:bedbug/application/screens/settings/settings_screen.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';
-import 'package:bedbug/resources/settings/user_settings/user_settings.entity.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.result.dart';
@@ -38,7 +38,7 @@ class _FakeGetLocalSignatureUsecase implements GetLocalSignatureUsecase {
 /// Fake [GetSettingsUsecase] retournant les réglages par défaut.
 class _FakeGetSettingsUsecase implements GetSettingsUsecase {
   @override
-  Future<Either<GetSettingsFailure, UserSettings>> call(NoParams params) async => Right(defaultUserSettings);
+  Future<Either<GetSettingsFailure, UserSettings>> call(NoParams params) async => const Right(defaultUserSettings);
 }
 
 void main() {

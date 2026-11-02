@@ -1,22 +1,17 @@
-import 'package:bedbug/core/domain/entity.dart';
+import 'package:bedbug/core/domain/value_object.dart';
 
 /// Paramètres de configuration personnels de l'utilisateur.
 ///
-/// Entité singleton, comme `Storage` : un seul enregistrement par appareil.
-class UserSettings extends Entity {
+/// Un seul jeu de réglages par appareil, toujours remplacé en entier : il n'a pas d'identité à suivre, c'est un value
+/// object.
+class UserSettings extends ValueObject {
   /// Crée un [UserSettings].
   ///
-  /// - [id] : identifiant de l'enregistrement unique.
-  /// - [createdAt] : date de création.
-  /// - [updatedAt] : date de dernière mise à jour.
   /// - [blockedUrls] : liste des URLs bloquées (images, liens).
   /// - [blockedWords] : liste des mots bloqués dans les contenus.
   /// - [isAnonymousByDefault] : `true` si les nouveaux contenus sont publiés anonymement par défaut.
   /// - [isExchangeEnabled] : `true` si l'échange avec les téléphones proches est activé.
-  UserSettings({
-    required super.id,
-    required super.createdAt,
-    required super.updatedAt,
+  const UserSettings({
     required this.blockedUrls,
     required this.blockedWords,
     this.isAnonymousByDefault = false,
@@ -42,8 +37,6 @@ class UserSettings extends Entity {
 
   /// Retourne une copie de ces settings avec les champs fournis modifiés.
   ///
-  /// L'identifiant et les dates sont conservés : seuls les réglages changent.
-  ///
   /// - [blockedUrls] : nouvelle liste des URLs bloquées.
   /// - [blockedWords] : nouvelle liste des mots bloqués.
   /// - [isAnonymousByDefault] : nouvelle valeur de publication anonyme par défaut.
@@ -55,9 +48,6 @@ class UserSettings extends Entity {
     bool? isExchangeEnabled,
   }) {
     return UserSettings(
-      id: id,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
       blockedUrls: blockedUrls ?? this.blockedUrls,
       blockedWords: blockedWords ?? this.blockedWords,
       isAnonymousByDefault: isAnonymousByDefault ?? this.isAnonymousByDefault,

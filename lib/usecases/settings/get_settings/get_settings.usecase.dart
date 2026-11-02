@@ -6,9 +6,10 @@ import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
-import 'package:bedbug/resources/settings/user_settings/user_settings.entity.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';
 import 'package:bedbug/resources/settings/user_settings/user_settings.repository.dart';
 import 'package:bedbug/resources/settings/user_settings/user_settings.repository.hive.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
 import 'package:bedbug/usecases/settings/get_settings/get_settings.failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,22 +32,14 @@ class GetSettingsUsecase extends Usecase<NoParams, GetSettingsFailure, UserSetti
   @override
   Future<Either<GetSettingsFailure, UserSettings>> call(NoParams params) async {
     try {
-      final existing = await _settingsRepository.getUnique('');
+      final existing = await _settingsRepository.get();
 
       if (existing != null) {
         return Right(existing);
       }
 
-      final now = DateTime.now();
-      final defaults = UserSettings(
-        id: '',
-        createdAt: now,
-        updatedAt: now,
-        blockedUrls: const [],
-        blockedWords: const [],
-      );
-      await _settingsRepository.addOne(defaults);
-      return Right(defaults);
+      await _settingsRepository.save(defaultUserSettings);
+      return const Right(defaultUserSettings);
     } on DataException catch (error, stackTrace) {
       AppLogger.error('GetSettingsUsecase', error, stackTrace);
       return const Left(GetSettingsFailure.invalidData);
