@@ -3,11 +3,9 @@ import 'dart:typed_data';
 
 import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame.value_object.dart';
 import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_type.enum.dart';
+import 'package:bedbug/gateways/exchange/exchange_frame_decoder/exchange_frame_decoder.config.dart';
 import 'package:bedbug/gateways/exchange/exchange_frame_decoder/exchange_frame_decoder.gateway.dart';
 import 'package:bedbug/resources/data.exception.dart';
-
-/// Taille de l'en-tête d'une trame, en octets : le type (1) puis la longueur de la charge utile (4, gros-boutiste).
-const int exchangeFrameHeaderBytes = 5;
 
 /// Implémentation de [ExchangeFrameDecoderGateway] pour le format `[type][longueur][charge utile]`.
 ///

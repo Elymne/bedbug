@@ -1,3 +1,4 @@
+import 'package:bedbug/services/trust/url_safety.config.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:flutter_test/flutter_test.dart';
 

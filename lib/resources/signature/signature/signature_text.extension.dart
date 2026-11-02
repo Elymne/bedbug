@@ -1,10 +1,4 @@
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
-
-/// Longueur minimale d'un pseudo.
-const int minPseudoLength = 3;
-
-/// Longueur maximale d'un pseudo.
-const int maxPseudoLength = 24;
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
 
 /// Caractères autorisés dans un pseudo : lettres non accentuées et tiret.
 final RegExp pseudoAllowedCharacter = RegExp('[A-Za-z-]');

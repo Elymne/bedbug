@@ -5,6 +5,7 @@ import 'package:bedbug/application/widgets/buttons/app_close_button.dart';
 import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
+import 'package:bedbug/resources/content/drawing/drawing.config.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:bedbug/resources/content/drawing/drawing_dimensions.extension.dart';
 import 'package:flutter/material.dart';

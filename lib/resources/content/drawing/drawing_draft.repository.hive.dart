@@ -1,15 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:bedbug/resources/content/drawing/drawing.codec.binary.dart';
+import 'package:bedbug/resources/content/drawing/drawing.config.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:bedbug/resources/content/drawing/drawing_draft.repository.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
-
-/// Nom de la box Hive du brouillon de dessin.
-const String drawingDraftBoxName = 'drawing_draft';
 
 /// Clé Hive sous laquelle le brouillon de dessin est persisté.
 const String _draftKey = 'drawing_draft';

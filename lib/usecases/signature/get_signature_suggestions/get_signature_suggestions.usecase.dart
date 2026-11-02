@@ -5,15 +5,14 @@ import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
+import 'package:bedbug/usecases/signature/get_signature_suggestions/get_signature_suggestions.config.dart';
 import 'package:bedbug/usecases/signature/get_signature_suggestions/get_signature_suggestions.failure.dart';
 import 'package:bedbug/usecases/signature/get_signature_suggestions/get_signature_suggestions.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-/// Nombre maximal de pseudos de signature proposés en autocomplétion.
-const int maxSignatureSuggestions = 4;
 
 /// Provider du [GetSignatureSuggestionsUsecase].
 final getSignatureSuggestionsUsecaseProvider = Provider<GetSignatureSuggestionsUsecase>((ref) {

@@ -7,6 +7,7 @@ import 'package:bedbug/resources/content/trust_settings/url_trust_policy.value_o
 import 'package:bedbug/services/trust/domain_rule.service.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:bedbug/services/trust/url_trust.service.dart';
+import 'package:bedbug/usecases/content/fetch_media/fetch_media.config.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.failure.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.params.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.result.dart';

@@ -1,3 +1,4 @@
+import 'package:bedbug/resources/content/reaction/reaction.config.dart';
 import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
 
 /// Règles de forme de la bulle de texte d'une [Reaction].

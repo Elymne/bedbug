@@ -11,13 +11,6 @@ import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gall
 import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Taille maximale d'un média enregistré dans la galerie, en octets.
-///
-/// Plus large que pour l'affichage d'une image, pour laisser passer une
-/// courte vidéo, mais bornée : le fichier est gardé en mémoire avant d'être
-/// écrit.
-const int maxGalleryMediaBytes = 50 * 1024 * 1024;
-
 /// Provider du [SaveMediaToGalleryUsecase].
 final saveMediaToGalleryUsecaseProvider = Provider<SaveMediaToGalleryUsecase>((ref) {
   return SaveMediaToGalleryUsecase(

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
+import 'package:bedbug/gateways/exchange/peer_link/peer_link.config.dart';
 import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.ble.dart';
 import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.dart';
 import 'package:flutter/services.dart';

@@ -7,15 +7,10 @@ import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log.repository.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log.repository.hive.dart';
+import 'package:bedbug/usecases/exchange/save_exchange_log/save_exchange_log.config.dart';
 import 'package:bedbug/usecases/exchange/save_exchange_log/save_exchange_log.failure.dart';
 import 'package:bedbug/usecases/exchange/save_exchange_log/save_exchange_log.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-/// Nombre maximal de traces conservées dans le journal des échanges.
-///
-/// Le journal sert à comprendre ce qui vient de se passer : les rencontres anciennes n'apprennent plus rien, et un
-/// téléphone souvent entouré ne doit pas le voir grossir sans fin.
-const int maxExchangeLogs = 300;
 
 /// Provider du [SaveExchangeLogUsecase].
 final saveExchangeLogUsecaseProvider = Provider<SaveExchangeLogUsecase>((ref) {

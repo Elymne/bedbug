@@ -11,6 +11,7 @@ import 'package:bedbug/resources/content/reaction/reaction.repository.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
+import 'package:bedbug/resources/content/storage/storage.config.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
 import 'package:bedbug/resources/content/viewed_content/viewed_content.repository.dart';

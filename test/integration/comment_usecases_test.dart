@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:bedbug/resources/content/comment/comment.config.dart';
 import 'package:bedbug/resources/content/comment/comment.entity.dart';
 import 'package:bedbug/resources/content/comment/comment.repository.hive.dart';
 import 'package:bedbug/usecases/comment/get_content_comments/get_content_comments.params.dart';

@@ -1,3 +1,4 @@
+import 'package:bedbug/resources/content/comment/comment.config.dart';
 import 'package:bedbug/resources/content/comment/comment.entity.dart';
 
 /// Règles de forme du corps d'un [Comment].

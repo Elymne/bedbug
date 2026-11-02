@@ -1,4 +1,5 @@
 import 'package:bedbug/core/extensions/string_uuid_x.dart';
+import 'package:bedbug/resources/content/storage/storage.config.dart';
 import 'package:bedbug/resources/content/storage/storage.entity.dart';
 import 'package:bedbug/resources/content/storage/storage.model.hive.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.dart';

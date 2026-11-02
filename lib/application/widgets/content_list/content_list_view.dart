@@ -5,7 +5,7 @@ import 'package:bedbug/application/widgets/content_tile/content_widget.dart';
 import 'package:bedbug/application/widgets/separators/app_list_separator.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/content_urls.extension.dart';
-import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.config.dart';
 import 'package:bedbug/services/trust/url_trust.service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

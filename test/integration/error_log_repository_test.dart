@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.config.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.model.hive.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';

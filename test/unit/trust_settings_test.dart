@@ -1,5 +1,6 @@
 import 'package:bedbug/resources/content/content/content_media.value_object.dart';
 import 'package:bedbug/resources/content/trust_settings/domain_rule.value_object.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.config.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.model.hive.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:bedbug/resources/content/trust_settings/url_trust_policy.value_object.dart';

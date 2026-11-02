@@ -1,10 +1,8 @@
+import 'package:bedbug/resources/content/seen_content/seen_content.config.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
-
-/// Nom de la box Hive des identifiants de contenus déjà vus.
-const String seenContentBoxName = 'seen_contents';
 
 /// Provider de la [Box] Hive des identifiants déjà vus : identifiant du contenu → date de vue en millisecondes.
 final hiveSeenContentBoxProvider = Provider<Box<int>>((ref) => Hive.box<int>(seenContentBoxName));

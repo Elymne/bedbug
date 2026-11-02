@@ -1,3 +1,4 @@
+import 'package:bedbug/resources/content/trust_settings/trust_settings.config.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.model.hive.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.repository.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
@@ -5,9 +6,6 @@ import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/services/trust/domain_rule.service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
-
-/// Nom de la box Hive des réglages de confiance.
-const String trustSettingsBoxName = 'trust_settings';
 
 /// Clé Hive sous laquelle les réglages de confiance sont persistés.
 const String _settingsKey = 'trust_settings';

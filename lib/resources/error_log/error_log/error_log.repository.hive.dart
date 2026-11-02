@@ -1,16 +1,11 @@
 import 'package:bedbug/core/extensions/string_uuid_x.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.config.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.entity.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.model.hive.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
-
-/// Nom de la box Hive du journal des erreurs imprévues.
-const String errorLogBoxName = 'error_logs';
-
-/// Nombre maximal de traces conservées : le journal ne doit pas grossir sans fin sur un appareil qui échoue en boucle.
-const int maxErrorLogs = 200;
 
 /// Provider de la [Box] Hive du journal des erreurs imprévues.
 final hiveErrorLogBoxProvider = Provider<Box<ErrorLogHiveModel>>((ref) => Hive.box<ErrorLogHiveModel>(errorLogBoxName));

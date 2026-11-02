@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_bundle.value_object.dart';
+import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.config.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.json_zlib.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_offer.value_object.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_request.value_object.dart';
@@ -13,6 +14,7 @@ import 'package:bedbug/resources/content/content/link_content.entity.dart';
 import 'package:bedbug/resources/content/content/media_content.entity.dart';
 import 'package:bedbug/resources/content/content/tag.enum.dart';
 import 'package:bedbug/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/resources/content/drawing/drawing.config.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:bedbug/resources/content/drawing/drawing_operation.value_object.dart';
 import 'package:bedbug/resources/content/drawing/drawing_point.value_object.dart';

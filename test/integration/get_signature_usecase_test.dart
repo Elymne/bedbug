@@ -1,7 +1,7 @@
 import 'dart:io';
 
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
-import 'package:bedbug/resources/signature/signature/signature.repository.dart';
 import 'package:bedbug/usecases/signature/get_signature/get_signature.params.dart';
 import 'package:bedbug/usecases/signature/get_signature/get_signature.usecase.dart';
 import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.params.dart';

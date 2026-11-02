@@ -9,21 +9,11 @@ import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:bedbug/services/trust/url_trust.service.dart';
+import 'package:bedbug/usecases/content/fetch_media/fetch_media.config.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.failure.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.params.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.result.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-/// Nombre maximal de redirections suivies avant d'abandonner.
-///
-/// Un hébergeur sérieux redirige une ou deux fois (vers son CDN) : au-delà,
-/// c'est une boucle ou une chaîne fabriquée pour égarer les vérifications.
-const int maxMediaRedirects = 5;
-
-/// Taille maximale d'une image ou d'un gif téléchargé, en octets.
-///
-/// Borne la mémoire et les données consommées, quoi qu'annonce le serveur.
-const int maxImageBytes = 15 * 1024 * 1024;
 
 /// Provider du [FetchMediaUsecase].
 final fetchMediaUsecaseProvider = Provider<FetchMediaUsecase>((ref) {

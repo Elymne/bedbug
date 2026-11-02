@@ -1,12 +1,10 @@
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/exchange/exchange_log/exchange_log.config.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log.entity.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log.model.hive.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log.repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
-
-/// Nom de la box Hive du journal des échanges.
-const String exchangeLogBoxName = 'exchange_logs';
 
 /// Provider de la [Box] Hive du journal des échanges.
 final hiveExchangeLogBoxProvider = Provider<Box<ExchangeLogHiveModel>>((ref) {

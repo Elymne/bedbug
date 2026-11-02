@@ -5,6 +5,7 @@ import 'package:bedbug/resources/content/content/content.model.hive.dart';
 import 'package:bedbug/resources/content/content/content_origin.enum.dart';
 import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
 import 'package:bedbug/resources/content/drawing/drawing.codec.binary.dart';
+import 'package:bedbug/resources/content/drawing/drawing.config.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:bedbug/resources/content/drawing/drawing_dimensions.extension.dart';
 import 'package:bedbug/resources/content/drawing/drawing_operation.value_object.dart';

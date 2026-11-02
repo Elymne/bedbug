@@ -4,7 +4,7 @@ import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/content_origin.enum.dart';
 import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/content/storage/storage.repository.dart';
+import 'package:bedbug/resources/content/storage/storage.config.dart';
 import 'package:bedbug/resources/content/viewed_content/viewed_content.repository.hive.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';

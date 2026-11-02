@@ -15,6 +15,7 @@ import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart'
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
+import 'package:bedbug/usecases/exchange/build_exchange_offer/build_exchange_offer.config.dart';
 import 'package:bedbug/usecases/exchange/build_exchange_offer/build_exchange_offer.failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -28,18 +29,6 @@ final buildExchangeOfferUsecaseProvider = Provider<BuildExchangeOfferUsecase>((r
     ref.read(errorLogRepositoryProvider),
   );
 });
-
-/// Nombre maximal de contenus proposés dans une offre.
-///
-/// Une offre ne transporte que des identifiants (environ 60 octets par contenu une fois compressée) : 50 contenus
-/// tiennent en quelques kilo-octets, une fraction de seconde en BLE, tout en laissant au pair un vrai choix.
-const int maxOfferedContents = 50;
-
-/// Nombre de contenus de l'offre choisis par priorité de diffusion, le reste étant tiré au hasard.
-///
-/// Une offre uniquement faite des contenus les plus prioritaires proposerait toujours les mêmes : au-delà de
-/// [maxOfferedContents] contenus, les autres ne circuleraient plus du tout.
-const int priorityOfferedContents = 35;
 
 /// Construit l'offre envoyée à un pair au début d'un échange, déjà encodée pour le transport.
 ///

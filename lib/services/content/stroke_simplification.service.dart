@@ -2,12 +2,8 @@ import 'dart:math';
 
 import 'package:bedbug/core/domain/service.dart';
 import 'package:bedbug/resources/content/drawing/drawing_point.value_object.dart';
+import 'package:bedbug/services/content/stroke_simplification.config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-/// Écart toléré, en points du repère, entre le trait tracé et le trait simplifié.
-///
-/// Assez faible pour que la différence ne se voie pas une fois le trait lissé.
-const double defaultStrokeTolerance = 1.5;
 
 /// Provider du [StrokeSimplificationService].
 final strokeSimplificationServiceProvider = Provider<StrokeSimplificationService>((ref) {

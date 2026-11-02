@@ -1,8 +1,9 @@
 import 'package:bedbug/core/domain/service.dart';
+import 'package:bedbug/resources/content/reaction/reaction.config.dart';
 import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
 import 'package:bedbug/resources/content/reaction/reaction_merge.value_object.dart';
 import 'package:bedbug/resources/content/reaction/reaction_text.extension.dart';
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature_text.extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

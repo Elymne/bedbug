@@ -3,19 +3,11 @@ import 'dart:async';
 import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.ble.dart';
 import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
 import 'package:bedbug/gateways/exchange/peer_link/peer_attempt.value_object.dart';
+import 'package:bedbug/gateways/exchange/peer_link/peer_link.config.dart';
 import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-/// Canal des appels vers le service d'échange Android.
-const MethodChannel exchangeMethodChannel = MethodChannel('bedbug/exchange');
-
-/// Canal des événements du service d'échange Android.
-const EventChannel exchangeEventChannel = EventChannel('bedbug/exchange/events');
-
-/// Canal de la demande de permissions, tenu par l'activité Android.
-const MethodChannel exchangePermissionsChannel = MethodChannel('bedbug/exchange/permissions');
 
 /// Provider du [BlePeerLinkGateway].
 final peerLinkGatewayProvider = Provider<PeerLinkGateway>((ref) => BlePeerLinkGateway());

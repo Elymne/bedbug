@@ -1,8 +1,6 @@
+import 'package:bedbug/resources/content/content/content.config.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/content_media.value_object.dart';
-
-/// Nombre maximal de médias regroupés dans un même [MediaContent].
-const int maxMediaPerContent = 10;
 
 /// Contenu regroupant une ou plusieurs images, gifs ou vidéos hébergés sur des sites reconnus.
 ///

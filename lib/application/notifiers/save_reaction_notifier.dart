@@ -3,7 +3,7 @@ import 'package:bedbug/application/notifiers/content_reaction_count_notifier.dar
 import 'package:bedbug/application/notifiers/content_reactions_notifier.dart';
 import 'package:bedbug/core/extensions/string_uuid_x.dart';
 import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
-import 'package:bedbug/resources/signature/signature/signature.repository.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/text_font.enum.dart';
 import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.failure.dart';
 import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.params.dart';

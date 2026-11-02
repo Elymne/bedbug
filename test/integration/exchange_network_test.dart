@@ -18,8 +18,8 @@ import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart'
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
 import 'package:bedbug/resources/content/storage/storage.model.hive.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.model.hive.dart';
-import 'package:bedbug/resources/signature/signature/signature.repository.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
 import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.params.dart';
 import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.usecase.dart';

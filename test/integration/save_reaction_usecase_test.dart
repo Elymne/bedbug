@@ -1,8 +1,9 @@
 import 'dart:io';
 
+import 'package:bedbug/resources/content/reaction/reaction.config.dart';
 import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/usecases/reaction/count_content_reactions/count_content_reactions.params.dart';
 import 'package:bedbug/usecases/reaction/count_content_reactions/count_content_reactions.usecase.dart';
 import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.failure.dart';

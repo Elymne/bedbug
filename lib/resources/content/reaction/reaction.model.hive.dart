@@ -1,7 +1,7 @@
 import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/hive.type_ids.dart';
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/text_font.enum.dart';
 import 'package:hive_ce/hive.dart';
 

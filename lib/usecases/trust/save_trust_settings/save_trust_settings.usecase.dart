@@ -1,6 +1,7 @@
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.config.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.repository.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.repository.hive.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';

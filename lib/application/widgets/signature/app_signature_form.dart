@@ -20,6 +20,7 @@ import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
 import 'package:bedbug/application/widgets/texts/app_text_font_selector.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature/signature_text.extension.dart';
 import 'package:bedbug/resources/signature/signature/social_network.enum.dart';

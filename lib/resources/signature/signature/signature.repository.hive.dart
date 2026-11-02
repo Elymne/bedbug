@@ -1,4 +1,5 @@
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature/signature.model.hive.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.dart';

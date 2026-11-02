@@ -1,6 +1,7 @@
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/resources/content/comment/comment.config.dart';
 import 'package:bedbug/resources/content/comment/comment.entity.dart';
 import 'package:bedbug/resources/content/comment/comment.repository.dart';
 import 'package:bedbug/resources/content/comment/comment.repository.hive.dart';

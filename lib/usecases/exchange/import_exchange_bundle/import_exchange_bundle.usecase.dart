@@ -5,12 +5,14 @@ import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.json_zlib.dart';
+import 'package:bedbug/resources/content/content/content.config.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/content.repository.dart';
 import 'package:bedbug/resources/content/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
 import 'package:bedbug/resources/content/content/flair.extension.dart';
 import 'package:bedbug/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/resources/content/reaction/reaction.config.dart';
 import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
@@ -23,6 +25,7 @@ import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/resources/exchange/exchange_import_report/exchange_import_report.value_object.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
@@ -30,6 +33,7 @@ import 'package:bedbug/resources/signature/signature/signature_text.extension.da
 import 'package:bedbug/services/content/content_size.service.dart';
 import 'package:bedbug/services/content/drawing_validation.service.dart';
 import 'package:bedbug/services/reaction/reaction_merge.service.dart';
+import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.config.dart';
 import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.failure.dart';
 import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,30 +53,6 @@ final importExchangeBundleUsecaseProvider = Provider<ImportExchangeBundleUsecase
     ref.read(errorLogRepositoryProvider),
   );
 });
-
-/// Poids maximal d'un contenu reçu d'un pair, en octets.
-///
-/// Un dessin au maximum de ses limites pèse environ 90 Ko selon le calcul de [ContentSizeService] ; au-delà,
-/// un contenu reçu n'a rien de légitime et ne sert qu'à remplir le stockage.
-const int maxReceivedContentBytes = 128 * 1024;
-
-/// Nombre de rebonds au-delà duquel le compteur reçu n'est plus cru.
-///
-/// Le compteur vient du pair et n'est pas vérifiable : il est borné pour qu'une valeur extrême n'ait pas
-/// d'effet sur les scores.
-const int maxReceivedBounce = 1000;
-
-/// Durée pendant laquelle un contenu reçu ou supprimé reste mémorisé comme déjà vu.
-///
-/// Au-delà, un contenu a presque fini de circuler (sa priorité de diffusion décroît en quelques jours) : le
-/// risque de le retélécharger est faible, et la mémoire ne grossit pas indéfiniment.
-const Duration seenContentRetention = Duration(days: 30);
-
-/// Préfixe des identifiants de signatures reçues des pairs.
-///
-/// Les distingue de la signature locale et de la signature anonyme : aucune signature reçue ne peut prendre
-/// l'identifiant `local` et s'afficher comme celle de l'utilisateur.
-const String peerSignatureIdPrefix = 'peer-';
 
 /// Importe le lot reçu d'un pair : enregistre ce qui a été demandé, valide, et écarte tout le reste.
 ///

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/resources/content/reaction/reaction.config.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
 import 'package:bedbug/resources/content/reaction/reaction_text.extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

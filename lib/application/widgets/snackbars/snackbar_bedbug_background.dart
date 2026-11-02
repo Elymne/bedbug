@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/ghost/app_ghost_animation.dart';
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

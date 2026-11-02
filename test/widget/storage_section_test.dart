@@ -1,8 +1,8 @@
 import 'package:bedbug/application/screens/settings/widgets/storage_section.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/resources/content/storage/storage.config.dart';
 import 'package:bedbug/resources/content/storage/storage.entity.dart';
-import 'package:bedbug/resources/content/storage/storage.repository.dart';
 import 'package:bedbug/usecases/storage/enforce_storage_limit/enforce_storage_limit.failure.dart';
 import 'package:bedbug/usecases/storage/enforce_storage_limit/enforce_storage_limit.usecase.dart';
 import 'package:bedbug/usecases/storage/get_storage/get_storage.failure.dart';

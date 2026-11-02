@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_bundle.value_object.dart';
+import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.config.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_offer.value_object.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_request.value_object.dart';
@@ -22,15 +23,6 @@ import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
 import 'package:bedbug/resources/signature/signature/text_font.enum.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-/// Version du format d'échange. À incrémenter à chaque changement incompatible.
-const int exchangeFormatVersion = 1;
-
-/// Taille maximale d'un message une fois décompressé, en octets.
-///
-/// Un message compressé de quelques kilo-octets peut se décompresser en plusieurs giga-octets (« zip bomb ») :
-/// la décompression s'arrête net au-delà de cette taille, bien au-dessus d'un lot légitime.
-const int maxDecompressedExchangeBytes = 4 * 1024 * 1024;
 
 /// Provider du [JsonZlibExchangeCodecGateway].
 final exchangeCodecGatewayProvider = Provider<ExchangeCodecGateway>((ref) => const JsonZlibExchangeCodecGateway());

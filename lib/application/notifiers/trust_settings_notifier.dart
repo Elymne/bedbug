@@ -2,6 +2,7 @@ import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/screens/home/home_feed_notifier.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/content/trust_settings/domain_rule.value_object.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.config.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:bedbug/services/trust/trust_rules.service.dart';
 import 'package:bedbug/usecases/trust/delete_untrusted_contents/delete_untrusted_contents.usecase.dart';

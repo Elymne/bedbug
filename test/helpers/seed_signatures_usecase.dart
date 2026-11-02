@@ -6,6 +6,7 @@ import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';

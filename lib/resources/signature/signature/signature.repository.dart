@@ -1,11 +1,5 @@
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 
-/// Identifiant de la signature de l'utilisateur du téléphone.
-///
-/// Identique au `signatureId` attribué aux contenus créés localement, pour que
-/// la signature configurée dans les options s'affiche sur ces contenus.
-const String localSignatureId = 'local';
-
 /// Contrat du repository gérant les [Signature].
 abstract class SignatureRepository {
   /// Retourne la signature de l'utilisateur du téléphone, ou `null` s'il ne l'a jamais configurée.

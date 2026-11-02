@@ -1,14 +1,9 @@
 import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/gateways/public_suffix/public_suffix/public_suffix.config.dart';
 import 'package:bedbug/gateways/public_suffix/public_suffix/public_suffix.gateway.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:public_suffix/public_suffix.dart';
-
-/// Chemin de la Public Suffix List embarquée dans l'application.
-///
-/// Embarquée plutôt que téléchargée : l'app doit fonctionner sans connexion.
-/// À mettre à jour de temps en temps depuis https://publicsuffix.org/list/public_suffix_list.dat.
-const String publicSuffixListAssetPath = 'assets/data/public_suffix_list.dat';
 
 /// Provider du [PublicSuffixGateway].
 final publicSuffixGatewayProvider = Provider<PublicSuffixGateway>((ref) {

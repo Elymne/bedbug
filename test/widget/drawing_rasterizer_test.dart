@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:bedbug/application/providers/drawing_rasterizer_provider.dart';
+import 'package:bedbug/resources/content/drawing/drawing.config.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:bedbug/resources/content/drawing/drawing_operation.value_object.dart';
 import 'package:bedbug/resources/content/drawing/drawing_point.value_object.dart';

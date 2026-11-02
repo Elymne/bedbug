@@ -51,6 +51,7 @@ resources/<scope>/<resource>/
   <name>.repository.dart        repository interface
   <name>.repository.hive.dart   repository implementation, suffixed with its technology
   <name>.model.hive.dart        Hive DTO (+ generated <name>.model.hive.g.dart)
+  <resource>.config.dart        public constants of the resource (limits, defaults, box names)
 resources/
   data.exception.dart           invalid or corrupted data
   datasource.exception.dart     storage failure
@@ -61,9 +62,15 @@ resources/
 ### Gateways
 
 One folder per external source (`media`, `public_suffix`, `og_metadata`, `exchange`…), then one folder per gateway
-(`media/media_http/`, `exchange/peer_link/`), same naming as resources: `<name>.gateway.dart` for the interface, `<name>.gateway.<technology>.dart` for each implementation
-(`media_http.gateway.dio.dart`, `peer_link.gateway.ble.dart`), plus the value objects, enums and exceptions of that
-source.
+(`media/media_http/`, `exchange/peer_link/`), same naming as resources: `<name>.gateway.dart` for the interface,
+`<name>.gateway.<technology>.dart` for each implementation (`media_http.gateway.dio.dart`, `peer_link.gateway.ble.dart`),
+plus the value objects, enums, exceptions and `<gateway>.config.dart` of that gateway.
+
+### Constants
+
+Public top-level constants never sit in an entity, repository, gateway, service or use case file: they go in the
+`.config.dart` of their folder (`storage.config.dart`, `fetch_media.config.dart`). Private constants (`_name`) stay in
+the file that uses them.
 
 ### Exceptions
 
@@ -74,6 +81,7 @@ source.
 
 ```
 services/<business_scope>/<name>.service.dart
+services/<business_scope>/<name>.config.dart    public constants of the service, absent if none
 ```
 
 ### Use cases
@@ -86,6 +94,7 @@ usecases/<business_scope>/<name>/
   <name>.usecase.dart   provider, use case, its constants and private helpers
   <name>.params.dart    params class, absent with NoParams
   <name>.failure.dart   failure enum
+  <name>.config.dart    public constants of the use case, absent if none
   <name>.result.dart    return type defined by this use case only; absent when it returns void, a primitive, or an
                         existing entity / value object
 ```

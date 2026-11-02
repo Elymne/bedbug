@@ -4,6 +4,7 @@ import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.failure.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.params.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.usecase.dart';
+import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.config.dart';
 import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.failure.dart';
 import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.params.dart';
 import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.usecase.dart';

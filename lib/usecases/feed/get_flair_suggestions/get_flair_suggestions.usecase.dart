@@ -8,12 +8,10 @@ import 'package:bedbug/resources/content/content/flair_suggestion.value_object.d
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
+import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.config.dart';
 import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.failure.dart';
 import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-/// Nombre maximal de flairs proposés en autocomplétion.
-const int maxFlairSuggestions = 6;
 
 /// Provider du [GetFlairSuggestionsUsecase].
 final getFlairSuggestionsUsecaseProvider = Provider<GetFlairSuggestionsUsecase>((ref) {
