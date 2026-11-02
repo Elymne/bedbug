@@ -54,7 +54,7 @@ enum TrustLevel {
 /// les héberge voit alors son adresse IP : on ne charge donc d'office que
 /// ce qui vient de domaines connus. La greylist couvre les domaines
 /// acceptés mais qui demandent toujours un geste de l'utilisateur.
-class UrlTrustPolicy extends ValueObject {
+class UrlTrustPolicy {
   /// Crée une [UrlTrustPolicy].
   ///
   /// - [trustedRules] : domaines affichés ou ouverts directement.

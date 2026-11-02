@@ -167,7 +167,7 @@ bool _isSameList(List<Object> first, List<Object> second) {
 /// dans l'ordre à l'affichage : c'est léger à transmettre, impossible à
 /// confondre avec un fichier image, et annuler revient à retirer la
 /// dernière opération.
-sealed class DrawingOperation extends ValueObject {
+sealed class DrawingOperation {
   /// Crée une [DrawingOperation].
   ///
   /// - [layer] : calque sur lequel l'opération s'applique, de 0 (fond) à `drawingLayerCount - 1`.
@@ -314,7 +314,7 @@ bool _isSamePoints(List<DrawingPoint> first, List<DrawingPoint> second) {
 /// Des entiers dans un repère fixe, plutôt que des pixels d'écran : un
 /// dessin s'affiche à l'identique sur tous les téléphones, et se transmet
 /// sous une forme compacte.
-class DrawingPoint extends ValueObject {
+class DrawingPoint {
   /// Crée un [DrawingPoint].
   ///
   /// - [x] : abscisse, de 0 à la largeur du repère moins 1.
