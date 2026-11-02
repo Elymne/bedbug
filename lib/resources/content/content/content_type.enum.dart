@@ -1,4 +1,7 @@
-/// Type de contenu créé par l'utilisateur.
+/// Type concret d'un contenu.
+///
+/// Sa [value] est le discriminant stocké en base et échangé entre pairs pour savoir quel sous-type de `Content`
+/// reconstruire. Elle sert aussi au choix du type à l'écran de création.
 enum ContentType {
   /// Contenu textuel (titre + corps).
   text(0),

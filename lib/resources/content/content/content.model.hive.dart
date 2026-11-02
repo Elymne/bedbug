@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/content/content_type.enum.dart';
 import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
 import 'package:bedbug/resources/content/content/link_content.entity.dart';
 import 'package:bedbug/resources/content/content/media_content.entity.dart';
@@ -14,11 +15,6 @@ import 'package:hive_ce/hive.dart';
 
 part 'content.model.hive.g.dart';
 
-/// Discriminant identifiant le type concret d'un [Content] stocké.
-const _typeTextContent = 'text_content';
-const _typeLinkContent = 'link_content';
-const _typeMediaContent = 'media_content';
-const _typeDrawingContent = 'drawing_content';
 
 /// Flair attribué aux contenus persistés avant que le flair devienne obligatoire.
 const _legacyFlair = 'public';
@@ -67,7 +63,7 @@ class ContentHiveModel extends HiveObject {
         createdAt: entity.createdAt.millisecondsSinceEpoch,
         updatedAt: entity.updatedAt.millisecondsSinceEpoch,
         signatureId: entity.signatureId,
-        type: _typeTextContent,
+        type: ContentType.text.value,
         origin: entity.origin.value,
         broadcastScore: entity.broadcastScore,
         survivalScore: entity.survivalScore,
@@ -86,7 +82,7 @@ class ContentHiveModel extends HiveObject {
         createdAt: entity.createdAt.millisecondsSinceEpoch,
         updatedAt: entity.updatedAt.millisecondsSinceEpoch,
         signatureId: entity.signatureId,
-        type: _typeLinkContent,
+        type: ContentType.link.value,
         origin: entity.origin.value,
         broadcastScore: entity.broadcastScore,
         survivalScore: entity.survivalScore,
@@ -109,7 +105,7 @@ class ContentHiveModel extends HiveObject {
         createdAt: entity.createdAt.millisecondsSinceEpoch,
         updatedAt: entity.updatedAt.millisecondsSinceEpoch,
         signatureId: entity.signatureId,
-        type: _typeMediaContent,
+        type: ContentType.media.value,
         origin: entity.origin.value,
         broadcastScore: entity.broadcastScore,
         survivalScore: entity.survivalScore,
@@ -130,7 +126,7 @@ class ContentHiveModel extends HiveObject {
         createdAt: entity.createdAt.millisecondsSinceEpoch,
         updatedAt: entity.updatedAt.millisecondsSinceEpoch,
         signatureId: entity.signatureId,
-        type: _typeDrawingContent,
+        type: ContentType.drawing.value,
         origin: entity.origin.value,
         broadcastScore: entity.broadcastScore,
         survivalScore: entity.survivalScore,
@@ -162,9 +158,9 @@ class ContentHiveModel extends HiveObject {
   @HiveField(3)
   final String signatureId;
 
-  /// Discriminant du type concret de contenu.
+  /// Type concret du contenu, encodé comme valeur de [ContentType] (la même que dans les échanges entre pairs).
   @HiveField(4)
-  final String type;
+  final int type;
 
   /// Titre du contenu.
   @HiveField(5)
@@ -254,7 +250,7 @@ class ContentHiveModel extends HiveObject {
 
   Content _toEntity() {
     final tags = tagValues.map((value) => Tag.values.firstWhere((tag) => tag.value == value)).toList();
-    if (type == _typeTextContent) {
+    if (type == ContentType.text.value) {
       return TextContent(
         id: id,
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
@@ -272,7 +268,7 @@ class ContentHiveModel extends HiveObject {
         tags: tags,
       );
     }
-    if (type == _typeLinkContent) {
+    if (type == ContentType.link.value) {
       return LinkContent(
         id: id,
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
@@ -294,7 +290,7 @@ class ContentHiveModel extends HiveObject {
         tags: tags,
       );
     }
-    if (type == _typeMediaContent) {
+    if (type == ContentType.media.value) {
       return MediaContent(
         id: id,
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
@@ -319,7 +315,7 @@ class ContentHiveModel extends HiveObject {
         tags: tags,
       );
     }
-    if (type == _typeDrawingContent) {
+    if (type == ContentType.drawing.value) {
       return DrawingContent(
         id: id,
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),

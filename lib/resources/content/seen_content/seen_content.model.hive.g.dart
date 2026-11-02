@@ -13,7 +13,9 @@ class SeenContentHiveModelAdapter extends TypeAdapter<SeenContentHiveModel> {
   @override
   SeenContentHiveModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read()};
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
     return SeenContentHiveModel(
       id: fields[0] as String,
       createdAt: fields[1] as DateTime,
@@ -39,5 +41,7 @@ class SeenContentHiveModelAdapter extends TypeAdapter<SeenContentHiveModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SeenContentHiveModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+      other is SeenContentHiveModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

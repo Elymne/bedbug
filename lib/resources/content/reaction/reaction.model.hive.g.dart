@@ -13,7 +13,9 @@ class ReactionHiveModelAdapter extends TypeAdapter<ReactionHiveModel> {
   @override
   ReactionHiveModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read()};
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
     return ReactionHiveModel(
       id: fields[0] as String,
       createdAt: (fields[1] as num).toInt(),
@@ -60,5 +62,7 @@ class ReactionHiveModelAdapter extends TypeAdapter<ReactionHiveModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ReactionHiveModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+      other is ReactionHiveModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
