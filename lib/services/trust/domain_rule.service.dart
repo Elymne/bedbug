@@ -1,6 +1,6 @@
 import 'package:bedbug/core/domain/service.dart';
 import 'package:bedbug/resources/content/domain_rule/domain_rule.value_object.dart';
-import 'package:bedbug/resources/content/safe_url/safe_url.value_object.dart';
+import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

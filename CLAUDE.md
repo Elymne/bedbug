@@ -40,7 +40,7 @@ core → used by all
 
 One folder per **data** scope (`content`, `exchange`, `settings`, `signature`, `error_log`…), not per business concern.
 Inside a scope, one folder per resource: every entity and every value object gets its own folder (`content/comment/`,
-`content/reaction_merge/`, `exchange/exchange_log/`…), even when the scope holds a single one. Exception: a small value
+`content/drawing/`, `exchange/exchange_log/`…), even when the scope holds a single one. Exception: a small value
 object that only exists as a part of another object stays in its owner's file (`UrlTrustPolicy` in
 `trust_settings.value_object.dart`). A resource folder holds
 everything about that data:
@@ -86,6 +86,7 @@ the file that uses them.
 ```
 services/<business_scope>/<name>.service.dart
 services/<business_scope>/<name>.config.dart    public constants of the service, absent if none
+services/<business_scope>/<name>.result.dart    type returned by this service only (`reaction_merge.result.dart`)
 ```
 
 ### Use cases
@@ -158,8 +159,8 @@ core/
 
 - `Entity`: persisted object with `id`, `createdAt`, `updatedAt`.
 - `ValueObject`: computed data, composite structure or concept without identity. It lives in `resources` (or in
-  `gateways` when it belongs to an external source), never in `usecases`, except for a type returned by a single use
-  case (`<name>.result.dart`).
+  `gateways` when it belongs to an external source), never in `usecases` or `services`, except for a type returned by a
+  single use case or service (`<name>.result.dart`).
 - Both are immutable (`final` fields, `const` constructor) with value-based equality.
 - Instances are dumb data: fields, equality, `toString` and `copyWith` only, no instance logic.
 - The rules tied to the resource itself (validating a field, normalising a value) are **static methods of the entity

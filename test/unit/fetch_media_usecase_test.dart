@@ -2,8 +2,8 @@ import 'dart:typed_data';
 
 import 'package:bedbug/gateways/media/media_http/media_http.gateway.dart';
 import 'package:bedbug/resources/content/domain_rule/domain_rule.value_object.dart';
-import 'package:bedbug/resources/content/safe_url/safe_url.value_object.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
+import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
 import 'package:bedbug/services/trust/domain_rule.service.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:bedbug/services/trust/url_trust.service.dart';

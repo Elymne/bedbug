@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:bedbug/core/config/http_config.dart';
 import 'package:bedbug/gateways/media/media_http/media_http.gateway.dart';
-import 'package:bedbug/resources/content/safe_url/safe_url.value_object.dart';
+import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
