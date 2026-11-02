@@ -1,21 +1,15 @@
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/resources/content/comment/comment.repository.dart';
-import 'package:bedbug/resources/content/comment/comment.repository.hive.dart';
 import 'package:bedbug/resources/content/content/content.repository.dart';
 import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/reaction/reaction.repository.dart';
-import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
-import 'package:bedbug/resources/content/seen_content/seen_content.entity.dart';
-import 'package:bedbug/resources/content/seen_content/seen_content.repository.dart';
-import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
-import 'package:bedbug/resources/content/storage/storage.repository.dart';
-import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
+import 'package:bedbug/services/content/delete_contents/delete_contents.failure.dart';
+import 'package:bedbug/services/content/delete_contents/delete_contents.params.dart';
+import 'package:bedbug/services/content/delete_contents/delete_contents.service.dart';
 import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.failure.dart';
 import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,10 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final deleteOwnContentUsecaseProvider = Provider<DeleteOwnContentUsecase>((ref) {
   return DeleteOwnContentUsecase(
     ref.read(contentRepositoryProvider),
-    ref.read(storageRepositoryProvider),
-    ref.read(reactionRepositoryProvider),
-    ref.read(commentRepositoryProvider),
-    ref.read(seenContentRepositoryProvider),
+    ref.read(deleteContentsServiceProvider),
     ref.read(errorLogRepositoryProvider),
   );
 });
@@ -40,26 +31,14 @@ final deleteOwnContentUsecaseProvider = Provider<DeleteOwnContentUsecase>((ref) 
 /// selon les règles de nettoyage du stockage. La suppression est locale : les
 /// copies déjà transmises à d'autres appareils ne peuvent pas être rappelées.
 ///
-/// Les réactions et les commentaires du contenu sont supprimés avec lui, et
-/// le poids du contenu est retiré du compteur de stockage. Le contenu est
-/// mémorisé comme déjà vu : un pair qui en détient une copie ne pourra pas
-/// le faire revenir sur l'appareil.
+/// La suppression passe par [DeleteContentsService] : réactions, commentaires et poids partent avec le contenu, et
+/// il est mémorisé comme déjà vu, pour qu'un pair qui en détient une copie ne puisse pas le faire revenir.
 class DeleteOwnContentUsecase extends Usecase<DeleteOwnContentParams, DeleteOwnContentFailure, void> {
   /// Crée un [DeleteOwnContentUsecase].
-  DeleteOwnContentUsecase(
-    this._contentRepository,
-    this._storageRepository,
-    this._reactionRepository,
-    this._commentRepository,
-    this._seenContentRepository,
-    this._errorLogRepository,
-  );
+  DeleteOwnContentUsecase(this._contentRepository, this._deleteContentsService, this._errorLogRepository);
 
   final ContentRepository _contentRepository;
-  final StorageRepository _storageRepository;
-  final ReactionRepository _reactionRepository;
-  final CommentRepository _commentRepository;
-  final SeenContentRepository _seenContentRepository;
+  final DeleteContentsService _deleteContentsService;
   final ErrorLogRepository _errorLogRepository;
 
   @override
@@ -73,13 +52,14 @@ class DeleteOwnContentUsecase extends Usecase<DeleteOwnContentParams, DeleteOwnC
         return const Left(DeleteOwnContentFailure.notOwned);
       }
 
-      await _contentRepository.deleteOne(content.id);
-      await _storageRepository.adjustCurrentSizeInBytes(-content.sizeInBytes);
-      await _reactionRepository.deleteAllByContentId(content.id);
-      await _commentRepository.deleteAllByContentId(content.id);
-      final seenAt = DateTime.now();
-      await _seenContentRepository.addMany([SeenContent(id: content.id, createdAt: seenAt, updatedAt: seenAt)]);
-      return const Right(null);
+      final result = await _deleteContentsService(DeleteContentsParams(contents: [content]));
+      return result.fold<Either<DeleteOwnContentFailure, void>>(
+        onFailure: (DeleteContentsFailure failure) => Left(switch (failure) {
+          DeleteContentsFailure.storageError => DeleteOwnContentFailure.storageError,
+          DeleteContentsFailure.unknown => DeleteOwnContentFailure.unknown,
+        }),
+        onSuccess: (_) => const Right(null),
+      );
     } on DataException catch (error, stackTrace) {
       AppLogger.error('DeleteOwnContentUsecase', error, stackTrace);
       return const Left(DeleteOwnContentFailure.storageError);

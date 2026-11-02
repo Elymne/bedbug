@@ -14,7 +14,7 @@ and a separate **application** layer holds UI and framework concerns.
 lib/
   resources/     persisted data: entities, value objects, repositories and their implementations, by data scope
   gateways/      external sources (HTTP, gallery, BLE…): interfaces and implementations, by source
-  services/      small pure logic bricks, by business scope
+  services/      "sub use cases" reused by several use cases, by business scope
   usecases/      business operations, by business scope
   application/   UI and framework orchestration
   core/          cross-cutting technical code, no business logic
@@ -23,16 +23,16 @@ lib/
 ### Dependency rules
 
 ```
-application → usecases → services
-                       → resources, gateways
+application → usecases → services → resources, gateways
+                       ↘ resources, gateways
 core → used by all
 ```
 
-- `application` calls use cases and services. It only touches `resources` / `gateways` to read their types (entities,
-  value objects, enums) or to wire providers.
+- `application` only calls use cases. It touches `resources` / `gateways` to read their types (entities, value
+  objects, enums), to call their static rules (`SafeUrl.parse`), or to wire providers.
 - `usecases` depend on `services`, `resources` and `gateways`, whatever their scope: a use case of one business scope
   freely uses the data of several data scopes. A use case never depends on another use case.
-- `services` depend on other services and on the types of `resources` / `gateways`, never on a repository or a gateway.
+- `services` depend on `resources`, `gateways` and other services, never on a use case.
 - `gateways` may use the types of `resources`.
 - `core` depends on nothing.
 
@@ -86,10 +86,15 @@ the file that uses them.
 
 ### Services
 
+Same layout as use cases: one folder per service, inside its business scope.
+
 ```
-services/<business_scope>/<name>.service.dart
-services/<business_scope>/<name>.config.dart    public constants of the service, absent if none
-services/<business_scope>/<name>.result.dart    type returned by this service only (`reaction_merge.result.dart`)
+services/<business_scope>/<name>/
+  <name>.service.dart   provider, service, its constants and private helpers
+  <name>.params.dart    params class, absent with NoParams
+  <name>.failure.dart   failure enum
+  <name>.config.dart    public constants of the service, absent if none
+  <name>.result.dart    return type defined by this service only; absent otherwise
 ```
 
 ### Use cases
@@ -142,21 +147,23 @@ core/
 - Extend `Usecase<P extends Params, F, V>` and implement `call(params)`, returning `Future<Either<F, V>>`.
 - Never throw: failures are explicit and typed (failure enum).
 - Use `NoParams` when no input is required.
-- A use case never depends on another use case, only on repositories, gateways and services, even if it duplicates code.
-  Only the application layer calls use cases.
+- A use case never depends on another use case, only on repositories, gateways and services. Code shared by several
+  use cases becomes a service. Only the application layer calls use cases.
 - Logic needed by a single use case stays a private method of that use case.
 - Every use case receives `ErrorLogRepository`. Its final `catch (error, stackTrace)` (the unexpected errors, not the
   `on XException` ones) logs with `AppLogger.error`, then calls `_errorLogRepository.record(...)`, which never throws.
 
 ### Service rules
 
-- Extend `Service`. A service holds small pure logic bricks reused by several use cases or by the application
-  (parsing an address, matching a domain rule, detecting a file format).
-- Synchronous, no data access (no repository, no gateway): a service may only depend on other services. Anything
-  that needs more is a use case.
-- Never throw, and never return an `Either`: a failure is expressed by `null` or by an enum value. No `try/catch`
-  either: use the non-throwing APIs (`Uri.tryParse`, `int.tryParse`) and guard indexes and lengths.
-- Provided through a provider, like everything else.
+- A service is a "sub use case": a sequence of operations that several use cases would otherwise duplicate
+  (`DeleteContentsService`: delete contents with their reactions, comments, traces and weight; `MergeReactionService`:
+  integrate a reaction within its limits). It is written once, and each use case calls it.
+- Extend `Service<P extends Params, F, V>` and implement `call(params)`, returning `Future<Either<F, V>>`: same shape
+  and same error rules as a use case (typed failure enum, catch-all logged and recorded in `ErrorLogRepository`).
+- May depend on repositories, gateways and other services, never on a use case. Only use cases call services.
+- The calling use case maps the service failure to its own failure enum.
+- A pure, synchronous rule about a single resource is not a service: it is a static method of that resource (see
+  below).
 
 ### Entities and value objects
 
