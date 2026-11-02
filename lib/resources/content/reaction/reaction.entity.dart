@@ -66,4 +66,18 @@ class Reaction extends Entity {
   /// Choisie à chaque réaction, comme la couleur : un « NOOON » ne s'écrit
   /// pas dans la même police qu'un « trop mignon ».
   final TextFont bubbleFont;
+
+  /// Indique si [bubbleText] est une bulle valide : non vide, une seule ligne, au plus [maxReactionBubbleLength]
+  /// caractères.
+  ///
+  /// La règle vaut partout : à la saisie (formulaire), à l'enregistrement (use case), et à la réception d'une réaction
+  /// d'un pair, qui ne passe par aucun formulaire. La longueur est comptée en caractères Unicode (runes) et non en
+  /// unités UTF-16, pour qu'un emoji ne compte pas double.
+  ///
+  /// - [bubbleText] : texte à vérifier.
+  static bool isValidBubble(String bubbleText) {
+    return bubbleText.trim().isNotEmpty &&
+        bubbleText.runes.length <= maxReactionBubbleLength &&
+        !bubbleText.contains('\n');
+  }
 }

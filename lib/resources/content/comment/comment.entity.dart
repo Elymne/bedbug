@@ -30,4 +30,15 @@ class Comment extends Entity {
 
   /// Corps du commentaire.
   final String body;
+
+  /// Indique si [body] est un corps de commentaire valide : non vide, au plus [maxCommentLength] caractères.
+  ///
+  /// La règle vaut partout : à la saisie (formulaire), à l'enregistrement (use case), et à la réception d'un
+  /// commentaire d'un pair, qui ne passe par aucun formulaire. Les sauts de ligne sont autorisés. La longueur est
+  /// comptée en caractères Unicode (runes) et non en unités UTF-16, pour qu'un emoji ne compte pas double.
+  ///
+  /// - [body] : texte à vérifier.
+  static bool isValidBody(String body) {
+    return body.trim().isNotEmpty && body.runes.length <= maxCommentLength;
+  }
 }

@@ -76,4 +76,48 @@ class Signature extends Entity {
 
   /// Identifiant de l'auteur sur chaque réseau renseigné, au plus un par réseau.
   final Map<SocialNetwork, String> socialLinks;
+
+  /// Lettres latines (accentuées ou pleine chasse comprises), grecques et cyrilliques.
+  ///
+  /// Ce sont les alphabets avec lesquels on écrit des mots lisibles. Les kaomojis en empruntent parfois une isolée
+  /// (`ω`, `Д`, `Σ`, `T_T`), jamais plusieurs à la suite.
+  static final RegExp _wordLetterRun = RegExp('[A-Za-zÀ-ÖØ-öø-ÿＡ-Ｚａ-ｚͰ-ϿЀ-ӿ]{2,}');
+
+  /// Suite de lettres tolérée malgré tout : le `zzZ` des kaomojis endormis.
+  static final RegExp _sleepLetterRun = RegExp(r'^[zZ]+$');
+
+  /// Indique si [pseudo] est un pseudo valide : lettres non accentuées et tirets, entre [minPseudoLength] et
+  /// [maxPseudoLength] caractères.
+  ///
+  /// Le pseudo est affiché sous la forme `s/pseudo` : espaces, chiffres et symboles le rendraient illisible ou
+  /// permettraient d'imiter un autre affichage. La règle vaut aussi pour le profil reçu d'un pair, qui ne passe par
+  /// aucun formulaire.
+  ///
+  /// - [pseudo] : texte à vérifier.
+  static bool isValidPseudo(String pseudo) {
+    return RegExp('^[A-Za-z-]{$minPseudoLength,$maxPseudoLength}\$').hasMatch(pseudo);
+  }
+
+  /// Indique si [avatarText] est une icône valide : non vide et sans mot.
+  ///
+  /// Une icône est une émote (kaomoji, emoji, symboles) : on refuse toute suite de deux lettres ou plus, pour qu'on ne
+  /// puisse pas y écrire de mot. Seul le `zzZ` des émotes endormies fait exception.
+  ///
+  /// - [avatarText] : texte à vérifier.
+  static bool isValidAvatarText(String avatarText) {
+    if (avatarText.trim().isEmpty) {
+      return false;
+    }
+    return _wordLetterRun.allMatches(avatarText).every((match) => _sleepLetterRun.hasMatch(match.group(0)!));
+  }
+
+  /// Indique si [bio] est une description valide : une seule ligne, au plus [maxSignatureBioLength] caractères.
+  ///
+  /// La longueur est comptée en caractères Unicode (runes) et non en unités UTF-16, pour qu'un emoji ne compte pas
+  /// double.
+  ///
+  /// - [bio] : texte à vérifier.
+  static bool isValidBio(String bio) {
+    return bio.runes.length <= maxSignatureBioLength && !bio.contains('\n');
+  }
 }

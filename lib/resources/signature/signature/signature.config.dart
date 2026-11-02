@@ -35,3 +35,6 @@ const int minPseudoLength = 3;
 
 /// Longueur maximale d'un pseudo.
 const int maxPseudoLength = 24;
+
+/// Caractères autorisés dans un pseudo : lettres non accentuées et tiret.
+final RegExp pseudoAllowedCharacter = RegExp('[A-Za-z-]');

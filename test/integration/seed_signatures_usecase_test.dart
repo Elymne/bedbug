@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/resources/signature/signature/signature.extension.dart';
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
 import 'package:bedbug/usecases/signature/get_local_signature/get_local_signature.usecase.dart';
@@ -39,8 +39,8 @@ void main() {
     final repository = container.read(signatureRepositoryProvider);
     for (final signatureId in signatureIds) {
       final signature = (await repository.getById(signatureId))!;
-      expect(signature.pseudo.isValidPseudo, isTrue, reason: signature.pseudo);
-      expect(signature.avatarText.isValidAvatarText, isTrue, reason: signature.avatarText);
+      expect(Signature.isValidPseudo(signature.pseudo), isTrue, reason: signature.pseudo);
+      expect(Signature.isValidAvatarText(signature.avatarText), isTrue, reason: signature.avatarText);
       for (final entry in signature.socialLinks.entries) {
         expect(entry.key.normalizeHandle(entry.value), entry.value);
       }

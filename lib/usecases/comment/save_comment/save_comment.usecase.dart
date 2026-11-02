@@ -3,7 +3,6 @@ import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/resources/content/comment/comment.config.dart';
 import 'package:bedbug/resources/content/comment/comment.entity.dart';
-import 'package:bedbug/resources/content/comment/comment.extension.dart';
 import 'package:bedbug/resources/content/comment/comment.repository.dart';
 import 'package:bedbug/resources/content/comment/comment.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
@@ -41,7 +40,7 @@ class SaveCommentUsecase extends Usecase<SaveCommentParams, SaveCommentFailure, 
   Future<Either<SaveCommentFailure, Comment>> call(SaveCommentParams params) async {
     try {
       final body = params.comment.body.trim();
-      if (!body.isValidCommentBody) {
+      if (!Comment.isValidBody(body)) {
         return const Left(SaveCommentFailure.invalidComment);
       }
 

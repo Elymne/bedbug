@@ -47,7 +47,7 @@ resources/<scope>/<resource>/
   <name>.entity.dart            entity
   <name>.value_object.dart      value object
   <name>.enum.dart              enum tied to the resource
-  <resource>.extension.dart     all the extensions of the resource, in one file
+  <resource>.extension.dart     extensions on the resource types themselves (computed getters), in one file
   <name>.repository.dart        repository interface
   <name>.repository.hive.dart   repository implementation, suffixed with its technology
   <name>.model.hive.dart        Hive DTO (+ generated <name>.model.hive.g.dart)
@@ -157,8 +157,11 @@ core/
   `gateways` when it belongs to an external source), never in `usecases`, except for a type returned by a single use
   case (`<name>.result.dart`).
 - Both are immutable (`final` fields, `const` constructor) with value-based equality.
-- Both are dumb data: fields, equality, `toString` and `copyWith` only. No parsing, validation, matching or business
-  rule inside them: that logic belongs in a service or in a use case.
+- Instances are dumb data: fields, equality, `toString` and `copyWith` only, no instance logic.
+- The rules tied to the resource itself (validating a field, normalising a value) are **static methods of the entity
+  or value object** (`Comment.isValidBody(body)`, `Signature.isValidPseudo(pseudo)`): pure, synchronous, never throw,
+  no data access. They take the raw value rather than the object, so forms can check a field before the object
+  exists. Never write them as extensions on a base type (`String`, `int`…).
 
 ### Enums and extensions
 

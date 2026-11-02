@@ -7,7 +7,6 @@ import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
-import 'package:bedbug/resources/signature/signature/signature.extension.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
 import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
@@ -44,7 +43,7 @@ class SaveLocalSignatureUsecase extends Usecase<SaveLocalSignatureParams, SaveLo
       final pseudo = params.pseudo.trim();
       final avatarText = params.avatarText.trim();
       final bio = params.bio?.trim() ?? '';
-      if (!pseudo.isValidPseudo || !avatarText.isValidAvatarText || !bio.isValidSignatureBio) {
+      if (!Signature.isValidPseudo(pseudo) || !Signature.isValidAvatarText(avatarText) || !Signature.isValidBio(bio)) {
         return const Left(SaveLocalSignatureFailure.invalidProfile);
       }
 

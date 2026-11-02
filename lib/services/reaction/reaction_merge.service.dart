@@ -1,10 +1,9 @@
 import 'package:bedbug/core/domain/service.dart';
 import 'package:bedbug/resources/content/reaction/reaction.config.dart';
 import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
-import 'package:bedbug/resources/content/reaction/reaction.extension.dart';
 import 'package:bedbug/resources/content/reaction/reaction_merge.value_object.dart';
 import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/resources/signature/signature/signature.extension.dart';
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [ReactionMergeService].
@@ -28,7 +27,7 @@ class ReactionMergeService extends Service {
   Reaction? normalize(Reaction reaction) {
     final avatarText = reaction.avatarText.trim();
     final bubbleText = reaction.bubbleText.trim();
-    if (!avatarText.isValidAvatarText || !bubbleText.isValidReactionBubble) {
+    if (!Signature.isValidAvatarText(avatarText) || !Reaction.isValidBubble(bubbleText)) {
       return null;
     }
     return Reaction(

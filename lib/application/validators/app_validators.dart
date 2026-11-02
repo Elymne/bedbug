@@ -1,7 +1,7 @@
 import 'package:bedbug/resources/content/content/flair.extension.dart';
-import 'package:bedbug/resources/content/reaction/reaction.extension.dart';
+import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
 import 'package:bedbug/resources/content/storage/storage.config.dart';
-import 'package:bedbug/resources/signature/signature/signature.extension.dart';
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -52,25 +52,25 @@ class AppValidators {
 
   /// Vérifie que le pseudo ne contient que des lettres non accentuées et des tirets, sur 3 caractères minimum.
   ///
-  /// Applique la règle du domaine (`isValidPseudo`). Retourne `null` si vide
+  /// Applique la règle du domaine (`Signature.isValidPseudo`). Retourne `null` si vide
   /// — déléguer la vérification à [required].
   static const pseudo = _PseudoValidator();
 
   /// Vérifie que l'icône ne contient aucun mot (pas de suite de lettres).
   ///
-  /// Applique la règle du domaine (`isValidAvatarText`). Retourne `null` si
+  /// Applique la règle du domaine (`Signature.isValidAvatarText`). Retourne `null` si
   /// vide — déléguer la vérification à [required].
   static const avatarText = _AvatarTextValidator();
 
   /// Vérifie que la description d'une signature tient sur une ligne et ne dépasse pas sa longueur maximale.
   ///
-  /// Applique la règle du domaine (`isValidSignatureBio`). Retourne `null`
+  /// Applique la règle du domaine (`Signature.isValidBio`). Retourne `null`
   /// si vide : la description est optionnelle.
   static const signatureBio = _SignatureBioValidator();
 
   /// Vérifie que la bulle d'une réaction tient sur une ligne et ne dépasse pas sa longueur maximale.
   ///
-  /// Applique la règle du domaine (`isValidReactionBubble`). Retourne `null`
+  /// Applique la règle du domaine (`Reaction.isValidBubble`). Retourne `null`
   /// si vide — déléguer la vérification à [required].
   static const reactionBubble = _ReactionBubbleValidator();
 
@@ -199,7 +199,7 @@ class _PseudoValidator extends Validator<dynamic> {
     if (value is! String || value.trim().isEmpty) {
       return null;
     }
-    if (!value.trim().isValidPseudo) {
+    if (!Signature.isValidPseudo(value.trim())) {
       return {'pseudo': true};
     }
     return null;
@@ -215,7 +215,7 @@ class _SignatureBioValidator extends Validator<dynamic> {
     if (value is! String || value.trim().isEmpty) {
       return null;
     }
-    if (!value.trim().isValidSignatureBio) {
+    if (!Signature.isValidBio(value.trim())) {
       return {'signatureBio': true};
     }
     return null;
@@ -231,7 +231,7 @@ class _ReactionBubbleValidator extends Validator<dynamic> {
     if (value is! String || value.trim().isEmpty) {
       return null;
     }
-    if (!value.trim().isValidReactionBubble) {
+    if (!Reaction.isValidBubble(value.trim())) {
       return {'reactionBubble': true};
     }
     return null;
@@ -247,7 +247,7 @@ class _AvatarTextValidator extends Validator<dynamic> {
     if (value is! String || value.trim().isEmpty) {
       return null;
     }
-    if (!value.isValidAvatarText) {
+    if (!Signature.isValidAvatarText(value)) {
       return {'avatarText': true};
     }
     return null;
