@@ -43,8 +43,7 @@ Inside a scope, one folder per resource: every entity and every value object get
 `content/drawing/`, `exchange/exchange_log/`…), even when the scope holds a single one. Exception: a small value
 object that only exists as a part of another object stays in its owner's file (`UrlTrustPolicy` in
 `trust_settings.value_object.dart`, `DrawingOperation` and `DrawingPoint` in `drawing.value_object.dart`). A resource
-folder holds
-everything about that data:
+folder holds everything about that data:
 
 ```
 resources/<scope>/<resource>/
