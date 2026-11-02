@@ -9,6 +9,7 @@ import 'package:bedbug/resources/content/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/content/content_urls.extension.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.entity.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.dart';
@@ -93,7 +94,10 @@ class DeleteUntrustedContentsUsecase extends Usecase<NoParams, DeleteUntrustedCo
       }
 
       final ids = untrusted.map((content) => content.id).toList();
-      await _seenContentRepository.addMany(ids, DateTime.now());
+      final seenAt = DateTime.now();
+      await _seenContentRepository.addMany([
+        for (final id in ids) SeenContent(id: id, createdAt: seenAt, updatedAt: seenAt),
+      ]);
       await _viewedContentRepository.deleteMany(ids);
       await _reactionRepository.deleteAllByContentIds(ids.toSet());
       await _commentRepository.deleteAllByContentIds(ids.toSet());

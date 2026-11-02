@@ -16,6 +16,7 @@ import 'package:bedbug/resources/content/reaction/reaction.config.dart';
 import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.entity.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.dart';
@@ -146,7 +147,9 @@ class ImportExchangeBundleUsecase
       if (signaturesToSave.isNotEmpty) {
         await _signatureRepository.saveMany(signaturesToSave.values.toList());
       }
-      await _seenContentRepository.addMany(receivedIds, now);
+      await _seenContentRepository.addMany([
+        for (final id in receivedIds) SeenContent(id: id, createdAt: now, updatedAt: now),
+      ]);
 
       final reactionReport = await _importReactions(bundle.reactions, {
         ...requestedIds,

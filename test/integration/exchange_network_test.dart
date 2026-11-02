@@ -15,6 +15,7 @@ import 'package:bedbug/resources/content/content/text_content.entity.dart';
 import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
 import 'package:bedbug/resources/content/reaction/reaction.model.hive.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.model.hive.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
 import 'package:bedbug/resources/content/storage/storage.model.hive.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
@@ -118,7 +119,7 @@ class _Device {
   static Future<_Device> open(String name) async {
     final contents = await Hive.openBox<ContentHiveModel>('${name}_contents');
     final reactions = await Hive.openBox<ReactionHiveModel>('${name}_reactions');
-    final seen = await Hive.openBox<int>('${name}_seen');
+    final seen = await Hive.openBox<SeenContentHiveModel>('${name}_seen');
     final signatures = await Hive.openBox<SignatureHiveModel>('${name}_signatures');
     final storage = await Hive.openBox<StorageHiveModel>('${name}_storage');
     final container = ProviderContainer(

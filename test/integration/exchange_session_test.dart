@@ -25,6 +25,7 @@ import 'package:bedbug/resources/content/content/content_origin.enum.dart';
 import 'package:bedbug/resources/content/content/text_content.entity.dart';
 import 'package:bedbug/resources/content/reaction/reaction.model.hive.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.model.hive.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
 import 'package:bedbug/resources/content/storage/storage.config.dart';
 import 'package:bedbug/resources/content/storage/storage.model.hive.dart';
@@ -99,7 +100,7 @@ String _noise(Random random, int length) {
 Future<ProviderContainer> _openDevice(String prefix, {List<Override> overrides = const []}) async {
   final contents = await Hive.openBox<ContentHiveModel>('${prefix}_contents');
   final reactions = await Hive.openBox<ReactionHiveModel>('${prefix}_reactions');
-  final seen = await Hive.openBox<int>('${prefix}_seen');
+  final seen = await Hive.openBox<SeenContentHiveModel>('${prefix}_seen');
   final signatures = await Hive.openBox<SignatureHiveModel>('${prefix}_signatures');
   final storage = await Hive.openBox<StorageHiveModel>('${prefix}_storage');
   final logs = await Hive.openBox<ExchangeLogHiveModel>('${prefix}_exchange_logs');

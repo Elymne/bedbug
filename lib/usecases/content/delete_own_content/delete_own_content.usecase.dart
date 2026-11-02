@@ -7,6 +7,7 @@ import 'package:bedbug/resources/content/content/content.repository.dart';
 import 'package:bedbug/resources/content/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.entity.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
 import 'package:bedbug/resources/content/storage/storage.repository.dart';
@@ -76,7 +77,8 @@ class DeleteOwnContentUsecase extends Usecase<DeleteOwnContentParams, DeleteOwnC
       await _storageRepository.adjustCurrentSizeInBytes(-content.sizeInBytes);
       await _reactionRepository.deleteAllByContentId(content.id);
       await _commentRepository.deleteAllByContentId(content.id);
-      await _seenContentRepository.addMany([content.id], DateTime.now());
+      final seenAt = DateTime.now();
+      await _seenContentRepository.addMany([SeenContent(id: content.id, createdAt: seenAt, updatedAt: seenAt)]);
       return const Right(null);
     } on DataException catch (error, stackTrace) {
       AppLogger.error('DeleteOwnContentUsecase', error, stackTrace);

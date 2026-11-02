@@ -1,11 +1,15 @@
 import 'package:bedbug/resources/content/seen_content/seen_content.config.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.entity.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.model.hive.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
-/// Provider de la [Box] Hive des identifiants déjà vus : identifiant du contenu → date de vue en millisecondes.
-final hiveSeenContentBoxProvider = Provider<Box<int>>((ref) => Hive.box<int>(seenContentBoxName));
+/// Provider de la [Box] Hive des contenus déjà reçus ou supprimés, indexée par identifiant du contenu.
+final hiveSeenContentBoxProvider = Provider<Box<SeenContentHiveModel>>((ref) {
+  return Hive.box<SeenContentHiveModel>(seenContentBoxName);
+});
 
 /// Provider du [HiveSeenContentRepository].
 final seenContentRepositoryProvider = Provider<SeenContentRepository>((ref) {
@@ -13,20 +17,18 @@ final seenContentRepositoryProvider = Provider<SeenContentRepository>((ref) {
 });
 
 /// Implémentation de [SeenContentRepository] utilisant Hive.
-///
-/// Une simple box d'entiers suffit : la clé est l'identifiant du contenu, la valeur la date de vue en
-/// millisecondes. Pas de modèle ni de `typeId` à déclarer.
 class HiveSeenContentRepository implements SeenContentRepository {
   /// Crée un [HiveSeenContentRepository].
+  ///
+  /// - [_box] : box Hive des contenus déjà reçus ou supprimés.
   HiveSeenContentRepository(this._box);
 
-  final Box<int> _box;
+  final Box<SeenContentHiveModel> _box;
 
   @override
-  Future<void> addMany(Iterable<String> ids, DateTime seenAt) async {
+  Future<void> addMany(Iterable<SeenContent> entities) async {
     try {
-      final millis = seenAt.millisecondsSinceEpoch;
-      await _box.putAll({for (final id in ids) id: millis});
+      await _box.putAll({for (final entity in entities) entity.id: SeenContentHiveModel.fromEntity(entity)});
     } on HiveError catch (error) {
       throw DatasourceException('HiveSeenContentRepository', error);
     }
@@ -44,9 +46,8 @@ class HiveSeenContentRepository implements SeenContentRepository {
   @override
   Future<void> deleteSeenBefore(DateTime date) async {
     try {
-      final limit = date.millisecondsSinceEpoch;
-      final expiredKeys = _box.keys.where((key) => (_box.get(key) ?? 0) < limit).toList();
-      await _box.deleteAll(expiredKeys);
+      final expiredKeys = _box.values.where((model) => model.createdAt.isBefore(date)).map((model) => model.id);
+      await _box.deleteAll(expiredKeys.toList());
     } on HiveError catch (error) {
       throw DatasourceException('HiveSeenContentRepository', error);
     }

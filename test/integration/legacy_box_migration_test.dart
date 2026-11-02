@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:bedbug/resources/content/seen_content/seen_content.config.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.model.hive.dart';
 import 'package:bedbug/resources/content/viewed_content/viewed_content.config.dart';
 import 'package:bedbug/resources/content/viewed_content/viewed_content.model.hive.dart';
 import 'package:bedbug/resources/hive.initializer.dart';
@@ -36,5 +38,17 @@ void main() {
     await migrateLegacyViewedContents();
 
     expect(Hive.box<ViewedContentHiveModel>(viewedContentBoxName).isEmpty, isTrue);
+  });
+
+  test('recopie les contenus déjà reçus de l\'ancienne box puis la supprime', () async {
+    final seenAt = DateTime(2026, 10, 30, 8);
+    final legacyBox = await Hive.openBox<int>(legacySeenContentBoxName);
+    await legacyBox.put('content-a', seenAt.millisecondsSinceEpoch);
+
+    await migrateLegacySeenContents();
+
+    final box = Hive.box<SeenContentHiveModel>(seenContentBoxName);
+    expect(box.get('content-a')!.toEntity().createdAt, seenAt);
+    expect(await Hive.boxExists(legacySeenContentBoxName), isFalse);
   });
 }

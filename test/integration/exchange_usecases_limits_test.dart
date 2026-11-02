@@ -17,6 +17,7 @@ import 'package:bedbug/resources/content/content_media/content_media.value_objec
 import 'package:bedbug/resources/content/reaction/reaction.config.dart';
 import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.entity.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
 import 'package:bedbug/resources/exchange/exchange_import_report/exchange_import_report.value_object.dart';
 import 'package:bedbug/resources/signature/signature/signature.config.dart';
@@ -600,7 +601,10 @@ void main() {
     });
 
     test('ne réimporte pas un contenu déjà vu', () async {
-      await container.read(seenContentRepositoryProvider).addMany(['seen'], DateTime.now());
+      final seenAt = DateTime.now();
+      await container.read(seenContentRepositoryProvider).addMany([
+        SeenContent(id: 'seen', createdAt: seenAt, updatedAt: seenAt),
+      ]);
 
       final report = await importFromPeer(
         contentIds: ['seen'],
@@ -613,7 +617,9 @@ void main() {
 
     test('réaccepte un contenu dont la mémoire a expiré', () async {
       final expired = DateTime.now().subtract(seenContentRetention + const Duration(days: 1));
-      await container.read(seenContentRepositoryProvider).addMany(['old'], expired);
+      await container.read(seenContentRepositoryProvider).addMany([
+        SeenContent(id: 'old', createdAt: expired, updatedAt: expired),
+      ]);
 
       final report = await importFromPeer(
         contentIds: ['old'],

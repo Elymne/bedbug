@@ -12,6 +12,7 @@ import 'package:bedbug/resources/content/content/content_origin.enum.dart';
 import 'package:bedbug/resources/content/content/text_content.entity.dart';
 import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.entity.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
 import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
@@ -176,7 +177,10 @@ void main() {
   group('sélection', () {
     test('écarte les contenus déjà possédés ou déjà vus, et respecte le budget', () async {
       await container.read(contentRepositoryProvider).addOne(_text('owned'));
-      await container.read(seenContentRepositoryProvider).addMany(['seen'], DateTime.now());
+      final seenAt = DateTime.now();
+      await container.read(seenContentRepositoryProvider).addMany([
+        SeenContent(id: 'seen', createdAt: seenAt, updatedAt: seenAt),
+      ]);
       const offer = ExchangeOffer(
         contents: [
           OfferedContent(id: 'owned', sizeInBytes: 10, reactionCount: 0),

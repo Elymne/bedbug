@@ -9,6 +9,7 @@ import 'package:bedbug/resources/content/content/content.repository.dart';
 import 'package:bedbug/resources/content/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.entity.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
 import 'package:bedbug/resources/content/storage/storage.config.dart';
@@ -88,7 +89,10 @@ class EnforceStorageLimitUsecase extends Usecase<NoParams, EnforceStorageLimitFa
       }
 
       if (removedIds.isNotEmpty) {
-        await _seenContentRepository.addMany(removedIds, DateTime.now());
+        final seenAt = DateTime.now();
+        await _seenContentRepository.addMany([
+          for (final id in removedIds) SeenContent(id: id, createdAt: seenAt, updatedAt: seenAt),
+        ]);
         await _viewedContentRepository.deleteMany(removedIds);
         await _reactionRepository.deleteAllByContentIds(removedIds.toSet());
         await _commentRepository.deleteAllByContentIds(removedIds.toSet());

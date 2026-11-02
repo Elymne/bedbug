@@ -7,6 +7,7 @@ import 'package:bedbug/resources/content/content/content.model.hive.dart';
 import 'package:bedbug/resources/content/drawing/drawing.config.dart';
 import 'package:bedbug/resources/content/reaction/reaction.model.hive.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.config.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.model.hive.dart';
 import 'package:bedbug/resources/content/storage/storage.model.hive.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.config.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.model.hive.dart';
@@ -42,13 +43,14 @@ Future<void> initHive() async {
     Hive.openBox<SettingsHiveModel>('settings'),
     Hive.openBox<Uint8List>(drawingDraftBoxName),
     Hive.openBox<TrustSettingsHiveModel>(trustSettingsBoxName),
-    Hive.openBox<int>(seenContentBoxName),
+    Hive.openBox<SeenContentHiveModel>(seenContentBoxName),
     Hive.openBox<ViewedContentHiveModel>(viewedContentBoxName),
     Hive.openBox<ExchangeLogHiveModel>(exchangeLogBoxName),
     Hive.openBox<ErrorLogHiveModel>(errorLogBoxName),
   ]);
   await _purgeLegacyImageContents();
   await migrateLegacyViewedContents();
+  await migrateLegacySeenContents();
 }
 
 /// Supprime les anciens contenus image et leurs fichiers.
@@ -86,6 +88,29 @@ Future<void> migrateLegacyViewedContents() async {
   await box.putAll({
     for (final key in legacyBox.keys.cast<String>())
       key: ViewedContentHiveModel(
+        id: key,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(legacyBox.get(key)!),
+        updatedAt: DateTime.fromMillisecondsSinceEpoch(legacyBox.get(key)!),
+      ),
+  });
+  await legacyBox.deleteFromDisk();
+}
+
+/// Recopie l'ancienne box des contenus déjà reçus ou supprimés dans la nouvelle, puis la supprime.
+///
+/// Ces contenus étaient stockés en entiers bruts (identifiant → date en millisecondes), sans modèle. Ils ont maintenant
+/// leur entité et leur modèle Hive, dans une autre box : sans cette recopie, chaque téléphone oublierait ce qu'il a
+/// déjà reçu ou supprimé, et retéléchargerait ces contenus au prochain échange. Sans effet si l'ancienne box n'existe
+/// plus.
+Future<void> migrateLegacySeenContents() async {
+  if (!await Hive.boxExists(legacySeenContentBoxName)) {
+    return;
+  }
+  final legacyBox = await Hive.openBox<int>(legacySeenContentBoxName);
+  final box = Hive.box<SeenContentHiveModel>(seenContentBoxName);
+  await box.putAll({
+    for (final key in legacyBox.keys.cast<String>())
+      key: SeenContentHiveModel(
         id: key,
         createdAt: DateTime.fromMillisecondsSinceEpoch(legacyBox.get(key)!),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(legacyBox.get(key)!),
