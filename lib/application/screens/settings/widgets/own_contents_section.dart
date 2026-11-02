@@ -12,7 +12,7 @@ import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:bedbug/core/extensions/datetime_x.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
-import 'package:bedbug/resources/content/content/content_title.extension.dart';
+import 'package:bedbug/resources/content/content/content.extension.dart';
 import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

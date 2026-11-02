@@ -1,4 +1,4 @@
-import 'package:bedbug/resources/content/content/flair.extension.dart';
+import 'package:bedbug/resources/content/content/content.extension.dart';
 import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
 import 'package:bedbug/resources/content/storage/storage.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';

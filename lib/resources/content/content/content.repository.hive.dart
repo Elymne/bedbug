@@ -2,11 +2,10 @@ import 'dart:math';
 
 import 'package:bedbug/resources/content/content/content.config.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
+import 'package:bedbug/resources/content/content/content.extension.dart';
 import 'package:bedbug/resources/content/content/content.model.hive.dart';
 import 'package:bedbug/resources/content/content/content.repository.dart';
 import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/content_title.extension.dart';
-import 'package:bedbug/resources/content/content/flair.extension.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
