@@ -8,7 +8,7 @@ import 'package:bedbug/resources/content/viewed_content/viewed_content.model.hiv
 import 'package:bedbug/resources/error_log/error_log/error_log.model.hive.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log.model.hive.dart';
 import 'package:bedbug/resources/exchange/keychain/keychain.model.hive.dart';
-import 'package:bedbug/resources/settings/settings/settings.model.hive.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.model.hive.dart';
 import 'package:bedbug/resources/signature/signature/signature.model.hive.dart';
 
 /// Registre centralisé des typeId Hive utilisés dans l'application.
@@ -37,8 +37,8 @@ class HiveTypeIds {
   /// TypeId de [StorageHiveModel].
   static const int storage = 6;
 
-  /// TypeId de [SettingsHiveModel].
-  static const int settings = 7;
+  /// TypeId de [UserSettingsHiveModel].
+  static const int userSettings = 7;
 
   /// TypeId de [ReactionHiveModel].
   static const int reaction = 8;

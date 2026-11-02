@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';
 import 'package:bedbug/usecases/settings/get_settings/get_settings.usecase.dart';
 import 'package:bedbug/usecases/settings/save_settings/save_settings.params.dart';
 import 'package:bedbug/usecases/settings/save_settings/save_settings.usecase.dart';
@@ -40,8 +40,8 @@ void main() {
 
     await getUsecase(const NoParams());
     final saveResult = await saveUsecase(
-      const SaveSettingsParams(
-        settings: UserSettings(blockedUrls: ['spam.com'], blockedWords: ['insulte']),
+      SaveSettingsParams(
+        settings: defaultUserSettings.copyWith(blockedUrls: ['spam.com'], blockedWords: ['insulte']),
       ),
     );
     expect(saveResult.isSuccess, isTrue);

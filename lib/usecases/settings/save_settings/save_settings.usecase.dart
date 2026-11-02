@@ -5,16 +5,16 @@ import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
-import 'package:bedbug/resources/settings/settings/settings.repository.dart';
-import 'package:bedbug/resources/settings/settings/settings.repository.hive.dart';
-import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.entity.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.repository.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.repository.hive.dart';
 import 'package:bedbug/usecases/settings/save_settings/save_settings.failure.dart';
 import 'package:bedbug/usecases/settings/save_settings/save_settings.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveSettingsUsecase].
 final saveSettingsUsecaseProvider = Provider<SaveSettingsUsecase>((ref) {
-  return SaveSettingsUsecase(ref.read(settingsRepositoryProvider), ref.read(errorLogRepositoryProvider));
+  return SaveSettingsUsecase(ref.read(userSettingsRepositoryProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Persiste les settings mis à jour.
@@ -24,7 +24,7 @@ class SaveSettingsUsecase extends Usecase<SaveSettingsParams, SaveSettingsFailur
   /// Crée un [SaveSettingsUsecase].
   SaveSettingsUsecase(this._settingsRepository, this._errorLogRepository);
 
-  final SettingsRepository _settingsRepository;
+  final UserSettingsRepository _settingsRepository;
   final ErrorLogRepository _errorLogRepository;
 
   @override

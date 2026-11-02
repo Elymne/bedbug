@@ -13,7 +13,7 @@ import 'package:bedbug/resources/content/viewed_content/viewed_content.model.hiv
 import 'package:bedbug/resources/error_log/error_log/error_log.model.hive.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log.model.hive.dart';
 import 'package:bedbug/resources/exchange/keychain/keychain.model.hive.dart';
-import 'package:bedbug/resources/settings/settings/settings.model.hive.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.model.hive.dart';
 import 'package:bedbug/resources/signature/signature/signature.model.hive.dart';
 
 extension HiveRegistrar on HiveInterface {
@@ -26,10 +26,10 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(PrivateKeyHiveModelAdapter());
     registerAdapter(ReactionHiveModelAdapter());
     registerAdapter(SeenContentHiveModelAdapter());
-    registerAdapter(SettingsHiveModelAdapter());
     registerAdapter(SignatureHiveModelAdapter());
     registerAdapter(StorageHiveModelAdapter());
     registerAdapter(TrustSettingsHiveModelAdapter());
+    registerAdapter(UserSettingsHiveModelAdapter());
     registerAdapter(ViewedContentHiveModelAdapter());
   }
 }
@@ -44,10 +44,10 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(PrivateKeyHiveModelAdapter());
     registerAdapter(ReactionHiveModelAdapter());
     registerAdapter(SeenContentHiveModelAdapter());
-    registerAdapter(SettingsHiveModelAdapter());
     registerAdapter(SignatureHiveModelAdapter());
     registerAdapter(StorageHiveModelAdapter());
     registerAdapter(TrustSettingsHiveModelAdapter());
+    registerAdapter(UserSettingsHiveModelAdapter());
     registerAdapter(ViewedContentHiveModelAdapter());
   }
 }

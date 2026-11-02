@@ -1,9 +1,9 @@
-import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.entity.dart';
 
 /// Contrat du repository gérant les [UserSettings].
 ///
 /// Ce repository gère un unique objet de configuration.
-abstract class SettingsRepository {
+abstract class UserSettingsRepository {
   /// Retourne les settings persistés, ou `null` si jamais initialisés.
   Future<UserSettings?> getUnique(String id);
 

@@ -11,7 +11,8 @@ import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.ble.dart';
 import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.dart';
 import 'package:bedbug/resources/content/home_feed/home_feed.value_object.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
-import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.entity.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
 import 'package:bedbug/usecases/settings/get_settings/get_settings.failure.dart';
@@ -73,7 +74,7 @@ class _FakePeerLinkGateway implements PeerLinkGateway {
 /// Fake [GetSettingsUsecase] et [SaveSettingsUsecase] : les réglages vivent en mémoire.
 class _FakeSettings {
   /// Réglages enregistrés.
-  UserSettings settings = const UserSettings.empty();
+  UserSettings settings = defaultUserSettings;
 }
 
 /// Fake [GetSettingsUsecase] lisant des réglages en mémoire.
@@ -120,7 +121,7 @@ void main() {
   });
 
   testWidgets('le choix est enregistré, et l\'échange reprend tout seul au lancement suivant', (tester) async {
-    store.settings = const UserSettings(blockedUrls: ['a'], blockedWords: [], isExchangeEnabled: true);
+    store.settings = defaultUserSettings.copyWith(blockedUrls: ['a'], isExchangeEnabled: true);
     await pumpApp(
       tester,
       const ExchangeScreen(),

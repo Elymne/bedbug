@@ -1,26 +1,27 @@
-import 'package:bedbug/core/domain/value_object.dart';
+import 'package:bedbug/core/domain/entity.dart';
 
 /// Paramètres de configuration personnels de l'utilisateur.
-class UserSettings extends ValueObject {
+///
+/// Entité singleton, comme `Storage` : un seul enregistrement par appareil.
+class UserSettings extends Entity {
   /// Crée un [UserSettings].
   ///
+  /// - [id] : identifiant de l'enregistrement unique.
+  /// - [createdAt] : date de création.
+  /// - [updatedAt] : date de dernière mise à jour.
   /// - [blockedUrls] : liste des URLs bloquées (images, liens).
   /// - [blockedWords] : liste des mots bloqués dans les contenus.
   /// - [isAnonymousByDefault] : `true` si les nouveaux contenus sont publiés anonymement par défaut.
   /// - [isExchangeEnabled] : `true` si l'échange avec les téléphones proches est activé.
-  const UserSettings({
+  UserSettings({
+    required super.id,
+    required super.createdAt,
+    required super.updatedAt,
     required this.blockedUrls,
     required this.blockedWords,
     this.isAnonymousByDefault = false,
     this.isExchangeEnabled = false,
   });
-
-  /// Retourne une instance [UserSettings] avec toutes les listes vides et les options désactivées.
-  const UserSettings.empty()
-    : blockedUrls = const [],
-      blockedWords = const [],
-      isAnonymousByDefault = false,
-      isExchangeEnabled = false;
 
   /// Liste des URLs bloquées par l'utilisateur.
   final List<String> blockedUrls;
@@ -40,6 +41,13 @@ class UserSettings extends ValueObject {
   final bool isExchangeEnabled;
 
   /// Retourne une copie de ces settings avec les champs fournis modifiés.
+  ///
+  /// L'identifiant et les dates sont conservés : seuls les réglages changent.
+  ///
+  /// - [blockedUrls] : nouvelle liste des URLs bloquées.
+  /// - [blockedWords] : nouvelle liste des mots bloqués.
+  /// - [isAnonymousByDefault] : nouvelle valeur de publication anonyme par défaut.
+  /// - [isExchangeEnabled] : nouvelle valeur d'activation de l'échange.
   UserSettings copyWith({
     List<String>? blockedUrls,
     List<String>? blockedWords,
@@ -47,6 +55,9 @@ class UserSettings extends ValueObject {
     bool? isExchangeEnabled,
   }) {
     return UserSettings(
+      id: id,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
       blockedUrls: blockedUrls ?? this.blockedUrls,
       blockedWords: blockedWords ?? this.blockedWords,
       isAnonymousByDefault: isAnonymousByDefault ?? this.isAnonymousByDefault,

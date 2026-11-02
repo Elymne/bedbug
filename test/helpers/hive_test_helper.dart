@@ -23,8 +23,8 @@ import 'package:bedbug/resources/exchange/exchange_log/exchange_log.config.dart'
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log.model.hive.dart';
 import 'package:bedbug/resources/exchange/keychain/keychain.config.dart';
 import 'package:bedbug/resources/exchange/keychain/keychain.model.hive.dart';
-import 'package:bedbug/resources/settings/settings/settings.config.dart';
-import 'package:bedbug/resources/settings/settings/settings.model.hive.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.model.hive.dart';
 import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.model.hive.dart';
 import 'package:hive_ce/hive.dart';
@@ -50,7 +50,7 @@ Future<Directory> openTestHive() async {
     Hive.openBox<ReactionHiveModel>(reactionBoxName),
     Hive.openBox<KeychainHiveModel>(keychainBoxName),
     Hive.openBox<StorageHiveModel>(storageBoxName),
-    Hive.openBox<SettingsHiveModel>(settingsBoxName),
+    Hive.openBox<UserSettingsHiveModel>(userSettingsBoxName),
     Hive.openBox<Uint8List>(drawingDraftBoxName),
     Hive.openBox<TrustSettingsHiveModel>(trustSettingsBoxName),
     Hive.openBox<SeenContentHiveModel>(seenContentBoxName),
