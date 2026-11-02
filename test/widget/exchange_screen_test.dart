@@ -9,11 +9,11 @@ import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.g
 import 'package:bedbug/gateways/exchange/peer_attempt/peer_attempt.value_object.dart';
 import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.ble.dart';
 import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.dart';
-import 'package:bedbug/resources/content/home_feed/home_feed.value_object.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';
 import 'package:bedbug/resources/settings/user_settings/user_settings.entity.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';
+import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.result.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
 import 'package:bedbug/usecases/settings/get_settings/get_settings.failure.dart';
 import 'package:bedbug/usecases/settings/get_settings/get_settings.usecase.dart';

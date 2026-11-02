@@ -9,8 +9,6 @@ import 'package:bedbug/resources/content/content/text_content.entity.dart';
 import 'package:bedbug/resources/content/content_media/content_media.value_object.dart';
 import 'package:bedbug/resources/content/drawing/drawing.config.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
-import 'package:bedbug/resources/content/drawing_operation/drawing_operation.value_object.dart';
-import 'package:bedbug/resources/content/drawing_point/drawing_point.value_object.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.failure.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';

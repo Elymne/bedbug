@@ -4,7 +4,6 @@ import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/resources/content/content/content.repository.dart';
 import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/home_feed/home_feed.value_object.dart';
 import 'package:bedbug/resources/content/viewed_content/viewed_content.repository.dart';
 import 'package:bedbug/resources/content/viewed_content/viewed_content.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
@@ -12,6 +11,7 @@ import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';
+import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.result.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [GetHomeFeedUsecase].

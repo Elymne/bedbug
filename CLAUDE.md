@@ -42,7 +42,8 @@ One folder per **data** scope (`content`, `exchange`, `settings`, `signature`, `
 Inside a scope, one folder per resource: every entity and every value object gets its own folder (`content/comment/`,
 `content/drawing/`, `exchange/exchange_log/`…), even when the scope holds a single one. Exception: a small value
 object that only exists as a part of another object stays in its owner's file (`UrlTrustPolicy` in
-`trust_settings.value_object.dart`). A resource folder holds
+`trust_settings.value_object.dart`, `DrawingOperation` and `DrawingPoint` in `drawing.value_object.dart`). A resource
+folder holds
 everything about that data:
 
 ```

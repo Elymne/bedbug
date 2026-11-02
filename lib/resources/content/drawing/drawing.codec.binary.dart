@@ -2,8 +2,6 @@ import 'dart:typed_data';
 
 import 'package:bedbug/resources/content/drawing/drawing.config.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
-import 'package:bedbug/resources/content/drawing_operation/drawing_operation.value_object.dart';
-import 'package:bedbug/resources/content/drawing_point/drawing_point.value_object.dart';
 
 /// Signature en tête d'un dessin encodé (« BBD »), suivie de la version du format.
 const List<int> _signature = [0x42, 0x42, 0x44];
