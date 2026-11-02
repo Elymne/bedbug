@@ -1,6 +1,6 @@
 # Contenus : ce qui est choisi, envoyé, accepté, refusé
 
-Code : `lib/features/exchange/domain/usecases/`.
+Code : `lib/usecases/exchange/`.
 
 Quatre use cases, un par étape. Ils produisent et reçoivent des octets, encodés en JSON compressé par
 `JsonZlibExchangeCodecGateway`.
