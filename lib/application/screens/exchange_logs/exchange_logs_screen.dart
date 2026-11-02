@@ -62,7 +62,7 @@ class ExchangeLogsScreen extends ConsumerWidget {
     final date = materialLocalizations.formatShortDate(log.createdAt);
     final time = TimeOfDay.fromDateTime(log.createdAt);
     final isInitiator = log.isInitiator;
-    final awaitedFrame = log.awaitedFrame;
+    final awaitedStep = log.awaitedStep;
     final isSuccess = log.outcome == ExchangeLogOutcome.success;
     final isDelayed = log.outcome == ExchangeLogOutcome.peerDelayed;
 
@@ -89,9 +89,9 @@ class ExchangeLogsScreen extends ConsumerWidget {
             _buildDetail(l10n.exchangeLogsPeer(log.peerAddress)),
             if (isInitiator != null)
               _buildDetail(isInitiator ? l10n.exchangeLogsInitiator : l10n.exchangeLogsResponder),
-            if (awaitedFrame != null) ...[
+            if (awaitedStep != null) ...[
               _buildDetail(l10n.exchangeLogsDuration((log.duration.inMilliseconds / 1000).toStringAsFixed(1))),
-              if (!isSuccess) _buildDetail(l10n.exchangeLogsAwaitedFrame(awaitedFrame.name)),
+              if (!isSuccess) _buildDetail(l10n.exchangeLogsAwaitedFrame(awaitedStep.name)),
               _buildDetail(l10n.exchangeLogsBytes(log.sentBytes, log.receivedBytes)),
               _buildDetail(l10n.exchangeLogsContents(log.importedContents, log.rejectedContents)),
               _buildDetail(l10n.exchangeLogsReactions(log.importedReactions, log.rejectedReactions)),

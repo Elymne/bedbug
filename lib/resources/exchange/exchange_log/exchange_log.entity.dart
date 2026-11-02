@@ -1,6 +1,6 @@
 import 'package:bedbug/core/domain/entity.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
+import 'package:bedbug/resources/exchange/exchange_log/exchange_log_step.enum.dart';
 
 /// Trace d'une rencontre avec un pair : échange abouti, interrompu, ou qui n'a jamais commencé.
 ///
@@ -13,7 +13,7 @@ class ExchangeLog extends Entity {
   /// - [outcome] : issue de la rencontre.
   /// - [isInitiator] : `true` si ce téléphone a appelé le pair, `null` si aucune connexion n'a abouti.
   /// - [duration] : durée de l'échange.
-  /// - [awaitedFrame] : trame attendue à la fin de l'échange, `null` sans échange.
+  /// - [awaitedStep] : étape attendue à la fin de l'échange, `null` sans échange.
   /// - [sentBytes] : octets envoyés au pair.
   /// - [receivedBytes] : octets reçus du pair.
   /// - [importedContents] : contenus enregistrés.
@@ -29,7 +29,7 @@ class ExchangeLog extends Entity {
     required this.outcome,
     this.isInitiator,
     this.duration = Duration.zero,
-    this.awaitedFrame,
+    this.awaitedStep,
     this.sentBytes = 0,
     this.receivedBytes = 0,
     this.importedContents = 0,
@@ -53,8 +53,8 @@ class ExchangeLog extends Entity {
   /// Durée de l'échange.
   final Duration duration;
 
-  /// Trame attendue à la fin de l'échange, qui indique où il s'est arrêté. `null` sans échange.
-  final ExchangeFrameType? awaitedFrame;
+  /// Étape attendue à la fin de l'échange, qui indique où il s'est arrêté. `null` sans échange.
+  final ExchangeLogStep? awaitedStep;
 
   /// Octets envoyés au pair.
   final int sentBytes;

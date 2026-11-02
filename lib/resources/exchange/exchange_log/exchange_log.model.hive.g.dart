@@ -22,7 +22,7 @@ class ExchangeLogHiveModelAdapter extends TypeAdapter<ExchangeLogHiveModel> {
       outcome: (fields[4] as num).toInt(),
       isInitiator: fields[5] as bool?,
       durationInMillis: (fields[6] as num).toInt(),
-      awaitedFrame: (fields[7] as num?)?.toInt(),
+      awaitedStep: (fields[7] as num?)?.toInt(),
       sentBytes: (fields[8] as num).toInt(),
       receivedBytes: (fields[9] as num).toInt(),
       importedContents: (fields[10] as num).toInt(),
@@ -52,7 +52,7 @@ class ExchangeLogHiveModelAdapter extends TypeAdapter<ExchangeLogHiveModel> {
       ..writeByte(6)
       ..write(obj.durationInMillis)
       ..writeByte(7)
-      ..write(obj.awaitedFrame)
+      ..write(obj.awaitedStep)
       ..writeByte(8)
       ..write(obj.sentBytes)
       ..writeByte(9)

@@ -6,12 +6,10 @@ import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/screens/exchange_logs/exchange_logs_notifier.dart';
 import 'package:bedbug/application/screens/settings/user_settings_notifier.dart';
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/core/extensions/string_uuid_x.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
 import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.ble.dart';
 import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.dart';
-import 'package:bedbug/resources/exchange/exchange_log/exchange_log.entity.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
 import 'package:bedbug/usecases/exchange/recalculate_broadcast_scores/recalculate_broadcast_scores.usecase.dart';
 import 'package:bedbug/usecases/exchange/save_exchange_log/save_exchange_log.params.dart';
@@ -155,23 +153,16 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
   ///
   /// - [attempt] : pair concerné.
   Future<void> _logAttempt(PeerAttempt attempt) async {
-    final now = DateTime.now();
     await _saveLog(
-      ExchangeLog(
-        id: UuidX.generate(),
-        createdAt: now,
-        updatedAt: now,
-        peerAddress: attempt.peerAddress,
-        outcome: attempt.outcome,
-      ),
+      SaveExchangeLogParams(startedAt: DateTime.now(), peerAddress: attempt.peerAddress, outcome: attempt.outcome),
     );
   }
 
-  /// Enregistre [log] et rafraîchit la page du journal.
+  /// Enregistre la rencontre décrite par [params] et rafraîchit la page du journal.
   ///
-  /// - [log] : trace à enregistrer.
-  Future<void> _saveLog(ExchangeLog log) async {
-    await _saveExchangeLogUsecase(SaveExchangeLogParams(log: log));
+  /// - [params] : ce qu'on sait de la rencontre.
+  Future<void> _saveLog(SaveExchangeLogParams params) async {
+    await _saveExchangeLogUsecase(params);
     ref.invalidate(exchangeLogsNotifierProvider);
   }
 
@@ -199,10 +190,8 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
     final removedContents = (await _enforceStorageLimitUsecase(const NoParams())).right ?? 0;
     final report = result.report;
     await _saveLog(
-      ExchangeLog(
-        id: UuidX.generate(),
-        createdAt: startedAt,
-        updatedAt: DateTime.now(),
+      SaveExchangeLogParams(
+        startedAt: startedAt,
         peerAddress: transport.peerAddress,
         outcome: _outcomeOf(result.failure),
         isInitiator: transport.isInitiator,

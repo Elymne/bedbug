@@ -1,7 +1,7 @@
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log.entity.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
+import 'package:bedbug/resources/exchange/exchange_log/exchange_log_step.enum.dart';
 import 'package:bedbug/resources/hive.type_ids.dart';
 import 'package:hive_ce/hive.dart';
 
@@ -19,7 +19,7 @@ class ExchangeLogHiveModel extends HiveObject {
     required this.outcome,
     required this.isInitiator,
     required this.durationInMillis,
-    required this.awaitedFrame,
+    required this.awaitedStep,
     required this.sentBytes,
     required this.receivedBytes,
     required this.importedContents,
@@ -39,7 +39,7 @@ class ExchangeLogHiveModel extends HiveObject {
       outcome: entity.outcome.value,
       isInitiator: entity.isInitiator,
       durationInMillis: entity.duration.inMilliseconds,
-      awaitedFrame: entity.awaitedFrame?.value,
+      awaitedStep: entity.awaitedStep?.value,
       sentBytes: entity.sentBytes,
       receivedBytes: entity.receivedBytes,
       importedContents: entity.importedContents,
@@ -78,9 +78,9 @@ class ExchangeLogHiveModel extends HiveObject {
   @HiveField(6)
   final int durationInMillis;
 
-  /// Trame attendue à la fin de l'échange, encodée comme valeur de [ExchangeFrameType].
+  /// Étape attendue à la fin de l'échange, encodée comme valeur de [ExchangeLogStep].
   @HiveField(7)
-  final int? awaitedFrame;
+  final int? awaitedStep;
 
   /// Octets envoyés au pair.
   @HiveField(8)
@@ -115,7 +115,7 @@ class ExchangeLogHiveModel extends HiveObject {
   /// Lève une [DataException] si l'issue enregistrée n'existe plus.
   ExchangeLog toEntity() {
     try {
-      final frame = awaitedFrame;
+      final step = awaitedStep;
       return ExchangeLog(
         id: id,
         createdAt: createdAt,
@@ -124,7 +124,7 @@ class ExchangeLogHiveModel extends HiveObject {
         outcome: ExchangeLogOutcome.values.firstWhere((candidate) => candidate.value == outcome),
         isInitiator: isInitiator,
         duration: Duration(milliseconds: durationInMillis),
-        awaitedFrame: frame == null ? null : ExchangeFrameType.fromValue(frame),
+        awaitedStep: step == null ? null : ExchangeLogStep.values.firstWhere((candidate) => candidate.value == step),
         sentBytes: sentBytes,
         receivedBytes: receivedBytes,
         importedContents: importedContents,
