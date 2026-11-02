@@ -1,11 +1,15 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/core/domain/service.dart';
-import 'package:bedbug/services/content/flood_fill.config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Provider du [FloodFillService].
-final floodFillServiceProvider = Provider<FloodFillService>((ref) => const FloodFillService());
+/// Écart de couleur toléré par défaut, somme des écarts des canaux rouge, vert, bleu et alpha.
+///
+/// Les bords d'un trait sont adoucis (anticrénelage) : sans tolérance, le
+/// remplissage s'arrêterait avant le trait et laisserait un liseré.
+const int defaultFillTolerance = 96;
+
+/// Provider du [FloodFill].
+final floodFillProvider = Provider<FloodFill>((ref) => const FloodFill());
 
 /// Calcule la zone couverte par un pot de peinture, sur une image en mémoire.
 ///
@@ -14,9 +18,9 @@ final floodFillServiceProvider = Provider<FloodFillService>((ref) => const Flood
 /// on part du point touché et on s'étend à tous les pixels voisins de même
 /// couleur. L'image a toujours la même taille, quel que soit l'écran : le
 /// même dessin donne la même zone sur tous les téléphones.
-class FloodFillService extends Service {
-  /// Crée un [FloodFillService].
-  const FloodFillService();
+class FloodFill {
+  /// Crée un [FloodFill].
+  const FloodFill();
 
   /// Retourne le masque de la zone à remplir depuis ([x], [y]) : 255 pour un pixel à peindre, 0 sinon.
   ///

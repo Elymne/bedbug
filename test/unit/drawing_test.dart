@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:bedbug/application/providers/flood_fill_provider.dart';
 import 'package:bedbug/resources/content/content/content.model.hive.dart';
 import 'package:bedbug/resources/content/content/content_origin.enum.dart';
 import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
@@ -8,7 +9,6 @@ import 'package:bedbug/resources/content/drawing/drawing.codec.binary.dart';
 import 'package:bedbug/resources/content/drawing/drawing.config.dart';
 import 'package:bedbug/resources/content/drawing/drawing.extension.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
-import 'package:bedbug/services/content/flood_fill.service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Retourne un trait au stylo passant par [points], avec les réglages fournis.
@@ -34,7 +34,7 @@ List<DrawingPoint> _line(int count) {
 }
 
 void main() {
-  const floodFill = FloodFillService();
+  const floodFill = FloodFill();
   const codec = DrawingBinaryCodec();
 
   final sample = _drawing([

@@ -2,9 +2,9 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:bedbug/application/providers/drawing_rasterizer_provider.dart';
+import 'package:bedbug/application/providers/flood_fill_provider.dart';
 import 'package:bedbug/resources/content/drawing/drawing.config.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
-import 'package:bedbug/services/content/flood_fill.service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Contour carré fermé de (300, 200) à (700, 600), au stylo épais.
@@ -24,7 +24,7 @@ const DrawingStroke _square = DrawingStroke(
 );
 
 void main() {
-  const rasterizer = DrawingRasterizer(FloodFillService());
+  const rasterizer = DrawingRasterizer(FloodFill());
 
   /// Calcule l'image de [operations], et retourne ses pixels RGBA.
   Future<Uint8List> pixelsOf(WidgetTester tester, List<DrawingOperation> operations) async {
