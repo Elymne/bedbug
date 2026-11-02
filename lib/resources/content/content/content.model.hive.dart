@@ -21,12 +21,6 @@ const _typeLinkContent = 'link_content';
 const _typeMediaContent = 'media_content';
 const _typeDrawingContent = 'drawing_content';
 
-/// Discriminant des anciens contenus image, dont les fichiers étaient stockés localement.
-///
-/// Ils ne peuvent plus être relus : ils sont supprimés au démarrage (voir
-/// `ContentHiveModel.isLegacyImageContent`).
-const _typeLegacyImageContent = 'image_content';
-
 /// Flair attribué aux contenus persistés avant que le flair devienne obligatoire.
 const _legacyFlair = 'public';
 
@@ -248,11 +242,6 @@ class ContentHiveModel extends HiveObject {
   /// Valeurs [Tag.value] des tags associés à ce contenu.
   @HiveField(22)
   final List<int> tagValues;
-
-  /// Indique si ce modèle est un ancien contenu image, à fichiers locaux, qui ne peut plus être relu.
-  bool get isLegacyImageContent {
-    return type == _typeLegacyImageContent;
-  }
 
   /// Convertit ce modèle en entité [Content] concrète.
   Content toEntity() {
