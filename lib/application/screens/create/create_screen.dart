@@ -20,7 +20,7 @@ import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/texts/app_loading_text.dart';
 import 'package:bedbug/core/extensions/string_uuid_x.dart';
-import 'package:bedbug/gateways/og_metadata/og_metadata/og_metadata.service.dio.dart';
+import 'package:bedbug/gateways/og_metadata/og_metadata/og_metadata.gateway.dart';
 import 'package:bedbug/resources/content/content/content.config.dart';
 import 'package:bedbug/resources/content/content/content.extension.dart';
 import 'package:bedbug/resources/content/content/content_origin.enum.dart';

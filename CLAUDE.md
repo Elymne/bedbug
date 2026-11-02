@@ -221,7 +221,7 @@ core/
 
   ```dart
   // ✅ OK — fits on one line
-  final ogMetadataServiceProvider = Provider<OgMetadataService>((ref) => OgMetadataService());
+  final ogMetadataGatewayProvider = Provider<OgMetadataGateway>((ref) => DioOgMetadataGateway());
 
   // ✅ OK — too long for one line → block body
   final saveContentUsecaseProvider = Provider<SaveContentUsecase>((ref) {
