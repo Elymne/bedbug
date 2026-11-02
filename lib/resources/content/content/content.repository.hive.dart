@@ -6,7 +6,7 @@ import 'package:bedbug/resources/content/content/content.repository.dart';
 import 'package:bedbug/resources/content/content/content_origin.enum.dart';
 import 'package:bedbug/resources/content/content/content_title.extension.dart';
 import 'package:bedbug/resources/content/content/flair.extension.dart';
-import 'package:bedbug/resources/content/content/flair_suggestion.value_object.dart';
+import 'package:bedbug/resources/content/flair_suggestion/flair_suggestion.value_object.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';

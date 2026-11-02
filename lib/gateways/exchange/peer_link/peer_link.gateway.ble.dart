@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.ble.dart';
 import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
-import 'package:bedbug/gateways/exchange/peer_link/peer_attempt.value_object.dart';
+import 'package:bedbug/gateways/exchange/peer_attempt/peer_attempt.value_object.dart';
 import 'package:bedbug/gateways/exchange/peer_link/peer_link.config.dart';
 import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';

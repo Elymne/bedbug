@@ -1,6 +1,6 @@
 import 'package:bedbug/application/notifiers/drawing_draft_notifier.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
-import 'package:bedbug/resources/content/drawing/drawing_operation.value_object.dart';
+import 'package:bedbug/resources/content/drawing_operation/drawing_operation.value_object.dart';
 import 'package:bedbug/services/content/drawing_validation.service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

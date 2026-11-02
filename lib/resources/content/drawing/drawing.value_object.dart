@@ -1,6 +1,6 @@
 import 'package:bedbug/core/domain/value_object.dart';
 import 'package:bedbug/resources/content/drawing/drawing.config.dart';
-import 'package:bedbug/resources/content/drawing/drawing_operation.value_object.dart';
+import 'package:bedbug/resources/content/drawing_operation/drawing_operation.value_object.dart';
 
 /// Dessin vectoriel : une taille et une orientation de surface, une palette, et la liste des opérations qui le
 /// composent.

@@ -1,5 +1,5 @@
 import 'package:bedbug/core/domain/service.dart';
-import 'package:bedbug/resources/content/content/content_media.value_object.dart';
+import 'package:bedbug/resources/content/content_media/content_media.value_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Extensions de fichier reconnues comme des vidéos.

@@ -1,5 +1,5 @@
 import 'package:bedbug/core/notifier/notifier_state.dart';
-import 'package:bedbug/resources/content/content/flair_suggestion.value_object.dart';
+import 'package:bedbug/resources/content/flair_suggestion/flair_suggestion.value_object.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.params.dart';
 import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.usecase.dart';

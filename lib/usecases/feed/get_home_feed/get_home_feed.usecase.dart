@@ -4,7 +4,7 @@ import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/resources/content/content/content.repository.dart';
 import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/content/home_feed.value_object.dart';
+import 'package:bedbug/resources/content/home_feed/home_feed.value_object.dart';
 import 'package:bedbug/resources/content/viewed_content/viewed_content.repository.dart';
 import 'package:bedbug/resources/content/viewed_content/viewed_content.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';

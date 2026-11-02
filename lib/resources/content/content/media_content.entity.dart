@@ -1,6 +1,6 @@
 import 'package:bedbug/resources/content/content/content.config.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
-import 'package:bedbug/resources/content/content/content_media.value_object.dart';
+import 'package:bedbug/resources/content/content_media/content_media.value_object.dart';
 
 /// Contenu regroupant une ou plusieurs images, gifs ou vidéos hébergés sur des sites reconnus.
 ///

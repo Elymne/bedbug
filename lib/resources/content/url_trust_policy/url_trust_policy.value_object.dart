@@ -1,5 +1,5 @@
 import 'package:bedbug/core/domain/value_object.dart';
-import 'package:bedbug/resources/content/trust_settings/domain_rule.value_object.dart';
+import 'package:bedbug/resources/content/domain_rule/domain_rule.value_object.dart';
 
 /// Politique de confiance appliquée à une famille d'URLs (médias ou liens) : une whitelist et une greylist.
 ///

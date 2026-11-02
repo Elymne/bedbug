@@ -1,5 +1,5 @@
 import 'package:bedbug/core/domain/value_object.dart';
-import 'package:bedbug/resources/content/drawing/drawing_point.value_object.dart';
+import 'package:bedbug/resources/content/drawing_point/drawing_point.value_object.dart';
 
 /// Opération d'un dessin : un trait de pinceau, ou un remplissage.
 ///

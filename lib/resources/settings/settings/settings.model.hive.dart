@@ -1,6 +1,6 @@
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/hive.type_ids.dart';
-import 'package:bedbug/resources/settings/settings/user_settings.value_object.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
 import 'package:hive_ce/hive.dart';
 
 part 'settings.model.hive.g.dart';

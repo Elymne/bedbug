@@ -3,7 +3,7 @@ import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/gateways/public_suffix/public_suffix/public_suffix.gateway.dart';
 import 'package:bedbug/gateways/public_suffix/public_suffix/public_suffix.gateway.package.dart';
-import 'package:bedbug/resources/content/trust_settings/domain_rule.value_object.dart';
+import 'package:bedbug/resources/content/domain_rule/domain_rule.value_object.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
 import 'package:bedbug/services/trust/domain_rule.service.dart';

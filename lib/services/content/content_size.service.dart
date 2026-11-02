@@ -7,7 +7,7 @@ import 'package:bedbug/resources/content/content/link_content.entity.dart';
 import 'package:bedbug/resources/content/content/media_content.entity.dart';
 import 'package:bedbug/resources/content/content/text_content.entity.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
-import 'package:bedbug/resources/content/drawing/drawing_operation.value_object.dart';
+import 'package:bedbug/resources/content/drawing_operation/drawing_operation.value_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [ContentSizeService].

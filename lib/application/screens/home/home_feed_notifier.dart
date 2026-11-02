@@ -2,7 +2,7 @@ import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/notifier/notifier_state.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
-import 'package:bedbug/resources/content/content/home_feed.value_object.dart';
+import 'package:bedbug/resources/content/home_feed/home_feed.value_object.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
 import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.params.dart';

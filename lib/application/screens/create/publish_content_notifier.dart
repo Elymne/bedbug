@@ -6,7 +6,7 @@ import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/gateways/og_metadata/og_metadata/og_metadata.service.dio.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/link_content.entity.dart';
-import 'package:bedbug/resources/content/trust_settings/url_trust_policy.value_object.dart';
+import 'package:bedbug/resources/content/url_trust_policy/url_trust_policy.value_object.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:bedbug/services/trust/url_trust.service.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.failure.dart';

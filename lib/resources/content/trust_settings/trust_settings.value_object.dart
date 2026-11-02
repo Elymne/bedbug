@@ -1,5 +1,5 @@
 import 'package:bedbug/core/domain/value_object.dart';
-import 'package:bedbug/resources/content/trust_settings/url_trust_policy.value_object.dart';
+import 'package:bedbug/resources/content/url_trust_policy/url_trust_policy.value_object.dart';
 
 /// Réglages de confiance de l'utilisateur : quels domaines l'app peut contacter, et comment.
 ///

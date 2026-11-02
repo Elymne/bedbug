@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame.value_object.dart';
+import 'package:bedbug/gateways/exchange/exchange_frame/exchange_frame.value_object.dart';
 import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.binary.dart';
 import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.dart';
 import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_type.enum.dart';

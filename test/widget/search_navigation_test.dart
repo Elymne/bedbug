@@ -5,7 +5,7 @@ import 'package:bedbug/application/screens/search/search_screen.dart';
 import 'package:bedbug/application/widgets/fields/content_search_input.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/content/home_feed.value_object.dart';
+import 'package:bedbug/resources/content/home_feed/home_feed.value_object.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
 import 'package:flutter/material.dart';

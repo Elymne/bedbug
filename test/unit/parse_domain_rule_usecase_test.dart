@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:bedbug/gateways/public_suffix/public_suffix/public_suffix.config.dart';
 import 'package:bedbug/gateways/public_suffix/public_suffix/public_suffix.gateway.package.dart';
-import 'package:bedbug/resources/content/trust_settings/domain_rule.value_object.dart';
+import 'package:bedbug/resources/content/domain_rule/domain_rule.value_object.dart';
 import 'package:bedbug/services/trust/domain_rule.service.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:bedbug/usecases/trust/parse_domain_rule/parse_domain_rule.failure.dart';

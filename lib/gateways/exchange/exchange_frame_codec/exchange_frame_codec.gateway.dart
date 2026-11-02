@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame.value_object.dart';
+import 'package:bedbug/gateways/exchange/exchange_frame/exchange_frame.value_object.dart';
 import 'package:bedbug/gateways/exchange/exchange_frame_decoder/exchange_frame_decoder.gateway.dart';
 
 /// Contrat de mise en octets des trames du protocole d'échange.

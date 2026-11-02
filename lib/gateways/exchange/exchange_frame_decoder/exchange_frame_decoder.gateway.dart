@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame.value_object.dart';
+import 'package:bedbug/gateways/exchange/exchange_frame/exchange_frame.value_object.dart';
 
 /// Contrat de reconstitution des trames à partir des morceaux d'octets reçus du transport.
 ///

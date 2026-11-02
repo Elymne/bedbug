@@ -10,7 +10,7 @@ import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/tag.enum.dart';
 import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/settings/settings/user_settings.value_object.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
 import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.failure.dart';
 import 'package:bedbug/usecases/content/save_content/save_content.params.dart';

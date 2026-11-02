@@ -1,4 +1,4 @@
-import 'package:bedbug/resources/settings/settings/user_settings.value_object.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
 
 /// Contrat du repository gérant les [UserSettings].
 ///

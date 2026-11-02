@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/flair_suggestion.value_object.dart';
+import 'package:bedbug/resources/content/flair_suggestion/flair_suggestion.value_object.dart';
 
 /// Contrat du repository gérant les [Content].
 abstract class ContentRepository {
