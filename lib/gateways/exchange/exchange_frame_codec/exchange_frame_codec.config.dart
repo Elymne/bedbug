@@ -1,4 +1,4 @@
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_type.enum.dart';
+import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.dart';
 
 /// Taille maximale de la charge utile d'une trame de contrôle ou de négociation ([ExchangeFrameType.offer] et
 /// [ExchangeFrameType.request]), en octets.

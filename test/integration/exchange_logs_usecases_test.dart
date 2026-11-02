@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_type.enum.dart';
+import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log.entity.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
 import 'package:bedbug/usecases/exchange/get_exchange_logs/get_exchange_logs.usecase.dart';

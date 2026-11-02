@@ -2,11 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bedbug/gateways/exchange/exchange_bundle/exchange_bundle.value_object.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.config.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.dart';
-import 'package:bedbug/gateways/exchange/exchange_offer/exchange_offer.value_object.dart';
-import 'package:bedbug/gateways/exchange/exchange_request/exchange_request.value_object.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/content_origin.enum.dart';
 import 'package:bedbug/resources/content/content/content_type.enum.dart';

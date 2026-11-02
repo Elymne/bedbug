@@ -6,7 +6,6 @@ import 'package:bedbug/application/widgets/ghost/app_ghost_effect.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
-import 'package:bedbug/gateways/exchange/peer_attempt/peer_attempt.value_object.dart';
 import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.ble.dart';
 import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';

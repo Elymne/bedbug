@@ -67,8 +67,10 @@ resources/
 
 One folder per external source (`media`, `public_suffix`, `og_metadata`, `exchange`…), then one folder per gateway
 (`media/media_http/`, `exchange/peer_link/`), same naming as resources: `<name>.gateway.dart` for the interface,
-`<name>.gateway.<technology>.dart` for each implementation (`media_http.gateway.dio.dart`, `peer_link.gateway.ble.dart`),
-plus the value objects, enums, exceptions and `<gateway>.config.dart` of that gateway.
+`<name>.gateway.<technology>.dart` for each implementation (`media_http.gateway.dio.dart`, `peer_link.gateway.ble.dart`).
+The messages a gateway reads or writes (value objects, enums) live in its interface file, next to the contract
+(`ExchangeBundle` in `exchange_codec.gateway.dart`, `MediaHttpResponse` in `media_http.gateway.dart`); its exceptions
+and constants go in `<gateway>.exception.dart` and `<gateway>.config.dart`.
 
 ### Constants
 

@@ -1,5 +1,5 @@
 import 'package:bedbug/core/domain/entity.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_type.enum.dart';
+import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
 
 /// Trace d'une rencontre avec un pair : échange abouti, interrompu, ou qui n'a jamais commencé.

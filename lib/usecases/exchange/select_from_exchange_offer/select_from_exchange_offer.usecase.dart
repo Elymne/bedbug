@@ -6,8 +6,6 @@ import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.json_zlib.dart';
-import 'package:bedbug/gateways/exchange/exchange_offer/exchange_offer.value_object.dart';
-import 'package:bedbug/gateways/exchange/exchange_request/exchange_request.value_object.dart';
 import 'package:bedbug/resources/content/content/content.repository.dart';
 import 'package:bedbug/resources/content/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/reaction/reaction.repository.dart';

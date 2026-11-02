@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/gateways/exchange/exchange_bundle/exchange_bundle.value_object.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.json_zlib.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';

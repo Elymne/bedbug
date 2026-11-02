@@ -1,7 +1,7 @@
 import 'package:bedbug/application/screens/exchange_logs/exchange_logs_screen.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_type.enum.dart';
+import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log.entity.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
 import 'package:bedbug/usecases/exchange/get_exchange_logs/get_exchange_logs.failure.dart';
