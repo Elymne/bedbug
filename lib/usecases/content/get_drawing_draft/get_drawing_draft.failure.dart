@@ -1,5 +1,7 @@
-/// Échecs possibles des use cases de lecture et d'écriture du brouillon de dessin.
-enum DrawingDraftFailure {
+import 'package:bedbug/usecases/content/get_drawing_draft/get_drawing_draft.usecase.dart';
+
+/// Échecs possibles du [GetDrawingDraftUsecase].
+enum GetDrawingDraftFailure {
   /// Le brouillon lu est corrompu.
   invalidData,
 

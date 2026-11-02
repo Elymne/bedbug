@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.config.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.json_zlib.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
@@ -21,8 +22,6 @@ import 'package:bedbug/resources/signature/signature/signature.repository.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
 import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.failure.dart';
 import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.params.dart';
-import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.config.dart';
-import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [BuildExchangeBundleUsecase].
@@ -38,7 +37,7 @@ final buildExchangeBundleUsecaseProvider = Provider<BuildExchangeBundleUsecase>(
 
 /// Construit le lot demandé par un pair, déjà encodé pour le transport.
 ///
-/// Répond à la demande produite par le pair ([SelectFromExchangeOfferUsecase]) : les contenus demandés, toutes
+/// Répond à la demande produite par le pair (`SelectFromExchangeOfferUsecase`) : les contenus demandés, toutes
 /// leurs réactions, et les réactions des contenus dont seules les réactions étaient demandées.
 ///
 /// Aucun identifiant de signature ne sort du téléphone : sans serveur, un identifiant ne prouve rien, et le

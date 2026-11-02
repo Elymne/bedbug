@@ -25,7 +25,7 @@ final getDrawingDraftUsecaseProvider = Provider<GetDrawingDraftUsecase>((ref) {
 /// chaque trait, et repris à la prochaine ouverture de l'éditeur. Un
 /// brouillon qui ne respecte plus les limites d'un dessin (ancienne version
 /// de l'app, fichier abîmé) est écarté plutôt que de bloquer l'éditeur.
-class GetDrawingDraftUsecase extends Usecase<NoParams, DrawingDraftFailure, Drawing?> {
+class GetDrawingDraftUsecase extends Usecase<NoParams, GetDrawingDraftFailure, Drawing?> {
   /// Crée un [GetDrawingDraftUsecase].
   GetDrawingDraftUsecase(this._drawingDraftRepository, this._errorLogRepository);
 
@@ -35,7 +35,7 @@ class GetDrawingDraftUsecase extends Usecase<NoParams, DrawingDraftFailure, Draw
   final ErrorLogRepository _errorLogRepository;
 
   @override
-  Future<Either<DrawingDraftFailure, Drawing?>> call(NoParams params) async {
+  Future<Either<GetDrawingDraftFailure, Drawing?>> call(NoParams params) async {
     try {
       final draft = await _drawingDraftRepository.get();
       if (draft == null || !Drawing.isValid(draft)) {
@@ -44,14 +44,14 @@ class GetDrawingDraftUsecase extends Usecase<NoParams, DrawingDraftFailure, Draw
       return Right(draft);
     } on DataException catch (error, stackTrace) {
       AppLogger.error('GetDrawingDraftUsecase', error, stackTrace);
-      return const Left(DrawingDraftFailure.invalidData);
+      return const Left(GetDrawingDraftFailure.invalidData);
     } on DatasourceException catch (error, stackTrace) {
       AppLogger.error('GetDrawingDraftUsecase', error, stackTrace);
-      return const Left(DrawingDraftFailure.storageError);
+      return const Left(GetDrawingDraftFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('GetDrawingDraftUsecase', error, stackTrace);
       await _errorLogRepository.record(source: 'GetDrawingDraftUsecase', error: error, stackTrace: stackTrace);
-      return const Left(DrawingDraftFailure.unknown);
+      return const Left(GetDrawingDraftFailure.unknown);
     }
   }
 }

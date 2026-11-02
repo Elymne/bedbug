@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.config.dart';
 import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.config.dart';
 import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.usecase.dart';
 

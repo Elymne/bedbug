@@ -6,7 +6,7 @@ import 'package:bedbug/resources/content/drawing/drawing_draft.repository.hive.d
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
-import 'package:bedbug/usecases/content/get_drawing_draft/get_drawing_draft.failure.dart';
+import 'package:bedbug/usecases/content/save_drawing_draft/save_drawing_draft.failure.dart';
 import 'package:bedbug/usecases/content/save_drawing_draft/save_drawing_draft.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,7 +22,7 @@ final saveDrawingDraftUsecaseProvider = Provider<SaveDrawingDraftUsecase>((ref) 
 /// trait près. Le brouillon est effacé dès que le dessin est validé ou que
 /// l'éditeur est fermé volontairement, pour ne pas ressortir un dessin
 /// abandonné à la prochaine ouverture.
-class SaveDrawingDraftUsecase extends Usecase<SaveDrawingDraftParams, DrawingDraftFailure, void> {
+class SaveDrawingDraftUsecase extends Usecase<SaveDrawingDraftParams, SaveDrawingDraftFailure, void> {
   /// Crée un [SaveDrawingDraftUsecase].
   SaveDrawingDraftUsecase(this._drawingDraftRepository, this._errorLogRepository);
 
@@ -31,7 +31,7 @@ class SaveDrawingDraftUsecase extends Usecase<SaveDrawingDraftParams, DrawingDra
   final ErrorLogRepository _errorLogRepository;
 
   @override
-  Future<Either<DrawingDraftFailure, void>> call(SaveDrawingDraftParams params) async {
+  Future<Either<SaveDrawingDraftFailure, void>> call(SaveDrawingDraftParams params) async {
     try {
       final drawing = params.drawing;
       if (drawing == null) {
@@ -42,11 +42,11 @@ class SaveDrawingDraftUsecase extends Usecase<SaveDrawingDraftParams, DrawingDra
       return const Right(null);
     } on DatasourceException catch (error, stackTrace) {
       AppLogger.error('SaveDrawingDraftUsecase', error, stackTrace);
-      return const Left(DrawingDraftFailure.storageError);
+      return const Left(SaveDrawingDraftFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('SaveDrawingDraftUsecase', error, stackTrace);
       await _errorLogRepository.record(source: 'SaveDrawingDraftUsecase', error: error, stackTrace: stackTrace);
-      return const Left(DrawingDraftFailure.unknown);
+      return const Left(SaveDrawingDraftFailure.unknown);
     }
   }
 }

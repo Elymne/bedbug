@@ -68,6 +68,6 @@ void main() {
 
     final result = await container.read(getDrawingDraftUsecaseProvider)(const NoParams());
 
-    expect(result.left, DrawingDraftFailure.invalidData);
+    expect(result.left, GetDrawingDraftFailure.invalidData);
   });
 }

@@ -25,7 +25,7 @@ final getTrustSettingsUsecaseProvider = Provider<GetTrustSettingsUsecase>((ref) 
 /// ne sont pas enregistrés tant que l'utilisateur n'a rien changé, pour
 /// qu'une mise à jour des listes par défaut profite à ceux qui n'y ont pas
 /// touché.
-class GetTrustSettingsUsecase extends Usecase<NoParams, TrustSettingsFailure, TrustSettings> {
+class GetTrustSettingsUsecase extends Usecase<NoParams, GetTrustSettingsFailure, TrustSettings> {
   /// Crée un [GetTrustSettingsUsecase].
   GetTrustSettingsUsecase(this._trustSettingsRepository, this._errorLogRepository);
 
@@ -33,19 +33,19 @@ class GetTrustSettingsUsecase extends Usecase<NoParams, TrustSettingsFailure, Tr
   final ErrorLogRepository _errorLogRepository;
 
   @override
-  Future<Either<TrustSettingsFailure, TrustSettings>> call(NoParams params) async {
+  Future<Either<GetTrustSettingsFailure, TrustSettings>> call(NoParams params) async {
     try {
       return Right(await _trustSettingsRepository.get() ?? defaultTrustSettings);
     } on DataException catch (error, stackTrace) {
       AppLogger.error('GetTrustSettingsUsecase', error, stackTrace);
-      return const Left(TrustSettingsFailure.invalidData);
+      return const Left(GetTrustSettingsFailure.invalidData);
     } on DatasourceException catch (error, stackTrace) {
       AppLogger.error('GetTrustSettingsUsecase', error, stackTrace);
-      return const Left(TrustSettingsFailure.storageError);
+      return const Left(GetTrustSettingsFailure.storageError);
     } catch (error, stackTrace) {
       AppLogger.error('GetTrustSettingsUsecase', error, stackTrace);
       await _errorLogRepository.record(source: 'GetTrustSettingsUsecase', error: error, stackTrace: stackTrace);
-      return const Left(TrustSettingsFailure.unknown);
+      return const Left(GetTrustSettingsFailure.unknown);
     }
   }
 }

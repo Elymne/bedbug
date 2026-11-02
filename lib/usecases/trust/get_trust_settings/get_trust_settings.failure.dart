@@ -1,5 +1,7 @@
-/// Échecs possibles des use cases de lecture et d'écriture des réglages de confiance.
-enum TrustSettingsFailure {
+import 'package:bedbug/usecases/trust/get_trust_settings/get_trust_settings.usecase.dart';
+
+/// Échecs possibles du [GetTrustSettingsUsecase].
+enum GetTrustSettingsFailure {
   /// Les réglages lus sont corrompus.
   invalidData,
 
