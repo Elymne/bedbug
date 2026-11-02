@@ -4,7 +4,6 @@ import 'package:bedbug/gateways/media/media_gallery/media_gallery.exception.dart
 import 'package:bedbug/gateways/media/media_gallery/media_gallery.gateway.dart';
 import 'package:bedbug/gateways/media/media_http/media_http.gateway.dart';
 import 'package:bedbug/resources/content/content/media_file_format.enum.dart';
-import 'package:bedbug/resources/content/domain_rule/domain_rule.value_object.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
 import 'package:bedbug/services/content/media_format.service.dart';

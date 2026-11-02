@@ -10,7 +10,7 @@ import 'package:bedbug/application/widgets/media/app_media_veil.dart';
 import 'package:bedbug/application/widgets/media/app_remote_image.dart';
 import 'package:bedbug/application/widgets/media/app_remote_video.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
-import 'package:bedbug/resources/content/content_media/content_media.value_object.dart';
+import 'package:bedbug/resources/content/content/media_content.entity.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:bedbug/services/trust/url_trust.service.dart';

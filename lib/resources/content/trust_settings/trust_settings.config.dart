@@ -1,4 +1,3 @@
-import 'package:bedbug/resources/content/domain_rule/domain_rule.value_object.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 
 /// Nom de la box Hive des réglages de confiance.

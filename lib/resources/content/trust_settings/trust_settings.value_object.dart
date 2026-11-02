@@ -1,5 +1,4 @@
 import 'package:bedbug/core/domain/value_object.dart';
-import 'package:bedbug/resources/content/domain_rule/domain_rule.value_object.dart';
 
 /// Réglages de confiance de l'utilisateur : quels domaines l'app peut contacter, et comment.
 ///
@@ -81,4 +80,38 @@ enum UrlTrust {
 
   /// Domaine absent des deux listes : traité selon le réglage de l'utilisateur (masqué, ou flouté).
   unknown,
+}
+
+/// Règle d'une liste de domaines : un domaine, avec ou sans ses sous-domaines.
+///
+/// Se lit et s'applique avec `DomainRuleService`.
+class DomainRule {
+  /// Crée une [DomainRule].
+  ///
+  /// - [host] : nom de domaine, déjà validé et en minuscules (voir `DomainRuleService.parse`).
+  /// - [isIncludingSubdomains] : `true` pour couvrir aussi tous les sous-domaines de [host].
+  const DomainRule({required this.host, required this.isIncludingSubdomains});
+
+  /// Nom de domaine couvert, en minuscules.
+  final String host;
+
+  /// Indique si la règle couvre aussi les sous-domaines de [host].
+  ///
+  /// `*.imgur.com` couvre `imgur.com` lui-même et tous ses sous-domaines.
+  final bool isIncludingSubdomains;
+
+  @override
+  bool operator ==(Object other) {
+    return other is DomainRule && other.host == host && other.isIncludingSubdomains == isIncludingSubdomains;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(host, isIncludingSubdomains);
+  }
+
+  @override
+  String toString() {
+    return 'DomainRule($host, isIncludingSubdomains: $isIncludingSubdomains)';
+  }
 }

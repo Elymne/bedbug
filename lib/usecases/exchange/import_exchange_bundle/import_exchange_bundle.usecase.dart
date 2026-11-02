@@ -25,7 +25,6 @@ import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
-import 'package:bedbug/resources/exchange/exchange_import_report/exchange_import_report.value_object.dart';
 import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.dart';
@@ -36,6 +35,7 @@ import 'package:bedbug/services/reaction/reaction_merge.service.dart';
 import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.config.dart';
 import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.failure.dart';
 import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.params.dart';
+import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.result.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [ImportExchangeBundleUsecase].

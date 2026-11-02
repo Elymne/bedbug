@@ -25,7 +25,6 @@ import 'package:bedbug/resources/content/content/content_origin.enum.dart';
 import 'package:bedbug/resources/content/content/link_content.entity.dart';
 import 'package:bedbug/resources/content/content/media_content.entity.dart';
 import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/content/content_media/content_media.value_object.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.result.dart';

@@ -1,4 +1,3 @@
-import 'package:bedbug/resources/content/domain_rule/domain_rule.value_object.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:bedbug/services/trust/domain_rule.service.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';

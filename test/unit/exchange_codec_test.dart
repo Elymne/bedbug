@@ -13,7 +13,6 @@ import 'package:bedbug/resources/content/content/link_content.entity.dart';
 import 'package:bedbug/resources/content/content/media_content.entity.dart';
 import 'package:bedbug/resources/content/content/tag.enum.dart';
 import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/content/content_media/content_media.value_object.dart';
 import 'package:bedbug/resources/content/drawing/drawing.config.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:bedbug/resources/content/reaction/reaction.entity.dart';

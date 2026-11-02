@@ -54,7 +54,7 @@ class ExchangeBundle extends ValueObject {
 }
 
 /// Un contenu d'un [ExchangeBundle], accompagné de la signature de son auteur.
-class ExchangedContent extends ValueObject {
+class ExchangedContent {
   /// Crée un [ExchangedContent].
   ///
   /// - [content] : contenu transmis. Seuls ses champs publics ont un sens à la réception.

@@ -6,7 +6,6 @@ import 'package:bedbug/resources/content/content/content.repository.hive.dart';
 import 'package:bedbug/resources/content/content/content_origin.enum.dart';
 import 'package:bedbug/resources/content/content/link_content.entity.dart';
 import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/content/domain_rule/domain_rule.value_object.dart';
 import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.repository.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.repository.hive.dart';

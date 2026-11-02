@@ -1,5 +1,4 @@
 import 'package:bedbug/core/domain/service.dart';
-import 'package:bedbug/resources/content/domain_rule/domain_rule.value_object.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

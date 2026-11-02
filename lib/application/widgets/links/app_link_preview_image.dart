@@ -1,6 +1,6 @@
 import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/widgets/media/app_remote_media.dart';
-import 'package:bedbug/resources/content/content_media/content_media.value_object.dart';
+import 'package:bedbug/resources/content/content/media_content.entity.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:bedbug/services/trust/url_trust.service.dart';
 import 'package:flutter/material.dart';

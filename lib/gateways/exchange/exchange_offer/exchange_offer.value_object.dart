@@ -43,7 +43,7 @@ class ExchangeOffer extends ValueObject {
 ///
 /// Porte, en plus de l'identifiant, un résumé de ses réactions : un pair qui possède déjà le contenu peut ainsi
 /// savoir s'il lui manque des réactions récentes, et ne demander que celles-ci.
-class OfferedContent extends ValueObject {
+class OfferedContent {
   /// Crée un [OfferedContent].
   ///
   /// - [id] : identifiant du contenu.
