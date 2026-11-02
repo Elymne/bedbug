@@ -1,18 +1,16 @@
-import 'package:bedbug/services/trust/url_safety.config.dart';
-import 'package:bedbug/services/trust/url_safety.service.dart';
+import 'package:bedbug/resources/url/safe_url/safe_url.config.dart';
+import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const urlSafetyService = UrlSafetyService();
-
   /// Vérifie que [raw] est refusée.
   void expectRejected(String raw) {
-    expect(urlSafetyService.parse(raw), isNull, reason: 'devrait être refusée : ${Uri.encodeFull(raw)}');
+    expect(SafeUrl.parse(raw), isNull, reason: 'devrait être refusée : ${Uri.encodeFull(raw)}');
   }
 
   /// Vérifie que [raw] est acceptée et pointe vers [host].
   void expectHost(String raw, String host) {
-    final url = urlSafetyService.parse(raw);
+    final url = SafeUrl.parse(raw);
     expect(url, isNotNull, reason: 'devrait être acceptée : $raw');
     expect(url!.host, host, reason: raw);
   }
@@ -31,7 +29,7 @@ void main() {
     });
 
     test('met le schéma et le domaine en minuscules, et garde le reste tel quel', () {
-      final url = urlSafetyService.parse('HTTPS://I.IMGUR.COM/AbC.gif?X=Y');
+      final url = SafeUrl.parse('HTTPS://I.IMGUR.COM/AbC.gif?X=Y');
       expect(url!.host, 'i.imgur.com');
       expect(url.url, 'https://i.imgur.com/AbC.gif?X=Y');
     });
@@ -233,8 +231,8 @@ void main() {
       'https://example.com/caf%C3%A9?q=1#x',
       'https://a.b.c.example.org',
     ]) {
-      final url = urlSafetyService.parse(raw)!;
-      expect(urlSafetyService.parse(url.url), url);
+      final url = SafeUrl.parse(raw)!;
+      expect(SafeUrl.parse(url.url), url);
     }
   });
 }

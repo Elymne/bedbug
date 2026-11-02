@@ -2,9 +2,6 @@ import 'package:bedbug/gateways/og_metadata/og_metadata/og_metadata.exception.da
 import 'package:bedbug/gateways/og_metadata/og_metadata/og_metadata.gateway.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
-import 'package:bedbug/services/trust/domain_rule.service.dart';
-import 'package:bedbug/services/trust/url_safety.service.dart';
-import 'package:bedbug/services/trust/url_trust.service.dart';
 import 'package:bedbug/usecases/content/fetch_link_preview/fetch_link_preview.failure.dart';
 import 'package:bedbug/usecases/content/fetch_link_preview/fetch_link_preview.params.dart';
 import 'package:bedbug/usecases/content/fetch_link_preview/fetch_link_preview.usecase.dart';
@@ -36,10 +33,6 @@ class _FakeOgMetadataGateway implements OgMetadataGateway {
 }
 
 void main() {
-  const urlSafetyService = UrlSafetyService();
-  const domainRuleService = DomainRuleService(urlSafetyService);
-  const urlTrustService = UrlTrustService(urlSafetyService, domainRuleService);
-
   const policy = UrlTrustPolicy(
     trustedRules: [DomainRule(host: 'site.com', isIncludingSubdomains: true)],
     greyRules: [DomainRule(host: 'grey.com', isIncludingSubdomains: false)],
@@ -47,7 +40,7 @@ void main() {
 
   /// Lance le use case sur [rawUrl] avec le faux site [gateway].
   Future<(FetchLinkPreviewFailure?, OgMetadata?)> fetch(_FakeOgMetadataGateway gateway, String rawUrl) async {
-    final usecase = FetchLinkPreviewUsecase(gateway, urlSafetyService, urlTrustService, FakeErrorLogRepository());
+    final usecase = FetchLinkPreviewUsecase(gateway, FakeErrorLogRepository());
     final result = await usecase(FetchLinkPreviewParams(rawUrl: rawUrl, policy: policy));
     return (result.left, result.right);
   }

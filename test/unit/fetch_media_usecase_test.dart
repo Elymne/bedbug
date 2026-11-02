@@ -3,9 +3,6 @@ import 'dart:typed_data';
 import 'package:bedbug/gateways/media/media_http/media_http.gateway.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
-import 'package:bedbug/services/trust/domain_rule.service.dart';
-import 'package:bedbug/services/trust/url_safety.service.dart';
-import 'package:bedbug/services/trust/url_trust.service.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.config.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.failure.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.params.dart';
@@ -33,10 +30,6 @@ class _FakeMediaHttpGateway implements MediaHttpGateway {
 }
 
 void main() {
-  const urlSafetyService = UrlSafetyService();
-  const domainRuleService = DomainRuleService(urlSafetyService);
-  const urlTrustService = UrlTrustService(urlSafetyService, domainRuleService);
-
   const policy = UrlTrustPolicy(
     trustedRules: [
       DomainRule(host: 'picsum.photos', isIncludingSubdomains: true),
@@ -52,7 +45,7 @@ void main() {
     String rawUrl, {
     bool isConfirmed = false,
   }) async {
-    final result = await FetchMediaUsecase(gateway, urlSafetyService, urlTrustService, FakeErrorLogRepository())(
+    final result = await FetchMediaUsecase(gateway, FakeErrorLogRepository())(
       FetchMediaParams(rawUrl: rawUrl, policy: policy, isConfirmed: isConfirmed),
     );
     return (result.left, result.right);

@@ -1,32 +1,26 @@
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
-import 'package:bedbug/services/trust/domain_rule.service.dart';
-import 'package:bedbug/services/trust/url_safety.service.dart';
-import 'package:bedbug/services/trust/url_trust.service.dart';
+import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const urlSafetyService = UrlSafetyService();
-  const domainRuleService = DomainRuleService(urlSafetyService);
-  const urlTrustService = UrlTrustService(urlSafetyService, domainRuleService);
-
   /// Règle analysée depuis [input], qui doit être valide.
   DomainRule rule(String input) {
-    final parsed = domainRuleService.parse(input);
+    final parsed = DomainRule.parse(input);
     expect(parsed, isNotNull, reason: 'règle valide attendue : $input');
     return parsed!;
   }
 
   /// Indique si [input] couvre l'URL [raw], qui doit être valide.
   bool covers(String input, String raw) {
-    return domainRuleService.matches(rule(input), urlSafetyService.parse(raw)!);
+    return DomainRule.matches(rule(input), SafeUrl.parse(raw)!);
   }
 
   group('analyse des règles', () {
     test('accepte un domaine, avec ou sans ses sous-domaines', () {
       expect(rule('i.imgur.com'), const DomainRule(host: 'i.imgur.com', isIncludingSubdomains: false));
       expect(rule('*.imgur.com'), const DomainRule(host: 'imgur.com', isIncludingSubdomains: true));
-      expect(domainRuleService.patternOf(rule('*.imgur.com')), '*.imgur.com');
-      expect(domainRuleService.patternOf(rule('i.imgur.com')), 'i.imgur.com');
+      expect(DomainRule.patternOf(rule('*.imgur.com')), '*.imgur.com');
+      expect(DomainRule.patternOf(rule('i.imgur.com')), 'i.imgur.com');
     });
 
     test('met en minuscules', () {
@@ -60,7 +54,7 @@ void main() {
         'img\u200Bur.com', // espace sans chasse
         'imgur.com\u0000',
       ]) {
-        expect(domainRuleService.parse(input), isNull, reason: 'devrait être refusée : ${Uri.encodeFull(input)}');
+        expect(DomainRule.parse(input), isNull, reason: 'devrait être refusée : ${Uri.encodeFull(input)}');
       }
     });
   });
@@ -92,7 +86,7 @@ void main() {
       expect(covers('imgur.com', 'https://evil.com/imgur.com'), isFalse);
       expect(covers('imgur.com', 'https://evil.com/?u=https://imgur.com'), isFalse);
       expect(covers('imgur.com', 'https://evil.com#imgur.com'), isFalse);
-      expect(urlSafetyService.parse('https://imgur.com@evil.com/'), isNull);
+      expect(SafeUrl.parse('https://imgur.com@evil.com/'), isNull);
     });
 
     test('un domaine punycode ne couvre pas sa version latine, et inversement', () {
@@ -116,29 +110,29 @@ void main() {
     );
 
     test('classe chaque URL selon les listes', () {
-      expect(urlTrustService.evaluate(policy, 'https://i.imgur.com/a.gif'), UrlTrust.trusted);
-      expect(urlTrustService.evaluate(policy, 'https://media.giphy.com/x.gif'), UrlTrust.trusted);
-      expect(urlTrustService.evaluate(policy, 'https://i.redd.it/x.jpg'), UrlTrust.grey);
-      expect(urlTrustService.evaluate(policy, 'https://evil.com/x.gif'), UrlTrust.unknown);
-      expect(urlTrustService.evaluate(policy, 'https://giphy.com/x.gif'), UrlTrust.unknown);
+      expect(UrlTrustPolicy.evaluate(policy, 'https://i.imgur.com/a.gif'), UrlTrust.trusted);
+      expect(UrlTrustPolicy.evaluate(policy, 'https://media.giphy.com/x.gif'), UrlTrust.trusted);
+      expect(UrlTrustPolicy.evaluate(policy, 'https://i.redd.it/x.jpg'), UrlTrust.grey);
+      expect(UrlTrustPolicy.evaluate(policy, 'https://evil.com/x.gif'), UrlTrust.unknown);
+      expect(UrlTrustPolicy.evaluate(policy, 'https://giphy.com/x.gif'), UrlTrust.unknown);
     });
 
     test('en cas de doublon entre les listes, la greylist l\'emporte', () {
-      expect(urlTrustService.evaluate(policy, 'https://ads.example.com/x'), UrlTrust.grey);
-      expect(urlTrustService.evaluate(policy, 'https://www.example.com/x'), UrlTrust.trusted);
+      expect(UrlTrustPolicy.evaluate(policy, 'https://ads.example.com/x'), UrlTrust.grey);
+      expect(UrlTrustPolicy.evaluate(policy, 'https://www.example.com/x'), UrlTrust.trusted);
     });
 
     test('une URL piégée est invalide, même si elle cite un domaine de confiance', () {
-      expect(urlTrustService.evaluate(policy, 'https://i.imgur.com@evil.com/a.gif'), UrlTrust.invalid);
-      expect(urlTrustService.evaluate(policy, 'http://i.imgur.com/a.gif'), UrlTrust.invalid);
-      expect(urlTrustService.evaluate(policy, 'https://\u0456.imgur.com/a.gif'), UrlTrust.invalid);
-      expect(urlTrustService.evaluate(policy, 'https://evil.com\\@i.imgur.com/'), UrlTrust.invalid);
-      expect(urlTrustService.evaluate(policy, 'javascript:alert(1)//i.imgur.com'), UrlTrust.invalid);
+      expect(UrlTrustPolicy.evaluate(policy, 'https://i.imgur.com@evil.com/a.gif'), UrlTrust.invalid);
+      expect(UrlTrustPolicy.evaluate(policy, 'http://i.imgur.com/a.gif'), UrlTrust.invalid);
+      expect(UrlTrustPolicy.evaluate(policy, 'https://\u0456.imgur.com/a.gif'), UrlTrust.invalid);
+      expect(UrlTrustPolicy.evaluate(policy, 'https://evil.com\\@i.imgur.com/'), UrlTrust.invalid);
+      expect(UrlTrustPolicy.evaluate(policy, 'javascript:alert(1)//i.imgur.com'), UrlTrust.invalid);
     });
 
     test('sans aucune règle, tout domaine valide est inconnu', () {
       const empty = UrlTrustPolicy(trustedRules: [], greyRules: []);
-      expect(urlTrustService.evaluate(empty, 'https://i.imgur.com/a.gif'), UrlTrust.unknown);
+      expect(UrlTrustPolicy.evaluate(empty, 'https://i.imgur.com/a.gif'), UrlTrust.unknown);
     });
   });
 }

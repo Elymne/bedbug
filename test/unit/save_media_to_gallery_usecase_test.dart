@@ -7,9 +7,6 @@ import 'package:bedbug/resources/content/content/media_file_format.enum.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
 import 'package:bedbug/services/content/media_format.service.dart';
-import 'package:bedbug/services/trust/domain_rule.service.dart';
-import 'package:bedbug/services/trust/url_safety.service.dart';
-import 'package:bedbug/services/trust/url_trust.service.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.failure.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.params.dart';
 import 'package:bedbug/usecases/content/fetch_media/fetch_media.usecase.dart';
@@ -68,9 +65,6 @@ Uint8List _bytes(List<int> prefix) {
 }
 
 void main() {
-  const urlSafetyService = UrlSafetyService();
-  const domainRuleService = DomainRuleService(urlSafetyService);
-  const urlTrustService = UrlTrustService(urlSafetyService, domainRuleService);
   const mediaFormatService = MediaFormatService();
 
   const policy = UrlTrustPolicy(
@@ -87,7 +81,7 @@ void main() {
     String rawUrl, {
     bool isConfirmed = false,
   }) async {
-    final fetched = await FetchMediaUsecase(http, urlSafetyService, urlTrustService, FakeErrorLogRepository())(
+    final fetched = await FetchMediaUsecase(http, FakeErrorLogRepository())(
       FetchMediaParams(rawUrl: rawUrl, policy: policy, isConfirmed: isConfirmed, maxBytes: maxGalleryMediaBytes),
     );
     final fetchedMedia = fetched.right;

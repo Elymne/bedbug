@@ -3,7 +3,7 @@ import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
 import 'package:bedbug/resources/content/storage/storage.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
-import 'package:bedbug/services/trust/url_safety.service.dart';
+import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Validators personnalisés compatibles avec [ReactiveForm].
@@ -74,7 +74,7 @@ class AppValidators {
   /// si vide — déléguer la vérification à [required].
   static const reactionBubble = _ReactionBubbleValidator();
 
-  /// Vérifie que l'adresse est une URL https sans piège (voir `UrlSafetyService.parse`).
+  /// Vérifie que l'adresse est une URL https sans piège (voir `SafeUrl.parse`).
   ///
   /// Les espaces autour sont ignorés : ils viennent souvent d'un copier-coller.
   /// Retourne `null` si vide — déléguer la vérification à [required].
@@ -311,7 +311,7 @@ class _SafeUrlValidator extends Validator<dynamic> {
       return null;
     }
     // Un validateur est une constante, sans accès aux providers : le service, sans état, est instancié ici.
-    if (const UrlSafetyService().parse(value.trim()) == null) {
+    if (SafeUrl.parse(value.trim()) == null) {
       return {'safeUrl': true};
     }
     return null;

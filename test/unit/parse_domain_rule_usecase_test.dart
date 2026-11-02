@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:bedbug/gateways/public_suffix/public_suffix/public_suffix.config.dart';
 import 'package:bedbug/gateways/public_suffix/public_suffix/public_suffix.gateway.package.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
-import 'package:bedbug/services/trust/domain_rule.service.dart';
-import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:bedbug/usecases/trust/parse_domain_rule/parse_domain_rule.failure.dart';
 import 'package:bedbug/usecases/trust/parse_domain_rule/parse_domain_rule.params.dart';
 import 'package:bedbug/usecases/trust/parse_domain_rule/parse_domain_rule.usecase.dart';
@@ -15,9 +13,7 @@ import '../helpers/fake_error_log_repository.dart';
 void main() {
   // La vraie liste embarquée, lue depuis le disque : c'est elle que l'app utilise.
   final gateway = PublicSuffixPackagePublicSuffixGateway(() => File(publicSuffixListAssetPath).readAsString());
-  const urlSafetyService = UrlSafetyService();
-  const domainRuleService = DomainRuleService(urlSafetyService);
-  final usecase = ParseDomainRuleUsecase(gateway, urlSafetyService, domainRuleService, FakeErrorLogRepository());
+  final usecase = ParseDomainRuleUsecase(gateway, FakeErrorLogRepository());
 
   /// Analyse [input] avec le use case.
   Future<(ParseDomainRuleFailure?, DomainRule?)> parse(String input) async {
@@ -82,12 +78,9 @@ void main() {
 
   test('une liste illisible fait refuser la règle plutôt que de laisser passer', () async {
     final brokenGateway = PublicSuffixPackagePublicSuffixGateway(() => Future<String>.error(Exception('illisible')));
-    final result = await ParseDomainRuleUsecase(
-      brokenGateway,
-      urlSafetyService,
-      domainRuleService,
-      FakeErrorLogRepository(),
-    )(const ParseDomainRuleParams(input: 'imgur.com'));
+    final result = await ParseDomainRuleUsecase(brokenGateway, FakeErrorLogRepository())(
+      const ParseDomainRuleParams(input: 'imgur.com'),
+    );
     expect(result.left, ParseDomainRuleFailure.publicSuffix);
   });
 }

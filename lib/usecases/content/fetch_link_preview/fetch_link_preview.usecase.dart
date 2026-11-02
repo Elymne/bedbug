@@ -7,20 +7,14 @@ import 'package:bedbug/gateways/og_metadata/og_metadata/og_metadata.gateway.dio.
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
-import 'package:bedbug/services/trust/url_safety.service.dart';
-import 'package:bedbug/services/trust/url_trust.service.dart';
+import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
 import 'package:bedbug/usecases/content/fetch_link_preview/fetch_link_preview.failure.dart';
 import 'package:bedbug/usecases/content/fetch_link_preview/fetch_link_preview.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [FetchLinkPreviewUsecase].
 final fetchLinkPreviewUsecaseProvider = Provider<FetchLinkPreviewUsecase>((ref) {
-  return FetchLinkPreviewUsecase(
-    ref.read(ogMetadataGatewayProvider),
-    ref.read(urlSafetyServiceProvider),
-    ref.read(urlTrustServiceProvider),
-    ref.read(errorLogRepositoryProvider),
-  );
+  return FetchLinkPreviewUsecase(ref.read(ogMetadataGatewayProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Lit l'aperçu (image, titre, description) d'un lien que l'utilisateur s'apprête à publier.
@@ -31,26 +25,19 @@ final fetchLinkPreviewUsecaseProvider = Provider<FetchLinkPreviewUsecase>((ref) 
 /// publier : l'appelant publie simplement le lien sans aperçu.
 class FetchLinkPreviewUsecase extends Usecase<FetchLinkPreviewParams, FetchLinkPreviewFailure, OgMetadata> {
   /// Crée un [FetchLinkPreviewUsecase].
-  FetchLinkPreviewUsecase(
-    this._ogMetadataGateway,
-    this._urlSafetyService,
-    this._urlTrustService,
-    this._errorLogRepository,
-  );
+  FetchLinkPreviewUsecase(this._ogMetadataGateway, this._errorLogRepository);
 
   final OgMetadataGateway _ogMetadataGateway;
-  final UrlSafetyService _urlSafetyService;
-  final UrlTrustService _urlTrustService;
   final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<FetchLinkPreviewFailure, OgMetadata>> call(FetchLinkPreviewParams params) async {
     try {
-      final url = _urlSafetyService.parse(params.rawUrl);
+      final url = SafeUrl.parse(params.rawUrl);
       if (url == null) {
         return const Left(FetchLinkPreviewFailure.invalidUrl);
       }
-      if (_urlTrustService.evaluate(params.policy, url.url) != UrlTrust.trusted) {
+      if (UrlTrustPolicy.evaluate(params.policy, url.url) != UrlTrust.trusted) {
         return const Left(FetchLinkPreviewFailure.untrustedDomain);
       }
       return Right(await _ogMetadataGateway.fetch(url));

@@ -12,8 +12,7 @@ import 'package:bedbug/application/widgets/media/app_remote_video.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:bedbug/resources/content/content/media_content.entity.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
-import 'package:bedbug/services/trust/url_safety.service.dart';
-import 'package:bedbug/services/trust/url_trust.service.dart';
+import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -78,8 +77,8 @@ class AppRemoteMedia extends ConsumerWidget {
     }
 
     final isRevealed = revealedUrls.contains(media.url);
-    final trust = ref.read(urlTrustServiceProvider).evaluate(trustSettings.mediaPolicy, media.url);
-    final host = ref.read(urlSafetyServiceProvider).parse(media.url)?.host;
+    final trust = UrlTrustPolicy.evaluate(trustSettings.mediaPolicy, media.url);
+    final host = SafeUrl.parse(media.url)?.host;
 
     if (trust == UrlTrust.invalid || host == null) {
       if (isOmittedWhenNotAllowed) {

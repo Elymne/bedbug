@@ -6,7 +6,7 @@ import 'package:bedbug/application/widgets/separators/app_list_separator.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/content.extension.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.config.dart';
-import 'package:bedbug/services/trust/url_trust.service.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -64,9 +64,7 @@ class ContentListView extends ConsumerWidget {
     final visibleContents = [
       for (final content in contents)
         if (content.isOwned ||
-            !ref
-                .read(urlTrustServiceProvider)
-                .isContentHidden(trustSettings, mediaUrls: content.mediaUrls, linkUrls: content.linkUrls))
+            !TrustSettings.isContentHidden(trustSettings, mediaUrls: content.mediaUrls, linkUrls: content.linkUrls))
           content,
     ];
     final onRefresh = this.onRefresh;

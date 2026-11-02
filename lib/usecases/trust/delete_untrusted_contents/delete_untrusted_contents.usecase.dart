@@ -17,13 +17,13 @@ import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.config.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.repository.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.repository.hive.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:bedbug/resources/content/viewed_content/viewed_content.repository.dart';
 import 'package:bedbug/resources/content/viewed_content/viewed_content.repository.hive.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/datasource.exception.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
-import 'package:bedbug/services/trust/url_trust.service.dart';
 import 'package:bedbug/usecases/trust/delete_untrusted_contents/delete_untrusted_contents.failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -37,7 +37,6 @@ final deleteUntrustedContentsUsecaseProvider = Provider<DeleteUntrustedContentsU
     ref.read(commentRepositoryProvider),
     ref.read(seenContentRepositoryProvider),
     ref.read(viewedContentRepositoryProvider),
-    ref.read(urlTrustServiceProvider),
     ref.read(errorLogRepositoryProvider),
   );
 });
@@ -66,7 +65,6 @@ class DeleteUntrustedContentsUsecase extends Usecase<NoParams, DeleteUntrustedCo
     this._commentRepository,
     this._seenContentRepository,
     this._viewedContentRepository,
-    this._urlTrustService,
     this._errorLogRepository,
   );
 
@@ -77,7 +75,6 @@ class DeleteUntrustedContentsUsecase extends Usecase<NoParams, DeleteUntrustedCo
   final CommentRepository _commentRepository;
   final SeenContentRepository _seenContentRepository;
   final ViewedContentRepository _viewedContentRepository;
-  final UrlTrustService _urlTrustService;
   final ErrorLogRepository _errorLogRepository;
 
   @override
@@ -87,7 +84,7 @@ class DeleteUntrustedContentsUsecase extends Usecase<NoParams, DeleteUntrustedCo
       final contents = await _contentRepository.getAll();
       final untrusted = contents.where((content) {
         return !content.isOwned &&
-            _urlTrustService.isContentHidden(settings, mediaUrls: content.mediaUrls, linkUrls: content.linkUrls);
+            TrustSettings.isContentHidden(settings, mediaUrls: content.mediaUrls, linkUrls: content.linkUrls);
       }).toList();
       if (untrusted.isEmpty) {
         return const Right(0);

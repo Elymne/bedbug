@@ -1,7 +1,6 @@
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:bedbug/resources/data.exception.dart';
 import 'package:bedbug/resources/hive.type_ids.dart';
-import 'package:bedbug/services/trust/domain_rule.service.dart';
 import 'package:hive_ce/hive.dart';
 
 part 'trust_settings.model.hive.g.dart';
@@ -32,13 +31,12 @@ class TrustSettingsHiveModel extends HiveObject {
   /// Crée un [TrustSettingsHiveModel] depuis des [TrustSettings].
   ///
   /// - [entity] : réglages à stocker.
-  /// - [domainRuleService] : service qui écrit chaque règle sous sa forme saisie.
-  factory TrustSettingsHiveModel.fromEntity(TrustSettings entity, DomainRuleService domainRuleService) {
+  factory TrustSettingsHiveModel.fromEntity(TrustSettings entity) {
     return TrustSettingsHiveModel(
-      mediaTrustedPatterns: [for (final rule in entity.mediaPolicy.trustedRules) domainRuleService.patternOf(rule)],
-      mediaGreyPatterns: [for (final rule in entity.mediaPolicy.greyRules) domainRuleService.patternOf(rule)],
-      linkTrustedPatterns: [for (final rule in entity.linkPolicy.trustedRules) domainRuleService.patternOf(rule)],
-      linkGreyPatterns: [for (final rule in entity.linkPolicy.greyRules) domainRuleService.patternOf(rule)],
+      mediaTrustedPatterns: [for (final rule in entity.mediaPolicy.trustedRules) DomainRule.patternOf(rule)],
+      mediaGreyPatterns: [for (final rule in entity.mediaPolicy.greyRules) DomainRule.patternOf(rule)],
+      linkTrustedPatterns: [for (final rule in entity.linkPolicy.trustedRules) DomainRule.patternOf(rule)],
+      linkGreyPatterns: [for (final rule in entity.linkPolicy.greyRules) DomainRule.patternOf(rule)],
     );
   }
 
@@ -60,18 +58,14 @@ class TrustSettingsHiveModel extends HiveObject {
 
   /// Convertit ce modèle en [TrustSettings].
   ///
-  /// - [domainRuleService] : service qui réanalyse chaque règle stockée.
-  TrustSettings toEntity(DomainRuleService domainRuleService) {
+  TrustSettings toEntity() {
     try {
       return TrustSettings(
         mediaPolicy: UrlTrustPolicy(
-          trustedRules: _toRules(mediaTrustedPatterns, domainRuleService),
-          greyRules: _toRules(mediaGreyPatterns, domainRuleService),
+          trustedRules: _toRules(mediaTrustedPatterns),
+          greyRules: _toRules(mediaGreyPatterns),
         ),
-        linkPolicy: UrlTrustPolicy(
-          trustedRules: _toRules(linkTrustedPatterns, domainRuleService),
-          greyRules: _toRules(linkGreyPatterns, domainRuleService),
-        ),
+        linkPolicy: UrlTrustPolicy(trustedRules: _toRules(linkTrustedPatterns), greyRules: _toRules(linkGreyPatterns)),
       );
     } catch (error) {
       throw DataException('TrustSettingsHiveModel', error);
@@ -81,8 +75,7 @@ class TrustSettingsHiveModel extends HiveObject {
   /// Réanalyse les règles stockées, en ignorant celles qui ne sont plus valides.
   ///
   /// - [patterns] : règles stockées, sous leur forme saisie.
-  /// - [domainRuleService] : service qui réanalyse chaque règle.
-  List<DomainRule> _toRules(List<String> patterns, DomainRuleService domainRuleService) {
-    return [for (final pattern in patterns) ?domainRuleService.parse(pattern)];
+  List<DomainRule> _toRules(List<String> patterns) {
+    return [for (final pattern in patterns) ?DomainRule.parse(pattern)];
   }
 }

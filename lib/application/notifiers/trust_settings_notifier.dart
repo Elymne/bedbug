@@ -3,7 +3,6 @@ import 'package:bedbug/application/screens/home/home_feed_notifier.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.config.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
-import 'package:bedbug/services/trust/trust_rules.service.dart';
 import 'package:bedbug/usecases/trust/delete_untrusted_contents/delete_untrusted_contents.usecase.dart';
 import 'package:bedbug/usecases/trust/get_trust_settings/get_trust_settings.usecase.dart';
 import 'package:bedbug/usecases/trust/parse_domain_rule/parse_domain_rule.failure.dart';
@@ -34,9 +33,6 @@ class TrustSettingsNotifier extends AsyncNotifier<TrustSettings> {
   /// Cas d'usage de vérification d'une règle saisie.
   late final _parseDomainRuleUsecase = ref.read(parseDomainRuleUsecaseProvider);
 
-  /// Service de rangement des règles dans les listes.
-  late final _trustRulesService = ref.read(trustRulesServiceProvider);
-
   /// Cas d'usage de suppression des contenus de domaines absents des listes.
   late final _deleteUntrustedContentsUsecase = ref.read(deleteUntrustedContentsUsecaseProvider);
 
@@ -62,7 +58,7 @@ class TrustSettingsNotifier extends AsyncNotifier<TrustSettings> {
         ParseDomainRuleFailure.unknown => ref.l10n.settingsSaveError,
       };
     }
-    return _save(_trustRulesService.withRule(_current, family, level, rule));
+    return _save(TrustSettings.withRule(_current, family, level, rule));
   }
 
   /// Retire [rule] des listes de [family].
@@ -70,7 +66,7 @@ class TrustSettingsNotifier extends AsyncNotifier<TrustSettings> {
   /// - [family] : famille d'URLs concernée.
   /// - [rule] : règle à retirer.
   Future<String?> removeRule({required UrlFamily family, required DomainRule rule}) {
-    return _save(_trustRulesService.withoutRule(_current, family, rule));
+    return _save(TrustSettings.withoutRule(_current, family, rule));
   }
 
   /// Revient aux listes par défaut.
