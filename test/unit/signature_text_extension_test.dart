@@ -1,6 +1,6 @@
 import 'package:bedbug/application/screens/avatar_picker/kaomoji_catalog.dart';
 import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/resources/signature/signature/signature_text.extension.dart';
+import 'package:bedbug/resources/signature/signature/signature.extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

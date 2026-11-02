@@ -47,7 +47,7 @@ resources/<scope>/<resource>/
   <name>.entity.dart            entity
   <name>.value_object.dart      value object
   <name>.enum.dart              enum tied to the resource
-  <name>.extension.dart         extension tied to an entity or value object
+  <resource>.extension.dart     all the extensions of the resource, in one file
   <name>.repository.dart        repository interface
   <name>.repository.hive.dart   repository implementation, suffixed with its technology
   <name>.model.hive.dart        Hive DTO (+ generated <name>.model.hive.g.dart)

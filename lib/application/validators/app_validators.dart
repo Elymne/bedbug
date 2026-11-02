@@ -1,7 +1,7 @@
 import 'package:bedbug/resources/content/content/flair.extension.dart';
-import 'package:bedbug/resources/content/reaction/reaction_text.extension.dart';
+import 'package:bedbug/resources/content/reaction/reaction.extension.dart';
 import 'package:bedbug/resources/content/storage/storage.config.dart';
-import 'package:bedbug/resources/signature/signature/signature_text.extension.dart';
+import 'package:bedbug/resources/signature/signature/signature.extension.dart';
 import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
 import 'package:bedbug/services/trust/url_safety.service.dart';
 import 'package:reactive_forms/reactive_forms.dart';

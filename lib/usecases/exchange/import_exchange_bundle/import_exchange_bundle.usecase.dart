@@ -27,9 +27,9 @@ import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.d
 import 'package:bedbug/resources/exchange/exchange_import_report/exchange_import_report.value_object.dart';
 import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.extension.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
-import 'package:bedbug/resources/signature/signature/signature_text.extension.dart';
 import 'package:bedbug/services/content/content_size.service.dart';
 import 'package:bedbug/services/content/drawing_validation.service.dart';
 import 'package:bedbug/services/reaction/reaction_merge.service.dart';

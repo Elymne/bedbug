@@ -193,7 +193,7 @@ void main() {
     expect(
       await save(
         http,
-        _FakeMediaGalleryGateway(const GalleryException('test', 'denied', isAccessDenied: true)),
+        _FakeMediaGalleryGateway(const MediaGalleryException('test', 'denied', isAccessDenied: true)),
         'https://cdn.trusted.com/a.png',
       ),
       SaveMediaToGalleryFailure.accessDenied,
@@ -201,7 +201,7 @@ void main() {
     expect(
       await save(
         http,
-        _FakeMediaGalleryGateway(const GalleryException('test', 'full')),
+        _FakeMediaGalleryGateway(const MediaGalleryException('test', 'full')),
         'https://cdn.trusted.com/a.png',
       ),
       SaveMediaToGalleryFailure.saveError,

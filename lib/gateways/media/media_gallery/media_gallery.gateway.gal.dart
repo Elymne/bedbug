@@ -26,7 +26,7 @@ class GalMediaGalleryGateway implements MediaGalleryGateway {
     final name = 'bedbug_${DateTime.now().millisecondsSinceEpoch}';
     try {
       if (!await Gal.hasAccess() && !await Gal.requestAccess()) {
-        throw const GalleryException('GalMediaGalleryGateway', 'Gallery access denied', isAccessDenied: true);
+        throw const MediaGalleryException('GalMediaGalleryGateway', 'Gallery access denied', isAccessDenied: true);
       }
       if (!format.isVideo) {
         await Gal.putImageBytes(bytes, name: name);
@@ -43,7 +43,7 @@ class GalMediaGalleryGateway implements MediaGalleryGateway {
         }
       }
     } on GalException catch (error) {
-      throw GalleryException(
+      throw MediaGalleryException(
         'GalMediaGalleryGateway',
         error,
         isAccessDenied: error.type == GalExceptionType.accessDenied,

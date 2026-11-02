@@ -9,7 +9,7 @@ import 'package:bedbug/resources/content/content/media_file_format.enum.dart';
 abstract class MediaGalleryGateway {
   /// Enregistre [bytes], au format [format], dans la galerie du téléphone.
   ///
-  /// Lève une `GalleryException` en cas d'échec, avec `isAccessDenied` à
+  /// Lève une `MediaGalleryException` en cas d'échec, avec `isAccessDenied` à
   /// `true` si l'utilisateur refuse l'accès.
   ///
   /// - [bytes] : contenu du média.

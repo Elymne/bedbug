@@ -10,7 +10,7 @@ import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:bedbug/resources/content/drawing/drawing.config.dart';
-import 'package:bedbug/resources/content/drawing/drawing_dimensions.extension.dart';
+import 'package:bedbug/resources/content/drawing/drawing.extension.dart';
 import 'package:bedbug/resources/content/drawing/drawing_operation.value_object.dart';
 import 'package:bedbug/resources/content/drawing/drawing_point.value_object.dart';
 import 'package:bedbug/services/content/stroke_simplification.service.dart';

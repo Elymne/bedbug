@@ -1,7 +1,7 @@
 import 'package:bedbug/core/domain/service.dart';
 import 'package:bedbug/resources/content/drawing/drawing.config.dart';
+import 'package:bedbug/resources/content/drawing/drawing.extension.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
-import 'package:bedbug/resources/content/drawing/drawing_dimensions.extension.dart';
 import 'package:bedbug/resources/content/drawing/drawing_operation.value_object.dart';
 import 'package:bedbug/resources/content/drawing/drawing_point.value_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

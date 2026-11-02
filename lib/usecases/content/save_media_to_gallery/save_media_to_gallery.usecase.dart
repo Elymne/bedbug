@@ -46,7 +46,7 @@ class SaveMediaToGalleryUsecase extends Usecase<SaveMediaToGalleryParams, SaveMe
 
       await _mediaGalleryGateway.save(params.bytes, format);
       return const Right(null);
-    } on GalleryException catch (error, stackTrace) {
+    } on MediaGalleryException catch (error, stackTrace) {
       AppLogger.error('SaveMediaToGalleryUsecase', error, stackTrace);
       if (error.isAccessDenied) {
         return const Left(SaveMediaToGalleryFailure.accessDenied);

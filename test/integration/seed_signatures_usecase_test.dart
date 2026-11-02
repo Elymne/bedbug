@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/resources/signature/signature/signature.extension.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
-import 'package:bedbug/resources/signature/signature/signature_text.extension.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
 import 'package:bedbug/usecases/signature/get_local_signature/get_local_signature.usecase.dart';
 import 'package:bedbug/usecases/signature/get_signature_suggestions/get_signature_suggestions.params.dart';
