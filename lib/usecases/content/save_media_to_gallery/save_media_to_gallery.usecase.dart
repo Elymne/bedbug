@@ -1,7 +1,7 @@
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/gateways/media/media_gallery/gallery.exception.dart';
+import 'package:bedbug/gateways/media/media_gallery/media_gallery.exception.dart';
 import 'package:bedbug/gateways/media/media_gallery/media_gallery.gateway.dart';
 import 'package:bedbug/gateways/media/media_gallery/media_gallery.gateway.gal.dart';
 import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';

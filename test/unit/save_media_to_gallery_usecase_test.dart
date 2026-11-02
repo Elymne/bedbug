@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/gateways/media/media_gallery/gallery.exception.dart';
+import 'package:bedbug/gateways/media/media_gallery/media_gallery.exception.dart';
 import 'package:bedbug/gateways/media/media_gallery/media_gallery.gateway.dart';
 import 'package:bedbug/gateways/media/media_http/media_http.gateway.dart';
 import 'package:bedbug/resources/content/content/media_file_format.enum.dart';
