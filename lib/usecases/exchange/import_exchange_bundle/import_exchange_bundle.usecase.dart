@@ -30,7 +30,8 @@ import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.dart';
 import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
-import 'package:bedbug/services/reaction/reaction_merge.service.dart';
+import 'package:bedbug/services/reaction/merge_reaction/merge_reaction.params.dart';
+import 'package:bedbug/services/reaction/merge_reaction/merge_reaction.service.dart';
 import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.config.dart';
 import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.failure.dart';
 import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.params.dart';
@@ -46,7 +47,7 @@ final importExchangeBundleUsecaseProvider = Provider<ImportExchangeBundleUsecase
     ref.read(signatureRepositoryProvider),
     ref.read(storageRepositoryProvider),
     ref.read(exchangeCodecGatewayProvider),
-    ref.read(reactionMergeServiceProvider),
+    ref.read(mergeReactionServiceProvider),
     ref.read(errorLogRepositoryProvider),
   );
 });
@@ -64,7 +65,7 @@ final importExchangeBundleUsecaseProvider = Provider<ImportExchangeBundleUsecase
 ///   que deux contenus portant exactement la même signature se retrouvent sous la même page `s/pseudo`. Une
 ///   signature invalide est ignorée et le contenu s'affiche en anonyme.
 /// - Les limites de contenu sont celles d'un contenu local ([Drawing.isValid], [Content.sizeInBytesOf]), avec
-///   un plafond de poids ([maxReceivedContentBytes]) ; celles des réactions viennent de [ReactionMergeService].
+///   un plafond de poids ([maxReceivedContentBytes]) ; celles des réactions viennent de [MergeReactionService].
 /// - Une réaction n'a pas d'auteur transmis : son identifiant en tient lieu, l'auteur réutilisant le même
 ///   identifiant quand il modifie sa réaction. Une réaction reçue ne remplace jamais celle de l'utilisateur.
 ///
@@ -79,7 +80,7 @@ class ImportExchangeBundleUsecase
     this._signatureRepository,
     this._storageRepository,
     this._exchangeCodecGateway,
-    this._reactionMergeService,
+    this._mergeReactionService,
     this._errorLogRepository,
   );
 
@@ -89,7 +90,7 @@ class ImportExchangeBundleUsecase
   final SignatureRepository _signatureRepository;
   final StorageRepository _storageRepository;
   final ExchangeCodecGateway _exchangeCodecGateway;
-  final ReactionMergeService _reactionMergeService;
+  final MergeReactionService _mergeReactionService;
   final ErrorLogRepository _errorLogRepository;
 
   @override
@@ -363,35 +364,15 @@ class ImportExchangeBundleUsecase
     return (imported: imported, rejected: rejected);
   }
 
-  /// Enregistre [reaction] selon les règles de [ReactionMergeService], et indique si elle a été traitée.
+  /// Enregistre [reaction] avec [MergeReactionService], et indique si elle a été traitée.
   ///
   /// Une version plus ancienne que celle connue compte comme traitée : elle n'est simplement pas écrite. Une réaction
   /// refusée, ou qui échoue à l'écriture, n'empêche pas d'importer les suivantes.
   ///
   /// - [reaction] : réaction reçue, avec ses champs propres à l'appareil.
   Future<bool> _saveReceivedReaction(Reaction reaction) async {
-    try {
-      final normalized = _reactionMergeService.normalize(reaction);
-      if (normalized == null) {
-        return false;
-      }
-      final existingReactions = await _reactionRepository.getAllByContentId(normalized.contentId);
-      final merge = _reactionMergeService.merge(existingReactions, normalized);
-      if (!merge.isNewReactionKept) {
-        return true;
-      }
-
-      await _reactionRepository.deleteMany(merge.replacedIds);
-      await _reactionRepository.addOne(normalized);
-      if (merge.overflowIds.isNotEmpty) {
-        await _reactionRepository.deleteMany(merge.overflowIds);
-      }
-      return true;
-    } catch (error, stackTrace) {
-      AppLogger.error('ImportExchangeBundleUsecase', error, stackTrace);
-      await _errorLogRepository.record(source: 'ImportExchangeBundleUsecase', error: error, stackTrace: stackTrace);
-      return false;
-    }
+    final result = await _mergeReactionService(MergeReactionParams(reaction: reaction));
+    return result.isSuccess;
   }
 
   /// Retourne les identifiants des réactions de l'utilisateur sur le contenu [contentId].
