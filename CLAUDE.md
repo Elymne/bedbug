@@ -1,6 +1,7 @@
 # BedBug
 
 Open-source local social network: messages and contents are transmitted from device to device (Wi-Fi / BLE).
+Targets Android and iOS only: no web or desktop platform.
 
 This file only describes the architecture, the folder structure, the libraries and the coding rules. Anything that can
 be learned by reading the code (existing widgets, entities, use cases…) does not belong here.
@@ -354,7 +355,7 @@ Riverpod handles both state management and dependency injection.
 
 - The router is a `Provider<GoRouter>` declared in the same file as the route paths.
 - Every route path is a top-level `const String` in the router file, before the provider.
-- Always `pageBuilder`, never `builder`: `NoTransitionPage` on web, `MaterialPage` / `CupertinoPage` on mobile.
+- Always `pageBuilder`, never `builder`.
 - Sub-routes use a relative path (no leading `/`).
 - Read path parameters through `state.pathParameters`.
 - Always provide an `errorBuilder` pointing to a dedicated error page.
@@ -391,3 +392,9 @@ Riverpod handles both state management and dependency injection.
 - Keys are camelCase `<screen><Context>` (`homeEmptyList`). Generic strings use a short unprefixed name (`close`).
 - Run `flutter gen-l10n` after each ARB change. Never edit `generated/`.
 - In widgets: `AppLocalizations.of(context)!`. In notifiers and providers: `ref.l10n`.
+
+## Git
+
+- Never run any git command (read or write: `status`, `log`, `diff`, `add`, `commit`, `push`, `rebase`…) unless
+  explicitly asked to.
+- Never add any Claude attribution to commits or pull requests (`Co-Authored-By`, "Generated with Claude Code").

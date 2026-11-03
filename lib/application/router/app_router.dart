@@ -196,7 +196,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: splashPath,
     refreshListenable: refreshNotifier,
     redirect: (context, state) => null,
-    errorPageBuilder: (context, state) => const NoTransitionPage(child: ErrorRoutePage(message: 'Page not found')),
+    errorPageBuilder: (context, state) => _fadePage(const ErrorRoutePage(message: 'Page not found')),
     routes: [
       GoRoute(path: splashPath, pageBuilder: (context, state) => _fadePage(const SplashScreen())),
       GoRoute(path: signatureSetupPath, pageBuilder: (context, state) => _fadePage(const SignatureSetupScreen())),
