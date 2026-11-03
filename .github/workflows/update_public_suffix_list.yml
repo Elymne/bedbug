@@ -1,0 +1,42 @@
+name: Update public suffix list
+
+on:
+  schedule:
+    # Chaque lundi à 06:00 UTC.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.7"
+          cache: true
+
+      - name: 🌐 Download public suffix list
+        run: dart run tool/update_public_suffix_list.dart
+
+      - name: 📬 Open pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          add-paths: assets/data/public_suffix_list.dat
+          branch: chore/update-public-suffix-list
+          delete-branch: true
+          author: "Djurdjevic Sacha <31738821+Elymne@users.noreply.github.com>"
+          committer: "Djurdjevic Sacha <31738821+Elymne@users.noreply.github.com>"
+          commit-message: "chore: update public suffix list"
+          title: "chore: update public suffix list"
+          body: |
+            Mise à jour automatique de `assets/data/public_suffix_list.dat` depuis
+            https://publicsuffix.org/list/public_suffix_list.dat.
