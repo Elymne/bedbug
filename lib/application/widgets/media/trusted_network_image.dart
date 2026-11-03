@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 
-import 'package:bedbug/application/providers/trusted_media_loader_provider.dart';
+import 'package:bedbug/application/widgets/media/trusted_media_loader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 

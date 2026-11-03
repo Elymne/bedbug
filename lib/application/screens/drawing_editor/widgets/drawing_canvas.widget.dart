@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:bedbug/application/providers/drawing_rasterizer_provider.dart';
+import 'package:bedbug/application/drawing/drawing_rasterizer.dart';
 import 'package:bedbug/application/screens/drawing_editor/drawing_canvas_zoom.notifier.dart';
 import 'package:bedbug/application/screens/drawing_editor/drawing_editor.notifier.dart';
 import 'package:bedbug/application/screens/drawing_editor/drawing_editor_image.notifier.dart';

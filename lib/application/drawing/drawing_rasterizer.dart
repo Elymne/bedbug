@@ -3,7 +3,8 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:bedbug/application/providers/flood_fill_provider.dart';
+import 'package:bedbug/application/drawing/drawing_rasterizer.config.dart';
+import 'package:bedbug/application/drawing/flood_fill.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/resources/content/drawing/drawing.config.dart';
 import 'package:bedbug/resources/content/drawing/drawing.extension.dart';
@@ -11,13 +12,6 @@ import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:perfect_freehand/perfect_freehand.dart';
-
-/// Rapport entre l'image d'un dessin et son repère : un pixel pour deux points.
-///
-/// Fixe, quel que soit l'écran : un remplissage se calcule sur cette image,
-/// et doit donner la même zone sur tous les téléphones. Affichée sans
-/// lissage, elle donne aussi aux dessins leur rendu « pixel » assumé.
-const double drawingRasterScale = 0.5;
 
 /// Écart maximal entre deux points confiés à `perfect_freehand`, en points du repère.
 ///

@@ -125,10 +125,11 @@ application/
     <screen>.config.dart
     <widget>/           one folder per widget of the screen: <widget>.widget.dart, plus <widget>.notifier.dart
                         when it watches a notifier of its own (and <widget>.config.dart if needed)
-  widgets/            widgets reused across screens, grouped by kind
+  widgets/            widgets reused across screens, grouped by kind, each next to the technical helpers only its
+                      kind uses (`widgets/media/trusted_media_loader.dart`)
   notifiers/          global notifiers: watched by several widgets
-  providers/          technical providers shared across screens
   exchange/           device-to-device session, orchestrating the exchange use cases
+  drawing/            drawing rendering (rasterizer, flood fill), shared by the editor and the drawing widgets
   router/             router and route paths
   style/              colors, text styles, theme
   validators/         form validators

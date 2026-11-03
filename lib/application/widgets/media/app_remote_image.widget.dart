@@ -1,6 +1,6 @@
-import 'package:bedbug/application/providers/trusted_media_loader_provider.dart';
 import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/media/app_media_placeholder.widget.dart';
+import 'package:bedbug/application/widgets/media/trusted_media_loader.dart';
 import 'package:bedbug/application/widgets/media/trusted_network_image.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';

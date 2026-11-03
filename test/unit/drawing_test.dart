@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:bedbug/application/providers/flood_fill_provider.dart';
+import 'package:bedbug/application/drawing/flood_fill.dart';
 import 'package:bedbug/resources/content/content/content.model.hive.dart';
 import 'package:bedbug/resources/content/content/content_origin.enum.dart';
 import 'package:bedbug/resources/content/content/drawing_content.entity.dart';

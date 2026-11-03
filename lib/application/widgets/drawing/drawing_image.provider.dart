@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 
-import 'package:bedbug/application/providers/drawing_rasterizer_provider.dart';
+import 'package:bedbug/application/drawing/drawing_rasterizer.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
