@@ -5,24 +5,26 @@ import 'package:bedbug/application/exchange/exchange_stats_notifier.dart';
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/screens/exchange_logs/exchange_logs_notifier.dart';
 import 'package:bedbug/application/screens/settings/user_settings_notifier.dart';
-import 'package:bedbug/features/content/domain/usecases/delete_untrusted_contents_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/enforce_storage_limit_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/recalculate_broadcast_scores_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/recalculate_display_scores_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/recalculate_survival_scores_usecase.dart';
-import 'package:bedbug/features/exchange/domain/entities/exchange_log.dart';
-import 'package:bedbug/features/exchange/domain/enums/exchange_log_outcome.dart';
-import 'package:bedbug/features/exchange/domain/gateways/exchange_transport_gateway.dart';
-import 'package:bedbug/features/exchange/domain/object_values/peer_attempt.dart';
-import 'package:bedbug/features/exchange/domain/usecases/save_exchange_log_usecase.dart';
-import 'package:bedbug/features/exchange/domain/usecases/start_peer_link_usecase.dart';
-import 'package:bedbug/features/exchange/domain/usecases/stop_peer_link_usecase.dart';
-import 'package:bedbug/features/exchange/infrastructure/gateways/ble_peer_link_gateway.dart';
-import 'package:bedbug/features/settings/domain/usecases/get_settings_usecase.dart';
-import 'package:bedbug/features/settings/domain/usecases/save_settings_usecase.dart';
-import 'package:bedbug/shared/domain/params.dart';
-import 'package:bedbug/shared/extensions/string_uuid_x.dart';
-import 'package:bedbug/shared/logger/app_logger.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
+import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.ble.dart';
+import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.dart';
+import 'package:bedbug/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
+import 'package:bedbug/usecases/exchange/recalculate_broadcast_scores/recalculate_broadcast_scores.usecase.dart';
+import 'package:bedbug/usecases/exchange/save_exchange_log/save_exchange_log.params.dart';
+import 'package:bedbug/usecases/exchange/save_exchange_log/save_exchange_log.usecase.dart';
+import 'package:bedbug/usecases/exchange/start_peer_link/start_peer_link.failure.dart';
+import 'package:bedbug/usecases/exchange/start_peer_link/start_peer_link.params.dart';
+import 'package:bedbug/usecases/exchange/start_peer_link/start_peer_link.usecase.dart';
+import 'package:bedbug/usecases/exchange/stop_peer_link/stop_peer_link.usecase.dart';
+import 'package:bedbug/usecases/feed/recalculate_display_scores/recalculate_display_scores.usecase.dart';
+import 'package:bedbug/usecases/settings/get_settings/get_settings.usecase.dart';
+import 'package:bedbug/usecases/settings/save_settings/save_settings.params.dart';
+import 'package:bedbug/usecases/settings/save_settings/save_settings.usecase.dart';
+import 'package:bedbug/usecases/storage/enforce_storage_limit/enforce_storage_limit.usecase.dart';
+import 'package:bedbug/usecases/storage/recalculate_survival_scores/recalculate_survival_scores.usecase.dart';
+import 'package:bedbug/usecases/trust/delete_untrusted_contents/delete_untrusted_contents.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [PassiveExchangeNotifier].
@@ -151,23 +153,16 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
   ///
   /// - [attempt] : pair concerné.
   Future<void> _logAttempt(PeerAttempt attempt) async {
-    final now = DateTime.now();
     await _saveLog(
-      ExchangeLog(
-        id: UuidX.generate(),
-        createdAt: now,
-        updatedAt: now,
-        peerAddress: attempt.peerAddress,
-        outcome: attempt.outcome,
-      ),
+      SaveExchangeLogParams(startedAt: DateTime.now(), peerAddress: attempt.peerAddress, outcome: attempt.outcome),
     );
   }
 
-  /// Enregistre [log] et rafraîchit la page du journal.
+  /// Enregistre la rencontre décrite par [params] et rafraîchit la page du journal.
   ///
-  /// - [log] : trace à enregistrer.
-  Future<void> _saveLog(ExchangeLog log) async {
-    await _saveExchangeLogUsecase(SaveExchangeLogParams(log: log));
+  /// - [params] : ce qu'on sait de la rencontre.
+  Future<void> _saveLog(SaveExchangeLogParams params) async {
+    await _saveExchangeLogUsecase(params);
     ref.invalidate(exchangeLogsNotifierProvider);
   }
 
@@ -195,10 +190,8 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
     final removedContents = (await _enforceStorageLimitUsecase(const NoParams())).right ?? 0;
     final report = result.report;
     await _saveLog(
-      ExchangeLog(
-        id: UuidX.generate(),
-        createdAt: startedAt,
-        updatedAt: DateTime.now(),
+      SaveExchangeLogParams(
+        startedAt: startedAt,
         peerAddress: transport.peerAddress,
         outcome: _outcomeOf(result.failure),
         isInitiator: transport.isInitiator,

@@ -3,9 +3,9 @@ import 'package:bedbug/application/screens/exchange_logs/exchange_logs_notifier.
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/widgets/headers/app_page_header.dart';
-import 'package:bedbug/features/exchange/domain/entities/exchange_log.dart';
-import 'package:bedbug/features/exchange/domain/enums/exchange_log_outcome.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
+import 'package:bedbug/core/extensions/build_context_x.dart';
+import 'package:bedbug/resources/exchange/exchange_log/exchange_log.entity.dart';
+import 'package:bedbug/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -62,7 +62,7 @@ class ExchangeLogsScreen extends ConsumerWidget {
     final date = materialLocalizations.formatShortDate(log.createdAt);
     final time = TimeOfDay.fromDateTime(log.createdAt);
     final isInitiator = log.isInitiator;
-    final awaitedFrame = log.awaitedFrame;
+    final awaitedStep = log.awaitedStep;
     final isSuccess = log.outcome == ExchangeLogOutcome.success;
     final isDelayed = log.outcome == ExchangeLogOutcome.peerDelayed;
 
@@ -89,9 +89,9 @@ class ExchangeLogsScreen extends ConsumerWidget {
             _buildDetail(l10n.exchangeLogsPeer(log.peerAddress)),
             if (isInitiator != null)
               _buildDetail(isInitiator ? l10n.exchangeLogsInitiator : l10n.exchangeLogsResponder),
-            if (awaitedFrame != null) ...[
+            if (awaitedStep != null) ...[
               _buildDetail(l10n.exchangeLogsDuration((log.duration.inMilliseconds / 1000).toStringAsFixed(1))),
-              if (!isSuccess) _buildDetail(l10n.exchangeLogsAwaitedFrame(awaitedFrame.name)),
+              if (!isSuccess) _buildDetail(l10n.exchangeLogsAwaitedFrame(awaitedStep.name)),
               _buildDetail(l10n.exchangeLogsBytes(log.sentBytes, log.receivedBytes)),
               _buildDetail(l10n.exchangeLogsContents(log.importedContents, log.rejectedContents)),
               _buildDetail(l10n.exchangeLogsReactions(log.importedReactions, log.rejectedReactions)),

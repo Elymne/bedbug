@@ -9,9 +9,9 @@ import 'package:bedbug/application/widgets/reactions/app_reaction_bubble.dart';
 import 'package:bedbug/application/widgets/scatter/app_scatter.dart';
 import 'package:bedbug/application/widgets/scroll/app_scroll_reveal.dart';
 import 'package:bedbug/application/widgets/texts/app_loading_text.dart';
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
-import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
+import 'package:bedbug/core/extensions/build_context_x.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

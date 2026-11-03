@@ -3,20 +3,26 @@ import 'dart:async';
 import 'package:bedbug/application/screens/exchange/exchange_screen.dart';
 import 'package:bedbug/application/screens/home/home_screen.dart';
 import 'package:bedbug/application/widgets/ghost/app_ghost_effect.dart';
-import 'package:bedbug/features/content/domain/object_values/home_feed.dart';
-import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
-import 'package:bedbug/features/exchange/domain/gateways/exchange_transport_gateway.dart';
-import 'package:bedbug/features/exchange/domain/gateways/peer_link_gateway.dart';
-import 'package:bedbug/features/exchange/domain/object_values/peer_attempt.dart';
-import 'package:bedbug/features/exchange/infrastructure/gateways/ble_peer_link_gateway.dart';
-import 'package:bedbug/features/settings/domain/usecases/get_settings_usecase.dart';
-import 'package:bedbug/features/settings/domain/usecases/save_settings_usecase.dart';
-import 'package:bedbug/features/settings/domain/value_objects/user_settings.dart';
-import 'package:bedbug/shared/domain/either.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
+import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.ble.dart';
+import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
+import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';
+import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.result.dart';
+import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
+import 'package:bedbug/usecases/settings/get_settings/get_settings.failure.dart';
+import 'package:bedbug/usecases/settings/get_settings/get_settings.usecase.dart';
+import 'package:bedbug/usecases/settings/save_settings/save_settings.failure.dart';
+import 'package:bedbug/usecases/settings/save_settings/save_settings.params.dart';
+import 'package:bedbug/usecases/settings/save_settings/save_settings.usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/fake_error_log_repository.dart';
 import '../helpers/find_app_icon.dart';
 import '../helpers/pump_app.dart';
 
@@ -67,7 +73,7 @@ class _FakePeerLinkGateway implements PeerLinkGateway {
 /// Fake [GetSettingsUsecase] et [SaveSettingsUsecase] : les réglages vivent en mémoire.
 class _FakeSettings {
   /// Réglages enregistrés.
-  UserSettings settings = const UserSettings.empty();
+  UserSettings settings = defaultUserSettings;
 }
 
 /// Fake [GetSettingsUsecase] lisant des réglages en mémoire.
@@ -114,12 +120,13 @@ void main() {
   });
 
   testWidgets('le choix est enregistré, et l\'échange reprend tout seul au lancement suivant', (tester) async {
-    store.settings = const UserSettings(blockedUrls: ['a'], blockedWords: [], isExchangeEnabled: true);
+    store.settings = defaultUserSettings.copyWith(blockedUrls: ['a'], isExchangeEnabled: true);
     await pumpApp(
       tester,
       const ExchangeScreen(),
       overrides: [
         peerLinkGatewayProvider.overrideWithValue(_FakePeerLinkGateway(isPermissionGranted: false)),
+        errorLogRepositoryProvider.overrideWithValue(FakeErrorLogRepository()),
         getSettingsUsecaseProvider.overrideWithValue(_FakeGetSettingsUsecase(store)),
         saveSettingsUsecaseProvider.overrideWithValue(_FakeSaveSettingsUsecase(store)),
       ],
@@ -143,6 +150,7 @@ void main() {
       const ExchangeScreen(),
       overrides: [
         peerLinkGatewayProvider.overrideWithValue(_FakePeerLinkGateway()),
+        errorLogRepositoryProvider.overrideWithValue(FakeErrorLogRepository()),
         getSettingsUsecaseProvider.overrideWithValue(_FakeGetSettingsUsecase(store)),
         saveSettingsUsecaseProvider.overrideWithValue(_FakeSaveSettingsUsecase(store)),
       ],
@@ -168,6 +176,7 @@ void main() {
       const ExchangeScreen(),
       overrides: [
         peerLinkGatewayProvider.overrideWithValue(_FakePeerLinkGateway(isPermissionGranted: false)),
+        errorLogRepositoryProvider.overrideWithValue(FakeErrorLogRepository()),
         getSettingsUsecaseProvider.overrideWithValue(_FakeGetSettingsUsecase(store)),
         saveSettingsUsecaseProvider.overrideWithValue(_FakeSaveSettingsUsecase(store)),
       ],
@@ -190,6 +199,7 @@ void main() {
       const ExchangeScreen(),
       overrides: [
         peerLinkGatewayProvider.overrideWithValue(gateway),
+        errorLogRepositoryProvider.overrideWithValue(FakeErrorLogRepository()),
         getSettingsUsecaseProvider.overrideWithValue(_FakeGetSettingsUsecase(store)),
         saveSettingsUsecaseProvider.overrideWithValue(_FakeSaveSettingsUsecase(store)),
       ],
@@ -213,6 +223,7 @@ void main() {
       const HomeScreen(),
       overrides: [
         peerLinkGatewayProvider.overrideWithValue(_FakePeerLinkGateway()),
+        errorLogRepositoryProvider.overrideWithValue(FakeErrorLogRepository()),
         getSettingsUsecaseProvider.overrideWithValue(_FakeGetSettingsUsecase(store)),
         saveSettingsUsecaseProvider.overrideWithValue(_FakeSaveSettingsUsecase(store)),
         getHomeFeedUsecaseProvider.overrideWithValue(_FakeGetHomeFeedUsecase()),

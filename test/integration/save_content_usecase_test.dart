@@ -1,16 +1,16 @@
 import 'dart:io';
 
-import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
-import 'package:bedbug/features/content/domain/entities/link_content.dart';
-import 'package:bedbug/features/content/domain/entities/media_content.dart';
-import 'package:bedbug/features/content/domain/entities/text_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/object_values/content_media.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing_point.dart';
-import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
+import 'package:bedbug/resources/content/content/content.repository.hive.dart';
+import 'package:bedbug/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
+import 'package:bedbug/resources/content/content/link_content.entity.dart';
+import 'package:bedbug/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/resources/content/drawing/drawing.config.dart';
+import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.failure.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -19,20 +19,19 @@ import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/texts/app_loading_text.dart';
-import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
-import 'package:bedbug/features/content/domain/entities/link_content.dart';
-import 'package:bedbug/features/content/domain/entities/media_content.dart';
-import 'package:bedbug/features/content/domain/entities/text_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/enums/content_type.dart';
-import 'package:bedbug/features/content/domain/enums/tag.dart';
-import 'package:bedbug/features/content/domain/extensions/flair_extension.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing.dart';
-import 'package:bedbug/features/content/domain/services/media_kind_service.dart';
-import 'package:bedbug/features/content/infrastructure/og_metadata_service.dart';
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
-import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
-import 'package:bedbug/shared/extensions/string_uuid_x.dart';
+import 'package:bedbug/core/extensions/string_uuid_x.dart';
+import 'package:bedbug/gateways/og_metadata/og_metadata/og_metadata.gateway.dart';
+import 'package:bedbug/resources/content/content/content.config.dart';
+import 'package:bedbug/resources/content/content/content.extension.dart';
+import 'package:bedbug/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/content/content_type.enum.dart';
+import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
+import 'package:bedbug/resources/content/content/link_content.entity.dart';
+import 'package:bedbug/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/resources/content/content/tag.enum.dart';
+import 'package:bedbug/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -277,7 +276,7 @@ class _State extends ConsumerState<CreateScreen> {
       // Placeholder : SaveContentUsecase détermine et corrige le poids réel
       // avant persistance.
       sizeInBytes: 0,
-      media: [for (final url in _mediaUrlsControl.value!) ref.read(mediaKindServiceProvider).mediaOf(url)],
+      media: [for (final url in _mediaUrlsControl.value!) ContentMedia.fromUrl(url)],
       title: _mediaTitleControl.value!,
       body: _mediaBodyControl.value?.isEmpty == true ? null : _mediaBodyControl.value,
       flair: flair,

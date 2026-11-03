@@ -1,0 +1,52 @@
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/usecase.dart';
+import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/resources/content/drawing/drawing_draft.repository.dart';
+import 'package:bedbug/resources/content/drawing/drawing_draft.repository.hive.dart';
+import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
+import 'package:bedbug/usecases/content/save_drawing_draft/save_drawing_draft.failure.dart';
+import 'package:bedbug/usecases/content/save_drawing_draft/save_drawing_draft.params.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// Provider du [SaveDrawingDraftUsecase].
+final saveDrawingDraftUsecaseProvider = Provider<SaveDrawingDraftUsecase>((ref) {
+  return SaveDrawingDraftUsecase(ref.read(drawingDraftRepositoryProvider), ref.read(errorLogRepositoryProvider));
+});
+
+/// Enregistre le dessin en cours comme brouillon, ou efface le brouillon une fois le dessin terminé ou abandonné.
+///
+/// Appelé à chaque modification du dessin : si le système ferme l'app
+/// pendant que l'utilisateur est ailleurs, il retrouve son dessin au dernier
+/// trait près. Le brouillon est effacé dès que le dessin est validé ou que
+/// l'éditeur est fermé volontairement, pour ne pas ressortir un dessin
+/// abandonné à la prochaine ouverture.
+class SaveDrawingDraftUsecase extends Usecase<SaveDrawingDraftParams, SaveDrawingDraftFailure, void> {
+  /// Crée un [SaveDrawingDraftUsecase].
+  SaveDrawingDraftUsecase(this._drawingDraftRepository, this._errorLogRepository);
+
+  /// Stockage du brouillon.
+  final DrawingDraftRepository _drawingDraftRepository;
+  final ErrorLogRepository _errorLogRepository;
+
+  @override
+  Future<Either<SaveDrawingDraftFailure, void>> call(SaveDrawingDraftParams params) async {
+    try {
+      final drawing = params.drawing;
+      if (drawing == null) {
+        await _drawingDraftRepository.clear();
+        return const Right(null);
+      }
+      await _drawingDraftRepository.save(drawing);
+      return const Right(null);
+    } on DatasourceException catch (error, stackTrace) {
+      AppLogger.error('SaveDrawingDraftUsecase', error, stackTrace);
+      return const Left(SaveDrawingDraftFailure.storageError);
+    } catch (error, stackTrace) {
+      AppLogger.error('SaveDrawingDraftUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'SaveDrawingDraftUsecase', error: error, stackTrace: stackTrace);
+      return const Left(SaveDrawingDraftFailure.unknown);
+    }
+  }
+}

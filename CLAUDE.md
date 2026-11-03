@@ -7,60 +7,110 @@ be learned by reading the code (existing widgets, entities, use cases…) does n
 
 ## Architecture
 
-Clean Architecture, object-oriented, organised around **features** for business logic and a separate **application**
-layer for UI and framework concerns.
+Clean Architecture, object-oriented. Data access is organised by **data scope**, business logic by **business scope**,
+and a separate **application** layer holds UI and framework concerns.
 
 ```
 lib/
-  features/      business logic only (domain + infrastructure)
+  resources/     persisted data: entities, value objects, repositories and their implementations, by data scope
+  gateways/      external sources (HTTP, gallery, BLE…): interfaces and implementations, by source
+  services/      "sub use cases" reused by several use cases, by business scope
+  usecases/      business operations, by business scope
   application/   UI and framework orchestration
-  shared/        cross-cutting technical code, no business logic
+  core/          cross-cutting technical code, no business logic
 ```
 
 ### Dependency rules
 
 ```
-application → domain ← infrastructure
-shared → used by all
+application → usecases → services → resources, gateways
+                       ↘ resources, gateways
+core → used by all
 ```
 
-- `application` depends on feature **domains** only, never on infrastructure (except to wire providers).
-- `domain` depends on nothing but `shared`.
-- `infrastructure` depends on its feature's domain and on `shared`.
-- `shared` depends on nothing.
-- Features are isolated from each other. Sole exception: a use case may depend on the domain of another feature
-  (repositories, gateways, services, entities), never on its use cases.
+- `application` only calls use cases. It touches `resources` / `gateways` to read their types (entities, value
+  objects, enums), to call their static rules (`SafeUrl.parse`), or to wire providers.
+- `usecases` depend on `services`, `resources` and `gateways`, whatever their scope: a use case of one business scope
+  freely uses the data of several data scopes. A use case never depends on another use case.
+- `services` depend on `resources`, `gateways` and other services, never on a use case.
+- `gateways` may use the types of `resources`.
+- `core` depends on nothing.
 
-### Features
+### Resources
 
-Each feature is a self-contained business module that knows nothing about UI or frameworks.
+One folder per **data** scope (`content`, `exchange`, `settings`, `signature`, `error_log`…), not per business concern.
+Inside a scope, one folder per resource: every entity and every value object gets its own folder (`content/comment/`,
+`content/drawing/`, `exchange/exchange_log/`…), even when the scope holds a single one. Exception: a small value
+object that only exists as a part of another object stays in its owner's file (`UrlTrustPolicy` in
+`trust_settings.value_object.dart`, `DrawingOperation` and `DrawingPoint` in `drawing.value_object.dart`). Such a part
+does not extend `ValueObject`: only its owner does, since the part never lives on its own. A resource
+folder holds everything about that data:
 
 ```
-features/<feature_name>/
-  domain/
-    entities/
-    object_values/
-    repositories/      repository interfaces
-    gateways/          gateway interfaces
-    usecases/
-    services/          small pure logic bricks shared by use cases
-    extensions/        feature-specific extensions
-    enums/             only enums shared across the feature
-  infrastructure/
-    datasources/       repository implementations (DB, API, SDK)
-    gateways/          gateway implementations
-    models/            DTOs, serialization
+resources/<scope>/<resource>/
+  <name>.entity.dart            entity
+  <name>.value_object.dart      value object
+  <name>.enum.dart              enum tied to the resource
+  <resource>.extension.dart     extensions on the resource types themselves (computed getters), in one file
+  <name>.repository.dart        repository interface
+  <name>.repository.hive.dart   repository implementation, suffixed with its technology
+  <name>.model.hive.dart        Hive DTO (+ generated <name>.model.hive.g.dart)
+  <resource>.config.dart        public constants of the resource (limits, defaults, box names)
+resources/
+  data.exception.dart           invalid or corrupted data
+  datasource.exception.dart     storage failure
+  hive.initializer.dart         Hive setup, box opening
+  hive.type_ids.dart            HiveTypeIds
 ```
 
-#### Domain rules
+### Gateways
 
-- No external dependency, no framework import.
-- Never throws: errors are returned through `Either`.
+One folder per external source (`media`, `public_suffix`, `og_metadata`, `exchange`…), then one folder per gateway
+(`media/media_http/`, `exchange/peer_link/`), same naming as resources: `<name>.gateway.dart` for the interface,
+`<name>.gateway.<technology>.dart` for each implementation (`media_http.gateway.dio.dart`, `peer_link.gateway.ble.dart`).
+The messages a gateway reads or writes (value objects, enums) live in its interface file, next to the contract
+(`ExchangeBundle` in `exchange_codec.gateway.dart`, `MediaHttpResponse` in `media_http.gateway.dart`); its exceptions
+and constants go in `<gateway>.exception.dart` and `<gateway>.config.dart`.
 
-#### Infrastructure rules
+### Constants
 
-- May use external libraries and throw exceptions.
-- Only implements domain interfaces.
+Public top-level constants and default values (`const`, or `final` when they cannot be `const`, like `anonymousSignature`)
+never sit in an entity, repository, gateway, service or use case file: they go in the
+`.config.dart` of their folder (`storage.config.dart`, `fetch_media.config.dart`). Private constants (`_name`) stay in
+the file that uses them.
+
+### Exceptions
+
+- Only `resources` and `gateways` throw. Their exceptions live next to them (`<name>.exception.dart`).
+- From the use cases onwards, everything goes through `Either`.
+
+### Services
+
+Same layout as use cases: one folder per service, inside its business scope.
+
+```
+services/<business_scope>/<name>/
+  <name>.service.dart   provider, service, its constants and private helpers
+  <name>.params.dart    params class, absent with NoParams
+  <name>.failure.dart   failure enum
+  <name>.config.dart    public constants of the service, absent if none
+  <name>.result.dart    return type defined by this service only; absent otherwise
+```
+
+### Use cases
+
+One folder per use case, inside its business scope (`content`, `feed`, `reaction`, `comment`, `trust`, `storage`,
+`exchange`, `signature`, `settings`…):
+
+```
+usecases/<business_scope>/<name>/
+  <name>.usecase.dart   provider, use case, its constants and private helpers
+  <name>.params.dart    params class, absent with NoParams
+  <name>.failure.dart   failure enum
+  <name>.config.dart    public constants of the use case, absent if none
+  <name>.result.dart    return type defined by this use case only; absent when it returns void, a primitive, or an
+                        existing entity / value object
+```
 
 ### Application
 
@@ -72,7 +122,7 @@ application/
   widgets/            widgets reused across screens, grouped by kind
   notifiers/          notifiers shared across screens
   providers/          technical providers shared across screens
-  exchange/           device-to-device session, orchestrating the exchange and content features
+  exchange/           device-to-device session, orchestrating the exchange use cases
   router/             router and route paths
   style/              colors, text styles, theme, constants
   validators/         form validators
@@ -80,56 +130,67 @@ application/
   l10n/               ARB files and localization
 ```
 
-### Shared
+### Core
 
 Purely technical code: no business rule, no domain knowledge, no UI or widget.
 
 ```
-shared/
+core/
   domain/          base classes (Usecase, Service, Params, Entity, ValueObject, Either)
-  infrastructure/  technical setup (Hive initialisation, type ids)
-  exceptions/
   extensions/      cross-cutting extensions
   logger/
   config/
 ```
 
-### Use cases
+### Use case rules
 
 - Extend `Usecase<P extends Params, F, V>` and implement `call(params)`, returning `Future<Either<F, V>>`.
 - Never throw: failures are explicit and typed (failure enum).
 - Use `NoParams` when no input is required.
-- A use case never depends on another use case, only on repositories, gateways and services, even if it duplicates code.
-  Only the application layer calls use cases.
+- A use case never depends on another use case, only on repositories, gateways and services. Code shared by several
+  use cases becomes a service. Only the application layer calls use cases.
 - Logic needed by a single use case stays a private method of that use case.
+- Every use case receives `ErrorLogRepository`. Its final `catch (error, stackTrace)` (the unexpected errors, not the
+  `on XException` ones) logs with `AppLogger.error`, then calls `_errorLogRepository.record(...)`, which never throws.
 
-### Services
+### Service rules
 
-- Extend `Service`. A service holds small pure logic bricks reused by several use cases or by the application
-  (parsing an address, matching a domain rule, detecting a file format).
-- Synchronous, no data access (no repository, no gateway): a service may only depend on other services. Anything
-  that needs more is a use case.
-- Never throw, and never return an `Either`: a failure is expressed by `null` or by an enum value. No `try/catch`
-  either: use the non-throwing APIs (`Uri.tryParse`, `int.tryParse`) and guard indexes and lengths.
-- Provided through a provider, like everything else.
+- A service is a "sub use case": a sequence of operations that several use cases would otherwise duplicate
+  (`DeleteContentsService`: delete contents with their reactions, comments, traces and weight; `MergeReactionService`:
+  integrate a reaction within its limits). It is written once, and each use case calls it.
+- Extend `Service<P extends Params, F, V>` and implement `call(params)`, returning `Future<Either<F, V>>`: same shape
+  and same error rules as a use case (typed failure enum, catch-all logged and recorded in `ErrorLogRepository`).
+- May depend on repositories, gateways and other services, never on a use case. Only use cases call services.
+- The calling use case maps the service failure to its own failure enum.
+- A pure, synchronous rule about a single resource is not a service: it is a static method of that resource (see
+  below).
 
 ### Entities and value objects
 
-- `Entity`: persisted object with `id`, `createdAt`, `updatedAt`.
-- `ValueObject`: computed data, composite structure or concept without identity.
+- `Entity`: object with its own identity, followed over time (`id`, `createdAt`, `updatedAt`): it is found again by
+  its `id` even when its values change (a content, a signature, a reaction).
+- `ValueObject`: object defined only by its values, without identity: two value objects with the same values are
+  interchangeable. It may be persisted, on its own (a single setting always replaced as a whole: `UserSettings`,
+  `TrustSettings`, `Storage`) or inside an entity (`Drawing` in `DrawingContent`). It lives in `resources` (or in
+  `gateways` when it belongs to an external source), never in `usecases` or `services`, except for a type returned by a
+  single use case or service (`<name>.result.dart`).
 - Both are immutable (`final` fields, `const` constructor) with value-based equality.
-- Both are dumb data: fields, equality, `toString` and `copyWith` only. No parsing, validation, matching or business
-  rule inside them: that logic belongs in a service or in a use case.
+- Instances are dumb data: fields, equality, `toString` and `copyWith` only, no instance logic.
+- The rules tied to the resource itself (validating a field, normalising a value) are **static methods of the entity
+  or value object** (`Comment.isValidBody(body)`, `Signature.isValidPseudo(pseudo)`): pure, synchronous, never throw,
+  no data access. They take the raw value rather than the object, so forms can check a field before the object
+  exists. Never write them as extensions on a base type (`String`, `int`…).
 
-### Enums
+### Enums and extensions
 
 - Tied to a single class → same file as the class.
-- Shared across a feature → `domain/enums/`.
+- Tied to an entity / value object → its resource folder `resources/<scope>/<resource>/` (or its gateway folder).
+- Tied to a use case → that use case's folder.
 
 ### Repositories
 
-- Declared in domain as a standalone `abstract class` (no shared `Repository<Entity, Params>` base), implemented in
-  infrastructure.
+- Declared as a standalone `abstract class` (no shared `Repository<Entity, Params>` base) in `<name>.repository.dart`,
+  implemented next to it in `<name>.repository.<technology>.dart`.
 - A repository only declares the methods its entity actually needs. No imposed CRUD: an entity that is never updated or
   deleted exposes neither `update` nor `delete`.
 - The interface exists only to swap the storage implementation, to ease testing (mocks) and to stay symmetric with use
@@ -141,6 +202,8 @@ shared/
 
 - One file = one responsibility.
 - Never mix UI, business logic and data access.
+- File names are `snake_case`, with dot-separated suffixes for their role and technology (`reaction.entity.dart`,
+  `reaction.repository.hive.dart`).
 
 ## Code style
 
@@ -168,7 +231,7 @@ shared/
 
   ```dart
   // ✅ OK — fits on one line
-  final ogMetadataServiceProvider = Provider<OgMetadataService>((ref) => OgMetadataService());
+  final ogMetadataGatewayProvider = Provider<OgMetadataGateway>((ref) => DioOgMetadataGateway());
 
   // ✅ OK — too long for one line → block body
   final saveContentUsecaseProvider = Provider<SaveContentUsecase>((ref) {
@@ -216,7 +279,7 @@ shared/
 
 - No single-character identifiers, including in lambdas and loops.
 - `bool` variables and parameters always use the `is` prefix (`isSaving`).
-- Infrastructure classes are prefixed with the concrete technology they depend on (`HiveContentRepository`,
+- Implementation classes are prefixed with the concrete technology they depend on (`HiveContentRepository`,
   `GalImageGalleryGateway`), never a vague word (`RemoteProductRepository`, `FirebaseUserRepository`).
 
 ## Flutter
@@ -284,7 +347,7 @@ Riverpod handles both state management and dependency injection.
 
 - Every provider name ends with `Provider`.
 - A provider is declared in the same file as the class it provides, right before it.
-- Use case file order: provider → use case → failure enum → params class.
+- Use case file order: provider → use case (failure, params and result live in their own files).
 - Notifier file order: provider → notifier → state class.
 
 ### go_router
@@ -317,7 +380,7 @@ Riverpod handles both state management and dependency injection.
 
 ### Hive
 
-- Hive models live in the feature's `infrastructure/models/`, annotated with `@HiveType` / `@HiveField`.
+- Hive models live in `resources/<scope>/<resource>/<name>.model.hive.dart`, annotated with `@HiveType` / `@HiveField`.
 - Every `typeId` is declared in `HiveTypeIds`. Never reuse a removed `typeId`.
 - Regenerate with `build_runner` after each model change (see README).
 

@@ -1,12 +1,13 @@
 import 'dart:io';
 
-import 'package:bedbug/features/content/domain/entities/text_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/usecases/get_storage_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/recalculate_storage_usage_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_storage_repository.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
+import 'package:bedbug/usecases/storage/get_storage/get_storage.usecase.dart';
+import 'package:bedbug/usecases/storage/recalculate_storage_usage/recalculate_storage_usage.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -83,8 +84,8 @@ void main() {
 
     await saveUsecase(SaveContentParams(content: _buildContent(id: 'a', bodyByteLength: 100)));
 
-    final drifted = (await storageRepository.getUnique(''))!;
-    await storageRepository.updateOne(drifted.copyWithCurrentSizeInBytes(999999));
+    final drifted = (await storageRepository.get())!;
+    await storageRepository.save(drifted.copyWithCurrentSizeInBytes(999999));
 
     final result = await usecase(const NoParams());
     expect(result.right, 100);

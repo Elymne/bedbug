@@ -1,13 +1,15 @@
 import 'dart:io';
 
-import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
-import 'package:bedbug/features/signature/domain/extensions/signature_text_extension.dart';
-import 'package:bedbug/features/signature/domain/usecases/get_local_signature_usecase.dart';
-import 'package:bedbug/features/signature/domain/usecases/get_signature_suggestions_usecase.dart';
-import 'package:bedbug/features/signature/domain/usecases/save_local_signature_usecase.dart';
-import 'package:bedbug/features/signature/infrastructure/datasources/hive_signature_repository.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
+import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
+import 'package:bedbug/usecases/signature/get_local_signature/get_local_signature.usecase.dart';
+import 'package:bedbug/usecases/signature/get_signature_suggestions/get_signature_suggestions.params.dart';
+import 'package:bedbug/usecases/signature/get_signature_suggestions/get_signature_suggestions.usecase.dart';
+import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.params.dart';
+import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -37,8 +39,8 @@ void main() {
     final repository = container.read(signatureRepositoryProvider);
     for (final signatureId in signatureIds) {
       final signature = (await repository.getById(signatureId))!;
-      expect(signature.pseudo.isValidPseudo, isTrue, reason: signature.pseudo);
-      expect(signature.avatarText.isValidAvatarText, isTrue, reason: signature.avatarText);
+      expect(Signature.isValidPseudo(signature.pseudo), isTrue, reason: signature.pseudo);
+      expect(Signature.isValidAvatarText(signature.avatarText), isTrue, reason: signature.avatarText);
       for (final entry in signature.socialLinks.entries) {
         expect(entry.key.normalizeHandle(entry.value), entry.value);
       }

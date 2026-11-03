@@ -3,12 +3,11 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:bedbug/application/providers/flood_fill_provider.dart';
 import 'package:bedbug/application/style/app_colors.dart';
-import 'package:bedbug/features/content/domain/extensions/drawing_dimensions_extension.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing_point.dart';
-import 'package:bedbug/features/content/domain/services/flood_fill_service.dart';
+import 'package:bedbug/resources/content/drawing/drawing.config.dart';
+import 'package:bedbug/resources/content/drawing/drawing.extension.dart';
+import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:perfect_freehand/perfect_freehand.dart';
@@ -39,7 +38,7 @@ const int _sprayDotsPerPoint = 10;
 
 /// Provider du [DrawingRasterizer].
 final drawingRasterizerProvider = Provider<DrawingRasterizer>((ref) {
-  return DrawingRasterizer(ref.read(floodFillServiceProvider));
+  return DrawingRasterizer(ref.read(floodFillProvider));
 });
 
 /// Transforme un dessin (ses opérations) en image affichable.
@@ -52,9 +51,9 @@ final drawingRasterizerProvider = Provider<DrawingRasterizer>((ref) {
 /// calques déjà dessinés.
 class DrawingRasterizer {
   /// Crée un [DrawingRasterizer].
-  const DrawingRasterizer(this._floodFillService);
+  const DrawingRasterizer(this._floodFill);
 
-  final FloodFillService _floodFillService;
+  final FloodFill _floodFill;
 
   /// Retourne l'image de [drawing], calques superposés sur un fond blanc.
   ///
@@ -170,7 +169,7 @@ class DrawingRasterizer {
     if (pixels == null) {
       return base ?? _blank(drawing);
     }
-    final mask = _floodFillService.fillMask(
+    final mask = _floodFill.fillMask(
       pixels.buffer.asUint8List(),
       rasterWidth(drawing),
       rasterHeight(drawing),

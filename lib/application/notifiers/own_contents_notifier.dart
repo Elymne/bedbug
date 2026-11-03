@@ -1,8 +1,9 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
-import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/usecases/get_own_contents_usecase.dart';
-import 'package:bedbug/shared/domain/params.dart';
-import 'package:bedbug/shared/notifier/notifier_state.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/core/notifier/notifier_state.dart';
+import 'package:bedbug/resources/content/content/content.entity.dart';
+import 'package:bedbug/usecases/content/get_own_contents/get_own_contents.failure.dart';
+import 'package:bedbug/usecases/content/get_own_contents/get_own_contents.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [OwnContentsNotifier].

@@ -2,14 +2,16 @@ import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/notifiers/own_contents_notifier.dart';
 import 'package:bedbug/application/notifiers/trust_settings_notifier.dart';
 import 'package:bedbug/application/screens/home/home_feed_notifier.dart';
-import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/entities/link_content.dart';
-import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
-import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
-import 'package:bedbug/features/content/domain/services/url_trust_service.dart';
-import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
-import 'package:bedbug/features/content/infrastructure/og_metadata_service.dart';
-import 'package:bedbug/shared/domain/either.dart';
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/gateways/og_metadata/og_metadata/og_metadata.gateway.dart';
+import 'package:bedbug/resources/content/content/content.entity.dart';
+import 'package:bedbug/resources/content/content/link_content.entity.dart';
+import 'package:bedbug/usecases/content/fetch_link_preview/fetch_link_preview.failure.dart';
+import 'package:bedbug/usecases/content/fetch_link_preview/fetch_link_preview.params.dart';
+import 'package:bedbug/usecases/content/fetch_link_preview/fetch_link_preview.usecase.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.failure.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [PublishContentNotifier].
@@ -30,14 +32,8 @@ class PublishContentNotifier extends AsyncNotifier<void> {
   /// Cas d'usage de sauvegarde d'un contenu.
   late final _saveContentUsecase = ref.read(saveContentUsecaseProvider);
 
-  /// Service de lecture de l'aperçu (Open Graph) d'un lien.
-  late final _ogMetadataService = ref.read(ogMetadataServiceProvider);
-
-  /// Service de vérification des URLs.
-  late final _urlSafetyService = ref.read(urlSafetyServiceProvider);
-
-  /// Service d'évaluation des URLs selon les listes de l'utilisateur.
-  late final _urlTrustService = ref.read(urlTrustServiceProvider);
+  /// Cas d'usage de lecture de l'aperçu (Open Graph) d'un lien.
+  late final _fetchLinkPreviewUsecase = ref.read(fetchLinkPreviewUsecaseProvider);
 
   @override
   Future<void> build() async {}
@@ -66,11 +62,13 @@ class PublishContentNotifier extends AsyncNotifier<void> {
   }) async {
     state = const AsyncLoading();
     final trustSettings = await ref.read(trustSettingsNotifierProvider.future);
-    var ogMetadata = const OgMetadata();
-    final safeUrl = _urlSafetyService.parse(url);
-    if (safeUrl != null && _urlTrustService.evaluate(trustSettings.linkPolicy, safeUrl.url) == UrlTrust.trusted) {
-      ogMetadata = await _ogMetadataService.fetch(safeUrl.url);
-    }
+    final preview = await _fetchLinkPreviewUsecase(
+      FetchLinkPreviewParams(rawUrl: url, policy: trustSettings.linkPolicy),
+    );
+    final ogMetadata = preview.fold(
+      onFailure: (FetchLinkPreviewFailure failure) => const OgMetadata(),
+      onSuccess: (OgMetadata metadata) => metadata,
+    );
     final result = await _save(buildContent(ogMetadata));
     state = const AsyncData(null);
     return result;

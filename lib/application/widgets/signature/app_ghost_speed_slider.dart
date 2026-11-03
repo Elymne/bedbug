@@ -1,4 +1,4 @@
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reactive_forms/reactive_forms.dart';

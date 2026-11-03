@@ -1,17 +1,14 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/extensions/drawing_dimensions_extension.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing_point.dart';
-import 'package:bedbug/features/content/domain/services/drawing_validation_service.dart';
-import 'package:bedbug/features/content/domain/services/flood_fill_service.dart';
-import 'package:bedbug/features/content/domain/services/stroke_simplification_service.dart';
-import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/drawing_binary_codec.dart';
+import 'package:bedbug/application/providers/flood_fill_provider.dart';
+import 'package:bedbug/resources/content/content/content.model.hive.dart';
+import 'package:bedbug/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
+import 'package:bedbug/resources/content/drawing/drawing.codec.binary.dart';
+import 'package:bedbug/resources/content/drawing/drawing.config.dart';
+import 'package:bedbug/resources/content/drawing/drawing.extension.dart';
+import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Retourne un trait au stylo passant par [points], avec les réglages fournis.
@@ -37,9 +34,7 @@ List<DrawingPoint> _line(int count) {
 }
 
 void main() {
-  const validation = DrawingValidationService();
-  const simplification = StrokeSimplificationService();
-  const floodFill = FloodFillService();
+  const floodFill = FloodFill();
   const codec = DrawingBinaryCodec();
 
   final sample = _drawing([
@@ -58,20 +53,17 @@ void main() {
 
   group('limites d\'un dessin', () {
     test('accepte un dessin dans les limites, et un dessin vide', () {
-      expect(validation.isValid(sample), isTrue);
-      expect(validation.isValid(const Drawing.empty()), isTrue);
+      expect(Drawing.isValid(sample), isTrue);
+      expect(Drawing.isValid(const Drawing.empty()), isTrue);
     });
 
     test('refuse une palette qui n\'a pas exactement 16 couleurs opaques', () {
-      expect(validation.isValid(Drawing(palette: defaultDrawingPalette.sublist(1), operations: const [])), isFalse);
-      expect(
-        validation.isValid(const Drawing(palette: [...defaultDrawingPalette, 0xFF000000], operations: [])),
-        isFalse,
-      );
+      expect(Drawing.isValid(Drawing(palette: defaultDrawingPalette.sublist(1), operations: const [])), isFalse);
+      expect(Drawing.isValid(const Drawing(palette: [...defaultDrawingPalette, 0xFF000000], operations: [])), isFalse);
       for (final color in [0x80FF0000, 0x00000000, -1, 0x1FFFFFFFF]) {
         final palette = [...defaultDrawingPalette]..[3] = color;
         expect(
-          validation.isValid(Drawing(palette: palette, operations: const [])),
+          Drawing.isValid(Drawing(palette: palette, operations: const [])),
           isFalse,
           reason: '$color',
         );
@@ -90,10 +82,10 @@ void main() {
         _stroke(point, seed: -1),
         _stroke(point, seed: maxDrawingSeed + 1),
       ]) {
-        expect(validation.isValid(_drawing([stroke])), isFalse, reason: '$stroke');
+        expect(Drawing.isValid(_drawing([stroke])), isFalse, reason: '$stroke');
       }
       expect(
-        validation.isValid(_drawing([const DrawingFill(layer: 3, colorIndex: 0, point: DrawingPoint(1, 1))])),
+        Drawing.isValid(_drawing([const DrawingFill(layer: 3, colorIndex: 0, point: DrawingPoint(1, 1))])),
         isFalse,
       );
     });
@@ -110,10 +102,10 @@ void main() {
         );
       }
 
-      expect(validation.isValid(portrait(const DrawingPoint(700, 1000))), isTrue);
-      expect(validation.isValid(portrait(const DrawingPoint(800, 10))), isFalse);
+      expect(Drawing.isValid(portrait(const DrawingPoint(700, 1000))), isTrue);
+      expect(Drawing.isValid(portrait(const DrawingPoint(800, 10))), isFalse);
       expect(
-        validation.isValid(
+        Drawing.isValid(
           _drawing([
             _stroke(const [DrawingPoint(5, 1000)]),
           ]),
@@ -130,7 +122,7 @@ void main() {
         const DrawingPoint(0, 768),
       ]) {
         expect(
-          validation.isValid(
+          Drawing.isValid(
             _drawing([
               _stroke([const DrawingPoint(5, 5), point]),
             ]),
@@ -138,28 +130,28 @@ void main() {
           isFalse,
           reason: '$point',
         );
-        expect(validation.isValid(_drawing([DrawingFill(layer: 0, colorIndex: 0, point: point)])), isFalse);
+        expect(Drawing.isValid(_drawing([DrawingFill(layer: 0, colorIndex: 0, point: point)])), isFalse);
       }
     });
 
     test('refuse un trait vide ou trop long, et un dessin qui a trop de points en tout', () {
-      expect(validation.isValid(_drawing([_stroke(const [])])), isFalse);
-      expect(validation.isValid(_drawing([_stroke(_line(maxDrawingStrokePoints))])), isTrue);
-      expect(validation.isValid(_drawing([_stroke(_line(maxDrawingStrokePoints + 1))])), isFalse);
+      expect(Drawing.isValid(_drawing([_stroke(const [])])), isFalse);
+      expect(Drawing.isValid(_drawing([_stroke(_line(maxDrawingStrokePoints))])), isTrue);
+      expect(Drawing.isValid(_drawing([_stroke(_line(maxDrawingStrokePoints + 1))])), isFalse);
 
       final strokeCount = maxDrawingPoints ~/ maxDrawingStrokePoints;
       final full = [for (var index = 0; index < strokeCount; index++) _stroke(_line(maxDrawingStrokePoints))];
-      expect(validation.isValid(_drawing(full)), isTrue);
-      expect(validation.isValid(_drawing([...full, _stroke(_line(1))])), isFalse);
+      expect(Drawing.isValid(_drawing(full)), isTrue);
+      expect(Drawing.isValid(_drawing([...full, _stroke(_line(1))])), isFalse);
     });
 
     test('refuse trop d\'opérations, ou trop de remplissages', () {
       final dots = [
         for (var index = 0; index < maxDrawingOperations; index++) _stroke(const [DrawingPoint(1, 1)]),
       ];
-      expect(validation.isValid(_drawing(dots)), isTrue);
+      expect(Drawing.isValid(_drawing(dots)), isTrue);
       expect(
-        validation.isValid(
+        Drawing.isValid(
           _drawing([
             ...dots,
             _stroke(const [DrawingPoint(1, 1)]),
@@ -169,15 +161,15 @@ void main() {
       );
 
       const fill = DrawingFill(layer: 0, colorIndex: 0, point: DrawingPoint(1, 1));
-      expect(validation.isValid(_drawing(List.filled(maxDrawingFills, fill))), isTrue);
-      expect(validation.isValid(_drawing(List.filled(maxDrawingFills + 1, fill))), isFalse);
+      expect(Drawing.isValid(_drawing(List.filled(maxDrawingFills, fill))), isTrue);
+      expect(Drawing.isValid(_drawing(List.filled(maxDrawingFills + 1, fill))), isFalse);
     });
   });
 
   group('simplification des traits', () {
     test('une ligne droite ne garde que ses extrémités', () {
       final points = [for (var x = 0; x <= 100; x++) DrawingPoint(x, 2 * x)];
-      expect(simplification.simplify(points), const [DrawingPoint(0, 0), DrawingPoint(100, 200)]);
+      expect(Drawing.simplifyStroke(points), const [DrawingPoint(0, 0), DrawingPoint(100, 200)]);
     });
 
     test('garde les angles, et fusionne les points répétés', () {
@@ -186,13 +178,13 @@ void main() {
         const DrawingPoint(50, 0),
         for (var y = 1; y <= 50; y++) DrawingPoint(50, y),
       ];
-      expect(simplification.simplify(points), const [DrawingPoint(0, 0), DrawingPoint(50, 0), DrawingPoint(50, 50)]);
+      expect(Drawing.simplifyStroke(points), const [DrawingPoint(0, 0), DrawingPoint(50, 0), DrawingPoint(50, 50)]);
     });
 
     test('un point seul ou répété reste un point', () {
-      expect(simplification.simplify(const [DrawingPoint(3, 4)]), const [DrawingPoint(3, 4)]);
-      expect(simplification.simplify(const [DrawingPoint(3, 4), DrawingPoint(3, 4)]), const [DrawingPoint(3, 4)]);
-      expect(simplification.simplify(const []), isEmpty);
+      expect(Drawing.simplifyStroke(const [DrawingPoint(3, 4)]), const [DrawingPoint(3, 4)]);
+      expect(Drawing.simplifyStroke(const [DrawingPoint(3, 4), DrawingPoint(3, 4)]), const [DrawingPoint(3, 4)]);
+      expect(Drawing.simplifyStroke(const []), isEmpty);
     });
   });
 
@@ -267,7 +259,7 @@ void main() {
               _stroke([const DrawingPoint(0, 0), DrawingPoint(surface.width - 1, surface.height - 1)]),
             ],
           );
-          expect(validation.isValid(drawing), isTrue, reason: '$size $orientation');
+          expect(Drawing.isValid(drawing), isTrue, reason: '$size $orientation');
           expect(codec.decode(codec.encode(drawing)), drawing, reason: '$size $orientation');
         }
       }
@@ -371,7 +363,7 @@ void main() {
         try {
           final decoded = codec.decode(input);
           // Un flux qui se lit n'est pas forcément dans les limites : c'est le rôle de la vérification.
-          validation.isValid(decoded);
+          Drawing.isValid(decoded);
         } on FormatException {
           // Refus attendu.
         }

@@ -3,28 +3,34 @@
 // Check in to version control
 
 import 'package:hive_ce/hive_ce.dart';
-import 'package:bedbug/features/content/infrastructure/models/comment_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/reaction_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/storage_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/trust_settings_hive_model.dart';
-import 'package:bedbug/features/exchange/infrastructure/models/exchange_log_hive_model.dart';
-import 'package:bedbug/features/exchange/infrastructure/models/keychain_hive_model.dart';
-import 'package:bedbug/features/settings/infrastructure/models/settings_hive_model.dart';
-import 'package:bedbug/features/signature/infrastructure/models/signature_hive_model.dart';
+import 'package:bedbug/resources/content/comment/comment.model.hive.dart';
+import 'package:bedbug/resources/content/content/content.model.hive.dart';
+import 'package:bedbug/resources/content/reaction/reaction.model.hive.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.model.hive.dart';
+import 'package:bedbug/resources/content/storage/storage.model.hive.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.model.hive.dart';
+import 'package:bedbug/resources/content/viewed_content/viewed_content.model.hive.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.model.hive.dart';
+import 'package:bedbug/resources/exchange/exchange_log/exchange_log.model.hive.dart';
+import 'package:bedbug/resources/exchange/keychain/keychain.model.hive.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.model.hive.dart';
+import 'package:bedbug/resources/signature/signature/signature.model.hive.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
     registerAdapter(CommentHiveModelAdapter());
     registerAdapter(ContentHiveModelAdapter());
+    registerAdapter(ErrorLogHiveModelAdapter());
     registerAdapter(ExchangeLogHiveModelAdapter());
     registerAdapter(KeychainHiveModelAdapter());
     registerAdapter(PrivateKeyHiveModelAdapter());
     registerAdapter(ReactionHiveModelAdapter());
-    registerAdapter(SettingsHiveModelAdapter());
+    registerAdapter(SeenContentHiveModelAdapter());
     registerAdapter(SignatureHiveModelAdapter());
     registerAdapter(StorageHiveModelAdapter());
     registerAdapter(TrustSettingsHiveModelAdapter());
+    registerAdapter(UserSettingsHiveModelAdapter());
+    registerAdapter(ViewedContentHiveModelAdapter());
   }
 }
 
@@ -32,13 +38,16 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
   void registerAdapters() {
     registerAdapter(CommentHiveModelAdapter());
     registerAdapter(ContentHiveModelAdapter());
+    registerAdapter(ErrorLogHiveModelAdapter());
     registerAdapter(ExchangeLogHiveModelAdapter());
     registerAdapter(KeychainHiveModelAdapter());
     registerAdapter(PrivateKeyHiveModelAdapter());
     registerAdapter(ReactionHiveModelAdapter());
-    registerAdapter(SettingsHiveModelAdapter());
+    registerAdapter(SeenContentHiveModelAdapter());
     registerAdapter(SignatureHiveModelAdapter());
     registerAdapter(StorageHiveModelAdapter());
     registerAdapter(TrustSettingsHiveModelAdapter());
+    registerAdapter(UserSettingsHiveModelAdapter());
+    registerAdapter(ViewedContentHiveModelAdapter());
   }
 }

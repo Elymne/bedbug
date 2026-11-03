@@ -1,21 +1,32 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bedbug/features/content/infrastructure/datasources/hive_drawing_draft_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_seen_content_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_trust_settings_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_viewed_content_repository.dart';
-import 'package:bedbug/features/content/infrastructure/models/comment_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/content_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/reaction_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/storage_hive_model.dart';
-import 'package:bedbug/features/content/infrastructure/models/trust_settings_hive_model.dart';
-import 'package:bedbug/features/exchange/infrastructure/datasources/hive_exchange_log_repository.dart';
-import 'package:bedbug/features/exchange/infrastructure/models/exchange_log_hive_model.dart';
-import 'package:bedbug/features/exchange/infrastructure/models/keychain_hive_model.dart';
-import 'package:bedbug/features/settings/infrastructure/models/settings_hive_model.dart';
-import 'package:bedbug/features/signature/infrastructure/models/signature_hive_model.dart';
 import 'package:bedbug/hive_registrar.g.dart';
+import 'package:bedbug/resources/content/comment/comment.config.dart';
+import 'package:bedbug/resources/content/comment/comment.model.hive.dart';
+import 'package:bedbug/resources/content/content/content.config.dart';
+import 'package:bedbug/resources/content/content/content.model.hive.dart';
+import 'package:bedbug/resources/content/drawing/drawing.config.dart';
+import 'package:bedbug/resources/content/reaction/reaction.config.dart';
+import 'package:bedbug/resources/content/reaction/reaction.model.hive.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.config.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.model.hive.dart';
+import 'package:bedbug/resources/content/storage/storage.config.dart';
+import 'package:bedbug/resources/content/storage/storage.model.hive.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.config.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.model.hive.dart';
+import 'package:bedbug/resources/content/viewed_content/viewed_content.config.dart';
+import 'package:bedbug/resources/content/viewed_content/viewed_content.model.hive.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.config.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.model.hive.dart';
+import 'package:bedbug/resources/exchange/exchange_log/exchange_log.config.dart';
+import 'package:bedbug/resources/exchange/exchange_log/exchange_log.model.hive.dart';
+import 'package:bedbug/resources/exchange/keychain/keychain.config.dart';
+import 'package:bedbug/resources/exchange/keychain/keychain.model.hive.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.model.hive.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/resources/signature/signature/signature.model.hive.dart';
 import 'package:hive_ce/hive.dart';
 
 /// Ouvre Hive sur un répertoire temporaire réel du disque, avec toutes les
@@ -33,18 +44,19 @@ Future<Directory> openTestHive() async {
     _areAdaptersRegistered = true;
   }
   await Future.wait([
-    Hive.openBox<SignatureHiveModel>('signatures'),
-    Hive.openBox<ContentHiveModel>('contents'),
-    Hive.openBox<CommentHiveModel>('comments'),
-    Hive.openBox<ReactionHiveModel>('reactions'),
-    Hive.openBox<KeychainHiveModel>('keychains'),
-    Hive.openBox<StorageHiveModel>('storage'),
-    Hive.openBox<SettingsHiveModel>('settings'),
+    Hive.openBox<SignatureHiveModel>(signatureBoxName),
+    Hive.openBox<ContentHiveModel>(contentBoxName),
+    Hive.openBox<CommentHiveModel>(commentBoxName),
+    Hive.openBox<ReactionHiveModel>(reactionBoxName),
+    Hive.openBox<KeychainHiveModel>(keychainBoxName),
+    Hive.openBox<StorageHiveModel>(storageBoxName),
+    Hive.openBox<UserSettingsHiveModel>(userSettingsBoxName),
     Hive.openBox<Uint8List>(drawingDraftBoxName),
     Hive.openBox<TrustSettingsHiveModel>(trustSettingsBoxName),
-    Hive.openBox<int>(seenContentBoxName),
-    Hive.openBox<int>(viewedContentBoxName),
+    Hive.openBox<SeenContentHiveModel>(seenContentBoxName),
+    Hive.openBox<ViewedContentHiveModel>(viewedContentBoxName),
     Hive.openBox<ExchangeLogHiveModel>(exchangeLogBoxName),
+    Hive.openBox<ErrorLogHiveModel>(errorLogBoxName),
   ]);
   return tempDir;
 }

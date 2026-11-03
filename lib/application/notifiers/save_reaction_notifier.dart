@@ -1,11 +1,13 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/notifiers/content_reaction_count_notifier.dart';
 import 'package:bedbug/application/notifiers/content_reactions_notifier.dart';
-import 'package:bedbug/features/content/domain/entities/reaction.dart';
-import 'package:bedbug/features/content/domain/usecases/save_reaction_usecase.dart';
-import 'package:bedbug/features/signature/domain/enums/text_font.dart';
-import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
-import 'package:bedbug/shared/extensions/string_uuid_x.dart';
+import 'package:bedbug/core/extensions/string_uuid_x.dart';
+import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/resources/signature/signature/text_font.enum.dart';
+import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.failure.dart';
+import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.params.dart';
+import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveReactionNotifier].

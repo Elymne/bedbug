@@ -1,17 +1,18 @@
 import 'dart:io';
 
-import 'package:bedbug/features/content/domain/entities/reaction.dart';
-import 'package:bedbug/features/content/domain/entities/text_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
-import 'package:bedbug/features/content/domain/usecases/enforce_storage_limit_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/get_storage_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/save_storage_limit_usecase.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_seen_content_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_storage_repository.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/resources/content/content/content.repository.hive.dart';
+import 'package:bedbug/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
+import 'package:bedbug/resources/content/storage/storage.config.dart';
+import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
+import 'package:bedbug/usecases/storage/enforce_storage_limit/enforce_storage_limit.usecase.dart';
+import 'package:bedbug/usecases/storage/get_storage/get_storage.usecase.dart';
+import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.params.dart';
+import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

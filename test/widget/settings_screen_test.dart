@@ -1,12 +1,15 @@
 import 'package:bedbug/application/screens/settings/settings_screen.dart';
 import 'package:bedbug/application/screens/settings/widgets/settings_menu_tile.dart';
 import 'package:bedbug/application/widgets/separators/app_list_separator.dart';
-import 'package:bedbug/features/settings/domain/usecases/get_settings_usecase.dart';
-import 'package:bedbug/features/settings/domain/value_objects/user_settings.dart';
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
-import 'package:bedbug/features/signature/domain/usecases/get_local_signature_usecase.dart';
-import 'package:bedbug/shared/domain/either.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';
+import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/usecases/settings/get_settings/get_settings.failure.dart';
+import 'package:bedbug/usecases/settings/get_settings/get_settings.usecase.dart';
+import 'package:bedbug/usecases/signature/get_local_signature/get_local_signature.failure.dart';
+import 'package:bedbug/usecases/signature/get_local_signature/get_local_signature.usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/pump_app.dart';
@@ -20,7 +23,7 @@ class _FakeGetLocalSignatureUsecase implements GetLocalSignatureUsecase {
 /// Fake [GetSettingsUsecase] retournant les réglages par défaut.
 class _FakeGetSettingsUsecase implements GetSettingsUsecase {
   @override
-  Future<Either<GetSettingsFailure, UserSettings>> call(NoParams params) async => const Right(UserSettings.empty());
+  Future<Either<GetSettingsFailure, UserSettings>> call(NoParams params) async => const Right(defaultUserSettings);
 }
 
 void main() {

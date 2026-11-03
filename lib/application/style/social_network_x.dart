@@ -1,4 +1,4 @@
-import 'package:bedbug/features/signature/domain/enums/social_network.dart';
+import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
 
 /// Libellés d'affichage des [SocialNetwork].
 ///

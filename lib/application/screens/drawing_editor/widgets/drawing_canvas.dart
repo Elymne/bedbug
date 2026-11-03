@@ -8,12 +8,10 @@ import 'package:bedbug/application/screens/drawing_editor/drawing_live_stroke_no
 import 'package:bedbug/application/screens/drawing_editor/drawing_tool_notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
-import 'package:bedbug/features/content/domain/extensions/drawing_dimensions_extension.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing_point.dart';
-import 'package:bedbug/features/content/domain/services/stroke_simplification_service.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
+import 'package:bedbug/core/extensions/build_context_x.dart';
+import 'package:bedbug/resources/content/drawing/drawing.config.dart';
+import 'package:bedbug/resources/content/drawing/drawing.extension.dart';
+import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -183,7 +181,7 @@ class DrawingCanvas extends ConsumerWidget {
     if (liveStroke == null || liveStroke.pointer != pointer || liveStroke.committedRevision != null) {
       return;
     }
-    final points = ref.read(strokeSimplificationServiceProvider).simplify(liveStroke.points);
+    final points = Drawing.simplifyStroke(liveStroke.points);
     final stroke = _buildStroke(ref.read(drawingToolNotifierProvider), points, liveStroke.seed);
     final editorNotifier = ref.read(drawingEditorNotifierProvider(args).notifier);
     if (!editorNotifier.addOperation(stroke)) {

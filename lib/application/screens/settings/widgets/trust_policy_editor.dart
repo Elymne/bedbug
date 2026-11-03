@@ -5,11 +5,8 @@ import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.dart';
 import 'package:bedbug/application/widgets/separators/app_list_separator.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
-import 'package:bedbug/features/content/domain/object_values/domain_rule.dart';
-import 'package:bedbug/features/content/domain/object_values/trust_settings.dart';
-import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
-import 'package:bedbug/features/content/domain/services/domain_rule_service.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
+import 'package:bedbug/core/extensions/build_context_x.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -114,7 +111,7 @@ class _State extends ConsumerState<TrustPolicyEditor> {
                 Expanded(
                   // Un domaine se lit toujours de gauche à droite, même en arabe.
                   child: Text(
-                    ref.read(domainRuleServiceProvider).patternOf(rule),
+                    DomainRule.patternOf(rule),
                     textDirection: TextDirection.ltr,
                     style: const TextStyle(fontSize: 15, color: AppColors.onLight),
                   ),

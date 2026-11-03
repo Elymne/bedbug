@@ -1,10 +1,12 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
-import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/object_values/home_feed.dart';
-import 'package:bedbug/features/content/domain/usecases/get_home_feed_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/mark_content_viewed_usecase.dart';
-import 'package:bedbug/shared/domain/params.dart';
-import 'package:bedbug/shared/notifier/notifier_state.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/core/notifier/notifier_state.dart';
+import 'package:bedbug/resources/content/content/content.entity.dart';
+import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';
+import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.result.dart';
+import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
+import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.params.dart';
+import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [HomeFeedNotifier].

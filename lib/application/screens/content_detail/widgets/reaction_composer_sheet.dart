@@ -12,10 +12,12 @@ import 'package:bedbug/application/widgets/signature/app_ghost_color_selector.da
 import 'package:bedbug/application/widgets/signature/app_ghost_speed_slider.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/texts/app_text_font_selector.dart';
-import 'package:bedbug/features/content/domain/entities/reaction.dart';
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
-import 'package:bedbug/features/signature/domain/enums/text_font.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
+import 'package:bedbug/core/extensions/build_context_x.dart';
+import 'package:bedbug/resources/content/reaction/reaction.config.dart';
+import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature/text_font.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

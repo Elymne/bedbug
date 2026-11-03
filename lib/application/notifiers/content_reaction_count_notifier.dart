@@ -1,4 +1,5 @@
-import 'package:bedbug/features/content/domain/usecases/count_content_reactions_usecase.dart';
+import 'package:bedbug/usecases/reaction/count_content_reactions/count_content_reactions.params.dart';
+import 'package:bedbug/usecases/reaction/count_content_reactions/count_content_reactions.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [ContentReactionCountNotifier], un par identifiant de contenu.

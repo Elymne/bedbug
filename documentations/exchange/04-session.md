@@ -1,6 +1,6 @@
 # Session : dans quel ordre parlent les téléphones
 
-Code : `lib/application/exchange/exchange_session.dart`, `lib/features/exchange/`.
+Code : `lib/application/exchange/exchange_session.dart`, `lib/usecases/exchange/`, `lib/gateways/exchange/`.
 
 La session vit dans `application` parce qu'elle appelle les use cases d'échange : seule cette couche en a le droit.
 

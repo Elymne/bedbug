@@ -11,12 +11,12 @@ import 'package:bedbug/application/widgets/images/app_round_image.dart';
 import 'package:bedbug/application/widgets/stats/content_stats.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
-import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
-import 'package:bedbug/features/content/domain/entities/link_content.dart';
-import 'package:bedbug/features/content/domain/entities/media_content.dart';
-import 'package:bedbug/features/content/domain/entities/text_content.dart';
-import 'package:bedbug/shared/extensions/datetime_x.dart';
+import 'package:bedbug/core/extensions/datetime_x.dart';
+import 'package:bedbug/resources/content/content/content.entity.dart';
+import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
+import 'package:bedbug/resources/content/content/link_content.entity.dart';
+import 'package:bedbug/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/resources/content/content/text_content.entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

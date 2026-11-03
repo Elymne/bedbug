@@ -1,12 +1,15 @@
 import 'dart:io';
 
-import 'package:bedbug/features/content/domain/entities/text_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/usecases/delete_own_content_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/get_own_contents_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/get_storage_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.failure.dart';
+import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.params.dart';
+import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.usecase.dart';
+import 'package:bedbug/usecases/content/get_own_contents/get_own_contents.usecase.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
+import 'package:bedbug/usecases/storage/get_storage/get_storage.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

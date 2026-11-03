@@ -8,7 +8,7 @@ import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/content_list/content_list_view.dart';
 import 'package:bedbug/application/widgets/fields/content_search_input.dart';
 import 'package:bedbug/application/widgets/navbar/app_nav_bar.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
+import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

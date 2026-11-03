@@ -3,9 +3,8 @@ import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/media_viewer/media_viewer_screen.dart';
 import 'package:bedbug/application/widgets/images/app_image_count_badge.dart';
 import 'package:bedbug/application/widgets/media/app_remote_media.dart';
-import 'package:bedbug/features/content/domain/object_values/content_media.dart';
-import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
-import 'package:bedbug/features/content/domain/services/url_trust_service.dart';
+import 'package:bedbug/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -86,7 +85,7 @@ class ContentMediaView extends ConsumerWidget {
     if (mediaPolicy == null) {
       return true;
     }
-    return ref.read(urlTrustServiceProvider).evaluate(mediaPolicy, item.url) != UrlTrust.grey;
+    return UrlTrustPolicy.evaluate(mediaPolicy, item.url) != UrlTrust.grey;
   }
 
   /// Ouvre la visionneuse plein écran sur les médias du contenu, à partir de celui en position [index].

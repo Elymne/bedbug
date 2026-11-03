@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bedbug/features/content/domain/object_values/drawing.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing_operation.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing_point.dart';
-import 'package:bedbug/features/content/domain/usecases/get_drawing_draft_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/save_drawing_draft_usecase.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_drawing_draft_repository.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/resources/content/drawing/drawing.config.dart';
+import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/usecases/content/get_drawing_draft/get_drawing_draft.failure.dart';
+import 'package:bedbug/usecases/content/get_drawing_draft/get_drawing_draft.usecase.dart';
+import 'package:bedbug/usecases/content/save_drawing_draft/save_drawing_draft.params.dart';
+import 'package:bedbug/usecases/content/save_drawing_draft/save_drawing_draft.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -68,6 +68,6 @@ void main() {
 
     final result = await container.read(getDrawingDraftUsecaseProvider)(const NoParams());
 
-    expect(result.left, DrawingDraftFailure.invalidData);
+    expect(result.left, GetDrawingDraftFailure.invalidData);
   });
 }

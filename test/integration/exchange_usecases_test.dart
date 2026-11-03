@@ -1,29 +1,34 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/entities/reaction.dart';
-import 'package:bedbug/features/content/domain/entities/text_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/usecases/delete_own_content_usecase.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_seen_content_repository.dart';
-import 'package:bedbug/features/exchange/domain/object_values/exchange_bundle.dart';
-import 'package:bedbug/features/exchange/domain/object_values/exchange_offer.dart';
-import 'package:bedbug/features/exchange/domain/object_values/exchange_request.dart';
-import 'package:bedbug/features/exchange/domain/usecases/build_exchange_bundle_usecase.dart';
-import 'package:bedbug/features/exchange/domain/usecases/build_exchange_offer_usecase.dart';
-import 'package:bedbug/features/exchange/domain/usecases/import_exchange_bundle_usecase.dart';
-import 'package:bedbug/features/exchange/domain/usecases/select_from_exchange_offer_usecase.dart';
-import 'package:bedbug/features/exchange/infrastructure/gateways/json_zlib_exchange_codec_gateway.dart';
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
-import 'package:bedbug/features/signature/domain/repositories/signature_repository.dart';
-import 'package:bedbug/features/signature/infrastructure/datasources/hive_signature_repository.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.dart';
+import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.json_zlib.dart';
+import 'package:bedbug/resources/content/content/content.entity.dart';
+import 'package:bedbug/resources/content/content/content.repository.hive.dart';
+import 'package:bedbug/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.entity.dart';
+import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
+import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.params.dart';
+import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.usecase.dart';
+import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.params.dart';
+import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.usecase.dart';
+import 'package:bedbug/usecases/exchange/build_exchange_offer/build_exchange_offer.usecase.dart';
+import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.config.dart';
+import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.params.dart';
+import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.usecase.dart';
+import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.params.dart';
+import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/fake_error_log_repository.dart';
 import '../helpers/hive_test_helper.dart';
 
 /// Codec utilisé pour fabriquer les messages d'un pair simulé et relire ceux de l'appareil.
@@ -121,6 +126,7 @@ void main() {
       container.read(seenContentRepositoryProvider),
       _codec,
       Random(seed),
+      FakeErrorLogRepository(),
     );
   }
 
@@ -169,7 +175,10 @@ void main() {
   group('sélection', () {
     test('écarte les contenus déjà possédés ou déjà vus, et respecte le budget', () async {
       await container.read(contentRepositoryProvider).addOne(_text('owned'));
-      await container.read(seenContentRepositoryProvider).addMany(['seen'], DateTime.now());
+      final seenAt = DateTime.now();
+      await container.read(seenContentRepositoryProvider).addMany([
+        SeenContent(id: 'seen', createdAt: seenAt, updatedAt: seenAt),
+      ]);
       const offer = ExchangeOffer(
         contents: [
           OfferedContent(id: 'owned', sizeInBytes: 10, reactionCount: 0),

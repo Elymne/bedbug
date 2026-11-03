@@ -2,7 +2,7 @@ import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/widgets/signature/app_signature_avatar.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.dart';
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

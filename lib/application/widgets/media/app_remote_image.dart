@@ -2,7 +2,7 @@ import 'package:bedbug/application/providers/trusted_media_loader_provider.dart'
 import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/media/app_media_placeholder.dart';
 import 'package:bedbug/application/widgets/media/trusted_network_image.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
+import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

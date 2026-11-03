@@ -1,14 +1,16 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/features/content/domain/gateways/media_http_gateway.dart';
-import 'package:bedbug/features/content/domain/object_values/domain_rule.dart';
-import 'package:bedbug/features/content/domain/object_values/safe_url.dart';
-import 'package:bedbug/features/content/domain/object_values/url_trust_policy.dart';
-import 'package:bedbug/features/content/domain/services/domain_rule_service.dart';
-import 'package:bedbug/features/content/domain/services/url_safety_service.dart';
-import 'package:bedbug/features/content/domain/services/url_trust_service.dart';
-import 'package:bedbug/features/content/domain/usecases/fetch_media_usecase.dart';
+import 'package:bedbug/gateways/media/media_http/media_http.gateway.dart';
+import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
+import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
+import 'package:bedbug/usecases/content/fetch_media/fetch_media.config.dart';
+import 'package:bedbug/usecases/content/fetch_media/fetch_media.failure.dart';
+import 'package:bedbug/usecases/content/fetch_media/fetch_media.params.dart';
+import 'package:bedbug/usecases/content/fetch_media/fetch_media.result.dart';
+import 'package:bedbug/usecases/content/fetch_media/fetch_media.usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../helpers/fake_error_log_repository.dart';
 
 /// Faux serveur : une réponse par adresse, et le journal des adresses contactées.
 class _FakeMediaHttpGateway implements MediaHttpGateway {
@@ -28,10 +30,6 @@ class _FakeMediaHttpGateway implements MediaHttpGateway {
 }
 
 void main() {
-  const urlSafetyService = UrlSafetyService();
-  const domainRuleService = DomainRuleService(urlSafetyService);
-  const urlTrustService = UrlTrustService(urlSafetyService, domainRuleService);
-
   const policy = UrlTrustPolicy(
     trustedRules: [
       DomainRule(host: 'picsum.photos', isIncludingSubdomains: true),
@@ -47,7 +45,7 @@ void main() {
     String rawUrl, {
     bool isConfirmed = false,
   }) async {
-    final result = await FetchMediaUsecase(gateway, urlSafetyService, urlTrustService)(
+    final result = await FetchMediaUsecase(gateway, FakeErrorLogRepository())(
       FetchMediaParams(rawUrl: rawUrl, policy: policy, isConfirmed: isConfirmed),
     );
     return (result.left, result.right);

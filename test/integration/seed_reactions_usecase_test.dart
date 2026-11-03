@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:bedbug/features/content/domain/entities/reaction.dart';
-import 'package:bedbug/features/content/domain/extensions/reaction_text_extension.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_reaction_repository.dart';
+import 'package:bedbug/resources/content/content/content.repository.hive.dart';
+import 'package:bedbug/resources/content/reaction/reaction.config.dart';
+import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -38,7 +38,7 @@ void main() {
       final reactions = await reactionRepository.getAllByContentId(content.id);
       expect(reactions.length, index < 3 ? 10 : 0, reason: 'contenu $index du fil');
       expect(reactions.map((reaction) => reaction.authorId).toSet().length, reactions.length);
-      expect(reactions.every((reaction) => reaction.bubbleText.isValidReactionBubble), isTrue);
+      expect(reactions.every((reaction) => Reaction.isValidBubble(reaction.bubbleText)), isTrue);
     }
   });
 

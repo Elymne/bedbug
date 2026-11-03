@@ -1,0 +1,61 @@
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/usecase.dart';
+import 'package:bedbug/core/logger/app_logger.dart';
+import 'package:bedbug/resources/content/content/content.entity.dart';
+import 'package:bedbug/resources/content/content/content.repository.dart';
+import 'package:bedbug/resources/content/content/content.repository.hive.dart';
+import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
+import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/resources/content/storage/storage.repository.dart';
+import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
+import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.dart';
+import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.failure.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// Provider du [SaveContentUsecase].
+final saveContentUsecaseProvider = Provider<SaveContentUsecase>((ref) {
+  return SaveContentUsecase(
+    ref.read(contentRepositoryProvider),
+    ref.read(storageRepositoryProvider),
+    ref.read(errorLogRepositoryProvider),
+  );
+});
+
+/// Persiste un contenu dans le stockage local.
+///
+/// Le poids (`sizeInBytes`) fourni par l'appelant n'est pas fiable : ce use case le fait recalculer par
+/// [Content.sizeInBytesOf] avant persistance, pour que le suivi du stockage reste juste.
+class SaveContentUsecase extends Usecase<SaveContentParams, SaveContentFailure, Content> {
+  /// Crée un [SaveContentUsecase].
+  SaveContentUsecase(this._contentRepository, this._storageRepository, this._errorLogRepository);
+
+  final ContentRepository _contentRepository;
+  final StorageRepository _storageRepository;
+  final ErrorLogRepository _errorLogRepository;
+
+  @override
+  Future<Either<SaveContentFailure, Content>> call(SaveContentParams params) async {
+    try {
+      final content = params.content;
+      // Un dessin hors limites (trop de couleurs, de points, de traits) n'est jamais enregistré.
+      if (content is DrawingContent && !Drawing.isValid(content.drawing)) {
+        return const Left(SaveContentFailure.invalidContent);
+      }
+      final resized = content.copyWithSizeInBytes(Content.sizeInBytesOf(content));
+
+      final saved = await _contentRepository.addOne(resized);
+      await _storageRepository.adjustCurrentSizeInBytes(saved.sizeInBytes);
+      return Right(saved);
+    } on DatasourceException catch (error, stackTrace) {
+      AppLogger.error('SaveContentUsecase', error, stackTrace);
+      return const Left(SaveContentFailure.storageError);
+    } catch (error, stackTrace) {
+      AppLogger.error('SaveContentUsecase', error, stackTrace);
+      await _errorLogRepository.record(source: 'SaveContentUsecase', error: error, stackTrace: stackTrace);
+      return const Left(SaveContentFailure.unknown);
+    }
+  }
+}

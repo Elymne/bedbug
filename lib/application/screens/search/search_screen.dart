@@ -4,7 +4,7 @@ import 'package:bedbug/application/screens/search/widgets/flair_suggestion_tile.
 import 'package:bedbug/application/screens/search/widgets/signature_suggestion_tile.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/fields/content_search_input.dart';
-import 'package:bedbug/shared/extensions/build_context_x.dart';
+import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

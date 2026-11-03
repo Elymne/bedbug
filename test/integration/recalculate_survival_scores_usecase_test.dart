@@ -1,12 +1,13 @@
 import 'dart:io';
 
-import 'package:bedbug/features/content/domain/entities/text_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/repositories/content_repository.dart';
-import 'package:bedbug/features/content/domain/usecases/recalculate_survival_scores_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/save_content_usecase.dart';
-import 'package:bedbug/features/content/infrastructure/datasources/hive_content_repository.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/resources/content/content/content.repository.dart';
+import 'package:bedbug/resources/content/content/content.repository.hive.dart';
+import 'package:bedbug/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
+import 'package:bedbug/usecases/storage/recalculate_survival_scores/recalculate_survival_scores.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

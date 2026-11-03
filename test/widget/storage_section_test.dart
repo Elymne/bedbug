@@ -1,12 +1,17 @@
 import 'package:bedbug/application/screens/settings/widgets/storage_section.dart';
-import 'package:bedbug/features/content/domain/entities/storage.dart';
-import 'package:bedbug/features/content/domain/repositories/storage_repository.dart';
-import 'package:bedbug/features/content/domain/usecases/enforce_storage_limit_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/get_storage_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/recalculate_survival_scores_usecase.dart';
-import 'package:bedbug/features/content/domain/usecases/save_storage_limit_usecase.dart';
-import 'package:bedbug/shared/domain/either.dart';
-import 'package:bedbug/shared/domain/params.dart';
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/core/domain/params.dart';
+import 'package:bedbug/resources/content/storage/storage.config.dart';
+import 'package:bedbug/resources/content/storage/storage.value_object.dart';
+import 'package:bedbug/usecases/storage/enforce_storage_limit/enforce_storage_limit.failure.dart';
+import 'package:bedbug/usecases/storage/enforce_storage_limit/enforce_storage_limit.usecase.dart';
+import 'package:bedbug/usecases/storage/get_storage/get_storage.failure.dart';
+import 'package:bedbug/usecases/storage/get_storage/get_storage.usecase.dart';
+import 'package:bedbug/usecases/storage/recalculate_survival_scores/recalculate_survival_scores.failure.dart';
+import 'package:bedbug/usecases/storage/recalculate_survival_scores/recalculate_survival_scores.usecase.dart';
+import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.failure.dart';
+import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.params.dart';
+import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -17,8 +22,7 @@ import '../helpers/pump_app.dart';
 ///
 /// - [limitInBytes] : limite, en octets.
 Storage _buildStorage(int limitInBytes) {
-  final date = DateTime(2026, 10);
-  return Storage(id: 'storage', createdAt: date, updatedAt: date, maxSizeInBytes: limitInBytes);
+  return Storage(maxSizeInBytes: limitInBytes);
 }
 
 /// Fake [GetStorageUsecase] retournant une limite fixe.

@@ -1,7 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:bedbug/application/providers/drawing_rasterizer_provider.dart';
-import 'package:bedbug/features/content/domain/object_values/drawing.dart';
+import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider de l'image d'un dessin, calculée une fois par [DrawingImageRequest.key].

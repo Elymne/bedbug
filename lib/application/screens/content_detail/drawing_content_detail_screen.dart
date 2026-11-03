@@ -2,7 +2,7 @@ import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/content_detail/content_detail_skeleton.dart';
 import 'package:bedbug/application/screens/drawing_viewer/drawing_viewer_screen.dart';
 import 'package:bedbug/application/widgets/drawing/app_drawing_image.dart';
-import 'package:bedbug/features/content/domain/entities/drawing_content.dart';
+import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

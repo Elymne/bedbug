@@ -1,12 +1,16 @@
 import 'package:bedbug/application/screens/signature/signature_screen.dart';
-import 'package:bedbug/features/content/domain/entities/content.dart';
-import 'package:bedbug/features/content/domain/entities/text_content.dart';
-import 'package:bedbug/features/content/domain/enums/content_origin.dart';
-import 'package:bedbug/features/content/domain/usecases/get_contents_by_signatures_usecase.dart';
-import 'package:bedbug/features/signature/domain/entities/signature.dart';
-import 'package:bedbug/features/signature/domain/enums/social_network.dart';
-import 'package:bedbug/features/signature/domain/usecases/get_signature_usecase.dart';
-import 'package:bedbug/shared/domain/either.dart';
+import 'package:bedbug/core/domain/either.dart';
+import 'package:bedbug/resources/content/content/content.entity.dart';
+import 'package:bedbug/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
+import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.failure.dart';
+import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.params.dart';
+import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.usecase.dart';
+import 'package:bedbug/usecases/signature/get_signature/get_signature.failure.dart';
+import 'package:bedbug/usecases/signature/get_signature/get_signature.params.dart';
+import 'package:bedbug/usecases/signature/get_signature/get_signature.usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/pump_app.dart';
