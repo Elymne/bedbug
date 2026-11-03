@@ -1,5 +1,5 @@
-import 'package:bedbug/application/widgets/reactions/app_reaction_bubble.dart';
-import 'package:bedbug/application/widgets/scatter/app_scatter.dart';
+import 'package:bedbug/application/widgets/reactions/app_reaction_bubble.widget.dart';
+import 'package:bedbug/application/widgets/scatter/app_scatter.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

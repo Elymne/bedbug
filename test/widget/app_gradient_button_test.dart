@@ -1,6 +1,6 @@
 import 'package:bedbug/application/style/app_colors.dart';
-import 'package:bedbug/application/widgets/buttons/app_form_submit_button.dart';
-import 'package:bedbug/application/widgets/buttons/app_gradient_button.dart';
+import 'package:bedbug/application/widgets/buttons/app_form_submit_button.widget.dart';
+import 'package:bedbug/application/widgets/buttons/app_gradient_button.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:reactive_forms/reactive_forms.dart';

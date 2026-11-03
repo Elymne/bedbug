@@ -1,6 +1,6 @@
-import 'package:bedbug/application/screens/settings/settings_screen.dart';
-import 'package:bedbug/application/screens/settings/widgets/settings_menu_tile.dart';
-import 'package:bedbug/application/widgets/separators/app_list_separator.dart';
+import 'package:bedbug/application/screens/settings/settings.screen.dart';
+import 'package:bedbug/application/screens/settings/widgets/settings_menu_tile.widget.dart';
+import 'package:bedbug/application/widgets/separators/app_list_separator.widget.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';

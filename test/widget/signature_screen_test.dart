@@ -1,4 +1,4 @@
-import 'package:bedbug/application/screens/signature/signature_screen.dart';
+import 'package:bedbug/application/screens/signature/signature.screen.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/content_origin.enum.dart';

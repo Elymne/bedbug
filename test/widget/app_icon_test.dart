@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_icons.dart';
-import 'package:bedbug/application/widgets/icons/app_icon.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';

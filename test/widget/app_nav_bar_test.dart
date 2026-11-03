@@ -1,6 +1,6 @@
 import 'package:bedbug/application/style/app_colors.dart';
-import 'package:bedbug/application/style/app_const.dart';
-import 'package:bedbug/application/widgets/navbar/app_nav_bar.dart';
+import 'package:bedbug/application/widgets/navbar/app_nav_bar.config.dart';
+import 'package:bedbug/application/widgets/navbar/app_nav_bar.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -21,7 +21,7 @@ Future<void> _pumpNavBar(WidgetTester tester, {ValueChanged<int>? onTap}) async 
     tester,
     Scaffold(
       bottomNavigationBar: SizedBox(
-        height: AppConst.homeNavBarBaseHeight,
+        height: appNavBarBaseHeight,
         child: AppNavBar(selectedIndex: 3, items: _kItems, onTap: onTap ?? (_) {}),
       ),
     ),

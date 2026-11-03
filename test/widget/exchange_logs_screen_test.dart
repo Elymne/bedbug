@@ -1,4 +1,4 @@
-import 'package:bedbug/application/screens/exchange_logs/exchange_logs_screen.dart';
+import 'package:bedbug/application/screens/exchange_logs/exchange_logs.screen.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log.entity.dart';

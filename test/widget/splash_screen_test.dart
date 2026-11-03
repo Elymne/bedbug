@@ -1,6 +1,6 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
-import 'package:bedbug/application/screens/splash/splash_screen.dart';
-import 'package:bedbug/application/screens/splash/widgets/app_title_text.dart';
+import 'package:bedbug/application/screens/splash/splash.screen.dart';
+import 'package:bedbug/application/screens/splash/widgets/app_title_text.widget.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';

@@ -76,8 +76,9 @@ and constants go in `<gateway>.exception.dart` and `<gateway>.config.dart`.
 ### Constants
 
 Public top-level constants and default values (`const`, or `final` when they cannot be `const`, like `anonymousSignature`)
-never sit in an entity, repository, gateway, service or use case file: they go in the
-`.config.dart` of their folder (`storage.config.dart`, `fetch_media.config.dart`). Private constants (`_name`) stay in
+never sit in an entity, repository, gateway, service, use case, screen, widget or notifier file: they go in the
+`.config.dart` of their folder (`storage.config.dart`, `fetch_media.config.dart`, `home.config.dart`,
+`app_nav_bar.config.dart`). Private constants (`_name`) stay in
 the file that uses them.
 
 ### Exceptions
@@ -119,13 +120,17 @@ The only layer aware of the framework.
 
 ```
 application/
-  screens/<screen>/   one folder per screen: the screen, its local notifiers and its local widgets/
+  screens/<screen>/   one folder per screen (see "State ownership" below):
+    <screen>.screen.dart
+    <screen>.config.dart
+    <widget>/           one folder per widget of the screen: <widget>.widget.dart, plus <widget>.notifier.dart
+                        when it watches a notifier of its own (and <widget>.config.dart if needed)
   widgets/            widgets reused across screens, grouped by kind
-  notifiers/          notifiers shared across screens
+  notifiers/          global notifiers: watched by several widgets
   providers/          technical providers shared across screens
   exchange/           device-to-device session, orchestrating the exchange use cases
   router/             router and route paths
-  style/              colors, text styles, theme, constants
+  style/              colors, text styles, theme
   validators/         form validators
   formatters/         input formatters
   l10n/               ARB files and localization
@@ -204,7 +209,8 @@ core/
 - One file = one responsibility.
 - Never mix UI, business logic and data access.
 - File names are `snake_case`, with dot-separated suffixes for their role and technology (`reaction.entity.dart`,
-  `reaction.repository.hive.dart`).
+  `reaction.repository.hive.dart`). In `application`: `<name>.screen.dart`, `<name>.widget.dart`,
+  `<name>.notifier.dart`.
 
 ## Code style
 
@@ -336,13 +342,24 @@ Riverpod handles both state management and dependency injection.
   late final exampleRepository = ref.read(exampleRepositoryProvider);
   ```
 
+#### State ownership
+
+- A screen is static: it only lays out widgets and never calls `ref.watch`. Whatever needs a state is cut out into the
+  smallest widget that displays it, and that widget watches the state itself, so a change rebuilds only that widget.
+- A widget watches **at most one** notifier. A widget that would watch two is either split into several widgets, or
+  its two notifiers are merged into one. This applies to global widgets (`application/widgets/`) too.
+- Only `ref.watch` counts: any widget may `ref.listen` to react to what happens in the app, and may call
+  `ref.read(provider.notifier).doSomething()` to trigger an action.
+
 #### Notifiers
 
-- One notifier per concern, not one catch-all notifier per screen. Business state (data from a use case) and ephemeral
-  UI state (scroll-driven animation, cursor position…) never share a notifier.
-- Name each notifier after its concern (`HomeFeedNotifier`, `HomeBarsOffsetNotifier`), not only after its screen.
-- A `ref.watch` on high-frequency UI state is scoped to the closest widget that needs it (local `Consumer`), never at
-  the top of the screen's `build`.
+- A notifier watched by a **single** widget belongs to it: same name as the widget (`HomeFeed` ↔ `HomeFeedNotifier`),
+  in a folder named after the widget inside its screen (`home/home_feed/home_feed.widget.dart` +
+  `home_feed.notifier.dart`).
+- A notifier watched by **several** widgets is global: it goes in `application/notifiers/` and is named after the
+  action it allows.
+- Business state (data from a use case) and ephemeral UI state (scroll-driven animation, cursor position…) never share
+  a notifier.
 
 #### Conventions
 

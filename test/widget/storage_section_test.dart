@@ -1,4 +1,4 @@
-import 'package:bedbug/application/screens/settings/widgets/storage_section.dart';
+import 'package:bedbug/application/screens/settings/widgets/storage_section.widget.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/content/storage/storage.config.dart';

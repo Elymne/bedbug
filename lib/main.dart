@@ -1,5 +1,5 @@
-import 'package:bedbug/application/app_root.dart';
-import 'package:bedbug/application/exchange/passive_exchange_notifier.dart';
+import 'package:bedbug/application/app_root.widget.dart';
+import 'package:bedbug/application/notifiers/passive_exchange.notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/core/config/app_config.dart';
 import 'package:bedbug/resources/hive.initializer.dart';
