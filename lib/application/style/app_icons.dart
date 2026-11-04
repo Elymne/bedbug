@@ -34,6 +34,9 @@ enum AppIcons {
   /// Croix dans un cercle.
   cancel,
 
+  /// Histogramme de trois barres.
+  chart,
+
   /// Coche.
   check,
 

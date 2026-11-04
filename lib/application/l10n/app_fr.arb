@@ -1079,9 +1079,37 @@
   "@trustResetButton": {
     "description": "Bouton rétablissant les listes de domaines par défaut"
   },
-  "exchangeToggleLabel": "Échanger avec les téléphones proches",
-  "@exchangeToggleLabel": {
-    "description": "Interrupteur activant l'échange de contenus en arrière-plan"
+  "exchangeSleepingHint": "Je dors… Touche-moi pour échanger avec les téléphones proches.",
+  "@exchangeSleepingHint": {
+    "description": "Texte sous le bedbug endormi de la page Échange, quand l'échange est coupé"
+  },
+  "exchangeAwakeHint": "J'échange avec les téléphones proches. Touche-moi pour dormir.",
+  "@exchangeAwakeHint": {
+    "description": "Texte sous le bedbug réveillé de la page Échange, quand l'échange est actif"
+  },
+  "settingsExchangeStatsTitle": "Statistiques d'échange",
+  "@settingsExchangeStatsTitle": {
+    "description": "Titre de la page des statistiques d'échange dans les paramètres"
+  },
+  "settingsExchangeStatsSubtitle": "Échanges et contenus reçus depuis le lancement",
+  "@settingsExchangeStatsSubtitle": {
+    "description": "Description de la ligne des statistiques d'échange dans le menu des paramètres"
+  },
+  "settingsExchangeStatsSuccess": "Échanges réussis",
+  "@settingsExchangeStatsSuccess": {
+    "description": "Ligne du nombre d'échanges réussis, page des statistiques d'échange"
+  },
+  "settingsExchangeStatsFailure": "Échanges échoués",
+  "@settingsExchangeStatsFailure": {
+    "description": "Ligne du nombre d'échanges échoués, page des statistiques d'échange"
+  },
+  "settingsExchangeStatsContents": "Contenus reçus",
+  "@settingsExchangeStatsContents": {
+    "description": "Ligne du nombre de contenus reçus, page des statistiques d'échange"
+  },
+  "settingsExchangeStatsHint": "Les compteurs repartent de zéro à chaque lancement de l'app.",
+  "@settingsExchangeStatsHint": {
+    "description": "Précision sous les statistiques d'échange : elles ne sont pas enregistrées"
   },
   "exchangePermissionDenied": "L'échange a besoin de l'accès au Bluetooth.",
   "@exchangePermissionDenied": {
@@ -1094,15 +1122,6 @@
   "exchangeUnavailable": "L'échange n'est pas disponible sur ce téléphone.",
   "@exchangeUnavailable": {
     "description": "Erreur quand le téléphone ne peut pas lancer l'échange"
-  },
-  "exchangeStats": "Échanges réussis : {successCount}\nÉchanges échoués : {failureCount}\nContenus reçus : {contentCount}",
-  "@exchangeStats": {
-    "description": "Compteurs des échanges depuis le lancement de l'app, sur la page Échange",
-    "placeholders": {
-      "successCount": { "type": "int" },
-      "failureCount": { "type": "int" },
-      "contentCount": { "type": "int" }
-    }
   },
   "signatureSetupTitle": "Crée ta signature",
   "@signatureSetupTitle": {

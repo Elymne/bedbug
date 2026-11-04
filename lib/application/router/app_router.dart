@@ -18,6 +18,7 @@ import 'package:bedbug/application/screens/search/search.screen.dart';
 import 'package:bedbug/application/screens/search_results/search_results.screen.dart';
 import 'package:bedbug/application/screens/select_options/select_options.screen.dart';
 import 'package:bedbug/application/screens/settings/debug_section/debug_section.widget.dart';
+import 'package:bedbug/application/screens/settings/exchange_stats_section/exchange_stats_section.widget.dart';
 import 'package:bedbug/application/screens/settings/language_section/language_section.widget.dart';
 import 'package:bedbug/application/screens/settings/own_contents_section/own_contents_section.widget.dart';
 import 'package:bedbug/application/screens/settings/publishing_section/publishing_section.widget.dart';
@@ -74,6 +75,9 @@ const String settingsStoragePath = '/settings/storage';
 
 /// Chemin vers la page des posts de l'utilisateur.
 const String settingsOwnContentsPath = '/settings/own-contents';
+
+/// Chemin vers la page des statistiques d'échange.
+const String settingsExchangeStatsPath = '/settings/exchange-stats';
 
 /// Chemin vers la page des outils de debug.
 const String settingsDebugPath = '/settings/debug';
@@ -222,6 +226,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           _settingsSectionRoute('trust', (l10n) => l10n.trustSettingsTitle, const TrustSection()),
           _settingsSectionRoute('storage', (l10n) => l10n.settingsStorageTitle, const StorageSection()),
           _settingsSectionRoute('own-contents', (l10n) => l10n.settingsOwnContentsTitle, const OwnContentsSection()),
+          _settingsSectionRoute(
+            'exchange-stats',
+            (l10n) => l10n.settingsExchangeStatsTitle,
+            const ExchangeStatsSection(),
+          ),
           _settingsSectionRoute('debug', (l10n) => l10n.settingsDebugTitle, const DebugSection()),
           GoRoute(path: 'exchange-logs', pageBuilder: (context, state) => _fadePage(const ExchangeLogsScreen())),
         ],

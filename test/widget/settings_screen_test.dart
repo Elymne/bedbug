@@ -44,7 +44,8 @@ void main() {
     expect(find.text('Publication'), findsOneWidget);
     expect(find.text('Comment tes contenus sont publiés'), findsOneWidget);
     expect(find.text('Mes posts'), findsOneWidget);
-    expect(find.byType(SettingsMenuTile), findsNWidgets(7));
-    expect(find.byType(AppListSeparator), findsNWidgets(6));
+    expect(find.text("Statistiques d'échange"), findsOneWidget);
+    expect(find.byType(SettingsMenuTile), findsNWidgets(8));
+    expect(find.byType(AppListSeparator), findsNWidgets(7));
   });
 }

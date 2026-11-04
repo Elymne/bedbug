@@ -14,7 +14,8 @@ class AppPageHeader extends ConsumerWidget {
   /// - [onBack] : callback déclenché lors du tap sur le bouton retour.
   ///   Si `null`, aucun bouton retour n'est affiché.
   /// - [titlePrefix] : préfixe optionnel affiché en couleur primaire devant le titre (ex. `f/`).
-  const AppPageHeader({super.key, required this.title, this.onBack, this.titlePrefix});
+  /// - [color] : couleur du titre et du bouton retour (défaut [AppColors.onLight]), à changer sur un fond sombre.
+  const AppPageHeader({super.key, required this.title, this.onBack, this.titlePrefix, this.color = AppColors.onLight});
 
   /// Titre de la page.
   final String title;
@@ -27,6 +28,11 @@ class AppPageHeader extends ConsumerWidget {
   /// `null` = pas de bouton retour.
   final VoidCallback? onBack;
 
+  /// Couleur du titre et du bouton retour.
+  ///
+  /// Le fond d'une page peut changer (ciel de nuit de la page d'échange) : l'en-tête doit rester lisible dessus.
+  final Color color;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
@@ -36,12 +42,12 @@ class AppPageHeader extends ConsumerWidget {
           if (onBack != null)
             IconButton(
               onPressed: onBack,
-              icon: const AppIcon(AppIcons.arrowBack, color: AppColors.onLight),
+              icon: AppIcon(AppIcons.arrowBack, color: color),
             ),
           AppPrefixedText(
             prefix: titlePrefix ?? '',
             text: title,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: AppColors.onLight),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: color),
           ),
         ],
       ),

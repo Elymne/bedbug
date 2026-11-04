@@ -22,6 +22,7 @@ import 'package:bedbug/resources/exchange/exchange_log/exchange_log.config.dart'
 import 'package:bedbug/resources/exchange/exchange_log/exchange_log.model.hive.dart';
 import 'package:bedbug/resources/exchange/keychain/keychain.config.dart';
 import 'package:bedbug/resources/exchange/keychain/keychain.model.hive.dart';
+import 'package:bedbug/resources/hive.type_ids.dart';
 import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';
 import 'package:bedbug/resources/settings/user_settings/user_settings.model.hive.dart';
 import 'package:bedbug/resources/signature/signature/signature.config.dart';
@@ -30,11 +31,17 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 
 /// Initialise Hive, enregistre les adapters et ouvre toutes les boxes.
 ///
-/// À appeler une seule fois au démarrage de l'application, avant tout
-/// accès aux repositories.
-Future<void> initHive() async {
-  await Hive.initFlutter();
-  Hive.registerAdapters();
+/// À appeler au démarrage de l'application, avant tout accès aux
+/// repositories. Peut être rappelée (après un `Hive.deleteFromDisk`, pour
+/// repartir d'une base vide) : les adapters ne sont enregistrés qu'une fois.
+///
+/// - [subDirectory] : dossier des données, `null` pour celui de l'app. Le smoke test sur téléphone en utilise un à
+///   part, pour ne jamais toucher aux données de l'utilisateur.
+Future<void> initHive({String? subDirectory}) async {
+  await Hive.initFlutter(subDirectory);
+  if (!Hive.isAdapterRegistered(HiveTypeIds.signature)) {
+    Hive.registerAdapters();
+  }
   await Future.wait([
     Hive.openBox<SignatureHiveModel>(signatureBoxName),
     Hive.openBox<ContentHiveModel>(contentBoxName),
