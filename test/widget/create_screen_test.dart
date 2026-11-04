@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/router/app_router.dart';
-import 'package:bedbug/application/screens/create/create_screen.dart';
-import 'package:bedbug/application/widgets/tags/app_tag.dart';
-import 'package:bedbug/application/widgets/texts/app_loading_text.dart';
+import 'package:bedbug/application/screens/create/create.screen.dart';
+import 'package:bedbug/application/widgets/tags/app_tag.widget.dart';
+import 'package:bedbug/application/widgets/texts/app_loading_text.widget.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';

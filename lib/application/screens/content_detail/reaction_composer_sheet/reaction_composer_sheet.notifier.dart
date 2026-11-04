@@ -1,0 +1,92 @@
+import 'package:bedbug/application/l10n/app_localizations_provider.dart';
+import 'package:bedbug/application/screens/content_detail/content_reactions_section/content_reactions_section.notifier.dart';
+import 'package:bedbug/application/widgets/stats/content_stats.notifier.dart';
+import 'package:bedbug/core/extensions/string_uuid_x.dart';
+import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/resources/signature/signature/text_font.enum.dart';
+import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.failure.dart';
+import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.params.dart';
+import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.usecase.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// Provider du [ReactionComposerSheetNotifier].
+final reactionComposerSheetNotifierProvider = AsyncNotifierProvider.autoDispose<ReactionComposerSheetNotifier, void>(
+  ReactionComposerSheetNotifier.new,
+);
+
+/// Notifier gérant l'enregistrement de la réaction de l'utilisateur sur un contenu.
+///
+/// Séparé de [ContentReactionsSectionNotifier] : l'enregistrement ne doit pas faire
+/// repasser la liste des réactions en chargement. Son état ne porte que le
+/// chargement en cours (pour désactiver le bouton) ; le résultat est retourné
+/// directement à l'appelant, seul à savoir quoi afficher.
+class ReactionComposerSheetNotifier extends AsyncNotifier<void> {
+  /// Cas d'usage d'enregistrement d'une réaction.
+  late final _saveReactionUsecase = ref.read(saveReactionUsecaseProvider);
+
+  @override
+  Future<void> build() async {}
+
+  /// Enregistre la réaction de l'utilisateur sur [contentId] et retourne `null` en cas de succès, ou le message d'erreur à afficher.
+  ///
+  /// La réaction est signée par l'utilisateur du téléphone, jamais en
+  /// anonyme : toutes les réactions anonymes partageraient le même auteur et
+  /// se remplaceraient entre elles. Elle remplace la précédente réaction de
+  /// l'utilisateur, dont la date de création est conservée. En cas de succès,
+  /// les réactions du contenu et leur nombre sont rechargés.
+  ///
+  /// - [contentId] : identifiant du contenu auquel réagir.
+  /// - [avatarText] : bedbug choisi.
+  /// - [bubbleText] : bulle de texte.
+  /// - [colorArgb] : couleur de l'effet ghost du bedbug en ARGB 32 bits.
+  /// - [ghostSpeed] : intensité de l'effet ghost du bedbug.
+  /// - [bubbleFont] : police de la bulle de texte.
+  /// - [previousReaction] : réaction actuelle de l'utilisateur sur ce contenu, `null` s'il n'a pas encore réagi.
+  Future<String?> save({
+    required String contentId,
+    required String avatarText,
+    required int colorArgb,
+    required double ghostSpeed,
+    required String bubbleText,
+    required TextFont bubbleFont,
+    Reaction? previousReaction,
+  }) async {
+    state = const AsyncLoading();
+    final now = DateTime.now();
+    final result = await _saveReactionUsecase(
+      SaveReactionParams(
+        reaction: Reaction(
+          // Même identifiant que la réaction remplacée : chez les pairs, qui ne reçoivent pas l'auteur, c'est
+          // l'identifiant qui permet à la nouvelle version de remplacer l'ancienne.
+          id: previousReaction?.id ?? UuidX.generate(),
+          createdAt: previousReaction?.createdAt ?? now,
+          updatedAt: now,
+          contentId: contentId,
+          authorId: localSignatureId,
+          avatarText: avatarText,
+          bubbleText: bubbleText,
+          colorArgb: colorArgb,
+          ghostSpeed: ghostSpeed,
+          bubbleFont: bubbleFont,
+        ),
+      ),
+    );
+    state = const AsyncData(null);
+
+    return result.fold(
+      onFailure: (SaveReactionFailure failure) {
+        return switch (failure) {
+          SaveReactionFailure.invalidReaction => ref.l10n.reactionInvalidError,
+          SaveReactionFailure.storageError => ref.l10n.homeGetContentsStorageError,
+          SaveReactionFailure.unknown => ref.l10n.reactionSaveError,
+        };
+      },
+      onSuccess: (_) {
+        ref.invalidate(contentReactionsSectionNotifierProvider(contentId));
+        ref.invalidate(contentStatsNotifierProvider(contentId));
+        return null;
+      },
+    );
+  }
+}

@@ -1,8 +1,8 @@
-import 'package:bedbug/application/exchange/passive_exchange_notifier.dart';
-import 'package:bedbug/application/screens/home/home_screen.dart';
-import 'package:bedbug/application/widgets/content_tile/content_widget.dart';
-import 'package:bedbug/application/widgets/fields/content_search_input.dart';
-import 'package:bedbug/application/widgets/ghost/app_ghost_icon.dart';
+import 'package:bedbug/application/notifiers/passive_exchange.notifier.dart';
+import 'package:bedbug/application/screens/home/home.screen.dart';
+import 'package:bedbug/application/widgets/content_tile/content.widget.dart';
+import 'package:bedbug/application/widgets/fields/content_search_input.widget.dart';
+import 'package:bedbug/application/widgets/ghost/app_ghost_icon.widget.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';

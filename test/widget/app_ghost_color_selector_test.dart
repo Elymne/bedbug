@@ -1,5 +1,5 @@
 import 'package:bedbug/application/style/app_colors.dart';
-import 'package:bedbug/application/widgets/signature/app_ghost_color_selector.dart';
+import 'package:bedbug/application/widgets/signature/app_ghost_color_selector.widget.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

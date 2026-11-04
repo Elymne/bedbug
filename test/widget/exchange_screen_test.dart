@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:bedbug/application/screens/exchange/exchange_screen.dart';
-import 'package:bedbug/application/screens/home/home_screen.dart';
-import 'package:bedbug/application/widgets/ghost/app_ghost_effect.dart';
+import 'package:bedbug/application/screens/exchange/exchange.screen.dart';
+import 'package:bedbug/application/screens/home/home.screen.dart';
+import 'package:bedbug/application/widgets/ghost/app_ghost_effect.widget.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';

@@ -59,3 +59,8 @@ final Signature anonymousSignature = Signature(
   pseudo: 'anonyme',
   avatarText: '(⌐■_■)',
 );
+
+/// Préfixe d'affichage d'une signature, à la manière de Reddit (`u/`) : `s/pseudo`.
+///
+/// Toujours affiché devant le pseudo via `AppPrefixedText`, en gras avec un léger effet ghost.
+const String signaturePrefix = 's/';

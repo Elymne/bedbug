@@ -1,9 +1,9 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/router/app_router.dart';
-import 'package:bedbug/application/screens/select_options/select_options_screen.dart';
-import 'package:bedbug/application/widgets/fields/app_select_box.dart';
+import 'package:bedbug/application/screens/select_options/select_options.screen.dart';
+import 'package:bedbug/application/widgets/fields/app_select_box.widget.dart';
 import 'package:bedbug/application/widgets/fields/app_select_option.dart';
-import 'package:bedbug/application/widgets/separators/app_list_separator.dart';
+import 'package:bedbug/application/widgets/separators/app_list_separator.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

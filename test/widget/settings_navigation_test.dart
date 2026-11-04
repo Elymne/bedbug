@@ -1,7 +1,7 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/router/app_router.dart';
-import 'package:bedbug/application/screens/home/home_screen.dart';
-import 'package:bedbug/application/screens/settings/settings_screen.dart';
+import 'package:bedbug/application/screens/home/home.screen.dart';
+import 'package:bedbug/application/screens/settings/settings.screen.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';

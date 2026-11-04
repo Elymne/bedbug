@@ -1,11 +1,11 @@
-import 'package:bedbug/application/app_root.dart';
+import 'package:bedbug/application/app_root.widget.dart';
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_values.dart';
-import 'package:bedbug/application/widgets/icons/app_icon.dart';
-import 'package:bedbug/application/widgets/snackbars/snackbar_bedbug_background.dart';
-import 'package:bedbug/application/widgets/snackbars/snackbar_pulse_border.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
+import 'package:bedbug/application/widgets/snackbars/snackbar_bedbug_background.widget.dart';
+import 'package:bedbug/application/widgets/snackbars/snackbar_pulse_border.widget.dart';
 import 'package:flutter/material.dart';
 
 /// Rayon des coins de la snackbar, repris par sa bordure pulsante.

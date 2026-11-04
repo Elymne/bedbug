@@ -1,8 +1,8 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/router/app_router.dart';
-import 'package:bedbug/application/screens/home/home_screen.dart';
-import 'package:bedbug/application/screens/search/search_screen.dart';
-import 'package:bedbug/application/widgets/fields/content_search_input.dart';
+import 'package:bedbug/application/screens/home/home.screen.dart';
+import 'package:bedbug/application/screens/search/search.screen.dart';
+import 'package:bedbug/application/widgets/fields/content_search_input.widget.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';

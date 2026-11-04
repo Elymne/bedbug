@@ -1,6 +1,7 @@
 # BedBug
 
 Open-source local social network: messages and contents are transmitted from device to device (Wi-Fi / BLE).
+Targets Android and iOS only: no web or desktop platform.
 
 This file only describes the architecture, the folder structure, the libraries and the coding rules. Anything that can
 be learned by reading the code (existing widgets, entities, use cases…) does not belong here.
@@ -75,8 +76,9 @@ and constants go in `<gateway>.exception.dart` and `<gateway>.config.dart`.
 ### Constants
 
 Public top-level constants and default values (`const`, or `final` when they cannot be `const`, like `anonymousSignature`)
-never sit in an entity, repository, gateway, service or use case file: they go in the
-`.config.dart` of their folder (`storage.config.dart`, `fetch_media.config.dart`). Private constants (`_name`) stay in
+never sit in an entity, repository, gateway, service, use case, screen, widget or notifier file: they go in the
+`.config.dart` of their folder (`storage.config.dart`, `fetch_media.config.dart`, `home.config.dart`,
+`app_nav_bar.config.dart`). Private constants (`_name`) stay in
 the file that uses them.
 
 ### Exceptions
@@ -118,14 +120,19 @@ The only layer aware of the framework.
 
 ```
 application/
-  screens/<screen>/   one folder per screen: the screen, its local notifiers and its local widgets/
-  widgets/            widgets reused across screens, grouped by kind
-  notifiers/          notifiers shared across screens
-  providers/          technical providers shared across screens
+  screens/<screen>/   one folder per screen (see "State ownership" below):
+    <screen>.screen.dart
+    <screen>.config.dart
+    <widget>/           one folder per widget of the screen: <widget>.widget.dart, plus <widget>.notifier.dart
+                        when it watches a notifier of its own (and <widget>.config.dart if needed)
+  widgets/            widgets reused across screens, grouped by kind, each next to the technical helpers only its
+                      kind uses (`widgets/media/trusted_media_loader.dart`)
+  notifiers/          global notifiers: watched by several widgets
   exchange/           device-to-device session, orchestrating the exchange use cases
+  drawing/            drawing rendering (rasterizer, flood fill), shared by the editor and the drawing widgets
   router/             router and route paths
-  style/              colors, text styles, theme, constants
-  validators/         form validators
+  style/              colors, text styles, theme
+  validators/         form validators, one <name>.validator.dart per validator
   formatters/         input formatters
   l10n/               ARB files and localization
 ```
@@ -203,7 +210,8 @@ core/
 - One file = one responsibility.
 - Never mix UI, business logic and data access.
 - File names are `snake_case`, with dot-separated suffixes for their role and technology (`reaction.entity.dart`,
-  `reaction.repository.hive.dart`).
+  `reaction.repository.hive.dart`). In `application`: `<name>.screen.dart`, `<name>.widget.dart`,
+  `<name>.notifier.dart`.
 
 ## Code style
 
@@ -322,7 +330,8 @@ Riverpod handles both state management and dependency injection.
 
 - Only store `ref.watch` results in a variable. For an `AsyncNotifier`, suffix the variable with `Watcher`
   (`exampleNotifierWatcher`); otherwise name it after the state (`currentUser`).
-- Never store `ref.read` in a variable inside `build`: call `ref.read(provider.notifier).doSomething()` directly.
+- Never store `ref.read` in a variable inside `build`: call `ref.read(provider.notifier).doSomething()` (or read
+  `ref.read(provider.notifier).someControl`) directly.
 - A notifier using async functions extends `AsyncNotifier`. Never add an `isLoading` field: `AsyncValue` has it.
 - In `ref.listen`, always start with `if (next.isLoading) return;` before reading `next.value` or `next.hasError`.
 
@@ -335,13 +344,27 @@ Riverpod handles both state management and dependency injection.
   late final exampleRepository = ref.read(exampleRepositoryProvider);
   ```
 
+#### State ownership
+
+- A screen is static: it only lays out widgets and never calls `ref.watch`. Whatever needs a state is cut out into the
+  smallest widget that displays it, and that widget watches the state itself, so a change rebuilds only that widget.
+- A widget watches **at most one** notifier. A widget that would watch two is either split into several widgets, or
+  its two notifiers are merged into one. This applies to global widgets (`application/widgets/`) too.
+- Only `ref.watch` counts: any widget may `ref.listen` to react to what happens in the app, and may call
+  `ref.read(provider.notifier).doSomething()` to trigger an action.
+
 #### Notifiers
 
-- One notifier per concern, not one catch-all notifier per screen. Business state (data from a use case) and ephemeral
-  UI state (scroll-driven animation, cursor position…) never share a notifier.
-- Name each notifier after its concern (`HomeFeedNotifier`, `HomeBarsOffsetNotifier`), not only after its screen.
-- A `ref.watch` on high-frequency UI state is scoped to the closest widget that needs it (local `Consumer`), never at
-  the top of the screen's `build`.
+- A notifier watched by a **single** widget belongs to it: same name as the widget (`HomeFeed` ↔ `HomeFeedNotifier`),
+  in a folder named after the widget inside its screen (`home/home_feed/home_feed.widget.dart` +
+  `home_feed.notifier.dart`).
+- A notifier watched by **several** widgets is global: it goes in `application/notifiers/` and is named after the
+  action it allows.
+- Exception, for a screen built around one piece of state that many of its own widgets edit (`drawing_editor`): the
+  notifiers shared by several widgets of that screen only go in a `notifiers/` folder of the screen
+  (`screens/drawing_editor/notifiers/drawing_editor.notifier.dart`), named after what they manage.
+- Business state (data from a use case) and ephemeral UI state (scroll-driven animation, cursor position…) never share
+  a notifier.
 
 #### Conventions
 
@@ -354,7 +377,7 @@ Riverpod handles both state management and dependency injection.
 
 - The router is a `Provider<GoRouter>` declared in the same file as the route paths.
 - Every route path is a top-level `const String` in the router file, before the provider.
-- Always `pageBuilder`, never `builder`: `NoTransitionPage` on web, `MaterialPage` / `CupertinoPage` on mobile.
+- Always `pageBuilder`, never `builder`.
 - Sub-routes use a relative path (no leading `/`).
 - Read path parameters through `state.pathParameters`.
 - Always provide an `errorBuilder` pointing to a dedicated error page.
@@ -362,21 +385,46 @@ Riverpod handles both state management and dependency injection.
 ### reactive_forms
 
 - Never use `TextEditingController`, `ValueNotifier` or `GlobalKey<FormState>`.
-- The `FormGroup` and its controls are `late final` attributes of the widget's `State`, not of the notifier. Dispose the
-  form in `dispose()`.
-- Declare each `FormControl<T>` as its own typed `late final` attribute, then reference it in the `FormGroup`, so values
-  are read without casts:
+- By default, a form lives in the `State` of the widget that displays it: its controls are typed `late final`
+  attributes, and the form is disposed in `dispose()`.
 
   ```dart
-  late final _emailControl = FormControl<String>(validators: [AppValidators.required, AppValidators.email]);
+  late final _emailControl = FormControl<String>(validators: [const NotEmptyValidator(), const EmailFormatValidator()]);
   late final FormGroup _form = FormGroup({'email': _emailControl});
   ```
 
-- Validators come from `AppValidators` and are declared on the `FormControl`. Each one is a `const` instance of a private
-  class extending `Validator<dynamic>`, never a plain function.
-- Before submitting, check `_form.valid`; if invalid, call `_form.markAllAsTouched()` and return.
-- Text fields use `ReactiveTextField<String>`, dropdowns `ReactiveDropdownField<T>`. For custom fields, pass the
-  `FormControl<T>` to the child widget and react with `ListenableBuilder`.
+- When several widgets share the same form, it moves to the notifier that manages it, instead of passing its controls
+  from widget to widget: the `FormGroup` and its controls become public typed attributes of the notifier, created in
+  `build()` and disposed with `ref.onDispose(form.dispose)` (disposing a `FormGroup` disposes its controls). The
+  notifier must stay watched by a widget for as long as the form is displayed. Widgets read the controls they display
+  from it (`ref.read(provider.notifier).emailControl`), and the form logic lives there: submission (validation,
+  building the object, calling the use case) and the operations on several controls. Widgets keep the display, the
+  localized validation messages, the snackbars and the navigation.
+
+  ```dart
+  late FormControl<String> emailControl;
+  late FormGroup form;
+
+  @override
+  Future<void> build() async {
+    emailControl = FormControl<String>(validators: [const NotEmptyValidator(), const EmailFormatValidator()]);
+    form = FormGroup({'email': emailControl});
+    ref.onDispose(form.dispose);
+  }
+  ```
+
+- Either way, declare each `FormControl<T>` as its own typed attribute, then reference it in the `FormGroup`, so values
+  are read without casts. Never bind a field by name (`formControlName`) nor read a control through
+  `form.control('name')`. Reusable field widgets of `application/widgets/` take a `FormControl<T>` parameter.
+- Validators live in `application/validators/`, one per file (`<name>.validator.dart`), and are declared on the
+  `FormControl`. Each one is a public class with a `const` constructor extending `Validator<dynamic>`, named
+  `<Name>Validator` (`NotEmptyValidator`, `PseudoValidator`), never a plain function. Never use the built-in
+  `Validators.*` of reactive_forms, and never reuse one of its class names (`RequiredValidator`, `EmailValidator`…).
+  A domain rule is delegated to the static method of its resource (`Signature.isValidPseudo`); a validator returns
+  `null` on an empty value, leaving it to `NotEmptyValidator`.
+- Before submitting, check `form.valid`; if invalid, call `form.markAllAsTouched()` and return.
+- Text fields use `ReactiveTextField<String>`, dropdowns `ReactiveDropdownField<T>`. To rebuild a part of the UI when a
+  control or a group changes, use `ReactiveValueListenableBuilder` (or `ReactiveStatusListenableBuilder`).
 
 ### Hive
 
@@ -391,3 +439,9 @@ Riverpod handles both state management and dependency injection.
 - Keys are camelCase `<screen><Context>` (`homeEmptyList`). Generic strings use a short unprefixed name (`close`).
 - Run `flutter gen-l10n` after each ARB change. Never edit `generated/`.
 - In widgets: `AppLocalizations.of(context)!`. In notifiers and providers: `ref.l10n`.
+
+## Git
+
+- Never run any git command (read or write: `status`, `log`, `diff`, `add`, `commit`, `push`, `rebase`…) unless
+  explicitly asked to.
+- Never add any Claude attribution to commits or pull requests (`Co-Authored-By`, "Generated with Claude Code").

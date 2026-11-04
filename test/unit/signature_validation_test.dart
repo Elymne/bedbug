@@ -1,4 +1,4 @@
-import 'package:bedbug/application/screens/avatar_picker/kaomoji_catalog.dart';
+import 'package:bedbug/application/screens/avatar_picker/avatar_picker.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 import 'package:flutter_test/flutter_test.dart';

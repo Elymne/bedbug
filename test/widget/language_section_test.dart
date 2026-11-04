@@ -1,7 +1,7 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
-import 'package:bedbug/application/l10n/locale_notifier.dart';
-import 'package:bedbug/application/screens/settings/settings_section_screen.dart';
-import 'package:bedbug/application/screens/settings/widgets/language_section.dart';
+import 'package:bedbug/application/notifiers/locale.notifier.dart';
+import 'package:bedbug/application/screens/settings/language_section/language_section.widget.dart';
+import 'package:bedbug/application/screens/settings/settings_section.screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

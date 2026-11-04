@@ -46,3 +46,8 @@ app.*.map.json
 
 # Locals generation.
 /lib/application/l10n/generated
+
+# Editors / tools (personal config)
+.claude/
+.vscode/
+.zed/

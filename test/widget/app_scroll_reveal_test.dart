@@ -1,4 +1,4 @@
-import 'package:bedbug/application/widgets/scroll/app_scroll_reveal.dart';
+import 'package:bedbug/application/widgets/scroll/app_scroll_reveal.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

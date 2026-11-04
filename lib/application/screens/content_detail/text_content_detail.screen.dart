@@ -1,0 +1,33 @@
+import 'package:bedbug/application/screens/content_detail/content_detail_skeleton/content_detail_skeleton.widget.dart';
+import 'package:bedbug/application/style/app_text_styles.dart';
+import 'package:bedbug/resources/content/content/text_content.entity.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+/// Page de détail d'un [TextContent].
+class TextContentDetailScreen extends ConsumerWidget {
+  /// Crée un [TextContentDetailScreen].
+  ///
+  /// - [content] : contenu texte à afficher en détail.
+  const TextContentDetailScreen({super.key, required this.content});
+
+  /// Contenu texte à afficher en détail.
+  final TextContent content;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ContentDetailSkeleton(
+      contentId: content.id,
+      isOwned: content.isOwned,
+      title: content.title,
+      flair: content.flair,
+      signatureId: content.signatureId,
+      createdAt: content.createdAt,
+      bounce: content.bounce,
+      tags: content.tags,
+      onClose: () => context.pop(),
+      contentBody: Text(content.body, style: AppTextStyles.contentPreview),
+    );
+  }
+}

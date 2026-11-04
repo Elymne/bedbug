@@ -1,5 +1,5 @@
 import 'package:bedbug/application/style/app_icons.dart';
-import 'package:bedbug/application/widgets/icons/app_icon.dart';
+import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 export 'package:bedbug/application/style/app_icons.dart';

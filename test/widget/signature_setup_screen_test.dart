@@ -1,6 +1,6 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/router/app_router.dart';
-import 'package:bedbug/application/screens/signature_setup/signature_setup_screen.dart';
+import 'package:bedbug/application/screens/signature_setup/signature_setup.screen.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/resources/signature/signature/signature.config.dart';

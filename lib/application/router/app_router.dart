@@ -1,34 +1,34 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
-import 'package:bedbug/application/router/error_route_page.dart';
-import 'package:bedbug/application/screens/avatar_picker/avatar_picker_screen.dart';
-import 'package:bedbug/application/screens/content_detail/drawing_content_detail_screen.dart';
-import 'package:bedbug/application/screens/content_detail/link_content_detail_screen.dart';
-import 'package:bedbug/application/screens/content_detail/media_content_detail_screen.dart';
-import 'package:bedbug/application/screens/content_detail/text_content_detail_screen.dart';
-import 'package:bedbug/application/screens/create/create_screen.dart';
-import 'package:bedbug/application/screens/drawing_editor/drawing_editor_screen.dart';
-import 'package:bedbug/application/screens/drawing_format/drawing_format_screen.dart';
-import 'package:bedbug/application/screens/drawing_viewer/drawing_viewer_screen.dart';
-import 'package:bedbug/application/screens/exchange/exchange_screen.dart';
-import 'package:bedbug/application/screens/exchange_logs/exchange_logs_screen.dart';
-import 'package:bedbug/application/screens/home/home_screen.dart';
-import 'package:bedbug/application/screens/media_viewer/media_viewer_screen.dart';
-import 'package:bedbug/application/screens/search/search_screen.dart';
-import 'package:bedbug/application/screens/search_results/search_criteria.dart';
-import 'package:bedbug/application/screens/search_results/search_results_screen.dart';
-import 'package:bedbug/application/screens/select_options/select_options_screen.dart';
-import 'package:bedbug/application/screens/settings/settings_screen.dart';
-import 'package:bedbug/application/screens/settings/settings_section_screen.dart';
-import 'package:bedbug/application/screens/settings/widgets/debug_section.dart';
-import 'package:bedbug/application/screens/settings/widgets/language_section.dart';
-import 'package:bedbug/application/screens/settings/widgets/own_contents_section.dart';
-import 'package:bedbug/application/screens/settings/widgets/publishing_section.dart';
-import 'package:bedbug/application/screens/settings/widgets/signature_section.dart';
-import 'package:bedbug/application/screens/settings/widgets/storage_section.dart';
-import 'package:bedbug/application/screens/settings/widgets/trust_section.dart';
-import 'package:bedbug/application/screens/signature/signature_screen.dart';
-import 'package:bedbug/application/screens/signature_setup/signature_setup_screen.dart';
-import 'package:bedbug/application/screens/splash/splash_screen.dart';
+import 'package:bedbug/application/notifiers/search_results.notifier.dart';
+import 'package:bedbug/application/router/error_route_page.widget.dart';
+import 'package:bedbug/application/screens/avatar_picker/avatar_picker.screen.dart';
+import 'package:bedbug/application/screens/content_detail/drawing_content_detail.screen.dart';
+import 'package:bedbug/application/screens/content_detail/link_content_detail.screen.dart';
+import 'package:bedbug/application/screens/content_detail/media_content_detail.screen.dart';
+import 'package:bedbug/application/screens/content_detail/text_content_detail.screen.dart';
+import 'package:bedbug/application/screens/create/create.screen.dart';
+import 'package:bedbug/application/screens/drawing_editor/drawing_editor.screen.dart';
+import 'package:bedbug/application/screens/drawing_format/drawing_format.screen.dart';
+import 'package:bedbug/application/screens/drawing_viewer/drawing_viewer.screen.dart';
+import 'package:bedbug/application/screens/exchange/exchange.screen.dart';
+import 'package:bedbug/application/screens/exchange_logs/exchange_logs.screen.dart';
+import 'package:bedbug/application/screens/home/home.screen.dart';
+import 'package:bedbug/application/screens/media_viewer/media_viewer.screen.dart';
+import 'package:bedbug/application/screens/search/search.screen.dart';
+import 'package:bedbug/application/screens/search_results/search_results.screen.dart';
+import 'package:bedbug/application/screens/select_options/select_options.screen.dart';
+import 'package:bedbug/application/screens/settings/debug_section/debug_section.widget.dart';
+import 'package:bedbug/application/screens/settings/language_section/language_section.widget.dart';
+import 'package:bedbug/application/screens/settings/own_contents_section/own_contents_section.widget.dart';
+import 'package:bedbug/application/screens/settings/publishing_section/publishing_section.widget.dart';
+import 'package:bedbug/application/screens/settings/settings.screen.dart';
+import 'package:bedbug/application/screens/settings/settings_section.screen.dart';
+import 'package:bedbug/application/screens/settings/signature_section/signature_section.widget.dart';
+import 'package:bedbug/application/screens/settings/storage_section/storage_section.widget.dart';
+import 'package:bedbug/application/screens/settings/trust_section/trust_section.widget.dart';
+import 'package:bedbug/application/screens/signature/signature.screen.dart';
+import 'package:bedbug/application/screens/signature_setup/signature_setup.screen.dart';
+import 'package:bedbug/application/screens/splash/splash.screen.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
@@ -196,7 +196,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: splashPath,
     refreshListenable: refreshNotifier,
     redirect: (context, state) => null,
-    errorPageBuilder: (context, state) => const NoTransitionPage(child: ErrorRoutePage(message: 'Page not found')),
+    errorPageBuilder: (context, state) => _fadePage(const ErrorRoutePage(message: 'Page not found')),
     routes: [
       GoRoute(path: splashPath, pageBuilder: (context, state) => _fadePage(const SplashScreen())),
       GoRoute(path: signatureSetupPath, pageBuilder: (context, state) => _fadePage(const SignatureSetupScreen())),

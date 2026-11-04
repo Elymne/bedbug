@@ -52,8 +52,17 @@ dart format --line-length 120 lib/ test/
 Reproduit localement la CI (install, fix, format, analyse, tests) :
 
 ```sh
-./ci-checker.sh     # bash
-./ci-checker.ps1    # PowerShell
+dart run tool/ci_check.dart         # corrige (fix, format) puis vérifie
+dart run tool/ci_check.dart --ci    # vérifie sans rien modifier, comme la CI
+```
+
+### Mettre à jour la Public Suffix List
+
+Télécharge la dernière version officielle dans `assets/data/public_suffix_list.dat`, après validation. Un workflow le
+fait chaque lundi et ouvre une PR s'il y a du changement ; à lancer à la main avant une release si besoin :
+
+```sh
+dart run tool/update_public_suffix_list.dart
 ```
 
 ### Lancer les tests
