@@ -1,10 +1,8 @@
-import 'package:bedbug/application/l10n/locale_display_name_x.dart';
-import 'package:bedbug/application/l10n/locale_notifier.dart';
-import 'package:bedbug/application/notifiers/local_signature.notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
-import 'package:bedbug/application/screens/settings/widgets/settings_menu_tile.widget.dart';
+import 'package:bedbug/application/screens/settings/settings_language_tile/settings_language_tile.widget.dart';
+import 'package:bedbug/application/screens/settings/settings_menu_tile/settings_menu_tile.widget.dart';
+import 'package:bedbug/application/screens/settings/settings_profile_tile/settings_profile_tile.widget.dart';
 import 'package:bedbug/application/style/app_icons.dart';
-import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/widgets/headers/app_page_header.widget.dart';
 import 'package:bedbug/application/widgets/separators/app_list_separator.widget.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
@@ -16,7 +14,8 @@ import 'package:go_router/go_router.dart';
 ///
 /// Chaque réglage a sa propre page, ouverte depuis une ligne du menu. La
 /// description de la ligne résume sa valeur quand elle tient en quelques mots
-/// (pseudo, langue), et son rôle sinon.
+/// (pseudo, langue), et son rôle sinon. Page statique : les lignes qui affichent
+/// une valeur l'observent elles-mêmes.
 class SettingsScreen extends ConsumerWidget {
   /// Crée un [SettingsScreen].
   const SettingsScreen({super.key});
@@ -24,24 +23,10 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.loc;
-    final localSignatureNotifierWatcher = ref.watch(localSignatureNotifierProvider);
-    final pseudo = localSignatureNotifierWatcher.value?.signature?.pseudo;
-    final locale = ref.watch(localeNotifierProvider);
 
     final menuTiles = [
-      SettingsMenuTile(
-        icon: AppIcons.person,
-        title: l10n.settingsProfileTitle,
-        subtitle: pseudo ?? l10n.settingsProfileNotConfigured,
-        subtitlePrefix: pseudo == null ? null : AppPrefixes.signature,
-        path: settingsSignaturePath,
-      ),
-      SettingsMenuTile(
-        icon: AppIcons.translate,
-        title: l10n.settingsLanguageTitle,
-        subtitle: locale.displayName,
-        path: settingsLanguagePath,
-      ),
+      const SettingsProfileTile(),
+      const SettingsLanguageTile(),
       SettingsMenuTile(
         icon: AppIcons.editNote,
         title: l10n.settingsPublishingTitle,

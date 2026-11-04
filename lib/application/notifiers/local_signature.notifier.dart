@@ -13,7 +13,7 @@ final localSignatureNotifierProvider = AsyncNotifierProvider<LocalSignatureNotif
 
 /// Notifier chargeant le profil de l'utilisateur du téléphone.
 ///
-/// Séparé de l'enregistrement (`SaveSignatureNotifier`) : un enregistrement en
+/// Séparé de l'enregistrement (`AppSignatureFormNotifier`) : un enregistrement en
 /// cours ne doit pas faire repasser la page en chargement, ce qui détruirait
 /// le formulaire en cours d'édition.
 class LocalSignatureNotifier extends AsyncNotifier<LocalSignatureState> {

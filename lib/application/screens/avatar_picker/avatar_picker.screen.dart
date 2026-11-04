@@ -1,5 +1,6 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
-import 'package:bedbug/application/screens/avatar_picker/kaomoji_catalog.dart';
+import 'package:bedbug/application/screens/avatar_picker/avatar_picker.config.dart';
+import 'package:bedbug/application/screens/avatar_picker/kaomoji_category.enum.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/widgets/headers/app_page_header.widget.dart';

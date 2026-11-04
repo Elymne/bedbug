@@ -1,5 +1,5 @@
 import 'package:bedbug/application/screens/settings/settings.screen.dart';
-import 'package:bedbug/application/screens/settings/widgets/settings_menu_tile.widget.dart';
+import 'package:bedbug/application/screens/settings/settings_menu_tile/settings_menu_tile.widget.dart';
 import 'package:bedbug/application/widgets/separators/app_list_separator.widget.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';

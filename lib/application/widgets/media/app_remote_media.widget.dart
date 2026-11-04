@@ -1,14 +1,13 @@
 import 'dart:ui';
 
-import 'package:bedbug/application/notifiers/revealed_urls.notifier.dart';
 import 'package:bedbug/application/notifiers/trust_settings.notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
 import 'package:bedbug/application/widgets/media/app_media_placeholder.widget.dart';
-import 'package:bedbug/application/widgets/media/app_media_veil.widget.dart';
 import 'package:bedbug/application/widgets/media/app_remote_image.widget.dart';
 import 'package:bedbug/application/widgets/media/app_remote_video.widget.dart';
+import 'package:bedbug/application/widgets/media/app_unknown_remote_media.widget.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:bedbug/resources/content/content/media_content.entity.dart';
 import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
@@ -70,13 +69,11 @@ class AppRemoteMedia extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final trustSettingsNotifierWatcher = ref.watch(trustSettingsNotifierProvider);
-    final revealedUrls = ref.watch(revealedUrlsNotifierProvider);
     final trustSettings = trustSettingsNotifierWatcher.value;
     if (trustSettings == null) {
       return const AppMediaPlaceholder(icon: AppIcons.image);
     }
 
-    final isRevealed = revealedUrls.contains(media.url);
     final trust = UrlTrustPolicy.evaluate(trustSettings.mediaPolicy, media.url);
     final host = SafeUrl.parse(media.url)?.host;
 
@@ -86,11 +83,14 @@ class AppRemoteMedia extends ConsumerWidget {
       }
       return AppMediaPlaceholder(icon: AppIcons.brokenImage, label: context.loc.mediaUnavailable);
     }
-    if (trust == UrlTrust.unknown && !isRevealed) {
-      if (isOmittedWhenNotAllowed) {
-        return const SizedBox.shrink();
-      }
-      return AppMediaVeil(url: media.url, host: host);
+    if (trust == UrlTrust.unknown) {
+      return AppUnknownRemoteMedia(
+        media: media,
+        host: host,
+        fit: fit,
+        isPlayable: isPlayable,
+        isOmittedWhenNotAllowed: isOmittedWhenNotAllowed,
+      );
     }
     if (trust == UrlTrust.grey && !isGreyRevealed) {
       // Pas de geste propre : un tap revient au parent (ouverture du contenu, ou de la visionneuse).
@@ -103,7 +103,8 @@ class AppRemoteMedia extends ConsumerWidget {
 
     return switch (media.kind) {
       MediaKind.video => AppRemoteVideo(url: media.url, isPlayable: isPlayable),
-      MediaKind.image || MediaKind.gif => AppRemoteImage(url: media.url, isConfirmed: isRevealed, fit: fit),
+      // Domaine de confiance (ou greylist dévoilée) : aucune confirmation n'est nécessaire pour le charger.
+      MediaKind.image || MediaKind.gif => AppRemoteImage(url: media.url, isConfirmed: false, fit: fit),
     };
   }
 

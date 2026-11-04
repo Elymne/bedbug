@@ -1,4 +1,4 @@
-import 'package:bedbug/application/screens/content_detail/content_detail_skeleton.widget.dart';
+import 'package:bedbug/application/screens/content_detail/content_detail_skeleton/content_detail_skeleton.widget.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/widgets/links/app_external_link.widget.dart';
 import 'package:bedbug/application/widgets/links/app_link_preview_image.widget.dart';

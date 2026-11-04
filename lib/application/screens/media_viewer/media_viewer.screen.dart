@@ -1,10 +1,9 @@
-import 'package:bedbug/application/screens/media_viewer/save_media_to_gallery.notifier.dart';
+import 'package:bedbug/application/screens/media_viewer/media_viewer_download_button/media_viewer_download_button.widget.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
 import 'package:bedbug/application/widgets/images/app_image_count_badge.widget.dart';
 import 'package:bedbug/application/widgets/media/app_remote_media.widget.dart';
-import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:bedbug/resources/content/content/media_content.entity.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +36,8 @@ class MediaViewerParams {
 /// volontaire qui le dévoile. Les médias passent par [AppRemoteMedia], comme
 /// partout ailleurs : un domaine inconnu reste voilé tant qu'il n'a pas été
 /// confirmé.
+///
+/// Page statique : seul le bouton d'enregistrement observe un état. Elle ne garde que le défilement entre les médias.
 class MediaViewerScreen extends ConsumerStatefulWidget {
   /// Crée un [MediaViewerScreen].
   ///
@@ -63,7 +64,6 @@ class _State extends ConsumerState<MediaViewerScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.loc;
-    final saveMediaToGalleryNotifierWatcher = ref.watch(saveMediaToGalleryNotifierProvider);
     final media = widget.params.media;
 
     return Scaffold(
@@ -109,41 +109,16 @@ class _State extends ConsumerState<MediaViewerScreen> {
                   icon: const AppIcon(AppIcons.close, color: AppColors.onDark),
                 ),
                 const Spacer(),
-                if (saveMediaToGalleryNotifierWatcher.isLoading)
-                  const Padding(
-                    padding: EdgeInsets.all(14),
-                    child: SizedBox.square(
-                      dimension: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.onDark),
-                    ),
-                  ),
-                if (!saveMediaToGalleryNotifierWatcher.isLoading)
-                  IconButton(
-                    onPressed: _download,
-                    tooltip: l10n.mediaViewerDownload,
-                    icon: const AppIcon(AppIcons.download, color: AppColors.onDark),
-                  ),
+                MediaViewerDownloadButton(
+                  currentMediaUrl: () {
+                    return media[_pageController.page?.round() ?? widget.params.initialIndex].url;
+                  },
+                ),
               ],
             ),
           ),
         ],
       ),
     );
-  }
-
-  /// Enregistre le média affiché dans la galerie du téléphone, puis confirme ou affiche l'erreur.
-  Future<void> _download() async {
-    final pageIndex = _pageController.page?.round() ?? widget.params.initialIndex;
-    final failureMessage = await ref
-        .read(saveMediaToGalleryNotifierProvider.notifier)
-        .save(widget.params.media[pageIndex].url);
-    if (!mounted) {
-      return;
-    }
-    if (failureMessage != null) {
-      AppSnackbar.showError(context, failureMessage);
-      return;
-    }
-    AppSnackbar.showSuccess(context, context.loc.mediaViewerSaveSuccess);
   }
 }

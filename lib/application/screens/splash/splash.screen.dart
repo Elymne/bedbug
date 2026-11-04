@@ -1,7 +1,7 @@
 import 'package:bedbug/application/router/app_router.dart';
+import 'package:bedbug/application/screens/splash/app_title_text/app_title_text.widget.dart';
 import 'package:bedbug/application/screens/splash/splash.notifier.dart';
-import 'package:bedbug/application/screens/splash/widgets/app_title_text.widget.dart';
-import 'package:bedbug/application/screens/splash/widgets/splash_bedbug.widget.dart';
+import 'package:bedbug/application/screens/splash/splash_bedbug/splash_bedbug.widget.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';

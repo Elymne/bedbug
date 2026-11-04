@@ -1,13 +1,8 @@
-import 'package:bedbug/application/notifiers/content_author.notifier.dart';
-import 'package:bedbug/application/screens/search_results/search_criteria.dart';
-import 'package:bedbug/application/screens/search_results/search_results.notifier.dart';
-import 'package:bedbug/application/style/app_prefixes.dart';
-import 'package:bedbug/application/widgets/content_list/content_list_view.widget.dart';
-import 'package:bedbug/application/widgets/headers/app_page_header.widget.dart';
-import 'package:bedbug/core/extensions/build_context_x.dart';
+import 'package:bedbug/application/notifiers/search_results.notifier.dart';
+import 'package:bedbug/application/screens/search_results/search_results_header/search_results_header.widget.dart';
+import 'package:bedbug/application/screens/search_results/search_results_list/search_results_list.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 /// Page listant les contenus correspondant à une recherche.
 ///
@@ -19,6 +14,8 @@ import 'package:go_router/go_router.dart';
 /// Une signature choisie ouvre, elle, sa page dédiée (`SignatureScreen`), qui
 /// réutilise le même notifier avec un [SignatureSearchCriteria] ; ce critère
 /// reste géré ici pour que le `switch` sur [SearchCriteria] soit exhaustif.
+///
+/// Page statique : l'en-tête et la liste observent chacun leur état.
 class SearchResultsScreen extends ConsumerWidget {
   /// Crée un [SearchResultsScreen].
   ///
@@ -30,49 +27,16 @@ class SearchResultsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.loc;
-    final searchResultsNotifierWatcher = ref.watch(searchResultsNotifierProvider(criteria));
-    final title = switch (criteria) {
-      FlairSearchCriteria(:final flair) => flair,
-      SignatureSearchCriteria(:final signatureId) => _signaturePseudo(ref, signatureId),
-      QuerySearchCriteria(:final query) => l10n.searchResultsQueryTitle(query),
-    };
-    final titlePrefix = switch (criteria) {
-      FlairSearchCriteria() => AppPrefixes.flair,
-      SignatureSearchCriteria() => AppPrefixes.signature,
-      QuerySearchCriteria() => null,
-    };
-
     return Scaffold(
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            AppPageHeader(title: title, titlePrefix: titlePrefix, onBack: context.pop),
-            Expanded(
-              child: searchResultsNotifierWatcher.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (_, _) => Center(child: Text(l10n.homeGetContentsUnknown)),
-                data: (state) {
-                  return ContentListView(
-                    contents: state.contents,
-                    emptyChild: Center(child: Text(state.failureMessage ?? l10n.searchResultsEmpty)),
-                  );
-                },
-              ),
-            ),
+            SearchResultsHeader(criteria: criteria),
+            Expanded(child: SearchResultsList(criteria: criteria)),
           ],
         ),
       ),
     );
-  }
-
-  /// Pseudo de la signature [signatureId], affiché en titre derrière le préfixe `s/`.
-  ///
-  /// Le pseudo est relu depuis la signature ; le temps de la charger, le titre
-  /// se contente du préfixe.
-  String _signaturePseudo(WidgetRef ref, String signatureId) {
-    final contentAuthorNotifierWatcher = ref.watch(contentAuthorNotifierProvider(signatureId));
-    return contentAuthorNotifierWatcher.value?.pseudo ?? '';
   }
 }

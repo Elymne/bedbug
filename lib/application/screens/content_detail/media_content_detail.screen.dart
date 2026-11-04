@@ -1,5 +1,5 @@
-import 'package:bedbug/application/screens/content_detail/content_detail_skeleton.widget.dart';
-import 'package:bedbug/application/screens/content_detail/widgets/content_media_view.widget.dart';
+import 'package:bedbug/application/screens/content_detail/content_detail_skeleton/content_detail_skeleton.widget.dart';
+import 'package:bedbug/application/screens/content_detail/content_media_view/content_media_view.widget.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/resources/content/content/media_content.entity.dart';
 import 'package:flutter/material.dart';

@@ -1,6 +1,6 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
-import 'package:bedbug/application/l10n/locale_notifier.dart';
+import 'package:bedbug/application/notifiers/locale.notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/style/app_theme.dart';
 import 'package:flutter/material.dart';

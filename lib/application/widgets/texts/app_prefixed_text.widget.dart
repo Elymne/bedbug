@@ -12,7 +12,7 @@ const double _kPrefixGhostSpeed = 0.5;
 /// Amplitude de l'effet ghost du préfixe, en pixels, réduite pour rester lisible à petite taille.
 const double _kPrefixGhostIntensity = 0.5;
 
-/// Nom précédé de son préfixe (`f/`, `s/`, voir `AppPrefixes`), le préfixe en gras avec un léger effet ghost.
+/// Nom précédé de son préfixe (`f/`, `s/`, voir `flairPrefix` et `signaturePrefix`), le préfixe en gras avec un léger effet ghost.
 ///
 /// Le préfixe signale d'un coup d'œil la nature du nom (flair, signature).
 /// Il garde la couleur du texte, plus lisible que la couleur primaire sur

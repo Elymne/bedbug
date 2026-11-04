@@ -1,5 +1,4 @@
 import 'package:bedbug/application/style/app_icons.dart';
-import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/style/app_text_styles.dart';
 import 'package:bedbug/application/style/tag_color_x.dart';
 import 'package:bedbug/application/widgets/content_tile/drawing_content.widget.dart';
@@ -12,6 +11,7 @@ import 'package:bedbug/application/widgets/stats/content_stats.widget.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.widget.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.widget.dart';
 import 'package:bedbug/core/extensions/datetime_x.dart';
+import 'package:bedbug/resources/content/content/content.config.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
 import 'package:bedbug/resources/content/content/link_content.entity.dart';
@@ -58,7 +58,7 @@ class ContentWidget extends ConsumerWidget {
               const AppRoundImage(file: null),
               Expanded(
                 child: AppPrefixedText(
-                  prefix: AppPrefixes.flair,
+                  prefix: flairPrefix,
                   text: '${content.flair}  •  ${content.createdAt.timeAgo}',
                   style: AppTextStyles.contentMeta,
                   overflow: TextOverflow.ellipsis,

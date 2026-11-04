@@ -1,11 +1,8 @@
 import 'package:bedbug/application/formatters/avatar_text_input_formatter.dart';
 import 'package:bedbug/application/notifiers/local_signature.notifier.dart';
-import 'package:bedbug/application/notifiers/save_signature.notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
-import 'package:bedbug/application/screens/settings/widgets/social_links_editor.widget.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_icons.dart';
-import 'package:bedbug/application/style/app_prefixes.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/validators/app_validators.dart';
 import 'package:bedbug/application/widgets/buttons/app_form_submit_button.widget.dart';
@@ -16,6 +13,8 @@ import 'package:bedbug/application/widgets/signature/app_ghost_color_selector.wi
 import 'package:bedbug/application/widgets/signature/app_ghost_speed_slider.widget.dart';
 import 'package:bedbug/application/widgets/signature/app_signature_avatar.widget.dart';
 import 'package:bedbug/application/widgets/signature/app_signature_bio.widget.dart';
+import 'package:bedbug/application/widgets/signature/app_signature_form.notifier.dart';
+import 'package:bedbug/application/widgets/signature/social_links_editor.widget.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.widget.dart';
 import 'package:bedbug/application/widgets/texts/app_text_font_selector.widget.dart';
@@ -115,9 +114,9 @@ class _State extends ConsumerState<AppSignatureForm> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.loc;
-    final saveProfileNotifierWatcher = ref.watch(saveSignatureNotifierProvider);
+    final appSignatureFormNotifierWatcher = ref.watch(appSignatureFormNotifierProvider);
 
-    ref.listen(saveSignatureNotifierProvider, (previous, next) {
+    ref.listen(appSignatureFormNotifierProvider, (previous, next) {
       if (next.isLoading) return;
       final saveState = next.value;
       if (saveState == null) return;
@@ -150,7 +149,7 @@ class _State extends ConsumerState<AppSignatureForm> {
                 decoration: InputDecoration(
                   labelText: l10n.settingsPseudoLabel,
                   hintText: l10n.settingsPseudoHint,
-                  prefixText: AppPrefixes.signature,
+                  prefixText: signaturePrefix,
                   prefixStyle: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800),
                 ),
                 validationMessages: {
@@ -210,7 +209,7 @@ class _State extends ConsumerState<AppSignatureForm> {
               alignment: AlignmentDirectional.centerEnd,
               child: AppFormSubmitButton(
                 form: _form,
-                isLoading: saveProfileNotifierWatcher.isLoading,
+                isLoading: appSignatureFormNotifierWatcher.isLoading,
                 onTap: _onSave,
                 child: Text(widget.submitLabel),
               ),
@@ -241,7 +240,7 @@ class _State extends ConsumerState<AppSignatureForm> {
                       ghostSpeed: _ghostSpeedControl.value ?? defaultGhostSpeed,
                     ),
                     AppPrefixedText(
-                      prefix: AppPrefixes.signature,
+                      prefix: signaturePrefix,
                       text: pseudo.isEmpty ? anonymousSignature.pseudo : pseudo,
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.onLight),
                     ),
@@ -284,7 +283,7 @@ class _State extends ConsumerState<AppSignatureForm> {
     }
 
     ref
-        .read(saveSignatureNotifierProvider.notifier)
+        .read(appSignatureFormNotifierProvider.notifier)
         .save(
           pseudo: _pseudoControl.value!,
           avatarText: _avatarTextControl.value!,

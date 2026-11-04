@@ -1,8 +1,8 @@
-import 'package:bedbug/application/notifiers/remote_video.notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
 import 'package:bedbug/application/widgets/media/app_media_placeholder.widget.dart';
+import 'package:bedbug/application/widgets/media/app_remote_video.notifier.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,9 +35,9 @@ class AppRemoteVideo extends ConsumerWidget {
       return const AppMediaPlaceholder(icon: AppIcons.playCircle, isDark: true);
     }
 
-    final remoteVideoNotifierWatcher = ref.watch(remoteVideoNotifierProvider(url));
+    final appRemoteVideoNotifierWatcher = ref.watch(appRemoteVideoNotifierProvider(url));
 
-    return remoteVideoNotifierWatcher.when(
+    return appRemoteVideoNotifierWatcher.when(
       loading: () {
         return const ColoredBox(
           color: AppColors.onLightDeep,
@@ -53,7 +53,7 @@ class AppRemoteVideo extends ConsumerWidget {
             button: true,
             label: l10n.videoPlayLabel,
             child: GestureDetector(
-              onTap: () => ref.read(remoteVideoNotifierProvider(url).notifier).play(),
+              onTap: () => ref.read(appRemoteVideoNotifierProvider(url).notifier).play(),
               child: const AppMediaPlaceholder(icon: AppIcons.playCircle, isDark: true),
             ),
           );

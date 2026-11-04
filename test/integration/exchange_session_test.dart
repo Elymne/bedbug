@@ -5,8 +5,8 @@ import 'dart:typed_data';
 
 import 'package:bedbug/application/exchange/exchange_session.config.dart';
 import 'package:bedbug/application/exchange/exchange_session.dart';
-import 'package:bedbug/application/exchange/exchange_stats.notifier.dart';
 import 'package:bedbug/application/notifiers/passive_exchange.notifier.dart';
+import 'package:bedbug/application/screens/exchange/exchange_stats/exchange_stats.notifier.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.dart';
 import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.json_zlib.dart';
 import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.binary.dart';

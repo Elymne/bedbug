@@ -330,7 +330,8 @@ Riverpod handles both state management and dependency injection.
 
 - Only store `ref.watch` results in a variable. For an `AsyncNotifier`, suffix the variable with `Watcher`
   (`exampleNotifierWatcher`); otherwise name it after the state (`currentUser`).
-- Never store `ref.read` in a variable inside `build`: call `ref.read(provider.notifier).doSomething()` directly.
+- Never store `ref.read` in a variable inside `build`: call `ref.read(provider.notifier).doSomething()` (or read
+  `ref.read(provider.notifier).someControl`) directly.
 - A notifier using async functions extends `AsyncNotifier`. Never add an `isLoading` field: `AsyncValue` has it.
 - In `ref.listen`, always start with `if (next.isLoading) return;` before reading `next.value` or `next.hasError`.
 
@@ -359,6 +360,9 @@ Riverpod handles both state management and dependency injection.
   `home_feed.notifier.dart`).
 - A notifier watched by **several** widgets is global: it goes in `application/notifiers/` and is named after the
   action it allows.
+- Exception, for a screen built around one piece of state that many of its own widgets edit (`drawing_editor`): the
+  notifiers shared by several widgets of that screen only go in a `notifiers/` folder of the screen
+  (`screens/drawing_editor/notifiers/drawing_editor.notifier.dart`), named after what they manage.
 - Business state (data from a use case) and ephemeral UI state (scroll-driven animation, cursor position…) never share
   a notifier.
 
@@ -381,21 +385,42 @@ Riverpod handles both state management and dependency injection.
 ### reactive_forms
 
 - Never use `TextEditingController`, `ValueNotifier` or `GlobalKey<FormState>`.
-- The `FormGroup` and its controls are `late final` attributes of the widget's `State`, not of the notifier. Dispose the
-  form in `dispose()`.
-- Declare each `FormControl<T>` as its own typed `late final` attribute, then reference it in the `FormGroup`, so values
-  are read without casts:
+- By default, a form lives in the `State` of the widget that displays it: its controls are typed `late final`
+  attributes, and the form is disposed in `dispose()`.
 
   ```dart
   late final _emailControl = FormControl<String>(validators: [AppValidators.required, AppValidators.email]);
   late final FormGroup _form = FormGroup({'email': _emailControl});
   ```
 
+- When several widgets share the same form, it moves to the notifier that manages it, instead of passing its controls
+  from widget to widget: the `FormGroup` and its controls become public typed attributes of the notifier, created in
+  `build()` and disposed with `ref.onDispose(form.dispose)` (disposing a `FormGroup` disposes its controls). The
+  notifier must stay watched by a widget for as long as the form is displayed. Widgets read the controls they display
+  from it (`ref.read(provider.notifier).emailControl`), and the form logic lives there: submission (validation,
+  building the object, calling the use case) and the operations on several controls. Widgets keep the display, the
+  localized validation messages, the snackbars and the navigation.
+
+  ```dart
+  late FormControl<String> emailControl;
+  late FormGroup form;
+
+  @override
+  Future<void> build() async {
+    emailControl = FormControl<String>(validators: [AppValidators.required, AppValidators.email]);
+    form = FormGroup({'email': emailControl});
+    ref.onDispose(form.dispose);
+  }
+  ```
+
+- Either way, declare each `FormControl<T>` as its own typed attribute, then reference it in the `FormGroup`, so values
+  are read without casts. Never bind a field by name (`formControlName`) nor read a control through
+  `form.control('name')`. Reusable field widgets of `application/widgets/` take a `FormControl<T>` parameter.
 - Validators come from `AppValidators` and are declared on the `FormControl`. Each one is a `const` instance of a private
   class extending `Validator<dynamic>`, never a plain function.
-- Before submitting, check `_form.valid`; if invalid, call `_form.markAllAsTouched()` and return.
-- Text fields use `ReactiveTextField<String>`, dropdowns `ReactiveDropdownField<T>`. For custom fields, pass the
-  `FormControl<T>` to the child widget and react with `ListenableBuilder`.
+- Before submitting, check `form.valid`; if invalid, call `form.markAllAsTouched()` and return.
+- Text fields use `ReactiveTextField<String>`, dropdowns `ReactiveDropdownField<T>`. To rebuild a part of the UI when a
+  control or a group changes, use `ReactiveValueListenableBuilder` (or `ReactiveStatusListenableBuilder`).
 
 ### Hive
 

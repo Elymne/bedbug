@@ -1,67 +1,36 @@
-import 'package:bedbug/application/exchange/exchange_stats.notifier.dart';
-import 'package:bedbug/application/notifiers/passive_exchange.notifier.dart';
+import 'package:bedbug/application/screens/exchange/exchange_stats/exchange_stats.widget.dart';
+import 'package:bedbug/application/screens/exchange/exchange_toggle/exchange_toggle.widget.dart';
 import 'package:bedbug/application/widgets/headers/app_page_header.widget.dart';
-import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 /// Page d'activation de l'échange de contenus avec les téléphones proches.
+///
+/// Page statique : la case d'activation et les compteurs observent chacun leur état.
 class ExchangeScreen extends ConsumerWidget {
   /// Crée un [ExchangeScreen].
   const ExchangeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.loc;
-    final passiveExchangeNotifierWatcher = ref.watch(passiveExchangeNotifierProvider);
-    final exchangeStats = ref.watch(exchangeStatsNotifierProvider);
-
     return Scaffold(
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            AppPageHeader(title: l10n.navExchangeLabel, onBack: context.pop),
-            Expanded(
+            AppPageHeader(title: context.loc.navExchangeLabel, onBack: context.pop),
+            const Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 spacing: 8,
-                children: [
-                  Text(l10n.exchangeToggleLabel),
-                  Checkbox(
-                    value: passiveExchangeNotifierWatcher.value ?? false,
-                    onChanged: passiveExchangeNotifierWatcher.isLoading
-                        ? null
-                        : (isChecked) => _onToggle(context, ref, isEnabled: isChecked ?? false),
-                  ),
-                  Text(
-                    l10n.exchangeStats(
-                      exchangeStats.successCount,
-                      exchangeStats.failureCount,
-                      exchangeStats.contentCount,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+                children: [ExchangeToggle(), ExchangeStats()],
               ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  /// Active ou coupe l'échange, et affiche l'erreur s'il y en a une.
-  ///
-  /// - [context] : contexte de la page.
-  /// - [ref] : accès aux providers.
-  /// - [isEnabled] : `true` pour activer l'échange.
-  Future<void> _onToggle(BuildContext context, WidgetRef ref, {required bool isEnabled}) async {
-    final failureMessage = await ref.read(passiveExchangeNotifierProvider.notifier).setEnabled(isEnabled: isEnabled);
-    if (failureMessage != null && context.mounted) {
-      AppSnackbar.showError(context, failureMessage);
-    }
   }
 }

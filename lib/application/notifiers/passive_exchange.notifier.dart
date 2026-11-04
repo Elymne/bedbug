@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:bedbug/application/exchange/exchange_session.dart';
-import 'package:bedbug/application/exchange/exchange_stats.notifier.dart';
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
-import 'package:bedbug/application/screens/exchange_logs/exchange_logs.notifier.dart';
-import 'package:bedbug/application/screens/settings/user_settings.notifier.dart';
+import 'package:bedbug/application/screens/exchange/exchange_stats/exchange_stats.notifier.dart';
+import 'package:bedbug/application/screens/exchange_logs/exchange_logs_list/exchange_logs_list.notifier.dart';
+import 'package:bedbug/application/screens/settings/publishing_section/publishing_section.notifier.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
@@ -146,7 +146,7 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
       return;
     }
     await _saveSettingsUsecase(SaveSettingsParams(settings: settings.copyWith(isExchangeEnabled: isEnabled)));
-    ref.invalidate(userSettingsNotifierProvider);
+    ref.invalidate(publishingSectionNotifierProvider);
   }
 
   /// Note dans le journal un pair vu sans qu'un échange ait pu commencer.
@@ -163,7 +163,7 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
   /// - [params] : ce qu'on sait de la rencontre.
   Future<void> _saveLog(SaveExchangeLogParams params) async {
     await _saveExchangeLogUsecase(params);
-    ref.invalidate(exchangeLogsNotifierProvider);
+    ref.invalidate(exchangeLogsListNotifierProvider);
   }
 
   /// Déroule un échange sur [transport], écarte ce que l'utilisateur n'accepte pas, recalcule les scores, puis fait

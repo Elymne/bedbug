@@ -19,7 +19,7 @@ class AppPageHeader extends ConsumerWidget {
   /// Titre de la page.
   final String title;
 
-  /// Préfixe optionnel affiché en couleur primaire devant [title] (voir `AppPrefixes`).
+  /// Préfixe optionnel affiché en couleur primaire devant [title] (voir `flairPrefix`, `signaturePrefix`).
   final String? titlePrefix;
 
   /// Callback déclenché lors du tap sur le bouton retour.

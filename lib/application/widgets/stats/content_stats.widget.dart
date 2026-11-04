@@ -1,8 +1,8 @@
-import 'package:bedbug/application/notifiers/content_reaction_count.notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/icons/app_bounce_icon.widget.dart';
 import 'package:bedbug/application/widgets/icons/app_burst_icon.widget.dart';
 import 'package:bedbug/application/widgets/stats/app_stat.widget.dart';
+import 'package:bedbug/application/widgets/stats/content_stats.notifier.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,8 +28,8 @@ class ContentStats extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.loc;
-    final contentReactionCountNotifierWatcher = ref.watch(contentReactionCountNotifierProvider(contentId));
-    final reactionCount = contentReactionCountNotifierWatcher.value;
+    final contentStatsNotifierWatcher = ref.watch(contentStatsNotifierProvider(contentId));
+    final reactionCount = contentStatsNotifierWatcher.value;
 
     return Row(
       mainAxisSize: MainAxisSize.min,

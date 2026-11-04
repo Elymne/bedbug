@@ -1,7 +1,6 @@
 import 'package:bedbug/application/router/app_router.dart';
-import 'package:bedbug/application/screens/search/search_suggestions.notifier.dart';
-import 'package:bedbug/application/screens/search/widgets/flair_suggestion_tile.widget.dart';
-import 'package:bedbug/application/screens/search/widgets/signature_suggestion_tile.widget.dart';
+import 'package:bedbug/application/screens/search/search_suggestions/search_suggestions.notifier.dart';
+import 'package:bedbug/application/screens/search/search_suggestions/search_suggestions.widget.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/widgets/fields/content_search_input.widget.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
@@ -19,6 +18,8 @@ import 'package:go_router/go_router.dart';
 /// - un tap sur un flair ouvre les résultats de ce flair exact ;
 /// - un tap sur une signature ouvre sa page, avec les contenus qu'elle a signés ;
 /// - valider la saisie au clavier lance une recherche globale (titre et flair).
+///
+/// Page statique : seules les suggestions observent leur état, dans [SearchSuggestions].
 class SearchScreen extends ConsumerWidget {
   /// Crée un [SearchScreen].
   const SearchScreen({super.key});
@@ -47,34 +48,7 @@ class SearchScreen extends ConsumerWidget {
                 },
               ),
             ),
-            Expanded(
-              child: Consumer(
-                builder: (context, ref, _) {
-                  final searchSuggestionsNotifierWatcher = ref.watch(searchSuggestionsNotifierProvider);
-                  final flairs = searchSuggestionsNotifierWatcher.value?.flairs ?? const [];
-                  final signatures = searchSuggestionsNotifierWatcher.value?.signatures ?? const [];
-                  return ListView(
-                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                    children: [
-                      for (final flair in flairs)
-                        FlairSuggestionTile(
-                          suggestion: flair,
-                          onTap: () {
-                            context.push(
-                              Uri(path: searchResultsPath, queryParameters: {searchFlairParam: flair.flair}).toString(),
-                            );
-                          },
-                        ),
-                      for (final signature in signatures)
-                        SignatureSuggestionTile(
-                          signature: signature,
-                          onTap: () => context.push('$signaturesPath/${Uri.encodeComponent(signature.id)}'),
-                        ),
-                    ],
-                  );
-                },
-              ),
-            ),
+            const Expanded(child: SearchSuggestions()),
           ],
         ),
       ),

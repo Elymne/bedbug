@@ -1,4 +1,4 @@
-import 'package:bedbug/application/screens/create/widgets/content_type_selector.widget.dart';
+import 'package:bedbug/application/screens/create/content_type_selector/content_type_selector.widget.dart';
 import 'package:bedbug/application/widgets/ghost/app_ghost_icon.widget.dart';
 import 'package:bedbug/resources/content/content/content_type.enum.dart';
 import 'package:flutter/material.dart';
