@@ -22,7 +22,7 @@ void main() {
                 for (final (index, key) in keys.indexed)
                   AppReactionBubble(
                     key: key,
-                    avatarText: '(◕‿◕)',
+                    avatarFrames: const ['(◕‿◕)'],
                     bubbleText: bubbleTexts[index % bubbleTexts.length],
                     ghostColor: Colors.pink,
                     isAnimating: false,

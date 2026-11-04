@@ -1,5 +1,5 @@
 /// Version du format d'échange. À incrémenter à chaque changement incompatible.
-const int exchangeFormatVersion = 1;
+const int exchangeFormatVersion = 2;
 
 /// Taille maximale d'un message une fois décompressé, en octets.
 ///

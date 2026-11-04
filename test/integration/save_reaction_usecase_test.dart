@@ -34,7 +34,7 @@ Reaction _reaction({
     updatedAt: updatedAt,
     contentId: 'content',
     authorId: authorId,
-    avatarText: avatarText,
+    avatarFrames: [avatarText],
     bubbleText: bubbleText,
   );
 }
@@ -163,7 +163,7 @@ void main() {
           updatedAt: DateTime(2026),
           contentId: 'content',
           authorId: 'alice',
-          avatarText: '(◕‿◕)',
+          avatarFrames: const ['(◕‿◕)'],
           bubbleText: 'ok',
           colorArgb: 0xFF51C2FF,
           ghostSpeed: 99,
@@ -194,7 +194,7 @@ void main() {
             updatedAt: DateTime(2026),
             contentId: 'other-content',
             authorId: 'alice',
-            avatarText: '(◕‿◕)',
+            avatarFrames: const ['(◕‿◕)'],
             bubbleText: 'ok',
           ),
         );

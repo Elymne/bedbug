@@ -162,6 +162,10 @@
   "@settingsGhostSpeedLabel": {
     "description": "Label du curseur réglant la force de l'effet ghost de l'icône"
   },
+  "settingsAvatarFrameSpeedLabel": "Vitesse de l'animation",
+  "@settingsAvatarFrameSpeedLabel": {
+    "description": "Label du curseur réglant la vitesse de l'animation d'un bedbug animé, affiché seulement pour un bedbug à plusieurs frames"
+  },
   "settingsProfileInvalid": "Pseudo ou icône invalide.",
   "@settingsProfileInvalid": {
     "description": "Message snackbar d'erreur quand le profil est refusé à l'enregistrement (pseudo ou icône hors règles)"
@@ -455,6 +459,10 @@
   "avatarPickerTitle": "Choisis ton icône",
   "@avatarPickerTitle": {
     "description": "Titre de la page du catalogue d'icônes (kaomojis)"
+  },
+  "avatarPickerAnimated": "Animé",
+  "@avatarPickerAnimated": {
+    "description": "Mention affichée à côté d'un bedbug animé dans la liste du catalogue"
   },
   "avatarPickerCategoryJoy": "Joie",
   "@avatarPickerCategoryJoy": {

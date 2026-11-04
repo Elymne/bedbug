@@ -40,7 +40,8 @@ class ContentDetailAuthor extends ConsumerWidget {
           AppPrefixedText(prefix: signaturePrefix, text: author.pseudo, style: AppTextStyles.contentMeta),
           // Le bedbug de l'auteur, à droite de son pseudo.
           AppSignatureAvatar(
-            avatarText: author.avatarText,
+            avatarFrames: author.avatarFrames,
+            avatarFrameSpeed: author.avatarFrameSpeed,
             ghostColor: authorColorArgb == null ? AppColors.primary : Color(authorColorArgb),
             ghostSpeed: author.ghostSpeed,
             fontSize: 14,

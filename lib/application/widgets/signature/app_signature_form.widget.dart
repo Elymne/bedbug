@@ -12,6 +12,7 @@ import 'package:bedbug/application/widgets/buttons/app_form_submit_button.widget
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.widget.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
 import 'package:bedbug/application/widgets/scroll/app_sticky_top.widget.dart';
+import 'package:bedbug/application/widgets/signature/app_avatar_frame_speed_slider.widget.dart';
 import 'package:bedbug/application/widgets/signature/app_ghost_color_selector.widget.dart';
 import 'package:bedbug/application/widgets/signature/app_ghost_speed_slider.widget.dart';
 import 'package:bedbug/application/widgets/signature/app_signature_avatar.widget.dart';
@@ -83,10 +84,19 @@ class _State extends ConsumerState<AppSignatureForm> {
   /// Contrôle de la police de la description.
   late final _bioFontControl = FormControl<TextFont>(value: widget.signature?.bioFont ?? TextFont.standard);
 
-  /// Contrôle de l'icône texte.
+  /// Contrôle du bedbug saisi : une seule frame, la première de l'animation quand elle vient du catalogue.
   late final _avatarTextControl = FormControl<String>(
-    value: widget.signature?.avatarText ?? defaultSignatureAvatarText,
+    value: widget.signature?.avatarFrames.first ?? defaultSignatureAvatarText,
     validators: [const NotEmptyValidator(), const AvatarTextValidator()],
+  );
+
+  /// Contrôle des frames du bedbug animé choisi dans le catalogue, `null` pour un bedbug fixe.
+  ///
+  /// La saisie ne permet qu'une frame : une animation ne vient que du catalogue. Elle reste choisie tant que le champ
+  /// affiche sa première frame ; dès que l'utilisateur tape autre chose, son bedbug redevient fixe (voir
+  /// [_avatarFrames]).
+  late final _catalogFramesControl = FormControl<List<String>>(
+    value: (widget.signature?.avatarFrames.length ?? 0) > 1 ? widget.signature!.avatarFrames : null,
   );
 
   /// Contrôle de la couleur de l'effet ghost.
@@ -94,6 +104,11 @@ class _State extends ConsumerState<AppSignatureForm> {
 
   /// Contrôle de la vitesse de l'effet ghost.
   late final _ghostSpeedControl = FormControl<double>(value: widget.signature?.ghostSpeed ?? defaultGhostSpeed);
+
+  /// Contrôle de la vitesse de l'animation du bedbug.
+  late final _avatarFrameSpeedControl = FormControl<double>(
+    value: widget.signature?.avatarFrameSpeed ?? defaultAvatarFrameSpeed,
+  );
 
   /// Contrôle des identifiants par réseau.
   late final _socialLinksControl = FormControl<Map<SocialNetwork, String>>(
@@ -106,8 +121,10 @@ class _State extends ConsumerState<AppSignatureForm> {
     'bio': _bioControl,
     'bioFont': _bioFontControl,
     'avatarText': _avatarTextControl,
+    'catalogFrames': _catalogFramesControl,
     'color': _colorControl,
     'ghostSpeed': _ghostSpeedControl,
+    'avatarFrameSpeed': _avatarFrameSpeedControl,
     'socialLinks': _socialLinksControl,
   });
 
@@ -187,7 +204,7 @@ class _State extends ConsumerState<AppSignatureForm> {
                   suffixIcon: IconButton(
                     onPressed: _pickAvatarFromCatalog,
                     tooltip: l10n.settingsAvatarBrowse,
-                    icon: const AppIcon(AppIcons.grid, color: AppColors.primary),
+                    icon: const AppIcon(AppIcons.list, color: AppColors.primary),
                   ),
                 ),
                 validationMessages: {
@@ -200,6 +217,24 @@ class _State extends ConsumerState<AppSignatureForm> {
             AppGhostColorSelector(control: _colorControl),
             Text(l10n.settingsGhostSpeedLabel),
             AppGhostSpeedSlider(formControl: _ghostSpeedControl),
+            // Réglage réservé aux bedbugs animés : sans effet sur un bedbug d'une seule frame, il reste caché.
+            StreamBuilder<Map<String, Object?>?>(
+              stream: _form.valueChanges,
+              initialData: _form.value,
+              builder: (context, _) {
+                if (_avatarFrames().length < 2) {
+                  return const SizedBox.shrink();
+                }
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 16,
+                  children: [
+                    Text(l10n.settingsAvatarFrameSpeedLabel),
+                    AppAvatarFrameSpeedSlider(formControl: _avatarFrameSpeedControl),
+                  ],
+                );
+              },
+            ),
             Text(l10n.settingsSocialLabel),
             StreamBuilder<Color?>(
               stream: _colorControl.valueChanges,
@@ -227,7 +262,6 @@ class _State extends ConsumerState<AppSignatureForm> {
             stream: _form.valueChanges,
             initialData: _form.value,
             builder: (context, _) {
-              final avatarText = _avatarTextControl.value?.trim() ?? '';
               final pseudo = _pseudoControl.value?.trim() ?? '';
               final bio = _bioControl.value?.trim() ?? '';
               return Container(
@@ -241,9 +275,10 @@ class _State extends ConsumerState<AppSignatureForm> {
                   spacing: 8,
                   children: [
                     AppSignatureAvatar(
-                      avatarText: avatarText.isEmpty ? defaultSignatureAvatarText : avatarText,
+                      avatarFrames: _avatarFrames(),
                       ghostColor: _colorControl.value ?? AppColors.primary,
                       ghostSpeed: _ghostSpeedControl.value ?? defaultGhostSpeed,
+                      avatarFrameSpeed: _avatarFrameSpeedControl.value ?? defaultAvatarFrameSpeed,
                     ),
                     AppPrefixedText(
                       prefix: signaturePrefix,
@@ -270,15 +305,33 @@ class _State extends ConsumerState<AppSignatureForm> {
     return Color(colorArgb);
   }
 
-  /// Ouvre la page du catalogue d'icônes et applique le kaomoji choisi.
+  /// Frames du bedbug à afficher et à enregistrer, déduites du champ et du choix fait dans le catalogue.
   ///
-  /// Revenir sans choisir laisse l'icône actuelle en place.
+  /// L'animation du catalogue n'est gardée que si le champ affiche encore sa première frame : taper un autre bedbug
+  /// remplace l'animation par ce bedbug, fixe. Un champ vide donne le bedbug par défaut.
+  List<String> _avatarFrames() {
+    final avatarText = _avatarTextControl.value?.trim() ?? '';
+    if (avatarText.isEmpty) {
+      return defaultSignatureAvatarFrames;
+    }
+    final catalogFrames = _catalogFramesControl.value;
+    if (catalogFrames != null && catalogFrames.first == avatarText) {
+      return catalogFrames;
+    }
+    return [avatarText];
+  }
+
+  /// Ouvre la page du catalogue des bedbugs et applique celui choisi.
+  ///
+  /// Le champ affiche la première frame du bedbug choisi, et ses frames sont retenues pour l'animer. Revenir sans
+  /// choisir laisse le bedbug actuel en place.
   Future<void> _pickAvatarFromCatalog() async {
-    final kaomoji = await context.push<String>(avatarPickerPath);
-    if (kaomoji == null) {
+    final avatarFrames = await context.push<List<String>>(avatarPickerPath);
+    if (avatarFrames == null) {
       return;
     }
-    _avatarTextControl.value = kaomoji;
+    _catalogFramesControl.value = avatarFrames.length > 1 ? avatarFrames : null;
+    _avatarTextControl.value = avatarFrames.first;
   }
 
   /// Valide le formulaire et déclenche l'enregistrement du profil.
@@ -292,9 +345,10 @@ class _State extends ConsumerState<AppSignatureForm> {
         .read(appSignatureFormNotifierProvider.notifier)
         .save(
           pseudo: _pseudoControl.value!,
-          avatarText: _avatarTextControl.value!,
+          avatarFrames: _avatarFrames(),
           colorArgb: (_colorControl.value ?? AppColors.primary).toARGB32(),
           ghostSpeed: _ghostSpeedControl.value ?? defaultGhostSpeed,
+          avatarFrameSpeed: _avatarFrameSpeedControl.value ?? defaultAvatarFrameSpeed,
           socialLinks: _socialLinksControl.value ?? const {},
           bio: _bioControl.value,
           bioFont: _bioFontControl.value ?? TextFont.standard,

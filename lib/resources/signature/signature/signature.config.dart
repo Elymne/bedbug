@@ -3,6 +3,28 @@ import 'package:bedbug/resources/signature/signature/signature.entity.dart';
 /// Icône texte d'une signature dont l'auteur n'en a pas encore choisi.
 const String defaultSignatureAvatarText = '(◕‿◕)';
 
+/// Frames du bedbug d'une signature dont l'auteur n'en a pas encore choisi : une seule, il reste fixe.
+const List<String> defaultSignatureAvatarFrames = [defaultSignatureAvatarText];
+
+/// Nombre maximal de frames d'un bedbug animé.
+///
+/// Le bedbug voyage dans chaque signature et chaque réaction : chaque frame alourdit les échanges. Quelques frames
+/// suffisent à un clin d'œil ou à un pas de danse.
+const int maxAvatarFrames = 6;
+
+/// Vitesse minimale de l'animation d'un bedbug (multiplicateur de la vitesse normale).
+///
+/// Strictement positive : une vitesse nulle figerait le bedbug sur une frame pour une durée infinie.
+const double minAvatarFrameSpeed = 0.25;
+
+/// Vitesse maximale de l'animation d'un bedbug (multiplicateur de la vitesse normale).
+///
+/// Au-delà, les frames défilent trop vite pour qu'on distingue le mouvement.
+const double maxAvatarFrameSpeed = 4;
+
+/// Vitesse de l'animation d'un bedbug dont l'auteur ne l'a pas réglée.
+const double defaultAvatarFrameSpeed = 1;
+
 /// Vitesse minimale de l'effet ghost (multiplicateur de la vitesse normale).
 ///
 /// Strictement positive : une vitesse nulle figerait l'animation sur une
@@ -57,7 +79,7 @@ final Signature anonymousSignature = Signature(
   createdAt: DateTime.fromMillisecondsSinceEpoch(0),
   updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
   pseudo: 'anonyme',
-  avatarText: '(⌐■_■)',
+  avatarFrames: const ['(⌐■_■)'],
 );
 
 /// Préfixe d'affichage d'une signature, à la manière de Reddit (`u/`) : `s/pseudo`.

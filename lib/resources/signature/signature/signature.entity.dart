@@ -13,9 +13,10 @@ class Signature extends Entity {
   /// Crée une [Signature].
   ///
   /// - [pseudo] : nom affiché sous la forme `s/pseudo`.
-  /// - [avatarText] : icône composée de texte (kaomoji, emoji, symboles), sans mot.
-  /// - [colorArgb] : couleur de l'effet ghost appliqué à [avatarText], `null` pour la couleur par défaut de l'app.
+  /// - [avatarFrames] : frames du bedbug, l'icône composée de texte (kaomoji, emoji, symboles), sans mot.
+  /// - [colorArgb] : couleur de l'effet ghost appliqué au bedbug, `null` pour la couleur par défaut de l'app.
   /// - [ghostSpeed] : vitesse de l'effet ghost, entre [minGhostSpeed] et [maxGhostSpeed].
+  /// - [avatarFrameSpeed] : vitesse de l'animation du bedbug, entre [minAvatarFrameSpeed] et [maxAvatarFrameSpeed].
   /// - [bio] : courte description de l'auteur, au plus [maxSignatureBioLength] caractères, `null` s'il n'en a pas.
   /// - [bioFont] : police de [bio] (défaut [TextFont.standard]).
   /// - [socialLinks] : identifiant de l'auteur sur chaque réseau renseigné.
@@ -24,9 +25,10 @@ class Signature extends Entity {
     required super.createdAt,
     required super.updatedAt,
     required this.pseudo,
-    this.avatarText = defaultSignatureAvatarText,
+    this.avatarFrames = defaultSignatureAvatarFrames,
     this.colorArgb,
     this.ghostSpeed = defaultGhostSpeed,
+    this.avatarFrameSpeed = defaultAvatarFrameSpeed,
     this.bio,
     this.bioFont = TextFont.standard,
     this.socialLinks = const {},
@@ -35,22 +37,32 @@ class Signature extends Entity {
   /// Nom affiché sous la forme `s/pseudo`.
   final String pseudo;
 
-  /// Icône de la signature, composée de texte.
-  final String avatarText;
+  /// Frames du bedbug de la signature, l'icône composée de texte, affichées tour à tour.
+  ///
+  /// Une seule frame donne un bedbug fixe. Plusieurs frames l'animent : seuls quelques caractères changent d'une
+  /// frame à l'autre (un œil qui se ferme, un bras qui se lève). Les frames voyagent avec la signature, pour que le
+  /// pair qui la reçoit anime le bedbug sans avoir à connaître l'animation.
+  final List<String> avatarFrames;
 
-  /// Couleur de l'effet ghost appliqué à [avatarText], encodée en ARGB 32 bits (`0xAARRGGBB`).
+  /// Couleur de l'effet ghost appliqué au bedbug, encodée en ARGB 32 bits (`0xAARRGGBB`).
   ///
   /// La couleur est libre (choisie au color picker) : le domaine la stocke
   /// sous forme d'entier, sans dépendre du type `Color` de Flutter. `null`
   /// signifie que l'utilisateur garde la couleur par défaut de l'app.
   final int? colorArgb;
 
-  /// Vitesse de l'effet ghost appliqué à [avatarText], entre [minGhostSpeed] et [maxGhostSpeed].
+  /// Vitesse de l'effet ghost appliqué au bedbug, entre [minGhostSpeed] et [maxGhostSpeed].
   ///
   /// Multiplicateur de la vitesse normale du tremblement (1 = vitesse
   /// normale) : l'amplitude, elle, ne change pas. Présentée à l'utilisateur
   /// comme la « force » de l'effet.
   final double ghostSpeed;
+
+  /// Vitesse de l'animation du bedbug, entre [minAvatarFrameSpeed] et [maxAvatarFrameSpeed].
+  ///
+  /// Multiplicateur de la vitesse normale à laquelle les frames défilent (1 = vitesse normale). Sans effet sur un
+  /// bedbug d'une seule frame.
+  final double avatarFrameSpeed;
 
   /// Courte description que l'auteur donne de lui-même, sur une seule ligne. `null` s'il n'en a pas.
   final String? bio;
@@ -82,7 +94,18 @@ class Signature extends Entity {
     return RegExp('^[A-Za-z-]{$minPseudoLength,$maxPseudoLength}\$').hasMatch(pseudo);
   }
 
-  /// Indique si [avatarText] est une icône valide : non vide et sans mot.
+  /// Indique si [avatarFrames] forme un bedbug valide : entre 1 et [maxAvatarFrames] frames, chacune valide (voir
+  /// [isValidAvatarText]).
+  ///
+  /// La règle vaut pour le bedbug d'une signature comme pour celui d'une réaction, saisi ou reçu d'un pair : sans
+  /// limite, un pair pourrait faire voyager une animation démesurée dans chaque échange.
+  ///
+  /// - [avatarFrames] : frames à vérifier.
+  static bool isValidAvatarFrames(List<String> avatarFrames) {
+    return avatarFrames.isNotEmpty && avatarFrames.length <= maxAvatarFrames && avatarFrames.every(isValidAvatarText);
+  }
+
+  /// Indique si [avatarText], une frame du bedbug, est une icône valide : non vide et sans mot.
   ///
   /// Une icône est une émote (kaomoji, emoji, symboles) : on refuse toute suite de deux lettres ou plus, pour qu'on ne
   /// puisse pas y écrire de mot. Seul le `zzZ` des émotes endormies fait exception.

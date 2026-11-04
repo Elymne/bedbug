@@ -106,6 +106,9 @@ enum AppIcons {
   /// Maillons de chaîne.
   link,
 
+  /// Liste à puces de trois lignes.
+  list,
+
   /// Dossiers empilés.
   media,
 

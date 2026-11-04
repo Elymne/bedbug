@@ -114,7 +114,7 @@ class SeedReactionsUsecase extends Usecase<SeedReactionsParams, SeedReactionsFai
       updatedAt: date,
       contentId: contentId,
       authorId: authorId,
-      avatarText: _avatarTexts[random.nextInt(_avatarTexts.length)],
+      avatarFrames: [_avatarTexts[random.nextInt(_avatarTexts.length)]],
       bubbleText: _bubbleTexts[random.nextInt(_bubbleTexts.length)],
       colorArgb: _colorArgbs[random.nextInt(_colorArgbs.length)],
       ghostSpeed: minGhostSpeed + random.nextInt(steps + 1) * 0.25,

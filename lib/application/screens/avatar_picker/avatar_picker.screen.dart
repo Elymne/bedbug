@@ -4,15 +4,19 @@ import 'package:bedbug/application/screens/avatar_picker/kaomoji_category.enum.d
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/widgets/headers/app_page_header.widget.dart';
+import 'package:bedbug/application/widgets/separators/app_list_separator.widget.dart';
+import 'package:bedbug/application/widgets/signature/app_bedbug_frames.widget.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Page de choix d'une icône de profil parmi le catalogue de kaomojis, classé par catégorie.
+/// Page de choix d'un bedbug parmi le catalogue de kaomojis, classé par catégorie.
 ///
-/// Un tap sur un kaomoji ferme la page et le renvoie à l'appelant via
-/// `context.pop`. Le retour sans choix renvoie `null`.
+/// Une liste plutôt qu'une grille : chaque bedbug a sa ligne, assez large pour
+/// qu'une animation se joue sans bousculer ses voisins, et les bedbugs animés y
+/// sont signalés. Un tap sur un bedbug ferme la page et renvoie ses frames à
+/// l'appelant via `context.pop`. Le retour sans choix renvoie `null`.
 ///
 /// Sert au choix de l'icône d'une signature comme au choix du bedbug d'une
 /// réaction : seul le titre change.
@@ -37,28 +41,39 @@ class AvatarPickerScreen extends ConsumerWidget {
             AppPageHeader(title: title ?? l10n.avatarPickerTitle, onBack: context.pop),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(AppValues.baseMargin, 0, AppValues.baseMargin, 32),
+                padding: const EdgeInsets.only(bottom: 32),
                 children: [
                   for (final entry in kaomojiCatalog.entries) ...[
-                    const SizedBox(height: 16),
-                    Text(
-                      _categoryTitle(l10n, entry.key),
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.onLight),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(AppValues.baseMargin, 24, AppValues.baseMargin, 8),
+                      child: Text(
+                        _categoryTitle(l10n, entry.key),
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.onLight),
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        for (final kaomoji in entry.value)
-                          ActionChip(
-                            label: Text(kaomoji, style: const TextStyle(fontSize: 16)),
-                            backgroundColor: AppColors.surface,
-                            side: const BorderSide(color: AppColors.border),
-                            onPressed: () => context.pop(kaomoji),
+                    for (final (index, avatarFrames) in entry.value.indexed) ...[
+                      if (index > 0) const AppListSeparator(),
+                      InkWell(
+                        onTap: () => context.pop(avatarFrames),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: AppValues.baseMargin, vertical: 14),
+                          child: Row(
+                            children: [
+                              AppBedbugFrames(
+                                frames: avatarFrames,
+                                style: const TextStyle(fontSize: 20, color: AppColors.onLight),
+                              ),
+                              const Spacer(),
+                              if (avatarFrames.length > 1)
+                                Text(
+                                  l10n.avatarPickerAnimated,
+                                  style: const TextStyle(fontSize: 12, color: AppColors.onLighter),
+                                ),
+                            ],
                           ),
-                      ],
-                    ),
+                        ),
+                      ),
+                    ],
                   ],
                 ],
               ),

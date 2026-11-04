@@ -84,7 +84,8 @@ class ContentReactionsSection extends ConsumerWidget {
                 for (final (index, reaction) in state.reactions.indexed)
                   AppScrollReveal(
                     child: AppReactionBubble(
-                      avatarText: reaction.avatarText,
+                      avatarFrames: reaction.avatarFrames,
+                      avatarFrameSpeed: reaction.avatarFrameSpeed,
                       bubbleText: reaction.bubbleText,
                       bubbleFont: reaction.bubbleFont,
                       ghostColor: reaction.colorArgb == null ? AppColors.primary : Color(reaction.colorArgb!),

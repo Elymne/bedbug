@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/create/create.screen.dart';
+import 'package:bedbug/application/screens/create/tag_select_box/tag_select_box.widget.dart';
+import 'package:bedbug/application/screens/tag_picker/tag_picker.screen.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.widget.dart';
 import 'package:bedbug/application/widgets/texts/app_loading_text.widget.dart';
 import 'package:bedbug/core/domain/either.dart';
@@ -261,6 +263,10 @@ void main() {
         ),
         GoRoute(path: '/create', builder: (context, state) => const CreateScreen()),
         GoRoute(
+          path: tagPickerPath,
+          builder: (context, state) => TagPickerScreen(selectedTags: state.extra! as List<Tag>),
+        ),
+        GoRoute(
           path: contentDetailPath,
           builder: (context, state) => Scaffold(body: Text('detail ${(state.extra! as TextContent).title}')),
         ),
@@ -291,9 +297,19 @@ void main() {
     await tester.enterText(find.widgetWithText(TextField, l10n.createTextTitleLabel), 'Mon titre');
     await tester.enterText(find.widgetWithText(TextField, l10n.createTextBodyLabel), 'Mon corps');
     await tester.enterText(find.widgetWithText(TextField, l10n.createFlairLabel), 'test');
-    await tester.tap(find.widgetWithText(AppTag, Tag.alert.text));
-    await tester.tap(find.widgetWithText(AppTag, Tag.question.text));
+    // Les tags se choisissent sur leur propre page, et le retour système y renvoie la sélection.
+    await tester.tap(find.byType(TagSelectBox));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.text(Tag.alert.text));
+    await tester.tap(find.text(Tag.question.text));
+    await tester.pump();
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
+
+    expect(find.widgetWithText(AppTag, Tag.alert.text), findsOneWidget);
+    expect(find.widgetWithText(AppTag, Tag.question.text), findsOneWidget);
     await tester.tap(find.text(l10n.createSaveButton));
     await tester.pump();
     await tester.pump();

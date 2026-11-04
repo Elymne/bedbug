@@ -37,7 +37,7 @@ void main() {
     final saveResult = await container.read(saveLocalSignatureUsecaseProvider)(
       const SaveLocalSignatureParams(
         pseudo: '  bed-bug  ',
-        avatarText: '(◕‿◕)',
+        avatarFrames: ['(◕‿◕)'],
         colorArgb: 0xFF123456,
         ghostSpeed: 99,
         socialLinks: {SocialNetwork.twitch: 'https://www.twitch.tv/bedbug', SocialNetwork.github: '   '},
@@ -58,7 +58,7 @@ void main() {
     final invalidPseudo = await saveUsecase(
       const SaveLocalSignatureParams(
         pseudo: 'bed bug',
-        avatarText: '(◕‿◕)',
+        avatarFrames: ['(◕‿◕)'],
         colorArgb: null,
         ghostSpeed: 1,
         socialLinks: {},
@@ -67,7 +67,7 @@ void main() {
     final invalidAvatar = await saveUsecase(
       const SaveLocalSignatureParams(
         pseudo: 'bedbug',
-        avatarText: 'coucou',
+        avatarFrames: ['coucou'],
         colorArgb: null,
         ghostSpeed: 1,
         socialLinks: {},
@@ -84,7 +84,7 @@ void main() {
     final withBio = await saveUsecase(
       const SaveLocalSignatureParams(
         pseudo: 'bedbug',
-        avatarText: '(◕‿◕)',
+        avatarFrames: ['(◕‿◕)'],
         colorArgb: null,
         ghostSpeed: 1,
         socialLinks: {},
@@ -94,7 +94,7 @@ void main() {
     final withBlankBio = await saveUsecase(
       const SaveLocalSignatureParams(
         pseudo: 'bedbug',
-        avatarText: '(◕‿◕)',
+        avatarFrames: ['(◕‿◕)'],
         colorArgb: null,
         ghostSpeed: 1,
         socialLinks: {},
@@ -114,7 +114,7 @@ void main() {
     final tooLong = await saveUsecase(
       SaveLocalSignatureParams(
         pseudo: 'bedbug',
-        avatarText: '(◕‿◕)',
+        avatarFrames: const ['(◕‿◕)'],
         colorArgb: null,
         ghostSpeed: 1,
         socialLinks: const {},
@@ -124,7 +124,7 @@ void main() {
     final multiline = await saveUsecase(
       const SaveLocalSignatureParams(
         pseudo: 'bedbug',
-        avatarText: '(◕‿◕)',
+        avatarFrames: ['(◕‿◕)'],
         colorArgb: null,
         ghostSpeed: 1,
         socialLinks: {},

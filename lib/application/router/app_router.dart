@@ -88,8 +88,8 @@ const String signatureSetupPath = '/signature-setup';
 ///
 /// Déclarée au premier niveau : le formulaire de signature l'ouvre aussi bien
 /// depuis les paramètres que depuis la création de la signature, qui ne doit
-/// pas empiler la page des paramètres. La page renvoie le kaomoji choisi via
-/// `context.pop`, à récupérer avec `context.push<String>(avatarPickerPath)`.
+/// pas empiler la page des paramètres. La page renvoie les frames du bedbug choisi via
+/// `context.pop`, à récupérer avec `context.push<List<String>>(avatarPickerPath)`.
 const String avatarPickerPath = '/avatar-picker';
 
 /// Chemin vers la page listant les options d'une `AppSelectBox`.
@@ -108,8 +108,8 @@ const String tagPickerPath = '/tag-picker';
 /// Chemin vers la page de choix du bedbug d'une réaction.
 ///
 /// Même page que [avatarPickerPath], avec un titre propre aux réactions. Le
-/// kaomoji choisi est renvoyé via `context.pop`, à récupérer avec
-/// `context.push<String>(reactionPickerPath)`.
+/// bedbug choisi (ses frames) est renvoyé via `context.pop`, à récupérer avec
+/// `context.push<List<String>>(reactionPickerPath)`.
 const String reactionPickerPath = '/reaction-picker';
 
 /// Chemin vers la page de recherche dédiée.

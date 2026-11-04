@@ -161,7 +161,7 @@ class _Device {
       updatedAt: now,
       contentId: contentId,
       authorId: name,
-      avatarText: '(◕‿◕)',
+      avatarFrames: const ['(◕‿◕)'],
       bubbleText: bubbleText,
     );
     final result = await container.read(saveReactionUsecaseProvider)(SaveReactionParams(reaction: reaction));

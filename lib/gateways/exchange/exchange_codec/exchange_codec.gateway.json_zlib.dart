@@ -307,9 +307,10 @@ class JsonZlibExchangeCodecGateway implements ExchangeCodecGateway {
   Map<String, Object?> _signatureToJson(Signature signature) {
     return {
       'pseudo': signature.pseudo,
-      'avatarText': signature.avatarText,
+      'avatarFrames': signature.avatarFrames,
       'colorArgb': signature.colorArgb,
       'ghostSpeed': signature.ghostSpeed,
+      'avatarFrameSpeed': signature.avatarFrameSpeed,
       'bio': signature.bio,
       'bioFont': signature.bioFont.value,
       'socialLinks': {for (final entry in signature.socialLinks.entries) '${entry.key.value}': entry.value},
@@ -337,9 +338,10 @@ class JsonZlibExchangeCodecGateway implements ExchangeCodecGateway {
       createdAt: DateTime.fromMillisecondsSinceEpoch(0),
       updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
       pseudo: _readString(json, 'pseudo'),
-      avatarText: _readString(json, 'avatarText'),
+      avatarFrames: _readList(json, 'avatarFrames').map(_asString).toList(),
       colorArgb: _readOptionalInt(json, 'colorArgb'),
       ghostSpeed: _readDouble(json, 'ghostSpeed'),
+      avatarFrameSpeed: _readDouble(json, 'avatarFrameSpeed'),
       bio: _readOptionalString(json, 'bio'),
       bioFont: TextFont.fromValue(_readInt(json, 'bioFont')),
       socialLinks: socialLinks,
@@ -355,10 +357,11 @@ class JsonZlibExchangeCodecGateway implements ExchangeCodecGateway {
       'contentId': reaction.contentId,
       'createdAt': reaction.createdAt.millisecondsSinceEpoch,
       'updatedAt': reaction.updatedAt.millisecondsSinceEpoch,
-      'avatarText': reaction.avatarText,
+      'avatarFrames': reaction.avatarFrames,
       'bubbleText': reaction.bubbleText,
       'colorArgb': reaction.colorArgb,
       'ghostSpeed': reaction.ghostSpeed,
+      'avatarFrameSpeed': reaction.avatarFrameSpeed,
       'bubbleFont': reaction.bubbleFont.value,
     };
   }
@@ -373,10 +376,11 @@ class JsonZlibExchangeCodecGateway implements ExchangeCodecGateway {
       updatedAt: _readDate(json, 'updatedAt'),
       contentId: _readString(json, 'contentId'),
       authorId: '',
-      avatarText: _readString(json, 'avatarText'),
+      avatarFrames: _readList(json, 'avatarFrames').map(_asString).toList(),
       bubbleText: _readString(json, 'bubbleText'),
       colorArgb: _readOptionalInt(json, 'colorArgb'),
       ghostSpeed: _readDouble(json, 'ghostSpeed'),
+      avatarFrameSpeed: _readDouble(json, 'avatarFrameSpeed'),
       bubbleFont: TextFont.fromValue(_readInt(json, 'bubbleFont')),
     );
   }

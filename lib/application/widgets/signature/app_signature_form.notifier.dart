@@ -26,17 +26,19 @@ class AppSignatureFormNotifier extends AsyncNotifier<AppSignatureFormState> {
   /// Enregistre le profil saisi.
   ///
   /// - [pseudo] : pseudo saisi.
-  /// - [avatarText] : icône texte saisie.
+  /// - [avatarFrames] : frames du bedbug choisi.
   /// - [colorArgb] : couleur de l'effet ghost de l'icône en ARGB 32 bits.
   /// - [ghostSpeed] : vitesse de l'effet ghost.
+  /// - [avatarFrameSpeed] : vitesse de l'animation du bedbug.
   /// - [socialLinks] : identifiants saisis par réseau.
   /// - [bio] : description saisie, `null` ou vide pour ne pas en avoir.
   /// - [bioFont] : police choisie pour la description.
   Future<void> save({
     required String pseudo,
-    required String avatarText,
+    required List<String> avatarFrames,
     required int colorArgb,
     required double ghostSpeed,
+    required double avatarFrameSpeed,
     required Map<SocialNetwork, String> socialLinks,
     required TextFont bioFont,
     String? bio,
@@ -46,9 +48,10 @@ class AppSignatureFormNotifier extends AsyncNotifier<AppSignatureFormState> {
     final result = await _saveLocalSignatureUsecase(
       SaveLocalSignatureParams(
         pseudo: pseudo,
-        avatarText: avatarText,
+        avatarFrames: avatarFrames,
         colorArgb: colorArgb,
         ghostSpeed: ghostSpeed,
+        avatarFrameSpeed: avatarFrameSpeed,
         socialLinks: socialLinks,
         bio: bio,
         bioFont: bioFont,

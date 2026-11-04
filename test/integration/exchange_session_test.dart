@@ -262,7 +262,13 @@ class _ScriptedPeer {
       ExchangeFrameType.request,
       _codec.encodeRequest(const ExchangeRequest(contentIds: [], reactionContentIds: [])),
     );
-    final signature = Signature(id: '', createdAt: _date, updatedAt: _date, pseudo: 'bedbug', avatarText: '(◕‿◕)');
+    final signature = Signature(
+      id: '',
+      createdAt: _date,
+      updatedAt: _date,
+      pseudo: 'bedbug',
+      avatarFrames: const ['(◕‿◕)'],
+    );
     final bundle = ExchangeBundle(
       contents: [for (final content in contents) ExchangedContent(content: content, signature: signature)],
       reactions: const [],

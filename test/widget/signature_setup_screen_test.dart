@@ -1,5 +1,6 @@
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/router/app_router.dart';
+import 'package:bedbug/application/screens/signature_setup/signature_info_dialog/signature_info_dialog.widget.dart';
 import 'package:bedbug/application/screens/signature_setup/signature_setup.screen.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
@@ -80,6 +81,13 @@ Future<void> _pumpSetup(WidgetTester tester, _FakeSaveLocalSignatureUsecase save
     ),
   );
   await tester.pump();
+
+  // La popup d'explication s'ouvre à l'arrivée sur la page : la fermer pour atteindre le formulaire.
+  await tester.pump();
+  expect(find.byType(SignatureInfoDialog), findsOneWidget);
+  await tester.tap(find.text('Compris'));
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 300));
 }
 
 void main() {

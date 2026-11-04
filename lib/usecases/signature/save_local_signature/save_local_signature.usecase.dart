@@ -41,9 +41,11 @@ class SaveLocalSignatureUsecase extends Usecase<SaveLocalSignatureParams, SaveLo
   Future<Either<SaveLocalSignatureFailure, Signature>> call(SaveLocalSignatureParams params) async {
     try {
       final pseudo = params.pseudo.trim();
-      final avatarText = params.avatarText.trim();
+      final avatarFrames = [for (final frame in params.avatarFrames) frame.trim()];
       final bio = params.bio?.trim() ?? '';
-      if (!Signature.isValidPseudo(pseudo) || !Signature.isValidAvatarText(avatarText) || !Signature.isValidBio(bio)) {
+      if (!Signature.isValidPseudo(pseudo) ||
+          !Signature.isValidAvatarFrames(avatarFrames) ||
+          !Signature.isValidBio(bio)) {
         return const Left(SaveLocalSignatureFailure.invalidProfile);
       }
 
@@ -63,9 +65,10 @@ class SaveLocalSignatureUsecase extends Usecase<SaveLocalSignatureParams, SaveLo
           createdAt: existing?.createdAt ?? now,
           updatedAt: now,
           pseudo: pseudo,
-          avatarText: avatarText,
+          avatarFrames: avatarFrames,
           colorArgb: params.colorArgb,
           ghostSpeed: params.ghostSpeed.clamp(minGhostSpeed, maxGhostSpeed),
+          avatarFrameSpeed: params.avatarFrameSpeed.clamp(minAvatarFrameSpeed, maxAvatarFrameSpeed),
           socialLinks: socialLinks,
           bio: bio.isEmpty ? null : bio,
           bioFont: params.bioFont,

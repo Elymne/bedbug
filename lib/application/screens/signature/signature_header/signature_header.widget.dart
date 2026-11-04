@@ -60,7 +60,8 @@ class SignatureHeader extends ConsumerWidget {
                 // déborde légèrement du texte.
                 padding: const EdgeInsets.all(4),
                 child: AppSignatureAvatar(
-                  avatarText: signature.avatarText,
+                  avatarFrames: signature.avatarFrames,
+                  avatarFrameSpeed: signature.avatarFrameSpeed,
                   ghostColor: ghostColor,
                   ghostSpeed: signature.ghostSpeed,
                 ),
