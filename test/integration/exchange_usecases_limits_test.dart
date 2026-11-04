@@ -131,7 +131,7 @@ Reaction _reaction(
     updatedAt: updatedAt ?? _date,
     contentId: contentId,
     authorId: authorId,
-    avatarText: '(◕‿◕)',
+    avatarFrames: const ['(◕‿◕)'],
     bubbleText: bubbleText,
   );
 }
@@ -157,7 +157,7 @@ Signature _signature({
     createdAt: _date,
     updatedAt: _date,
     pseudo: pseudo,
-    avatarText: avatarText,
+    avatarFrames: [avatarText],
     colorArgb: colorArgb,
     ghostSpeed: ghostSpeed,
     bio: bio,

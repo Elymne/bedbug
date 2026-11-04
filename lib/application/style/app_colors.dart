@@ -63,4 +63,28 @@ class AppColors {
 
   /// Couleur d'accentuation orange, utilisée entre autres pour les tags.
   static const Color orange = Color(0xFFFF9D4D);
+
+  /// Transparent : laisse voir ce qu'il y a dessous, par exemple le ciel de la page d'échange sous la barre d'état.
+  static const Color transparent = Color(0x00000000);
+
+  /// Haut du ciel de la page d'échange la nuit, quand l'échange est coupé : presque noir.
+  static const Color exchangeNightSkyTop = Color(0xFF020308);
+
+  /// Bas du ciel de la page d'échange la nuit, vers lequel le noir du haut se dégrade : un bleu nuit profond.
+  static const Color exchangeNightSky = Color(0xFF0E1834);
+
+  /// Ciel de la page d'échange le jour, quand l'échange est actif : un jaune pâle et chaud.
+  static const Color exchangeDaySky = Color(0xFFFFF3D6);
+
+  /// Ciel de la page d'échange quand l'échange n'a pas pu démarrer : un rouge de colère.
+  static const Color exchangeAngrySky = Color(0xFFD94848);
+
+  /// Bordure de la lune, et halo qui respire derrière le bedbug endormi.
+  static const Color moonGlow = Color(0xFF6FA8FF);
+
+  /// Cratères de la lune, un gris clair.
+  static const Color moonCrater = Color(0xFFD3D7DE);
+
+  /// Bordure du soleil, un jaune-orangé.
+  static const Color sunGlow = Color(0xFFFFAA33);
 }

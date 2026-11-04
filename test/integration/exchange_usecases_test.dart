@@ -90,7 +90,7 @@ Reaction _reaction(
     updatedAt: updatedAt ?? _date,
     contentId: contentId,
     authorId: authorId,
-    avatarText: '(◕‿◕)',
+    avatarFrames: const ['(◕‿◕)'],
     bubbleText: bubbleText,
   );
 }
@@ -99,7 +99,7 @@ Reaction _reaction(
 ///
 /// - [pseudo] : pseudo de la signature.
 Signature _signature({String pseudo = 'bedbug'}) {
-  return Signature(id: '', createdAt: _date, updatedAt: _date, pseudo: pseudo, avatarText: '(◕‿◕)');
+  return Signature(id: '', createdAt: _date, updatedAt: _date, pseudo: pseudo, avatarFrames: const ['(◕‿◕)']);
 }
 
 void main() {
@@ -250,7 +250,13 @@ void main() {
       await container
           .read(signatureRepositoryProvider)
           .saveLocal(
-            Signature(id: localSignatureId, createdAt: _date, updatedAt: _date, pseudo: 'moi', avatarText: '(・ω・)'),
+            Signature(
+              id: localSignatureId,
+              createdAt: _date,
+              updatedAt: _date,
+              pseudo: 'moi',
+              avatarFrames: const ['(・ω・)'],
+            ),
           );
       await container.read(contentRepositoryProvider).addMany([
         _text('mine'),

@@ -37,17 +37,19 @@ class ReactionComposerSheetNotifier extends AsyncNotifier<void> {
   /// les réactions du contenu et leur nombre sont rechargés.
   ///
   /// - [contentId] : identifiant du contenu auquel réagir.
-  /// - [avatarText] : bedbug choisi.
+  /// - [avatarFrames] : frames du bedbug choisi.
   /// - [bubbleText] : bulle de texte.
   /// - [colorArgb] : couleur de l'effet ghost du bedbug en ARGB 32 bits.
   /// - [ghostSpeed] : intensité de l'effet ghost du bedbug.
+  /// - [avatarFrameSpeed] : vitesse de l'animation du bedbug.
   /// - [bubbleFont] : police de la bulle de texte.
   /// - [previousReaction] : réaction actuelle de l'utilisateur sur ce contenu, `null` s'il n'a pas encore réagi.
   Future<String?> save({
     required String contentId,
-    required String avatarText,
+    required List<String> avatarFrames,
     required int colorArgb,
     required double ghostSpeed,
+    required double avatarFrameSpeed,
     required String bubbleText,
     required TextFont bubbleFont,
     Reaction? previousReaction,
@@ -64,10 +66,11 @@ class ReactionComposerSheetNotifier extends AsyncNotifier<void> {
           updatedAt: now,
           contentId: contentId,
           authorId: localSignatureId,
-          avatarText: avatarText,
+          avatarFrames: avatarFrames,
           bubbleText: bubbleText,
           colorArgb: colorArgb,
           ghostSpeed: ghostSpeed,
+          avatarFrameSpeed: avatarFrameSpeed,
           bubbleFont: bubbleFont,
         ),
       ),

@@ -86,9 +86,9 @@ class MergeReactionService extends Service<MergeReactionParams, MergeReactionFai
   ///
   /// - [reaction] : réaction à enregistrer.
   Reaction? _normalize(Reaction reaction) {
-    final avatarText = reaction.avatarText.trim();
+    final avatarFrames = [for (final frame in reaction.avatarFrames) frame.trim()];
     final bubbleText = reaction.bubbleText.trim();
-    if (!Signature.isValidAvatarText(avatarText) || !Reaction.isValidBubble(bubbleText)) {
+    if (!Signature.isValidAvatarFrames(avatarFrames) || !Reaction.isValidBubble(bubbleText)) {
       return null;
     }
     return Reaction(
@@ -97,10 +97,11 @@ class MergeReactionService extends Service<MergeReactionParams, MergeReactionFai
       updatedAt: reaction.updatedAt,
       contentId: reaction.contentId,
       authorId: reaction.authorId,
-      avatarText: avatarText,
+      avatarFrames: avatarFrames,
       bubbleText: bubbleText,
       colorArgb: reaction.colorArgb,
       ghostSpeed: reaction.ghostSpeed.clamp(minGhostSpeed, maxGhostSpeed),
+      avatarFrameSpeed: reaction.avatarFrameSpeed.clamp(minAvatarFrameSpeed, maxAvatarFrameSpeed),
       bubbleFont: reaction.bubbleFont,
     );
   }

@@ -22,6 +22,22 @@ void main() {
     });
   });
 
+  group('isValidAvatarFrames', () {
+    test('accepte un bedbug fixe et un bedbug animé', () {
+      expect(Signature.isValidAvatarFrames(const ['(◕‿◕)']), isTrue);
+      expect(Signature.isValidAvatarFrames(const ['└(＾＾)┐', '┌(＾＾)┘']), isTrue);
+    });
+
+    test('refuse un bedbug sans frame ou avec trop de frames', () {
+      expect(Signature.isValidAvatarFrames(const []), isFalse);
+      expect(Signature.isValidAvatarFrames(List.filled(maxAvatarFrames + 1, '(◕‿◕)')), isFalse);
+    });
+
+    test('refuse un bedbug dont une seule frame contient un mot', () {
+      expect(Signature.isValidAvatarFrames(const ['(◕‿◕)', 'coucou']), isFalse);
+    });
+  });
+
   group('isValidAvatarText', () {
     test('accepte les émotes, emojis et lettres isolées', () {
       for (final avatar in ['(◕‿◕)', 'ʕ•ᴥ•ʔ', '(T_T)', 'ヽ(`Д´)ﾉ', '😀', '(-.-)Zzz']) {
@@ -39,9 +55,9 @@ void main() {
       expect(Signature.isValidAvatarText('   '), isFalse);
     });
 
-    test('accepte toutes les entrées du catalogue de kaomojis', () {
-      for (final kaomoji in kaomojiCatalog.values.expand((kaomojis) => kaomojis)) {
-        expect(Signature.isValidAvatarText(kaomoji), isTrue, reason: kaomoji);
+    test('accepte tous les bedbugs du catalogue', () {
+      for (final avatarFrames in kaomojiCatalog.values.expand((bedbugs) => bedbugs)) {
+        expect(Signature.isValidAvatarFrames(avatarFrames), isTrue, reason: '$avatarFrames');
       }
     });
   });

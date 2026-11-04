@@ -37,7 +37,8 @@ class SignatureSuggestionTile extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(8)),
         child: AppSignatureAvatar(
-          avatarText: signature.avatarText,
+          avatarFrames: signature.avatarFrames,
+          avatarFrameSpeed: signature.avatarFrameSpeed,
           ghostColor: colorArgb == null ? AppColors.primary : Color(colorArgb),
           fontSize: 13,
           isAnimating: false,

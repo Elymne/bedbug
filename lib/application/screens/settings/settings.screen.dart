@@ -52,6 +52,12 @@ class SettingsScreen extends ConsumerWidget {
         path: settingsOwnContentsPath,
       ),
       SettingsMenuTile(
+        icon: AppIcons.chart,
+        title: l10n.settingsExchangeStatsTitle,
+        subtitle: l10n.settingsExchangeStatsSubtitle,
+        path: settingsExchangeStatsPath,
+      ),
+      SettingsMenuTile(
         icon: AppIcons.bug,
         title: l10n.settingsDebugTitle,
         subtitle: l10n.settingsDebugSubtitle,

@@ -17,10 +17,11 @@ class ReactionHiveModel extends HiveObject {
     required this.updatedAt,
     required this.contentId,
     required this.authorId,
-    required this.avatarText,
+    required this.avatarFrames,
     this.bubbleText,
     this.colorArgb,
     this.ghostSpeed = defaultGhostSpeed,
+    this.avatarFrameSpeed = defaultAvatarFrameSpeed,
     this.bubbleFont = 0,
   });
 
@@ -32,10 +33,11 @@ class ReactionHiveModel extends HiveObject {
       updatedAt: entity.updatedAt.millisecondsSinceEpoch,
       contentId: entity.contentId,
       authorId: entity.authorId,
-      avatarText: entity.avatarText,
+      avatarFrames: entity.avatarFrames,
       bubbleText: entity.bubbleText,
       colorArgb: entity.colorArgb,
       ghostSpeed: entity.ghostSpeed,
+      avatarFrameSpeed: entity.avatarFrameSpeed,
       bubbleFont: entity.bubbleFont.value,
     );
   }
@@ -60,9 +62,15 @@ class ReactionHiveModel extends HiveObject {
   @HiveField(4)
   final String authorId;
 
-  /// Bedbug choisi, sous forme de texte.
-  @HiveField(5)
-  final String avatarText;
+  // Champ 5 : anciennement le bedbug d'une seule frame, remplacé par
+  // [avatarFrames]. Ne pas réutiliser.
+
+  /// Frames du bedbug choisi.
+  ///
+  /// Les réactions persistées sans ce champ sont relues avec le bedbug par
+  /// défaut.
+  @HiveField(10, defaultValue: defaultSignatureAvatarFrames)
+  final List<String> avatarFrames;
 
   /// Bulle de texte, `null` pour les réactions stockées avant qu'elle soit obligatoire.
   @HiveField(6)
@@ -78,6 +86,13 @@ class ReactionHiveModel extends HiveObject {
   /// champ : elles sont relues avec l'intensité par défaut.
   @HiveField(8, defaultValue: defaultGhostSpeed)
   final double ghostSpeed;
+
+  /// Vitesse de l'animation du bedbug (multiplicateur de la vitesse normale).
+  ///
+  /// Les données persistées sans ce champ sont relues avec la vitesse par
+  /// défaut.
+  @HiveField(11, defaultValue: defaultAvatarFrameSpeed)
+  final double avatarFrameSpeed;
 
   /// Police de la bulle de texte, sous forme de valeur de [TextFont].
   ///
@@ -95,13 +110,14 @@ class ReactionHiveModel extends HiveObject {
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
         contentId: contentId,
         authorId: authorId,
-        avatarText: avatarText,
+        avatarFrames: avatarFrames,
         // Les réactions stockées avant que la bulle soit obligatoire n'en ont pas.
         bubbleText: bubbleText ?? '',
         colorArgb: colorArgb,
         // Bornée à la relecture : une valeur hors bornes figerait ou ferait
         // planter l'animation.
         ghostSpeed: ghostSpeed.clamp(minGhostSpeed, maxGhostSpeed),
+        avatarFrameSpeed: avatarFrameSpeed.clamp(minAvatarFrameSpeed, maxAvatarFrameSpeed),
         bubbleFont: TextFont.fromValue(bubbleFont),
       );
     } catch (error) {

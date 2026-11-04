@@ -17,9 +17,10 @@ class SignatureHiveModel extends HiveObject {
   /// - [createdAt] : date de création en millisecondes depuis l'époque.
   /// - [updatedAt] : date de mise à jour en millisecondes depuis l'époque.
   /// - [pseudo] : nom d'affichage de l'utilisateur.
-  /// - [avatarText] : icône texte de l'utilisateur.
+  /// - [avatarFrames] : frames du bedbug de la signature.
   /// - [colorArgb] : couleur de l'effet ghost en ARGB 32 bits, `null` pour la couleur par défaut.
   /// - [ghostSpeed] : vitesse de l'effet ghost.
+  /// - [avatarFrameSpeed] : vitesse de l'animation du bedbug.
   /// - [socialLinks] : identifiants par réseau, indexés par valeur de [SocialNetwork].
   /// - [bio] : courte description de l'utilisateur, `null` s'il n'en a pas.
   /// - [bioFont] : police de la description, valeur de [TextFont].
@@ -28,9 +29,10 @@ class SignatureHiveModel extends HiveObject {
     required this.createdAt,
     required this.updatedAt,
     required this.pseudo,
-    required this.avatarText,
+    required this.avatarFrames,
     this.colorArgb,
     required this.ghostSpeed,
+    this.avatarFrameSpeed = defaultAvatarFrameSpeed,
     required this.socialLinks,
     this.bio,
     this.bioFont = 0,
@@ -43,9 +45,10 @@ class SignatureHiveModel extends HiveObject {
       createdAt: entity.createdAt.millisecondsSinceEpoch,
       updatedAt: entity.updatedAt.millisecondsSinceEpoch,
       pseudo: entity.pseudo,
-      avatarText: entity.avatarText,
+      avatarFrames: entity.avatarFrames,
       colorArgb: entity.colorArgb,
       ghostSpeed: entity.ghostSpeed,
+      avatarFrameSpeed: entity.avatarFrameSpeed,
       socialLinks: {for (final entry in entity.socialLinks.entries) entry.key.value: entry.value},
       bio: entity.bio,
       bioFont: entity.bioFont.value,
@@ -71,12 +74,15 @@ class SignatureHiveModel extends HiveObject {
   // Champ 4 : anciennement l'e-mail de l'utilisateur, retiré parce qu'une
   // signature voyage avec les contenus. Ne pas réutiliser.
 
-  /// Icône texte de la signature.
+  // Champ 5 : anciennement l'icône texte, d'une seule frame, remplacée par
+  // [avatarFrames]. Ne pas réutiliser.
+
+  /// Frames du bedbug de la signature.
   ///
-  /// Les signatures persistées avant l'ajout de l'icône n'ont pas ce champ :
-  /// elles sont relues avec l'icône par défaut.
-  @HiveField(5, defaultValue: defaultSignatureAvatarText)
-  final String avatarText;
+  /// Les signatures persistées sans ce champ sont relues avec le bedbug par
+  /// défaut.
+  @HiveField(12, defaultValue: defaultSignatureAvatarFrames)
+  final List<String> avatarFrames;
 
   /// Couleur de l'effet ghost encodée en ARGB 32 bits, `null` pour la couleur par défaut de l'app.
   ///
@@ -91,6 +97,13 @@ class SignatureHiveModel extends HiveObject {
   /// champ : ils sont relus avec la vitesse par défaut.
   @HiveField(9, defaultValue: defaultGhostSpeed)
   final double ghostSpeed;
+
+  /// Vitesse de l'animation du bedbug (multiplicateur de la vitesse normale).
+  ///
+  /// Les données persistées sans ce champ sont relues avec la vitesse par
+  /// défaut.
+  @HiveField(13, defaultValue: defaultAvatarFrameSpeed)
+  final double avatarFrameSpeed;
 
   /// Identifiants de l'utilisateur par réseau, indexés par valeur de [SocialNetwork].
   @HiveField(7, defaultValue: <int, String>{})
@@ -118,11 +131,12 @@ class SignatureHiveModel extends HiveObject {
         createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt),
         updatedAt: DateTime.fromMillisecondsSinceEpoch(updatedAt),
         pseudo: pseudo,
-        avatarText: avatarText,
+        avatarFrames: avatarFrames,
         colorArgb: colorArgb,
         // Bornée à la relecture : une valeur stockée hors bornes (ancienne
         // force à 0, donnée corrompue) figerait ou ferait planter l'animation.
         ghostSpeed: ghostSpeed.clamp(minGhostSpeed, maxGhostSpeed),
+        avatarFrameSpeed: avatarFrameSpeed.clamp(minAvatarFrameSpeed, maxAvatarFrameSpeed),
         socialLinks: {
           for (final entry in socialLinks.entries)
             if (SocialNetwork.fromValue(entry.key) != null) SocialNetwork.fromValue(entry.key)!: entry.value,

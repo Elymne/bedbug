@@ -10,6 +10,7 @@ import 'package:bedbug/application/screens/home/home.screen.dart';
 import 'package:bedbug/application/screens/search/search.screen.dart';
 import 'package:bedbug/application/screens/select_options/select_options.screen.dart';
 import 'package:bedbug/application/screens/settings/debug_section/debug_section.widget.dart';
+import 'package:bedbug/application/screens/settings/exchange_stats_section/exchange_stats_section.widget.dart';
 import 'package:bedbug/application/screens/settings/language_section/language_section.widget.dart';
 import 'package:bedbug/application/screens/settings/own_contents_section/own_contents_section.widget.dart';
 import 'package:bedbug/application/screens/settings/publishing_section/publishing_section.widget.dart';
@@ -252,8 +253,12 @@ void main() {
       'Domaines autorisés': TrustSection,
       'Stockage': StorageSection,
       'Mes posts': OwnContentsSection,
+      "Statistiques d'échange": ExchangeStatsSection,
       'Debug': DebugSection,
     }.entries) {
+      // Le menu dépasse la hauteur de l'écran de test : faire défiler jusqu'à la ligne avant de la toucher.
+      await tester.ensureVisible(find.text(entry.key));
+      await tester.pump();
       await tester.tap(find.text(entry.key));
       await settleRoute(tester);
       expect(find.byType(entry.value), findsOneWidget, reason: 'échec en ouvrant ${entry.key}');

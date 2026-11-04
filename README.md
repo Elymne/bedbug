@@ -73,3 +73,12 @@ Deux jeux de tests séparés :
 flutter test test/unit test/integration    # logique et use cases, à chaque PR
 flutter test test/widget                   # widgets, hors CI
 ```
+
+Un smoke test parcourt l'app sur un vrai téléphone : premier lancement, ouverture de chaque page, publication d'un
+contenu. Il ne vérifie pas le détail des pages, seulement qu'aucune ne plante, avec le vrai Hive, les vraies polices et le
+vrai rendu. Ses données vivent dans un dossier à part, effacé à chaque lancement : celles de l'app ne sont pas touchées.
+À lancer avant chaque version, téléphone Android branché :
+
+```sh
+flutter test integration_test/app_smoke_test.dart
+```

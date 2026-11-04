@@ -19,9 +19,10 @@ class SignatureHiveModelAdapter extends TypeAdapter<SignatureHiveModel> {
       createdAt: (fields[1] as num).toInt(),
       updatedAt: (fields[2] as num).toInt(),
       pseudo: fields[3] as String,
-      avatarText: fields[5] == null ? '(◕‿◕)' : fields[5] as String,
+      avatarFrames: fields[12] == null ? ['(◕‿◕)'] : (fields[12] as List).cast<String>(),
       colorArgb: (fields[8] as num?)?.toInt(),
       ghostSpeed: fields[9] == null ? 1.0 : (fields[9] as num).toDouble(),
+      avatarFrameSpeed: fields[13] == null ? 1.0 : (fields[13] as num).toDouble(),
       socialLinks: fields[7] == null ? {} : (fields[7] as Map).cast<int, String>(),
       bio: fields[10] as String?,
       bioFont: fields[11] == null ? 0 : (fields[11] as num).toInt(),
@@ -31,7 +32,7 @@ class SignatureHiveModelAdapter extends TypeAdapter<SignatureHiveModel> {
   @override
   void write(BinaryWriter writer, SignatureHiveModel obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -40,8 +41,6 @@ class SignatureHiveModelAdapter extends TypeAdapter<SignatureHiveModel> {
       ..write(obj.updatedAt)
       ..writeByte(3)
       ..write(obj.pseudo)
-      ..writeByte(5)
-      ..write(obj.avatarText)
       ..writeByte(7)
       ..write(obj.socialLinks)
       ..writeByte(8)
@@ -51,7 +50,11 @@ class SignatureHiveModelAdapter extends TypeAdapter<SignatureHiveModel> {
       ..writeByte(10)
       ..write(obj.bio)
       ..writeByte(11)
-      ..write(obj.bioFont);
+      ..write(obj.bioFont)
+      ..writeByte(12)
+      ..write(obj.avatarFrames)
+      ..writeByte(13)
+      ..write(obj.avatarFrameSpeed);
   }
 
   @override

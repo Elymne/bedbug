@@ -102,7 +102,7 @@ class SeedSignaturesUsecase extends Usecase<SeedSignaturesParams, SeedSignatures
             createdAt: now,
             updatedAt: now,
             pseudo: pseudos[index],
-            avatarText: _avatarTexts[random.nextInt(_avatarTexts.length)],
+            avatarFrames: [_avatarTexts[random.nextInt(_avatarTexts.length)]],
             colorArgb: _colorArgbs[random.nextInt(_colorArgbs.length)],
             ghostSpeed: _randomGhostSpeed(random),
             socialLinks: _randomSocialLinks(random, pseudos[index]),

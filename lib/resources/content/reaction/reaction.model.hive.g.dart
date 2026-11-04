@@ -20,10 +20,11 @@ class ReactionHiveModelAdapter extends TypeAdapter<ReactionHiveModel> {
       updatedAt: (fields[2] as num).toInt(),
       contentId: fields[3] as String,
       authorId: fields[4] as String,
-      avatarText: fields[5] as String,
+      avatarFrames: fields[10] == null ? ['(◕‿◕)'] : (fields[10] as List).cast<String>(),
       bubbleText: fields[6] as String?,
       colorArgb: (fields[7] as num?)?.toInt(),
       ghostSpeed: fields[8] == null ? 1.0 : (fields[8] as num).toDouble(),
+      avatarFrameSpeed: fields[11] == null ? 1.0 : (fields[11] as num).toDouble(),
       bubbleFont: fields[9] == null ? 0 : (fields[9] as num).toInt(),
     );
   }
@@ -31,7 +32,7 @@ class ReactionHiveModelAdapter extends TypeAdapter<ReactionHiveModel> {
   @override
   void write(BinaryWriter writer, ReactionHiveModel obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -42,8 +43,6 @@ class ReactionHiveModelAdapter extends TypeAdapter<ReactionHiveModel> {
       ..write(obj.contentId)
       ..writeByte(4)
       ..write(obj.authorId)
-      ..writeByte(5)
-      ..write(obj.avatarText)
       ..writeByte(6)
       ..write(obj.bubbleText)
       ..writeByte(7)
@@ -51,7 +50,11 @@ class ReactionHiveModelAdapter extends TypeAdapter<ReactionHiveModel> {
       ..writeByte(8)
       ..write(obj.ghostSpeed)
       ..writeByte(9)
-      ..write(obj.bubbleFont);
+      ..write(obj.bubbleFont)
+      ..writeByte(10)
+      ..write(obj.avatarFrames)
+      ..writeByte(11)
+      ..write(obj.avatarFrameSpeed);
   }
 
   @override

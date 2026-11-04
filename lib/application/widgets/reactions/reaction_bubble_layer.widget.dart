@@ -1,5 +1,6 @@
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/text_font_x.dart';
+import 'package:bedbug/application/widgets/signature/app_bedbug_frames.widget.dart';
 import 'package:bedbug/resources/signature/signature/text_font.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,7 +20,9 @@ const double _kBubbleMaxWidth = 160;
 class ReactionBubbleLayer extends ConsumerWidget {
   /// Crée un [ReactionBubbleLayer].
   ///
-  /// - [avatarText] : bedbug de la réaction.
+  /// - [avatarFrames] : frames du bedbug de la réaction.
+  /// - [avatarFrameSpeed] : vitesse de l'animation du bedbug.
+  /// - [isAnimating] : `false` pour figer le bedbug sur sa première frame.
   /// - [bubbleText] : texte de la bulle, bulle absente si vide.
   /// - [bubbleFont] : police du texte de la bulle.
   /// - [fontSize] : taille du bedbug.
@@ -29,7 +32,9 @@ class ReactionBubbleLayer extends ConsumerWidget {
   /// - [hasText] : `true` pour dessiner le texte de la bulle et le bedbug.
   const ReactionBubbleLayer({
     super.key,
-    required this.avatarText,
+    required this.avatarFrames,
+    required this.avatarFrameSpeed,
+    required this.isAnimating,
     required this.bubbleText,
     required this.bubbleFont,
     required this.fontSize,
@@ -39,8 +44,14 @@ class ReactionBubbleLayer extends ConsumerWidget {
     required this.hasText,
   });
 
-  /// Bedbug de la réaction.
-  final String avatarText;
+  /// Frames du bedbug de la réaction.
+  final List<String> avatarFrames;
+
+  /// Vitesse de l'animation du bedbug (multiplicateur de la vitesse normale).
+  final double avatarFrameSpeed;
+
+  /// Indique si le bedbug passe d'une frame à l'autre.
+  final bool isAnimating;
 
   /// Texte de la bulle, bulle absente si vide.
   final String bubbleText;
@@ -92,8 +103,10 @@ class ReactionBubbleLayer extends ConsumerWidget {
             ),
             child: Text(bubbleText, style: bubbleFont.apply(TextStyle(fontSize: 12, color: textColor))),
           ),
-        Text(
-          avatarText,
+        AppBedbugFrames(
+          frames: avatarFrames,
+          speed: avatarFrameSpeed,
+          isAnimating: isAnimating,
           style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w700, color: textColor),
         ),
       ],

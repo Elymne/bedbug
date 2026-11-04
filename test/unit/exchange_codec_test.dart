@@ -83,9 +83,10 @@ void main() {
       createdAt: _date,
       updatedAt: _date,
       pseudo: 'bedbug',
-      avatarText: '(◕‿◕)',
+      avatarFrames: const ['└(＾＾)┐', '┌(＾＾)┘'],
       colorArgb: 0xFF112233,
       ghostSpeed: 2,
+      avatarFrameSpeed: 1.5,
       bio: 'Salut',
       bioFont: TextFont.molle,
       socialLinks: const {SocialNetwork.github: 'bedbug'},
@@ -153,10 +154,12 @@ void main() {
           updatedAt: _date,
           contentId: 'text',
           authorId: 'local',
-          avatarText: '(・ω・)',
+          avatarFrames: const ['(・ω・)', '(・ω・)ノ'],
           bubbleText: 'trop bien',
           colorArgb: 0xFF00FF00,
           ghostSpeed: 1.5,
+
+          avatarFrameSpeed: 0.5,
           bubbleFont: TextFont.gugi,
         ),
       ],
@@ -181,6 +184,9 @@ void main() {
     expect(decodedSignature.id, isEmpty);
     expect(decodedSignature.pseudo, 'bedbug');
     expect(decodedSignature.colorArgb, 0xFF112233);
+    expect(decodedSignature.avatarFrames, ['└(＾＾)┐', '┌(＾＾)┘']);
+
+    expect(decodedSignature.avatarFrameSpeed, 1.5);
     expect(decodedSignature.ghostSpeed, 2);
     expect(decodedSignature.bio, 'Salut');
     expect(decodedSignature.bioFont, TextFont.molle);
@@ -202,6 +208,9 @@ void main() {
     expect(reaction.id, 'reaction');
     expect(reaction.authorId, isEmpty);
     expect(reaction.bubbleText, 'trop bien');
+    expect(reaction.avatarFrames, ['(・ω・)', '(・ω・)ノ']);
+
+    expect(reaction.avatarFrameSpeed, 0.5);
     expect(reaction.ghostSpeed, 1.5);
     expect(reaction.bubbleFont, TextFont.gugi);
   });

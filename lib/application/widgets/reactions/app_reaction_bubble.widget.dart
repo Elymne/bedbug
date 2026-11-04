@@ -21,30 +21,35 @@ const ReactionBubbleStyle appReactionBubbleStyle = ReactionBubbleStyle.backed;
 class AppReactionBubble extends ConsumerWidget {
   /// Crée un [AppReactionBubble].
   ///
-  /// - [avatarText] : bedbug de la réaction.
+  /// - [avatarFrames] : frames du bedbug de la réaction.
   /// - [ghostColor] : couleur de l'effet ghost, choisie pour la réaction.
   /// - [bubbleText] : bulle de texte optionnelle, masquée si `null` ou vide.
   /// - [bubbleFont] : police de la bulle de texte (défaut [TextFont.standard]).
   /// - [ghostSpeed] : vitesse de l'effet ghost (défaut 1).
+  /// - [avatarFrameSpeed] : vitesse de l'animation du bedbug (défaut 1).
   /// - [fontSize] : taille du bedbug (défaut 20).
   /// - [isAnimating] : `false` pour figer le bedbug, par exemple dans une liste (défaut `true`).
   /// - [isMirrored] : `true` pour une réaction alignée à droite : bulle et bedbug calés à droite, coin pincé à droite (défaut `false`).
   /// - [style] : façon d'empiler les couches de la réaction (défaut [appReactionBubbleStyle]).
   const AppReactionBubble({
     super.key,
-    required this.avatarText,
+    required this.avatarFrames,
     required this.ghostColor,
     this.bubbleText,
     this.bubbleFont = TextFont.standard,
     this.ghostSpeed = 1,
+    this.avatarFrameSpeed = 1,
     this.fontSize = 20,
     this.isAnimating = true,
     this.isMirrored = false,
     this.style = appReactionBubbleStyle,
   });
 
-  /// Bedbug de la réaction.
-  final String avatarText;
+  /// Frames du bedbug de la réaction.
+  final List<String> avatarFrames;
+
+  /// Vitesse de l'animation du bedbug (multiplicateur de la vitesse normale).
+  final double avatarFrameSpeed;
 
   /// Couleur de l'effet ghost.
   final Color ghostColor;
@@ -61,7 +66,7 @@ class AppReactionBubble extends ConsumerWidget {
   /// Taille du bedbug.
   final double fontSize;
 
-  /// Indique si l'effet ghost est animé.
+  /// Indique si la réaction est animée : effet ghost et passage d'une frame à l'autre du bedbug.
   final bool isAnimating;
 
   /// Indique si la réaction est alignée à droite, en miroir de la disposition par défaut.
@@ -140,7 +145,9 @@ class AppReactionBubble extends ConsumerWidget {
   /// - [hasText] : `true` pour dessiner le texte de la bulle et le bedbug.
   Widget _layer({required bool hasFill, required bool hasBorder, required bool hasText}) {
     return ReactionBubbleLayer(
-      avatarText: avatarText,
+      avatarFrames: avatarFrames,
+      avatarFrameSpeed: avatarFrameSpeed,
+      isAnimating: isAnimating,
       bubbleText: bubbleText?.trim() ?? '',
       bubbleFont: bubbleFont,
       fontSize: fontSize,

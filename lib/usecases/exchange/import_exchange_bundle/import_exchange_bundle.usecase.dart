@@ -235,7 +235,7 @@ class ImportExchangeBundleUsecase
     }
     final bio = signature.bio;
     if (!Signature.isValidPseudo(signature.pseudo) ||
-        !Signature.isValidAvatarText(signature.avatarText) ||
+        !Signature.isValidAvatarFrames(signature.avatarFrames) ||
         (bio != null && !Signature.isValidBio(bio))) {
       return null;
     }
@@ -250,9 +250,10 @@ class ImportExchangeBundleUsecase
       createdAt: now,
       updatedAt: now,
       pseudo: signature.pseudo,
-      avatarText: signature.avatarText,
+      avatarFrames: signature.avatarFrames,
       colorArgb: colorArgb != null && colorArgb >= 0 && colorArgb <= 0xFFFFFFFF ? colorArgb : null,
       ghostSpeed: signature.ghostSpeed.clamp(minGhostSpeed, maxGhostSpeed),
+      avatarFrameSpeed: signature.avatarFrameSpeed.clamp(minAvatarFrameSpeed, maxAvatarFrameSpeed),
       bio: bio == null || bio.trim().isEmpty ? null : bio,
       bioFont: signature.bioFont,
       socialLinks: signature.socialLinks,
@@ -262,9 +263,10 @@ class ImportExchangeBundleUsecase
       createdAt: now,
       updatedAt: now,
       pseudo: normalized.pseudo,
-      avatarText: normalized.avatarText,
+      avatarFrames: normalized.avatarFrames,
       colorArgb: normalized.colorArgb,
       ghostSpeed: normalized.ghostSpeed,
+      avatarFrameSpeed: normalized.avatarFrameSpeed,
       bio: normalized.bio,
       bioFont: normalized.bioFont,
       socialLinks: normalized.socialLinks,
@@ -283,9 +285,12 @@ class ImportExchangeBundleUsecase
       ..sort();
     final canonical = [
       signature.pseudo,
-      signature.avatarText,
+      // Séparateur propre aux frames, distinct de celui des champs : ['a', 'b'] et ['a\u0000b'] ne doivent pas
+      // donner la même empreinte.
+      signature.avatarFrames.join('\u0001'),
       '${signature.colorArgb}',
       '${signature.ghostSpeed}',
+      '${signature.avatarFrameSpeed}',
       signature.bio ?? '',
       '${signature.bioFont.value}',
       ...socialLinks,
@@ -348,10 +353,11 @@ class ImportExchangeBundleUsecase
           updatedAt: updatedAt.isBefore(createdAt) ? createdAt : updatedAt,
           contentId: contentId,
           authorId: received.id,
-          avatarText: received.avatarText,
+          avatarFrames: received.avatarFrames,
           bubbleText: received.bubbleText,
           colorArgb: received.colorArgb,
           ghostSpeed: received.ghostSpeed,
+          avatarFrameSpeed: received.avatarFrameSpeed,
           bubbleFont: received.bubbleFont,
         ),
       );

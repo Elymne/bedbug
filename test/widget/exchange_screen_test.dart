@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:bedbug/application/notifiers/passive_exchange.notifier.dart';
 import 'package:bedbug/application/screens/exchange/exchange.screen.dart';
+import 'package:bedbug/application/screens/exchange/exchange_scene/exchange_scene.widget.dart';
 import 'package:bedbug/application/screens/home/home.screen.dart';
 import 'package:bedbug/application/widgets/ghost/app_ghost_effect.widget.dart';
+import 'package:bedbug/application/widgets/signature/app_bedbug_frames.widget.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
@@ -20,6 +23,7 @@ import 'package:bedbug/usecases/settings/save_settings/save_settings.failure.dar
 import 'package:bedbug/usecases/settings/save_settings/save_settings.params.dart';
 import 'package:bedbug/usecases/settings/save_settings/save_settings.usecase.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/fake_error_log_repository.dart';
@@ -105,11 +109,12 @@ class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
   }
 }
 
-/// Retourne la valeur affichée par la case à cocher.
+/// Retourne l'état de l'échange vu par la page : `true` le jour (échange actif), `false` la nuit.
 ///
 /// - [tester] : testeur du widget.
-bool? _checkboxValue(WidgetTester tester) {
-  return tester.widget<Checkbox>(find.byType(Checkbox)).value;
+bool? _isExchangeEnabled(WidgetTester tester) {
+  final container = ProviderScope.containerOf(tester.element(find.byType(ExchangeScene)));
+  return container.read(passiveExchangeNotifierProvider).value;
 }
 
 void main() {
@@ -133,18 +138,18 @@ void main() {
     );
     await tester.pump();
     await tester.pump();
-    expect(_checkboxValue(tester), isTrue);
+    expect(_isExchangeEnabled(tester), isTrue);
 
-    await tester.tap(find.byType(Checkbox));
+    await tester.tap(find.byType(AppBedbugFrames).first);
     await tester.pump();
     await tester.pump();
 
-    expect(_checkboxValue(tester), isFalse);
+    expect(_isExchangeEnabled(tester), isFalse);
     expect(store.settings.isExchangeEnabled, isFalse);
     expect(store.settings.blockedUrls, ['a']);
   });
 
-  testWidgets('la case active l\'échange puis le coupe', (tester) async {
+  testWidgets('toucher le bedbug active l\'échange, puis le coupe', (tester) async {
     await pumpApp(
       tester,
       const ExchangeScreen(),
@@ -157,20 +162,20 @@ void main() {
     );
     await tester.pump();
     await tester.pump();
-    expect(_checkboxValue(tester), isFalse);
+    expect(_isExchangeEnabled(tester), isFalse);
 
-    await tester.tap(find.byType(Checkbox));
+    await tester.tap(find.byType(AppBedbugFrames).first);
     await tester.pump();
     await tester.pump();
-    expect(_checkboxValue(tester), isTrue);
+    expect(_isExchangeEnabled(tester), isTrue);
 
-    await tester.tap(find.byType(Checkbox));
+    await tester.tap(find.byType(AppBedbugFrames).first);
     await tester.pump();
     await tester.pump();
-    expect(_checkboxValue(tester), isFalse);
+    expect(_isExchangeEnabled(tester), isFalse);
   });
 
-  testWidgets('la case reste décochée si les permissions sont refusées', (tester) async {
+  testWidgets('la nuit revient si les permissions sont refusées', (tester) async {
     await pumpApp(
       tester,
       const ExchangeScreen(),
@@ -184,14 +189,21 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    await tester.tap(find.byType(Checkbox));
+    await tester.tap(find.byType(AppBedbugFrames).first);
     await tester.pump();
     await tester.pump();
 
-    expect(_checkboxValue(tester), isFalse);
+    expect(_isExchangeEnabled(tester), isFalse);
+    // Le bedbug se fâche le temps que l'erreur s'affiche, puis se rendort.
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.textContaining('(╬ Ò'), findsWidgets);
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.textContaining('(╬ Ò'), findsNothing);
+    expect(find.textContaining('(－'), findsWidgets);
   });
 
-  testWidgets('la case se décoche quand l\'échange est arrêté depuis la notification', (tester) async {
+  testWidgets('la nuit tombe quand l\'échange est arrêté depuis la notification', (tester) async {
     final gateway = _FakePeerLinkGateway();
     addTearDown(gateway.close);
     await pumpApp(
@@ -206,7 +218,7 @@ void main() {
     );
     await tester.pump();
     await tester.pump();
-    await tester.tap(find.byType(Checkbox));
+    await tester.tap(find.byType(AppBedbugFrames).first);
     await tester.pump();
     await tester.pump();
 
@@ -214,7 +226,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(_checkboxValue(tester), isFalse);
+    expect(_isExchangeEnabled(tester), isFalse);
   });
 
   testWidgets('l\'icône du menu s\'anime seulement quand l\'échange est actif', (tester) async {
@@ -243,7 +255,7 @@ void main() {
     unawaited(Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ExchangeScreen())));
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
-    await tester.tap(find.byType(Checkbox));
+    await tester.tap(find.byType(AppBedbugFrames).first);
     await tester.pump();
     await tester.pump();
     Navigator.of(tester.element(find.byType(ExchangeScreen))).pop();

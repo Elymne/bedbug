@@ -40,7 +40,7 @@ void main() {
     for (final signatureId in signatureIds) {
       final signature = (await repository.getById(signatureId))!;
       expect(Signature.isValidPseudo(signature.pseudo), isTrue, reason: signature.pseudo);
-      expect(Signature.isValidAvatarText(signature.avatarText), isTrue, reason: signature.avatarText);
+      expect(Signature.isValidAvatarFrames(signature.avatarFrames), isTrue, reason: '${signature.avatarFrames}');
       for (final entry in signature.socialLinks.entries) {
         expect(entry.key.normalizeHandle(entry.value), entry.value);
       }
@@ -57,7 +57,7 @@ void main() {
     await container.read(saveLocalSignatureUsecaseProvider)(
       const SaveLocalSignatureParams(
         pseudo: 'moi',
-        avatarText: '(◕‿◕)',
+        avatarFrames: ['(◕‿◕)'],
         colorArgb: null,
         ghostSpeed: 1,
         socialLinks: {},

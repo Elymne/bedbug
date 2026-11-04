@@ -3,13 +3,13 @@ import 'package:bedbug/application/screens/content_detail/reaction_composer_shee
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_values.dart';
-import 'package:bedbug/application/validators/avatar_text.validator.dart';
 import 'package:bedbug/application/validators/not_empty.validator.dart';
 import 'package:bedbug/application/validators/reaction_bubble.validator.dart';
 import 'package:bedbug/application/widgets/buttons/app_form_submit_button.widget.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.widget.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
 import 'package:bedbug/application/widgets/reactions/app_reaction_bubble.widget.dart';
+import 'package:bedbug/application/widgets/signature/app_avatar_frame_speed_slider.widget.dart';
 import 'package:bedbug/application/widgets/signature/app_ghost_color_selector.widget.dart';
 import 'package:bedbug/application/widgets/signature/app_ghost_speed_slider.widget.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
@@ -74,10 +74,10 @@ class ReactionComposerSheet extends ConsumerStatefulWidget {
 }
 
 class _State extends ConsumerState<ReactionComposerSheet> {
-  /// Contrôle du bedbug choisi, par défaut celui de la réaction actuelle ou de la signature de l'utilisateur.
-  late final _avatarTextControl = FormControl<String>(
-    value: widget.ownReaction?.avatarText ?? widget.localSignature.avatarText,
-    validators: [const NotEmptyValidator(), const AvatarTextValidator()],
+  /// Contrôle des frames du bedbug choisi, par défaut celles de la réaction actuelle ou de la signature de l'utilisateur.
+  late final _avatarFramesControl = FormControl<List<String>>(
+    value: widget.ownReaction?.avatarFrames ?? widget.localSignature.avatarFrames,
+    validators: [const NotEmptyValidator()],
   );
 
   /// Contrôle de la bulle de texte, obligatoire.
@@ -94,16 +94,23 @@ class _State extends ConsumerState<ReactionComposerSheet> {
     value: widget.ownReaction?.ghostSpeed ?? widget.localSignature.ghostSpeed,
   );
 
+  /// Contrôle de la vitesse de l'animation du bedbug, par défaut celle de la réaction actuelle ou de la signature de
+  /// l'utilisateur.
+  late final _avatarFrameSpeedControl = FormControl<double>(
+    value: widget.ownReaction?.avatarFrameSpeed ?? widget.localSignature.avatarFrameSpeed,
+  );
+
   /// Contrôle de la police de la bulle, par défaut celle de la réaction actuelle.
   late final _bubbleFontControl = FormControl<TextFont>(value: widget.ownReaction?.bubbleFont ?? TextFont.standard);
 
   /// Formulaire de la réaction.
   late final FormGroup _form = FormGroup({
-    'avatarText': _avatarTextControl,
+    'avatarFrames': _avatarFramesControl,
     'bubbleText': _bubbleTextControl,
     'bubbleFont': _bubbleFontControl,
     'color': _colorControl,
     'ghostSpeed': _ghostSpeedControl,
+    'avatarFrameSpeed': _avatarFrameSpeedControl,
   });
 
   @override
@@ -138,11 +145,12 @@ class _State extends ConsumerState<ReactionComposerSheet> {
                 builder: (context, _) {
                   return Center(
                     child: AppReactionBubble(
-                      avatarText: _avatarTextControl.value ?? widget.localSignature.avatarText,
+                      avatarFrames: _avatarFramesControl.value ?? widget.localSignature.avatarFrames,
                       bubbleText: _bubbleTextControl.value,
                       bubbleFont: _bubbleFontControl.value ?? TextFont.standard,
                       ghostColor: _colorControl.value ?? AppColors.primary,
                       ghostSpeed: _ghostSpeedControl.value ?? defaultGhostSpeed,
+                      avatarFrameSpeed: _avatarFrameSpeedControl.value ?? defaultAvatarFrameSpeed,
                       fontSize: 32,
                     ),
                   );
@@ -150,13 +158,30 @@ class _State extends ConsumerState<ReactionComposerSheet> {
               ),
               FilledButton.icon(
                 onPressed: _pickBedbug,
-                icon: const AppIcon(AppIcons.grid),
+                icon: const AppIcon(AppIcons.list),
                 label: Text(l10n.reactionChangeBedbugButton),
               ),
               Text(l10n.settingsColorLabel),
               AppGhostColorSelector(control: _colorControl),
               Text(l10n.settingsGhostSpeedLabel),
               AppGhostSpeedSlider(formControl: _ghostSpeedControl),
+              // Réglage réservé aux bedbugs animés : sans effet sur un bedbug d'une seule frame, il reste caché.
+              ReactiveValueListenableBuilder<List<String>>(
+                formControl: _avatarFramesControl,
+                builder: (context, control, child) {
+                  if ((control.value?.length ?? 0) < 2) {
+                    return const SizedBox.shrink();
+                  }
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: 16,
+                    children: [
+                      Text(l10n.settingsAvatarFrameSpeedLabel),
+                      AppAvatarFrameSpeedSlider(formControl: _avatarFrameSpeedControl),
+                    ],
+                  );
+                },
+              ),
               AppFieldFocusPulse(
                 child: ReactiveTextField<String>(
                   formControl: _bubbleTextControl,
@@ -201,11 +226,11 @@ class _State extends ConsumerState<ReactionComposerSheet> {
   ///
   /// Revenir sans choisir laisse le bedbug actuel en place.
   Future<void> _pickBedbug() async {
-    final kaomoji = await context.push<String>(reactionPickerPath);
-    if (kaomoji == null) {
+    final avatarFrames = await context.push<List<String>>(reactionPickerPath);
+    if (avatarFrames == null) {
       return;
     }
-    _avatarTextControl.value = kaomoji;
+    _avatarFramesControl.value = avatarFrames;
   }
 
   /// Valide le formulaire, enregistre la réaction puis ferme la feuille.
@@ -221,10 +246,11 @@ class _State extends ConsumerState<ReactionComposerSheet> {
         .read(reactionComposerSheetNotifierProvider.notifier)
         .save(
           contentId: widget.contentId,
-          avatarText: _avatarTextControl.value!,
+          avatarFrames: _avatarFramesControl.value!,
           bubbleText: _bubbleTextControl.value!,
           colorArgb: (_colorControl.value ?? AppColors.primary).toARGB32(),
           ghostSpeed: _ghostSpeedControl.value ?? defaultGhostSpeed,
+          avatarFrameSpeed: _avatarFrameSpeedControl.value ?? defaultAvatarFrameSpeed,
           bubbleFont: _bubbleFontControl.value ?? TextFont.standard,
           previousReaction: widget.ownReaction,
         );

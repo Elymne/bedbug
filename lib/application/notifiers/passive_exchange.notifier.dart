@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:bedbug/application/exchange/exchange_session.dart';
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
-import 'package:bedbug/application/screens/exchange/exchange_stats/exchange_stats.notifier.dart';
 import 'package:bedbug/application/screens/exchange_logs/exchange_logs_list/exchange_logs_list.notifier.dart';
+import 'package:bedbug/application/screens/settings/exchange_stats_section/exchange_stats_section.notifier.dart';
 import 'package:bedbug/application/screens/settings/publishing_section/publishing_section.notifier.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
@@ -206,7 +206,7 @@ class PassiveExchangeNotifier extends AsyncNotifier<bool> {
         removedContents: removedContents,
       ),
     );
-    ref.read(exchangeStatsNotifierProvider.notifier).addResult(result);
+    ref.read(exchangeStatsSectionNotifierProvider.notifier).addResult(result);
     final failure = result.failure;
     if (failure != null) {
       AppLogger.warning('Échange interrompu : ${failure.name}');

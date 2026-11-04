@@ -25,7 +25,7 @@ class _FakeGetSignatureUsecase implements GetSignatureUsecase {
         createdAt: DateTime(2026),
         updatedAt: DateTime(2026),
         pseudo: 'Punaise-Royale',
-        avatarText: 'ʕ•ᴥ•ʔ',
+        avatarFrames: const ['ʕ•ᴥ•ʔ'],
         socialLinks: const {SocialNetwork.github: 'punaise-royale'},
       ),
     );

@@ -145,7 +145,7 @@ void main() {
               updatedAt: now,
               contentId: 'supprime',
               authorId: 'auteur',
-              avatarText: ':)',
+              avatarFrames: const [':)'],
               bubbleText: 'ok',
             ),
           );

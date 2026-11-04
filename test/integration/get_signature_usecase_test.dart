@@ -46,7 +46,7 @@ void main() {
     await container.read(saveLocalSignatureUsecaseProvider)(
       const SaveLocalSignatureParams(
         pseudo: 'bedbug',
-        avatarText: 'ʕ•ᴥ•ʔ',
+        avatarFrames: ['ʕ•ᴥ•ʔ'],
         colorArgb: null,
         ghostSpeed: 2,
         socialLinks: {},
@@ -58,6 +58,6 @@ void main() {
     );
 
     expect(result.right!.pseudo, 'bedbug');
-    expect(result.right!.avatarText, 'ʕ•ᴥ•ʔ');
+    expect(result.right!.avatarFrames, ['ʕ•ᴥ•ʔ']);
   });
 }

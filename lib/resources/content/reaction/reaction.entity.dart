@@ -16,10 +16,11 @@ class Reaction extends Entity {
   ///
   /// - [contentId] : identifiant du contenu auquel la réaction est rattachée.
   /// - [authorId] : identifiant de la signature qui a réagi.
-  /// - [avatarText] : bedbug choisi, issu du catalogue des signatures.
+  /// - [avatarFrames] : frames du bedbug choisi.
   /// - [bubbleText] : bulle de texte, non vide et au plus [maxReactionBubbleLength] caractères.
   /// - [colorArgb] : couleur de l'effet ghost du bedbug, `null` pour la couleur par défaut de l'app.
   /// - [ghostSpeed] : intensité de l'effet ghost, entre [minGhostSpeed] et [maxGhostSpeed].
+  /// - [avatarFrameSpeed] : vitesse de l'animation du bedbug, entre [minAvatarFrameSpeed] et [maxAvatarFrameSpeed].
   /// - [bubbleFont] : police de la bulle de texte (défaut [TextFont.standard]).
   Reaction({
     required super.id,
@@ -27,10 +28,11 @@ class Reaction extends Entity {
     required super.updatedAt,
     required this.contentId,
     required this.authorId,
-    required this.avatarText,
+    required this.avatarFrames,
     required this.bubbleText,
     this.colorArgb,
     this.ghostSpeed = defaultGhostSpeed,
+    this.avatarFrameSpeed = defaultAvatarFrameSpeed,
     this.bubbleFont = TextFont.standard,
   });
 
@@ -40,11 +42,12 @@ class Reaction extends Entity {
   /// Identifiant de la signature qui a réagi.
   final String authorId;
 
-  /// Bedbug choisi, sous forme de texte (kaomoji).
+  /// Frames du bedbug choisi, sous forme de texte (kaomoji), affichées tour à tour. Une seule frame : il reste fixe.
   ///
-  /// Stocké tel quel plutôt que sous forme d'index dans le catalogue : il
-  /// reste lisible par un pair dont le catalogue est d'une autre version.
-  final String avatarText;
+  /// Stockées telles quelles plutôt que sous forme d'index dans le catalogue :
+  /// le bedbug reste lisible, et animé, chez un pair dont le catalogue est
+  /// d'une autre version.
+  final List<String> avatarFrames;
 
   /// Bulle de texte affichée au-dessus du bedbug.
   ///
@@ -60,6 +63,12 @@ class Reaction extends Entity {
 
   /// Intensité de l'effet ghost du bedbug (multiplicateur de la vitesse normale).
   final double ghostSpeed;
+
+  /// Vitesse de l'animation du bedbug, entre [minAvatarFrameSpeed] et [maxAvatarFrameSpeed].
+  ///
+  /// Multiplicateur de la vitesse normale à laquelle les frames défilent (1 = vitesse normale). Sans effet sur un
+  /// bedbug d'une seule frame.
+  final double avatarFrameSpeed;
 
   /// Police de la bulle de texte.
   ///

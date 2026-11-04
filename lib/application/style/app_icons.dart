@@ -13,6 +13,9 @@ enum AppIcons {
   /// Flèche de retour.
   arrowBack(isDirectional: true),
 
+  /// Flèche vers le bas.
+  arrowDown,
+
   /// Page de texte.
   article,
 
@@ -33,6 +36,9 @@ enum AppIcons {
 
   /// Croix dans un cercle.
   cancel,
+
+  /// Histogramme de trois barres.
+  chart,
 
   /// Coche.
   check,
@@ -105,6 +111,9 @@ enum AppIcons {
 
   /// Maillons de chaîne.
   link,
+
+  /// Liste à puces de trois lignes.
+  list,
 
   /// Dossiers empilés.
   media,
