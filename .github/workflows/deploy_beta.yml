@@ -1,0 +1,104 @@
+name: Deploy beta
+
+# Publie une beta sur le Play Store pour un tag de préversion : `v0.1.0-beta.1`, `v0.1.0-beta.2`…
+#
+# Appelé par le workflow `release.yml` quand release-please vient de créer une beta. Un tag de beta posé à la main le
+# déclenche aussi, en secours.
+#
+# Le nom de version vu par les testeurs vient du tag (`0.1.0-beta.2`). Le numéro de build (`versionCode`), qui doit
+# augmenter à chaque envoi, est le nombre de minutes écoulées depuis 1970 : il croît toujours, quel que soit le
+# chemin qui a lancé le build, et les betas successives d'une même version ne font jamais grimper le nom vu par les
+# utilisateurs. Une beta validée se promeut ensuite en production depuis la Play Console, sans rebuild.
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: Tag de la beta à publier (ex. v0.1.0-beta.1).
+        required: true
+        type: string
+  push:
+    tags:
+      - "v*-beta*"
+
+env:
+  # Identifiant de l'app sur le Play Store, celui de `android/app/build.gradle.kts`.
+  PACKAGE_NAME: fr.bedbug
+  # Piste du Play Store : `internal` (test interne) ou `alpha` (test fermé).
+  PLAY_TRACK: internal
+  # `completed` publie la beta aux testeurs. Tant que l'app n'a jamais été publiée (état « brouillon » dans la Play
+  # Console), Google n'accepte que `draft` : il faut alors finir la publication à la main dans la console.
+  RELEASE_STATUS: completed
+  # Tag à publier : celui passé par `release.yml`, sinon celui qui a déclenché le workflow.
+  RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+  # Configuration d'environnement embarquée dans l'app (`assets/config/<env>.json`).
+  BUILD_ENV: preproduction
+
+jobs:
+  deploy-beta:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+
+      - name: 🏷️ Read version from tag
+        run: |
+          TAG="$RELEASE_TAG"
+          if ! echo "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$'; then
+            echo "❌ Invalid beta tag: $TAG"
+            echo "Expected: vMAJOR.MINOR.PATCH-beta.N (e.g. v0.1.0-beta.1)"
+            exit 1
+          fi
+          VERSION_CODE=$(( $(date +%s) / 60 ))
+          echo "VERSION_NAME=${TAG#v}" >> "$GITHUB_ENV"
+          echo "VERSION_CODE=$VERSION_CODE" >> "$GITHUB_ENV"
+          echo "✅ Version ${TAG#v} (build $VERSION_CODE)"
+
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.7"
+          cache: true
+
+      - name: ✅ Run CI checks
+        run: dart run tool/ci_check.dart --ci
+
+      - name: 🔑 Restore signing key
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+          {
+            echo "storeFile=upload-keystore.jks"
+            echo "storePassword=$ANDROID_KEYSTORE_PASSWORD"
+            echo "keyAlias=$ANDROID_KEY_ALIAS"
+            echo "keyPassword=$ANDROID_KEY_PASSWORD"
+          } > android/key.properties
+
+      - name: 📦 Build app bundle
+        run: |
+          flutter build appbundle --release \
+            --build-name="$VERSION_NAME" \
+            --build-number="$VERSION_CODE" \
+            --dart-define=ENV="$BUILD_ENV"
+
+      - name: 🚀 Upload to Play Store
+        uses: r0adkll/upload-google-play@v1.1.3
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: ${{ env.PACKAGE_NAME }}
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          releaseName: ${{ env.VERSION_NAME }}
+          track: ${{ env.PLAY_TRACK }}
+          status: ${{ env.RELEASE_STATUS }}

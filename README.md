@@ -67,11 +67,11 @@ dart run tool/update_public_suffix_list.dart
 
 ### Lancer les tests
 
-Deux jeux de tests séparés :
+Tous les tests de `test/` (unitaires, d'intégration et widgets) tournent dans la CI, à chaque PR :
 
 ```sh
-flutter test test/unit test/integration    # logique et use cases, à chaque PR
-flutter test test/widget                   # widgets, hors CI
+flutter test                # tout
+flutter test test/widget    # un seul jeu
 ```
 
 Un smoke test parcourt l'app sur un vrai téléphone : premier lancement, ouverture de chaque page, publication d'un
