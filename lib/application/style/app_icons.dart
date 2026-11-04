@@ -13,6 +13,9 @@ enum AppIcons {
   /// Flèche de retour.
   arrowBack(isDirectional: true),
 
+  /// Flèche vers le bas.
+  arrowDown,
+
   /// Page de texte.
   article,
 

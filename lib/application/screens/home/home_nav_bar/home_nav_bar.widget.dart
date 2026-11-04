@@ -1,5 +1,6 @@
 import 'package:bedbug/application/notifiers/passive_exchange.notifier.dart';
 import 'package:bedbug/application/router/app_router.dart';
+import 'package:bedbug/application/screens/home/home.config.dart';
 import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/navbar/app_nav_bar.widget.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
@@ -37,7 +38,7 @@ class HomeNavBar extends ConsumerWidget {
           context.push(createPath);
           return;
         }
-        if (index == 2) {
+        if (index == homeExchangeNavIndex) {
           context.push(exchangePath);
           return;
         }

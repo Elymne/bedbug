@@ -67,15 +67,19 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    // L'accueil vide anime en boucle sa flèche vers l'échange : il ne se stabilise jamais, on avance l'horloge.
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
 
     await tester.tap(findAppIcon(AppIcons.settings));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
     expect(find.byType(SettingsScreen), findsOneWidget);
     expect(router.canPop(), isTrue);
 
     await tester.tap(findAppIcon(AppIcons.arrowBack));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
     expect(find.byType(SettingsScreen), findsNothing);
     expect(find.byType(HomeScreen), findsOneWidget);
   });

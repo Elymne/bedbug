@@ -1,6 +1,6 @@
 import 'package:bedbug/application/app_root.widget.dart';
 import 'package:bedbug/application/notifiers/passive_exchange.notifier.dart';
-import 'package:bedbug/application/style/app_colors.dart';
+import 'package:bedbug/application/style/app_system_ui.config.dart';
 import 'package:bedbug/core/config/app_config.dart';
 import 'package:bedbug/resources/hive.initializer.dart';
 import 'package:flutter/foundation.dart';
@@ -22,13 +22,7 @@ void main() async {
   await initHive();
 
   // * Je veux rendre la topbar de l'os opaque.
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: AppColors.background,
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
-    ),
-  );
+  SystemChrome.setSystemUIOverlayStyle(appSystemUiOverlayStyle);
 
   debugPrint('Starting Web App');
 

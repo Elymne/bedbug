@@ -140,7 +140,7 @@ void main() {
     await tester.pump();
     expect(_isExchangeEnabled(tester), isTrue);
 
-    await tester.tap(find.byType(AppBedbugFrames));
+    await tester.tap(find.byType(AppBedbugFrames).first);
     await tester.pump();
     await tester.pump();
 
@@ -164,12 +164,12 @@ void main() {
     await tester.pump();
     expect(_isExchangeEnabled(tester), isFalse);
 
-    await tester.tap(find.byType(AppBedbugFrames));
+    await tester.tap(find.byType(AppBedbugFrames).first);
     await tester.pump();
     await tester.pump();
     expect(_isExchangeEnabled(tester), isTrue);
 
-    await tester.tap(find.byType(AppBedbugFrames));
+    await tester.tap(find.byType(AppBedbugFrames).first);
     await tester.pump();
     await tester.pump();
     expect(_isExchangeEnabled(tester), isFalse);
@@ -189,18 +189,18 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    await tester.tap(find.byType(AppBedbugFrames));
+    await tester.tap(find.byType(AppBedbugFrames).first);
     await tester.pump();
     await tester.pump();
 
     expect(_isExchangeEnabled(tester), isFalse);
     // Le bedbug se fâche le temps que l'erreur s'affiche, puis se rendort.
     await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('(╬ Ò﹏Ó)'), findsOneWidget);
+    expect(find.textContaining('(╬ Ò'), findsWidgets);
     await tester.pump(const Duration(seconds: 2));
     await tester.pump(const Duration(seconds: 1));
-    expect(find.text('(╬ Ò﹏Ó)'), findsNothing);
-    expect(find.text('(－_－) zzZ'), findsOneWidget);
+    expect(find.textContaining('(╬ Ò'), findsNothing);
+    expect(find.textContaining('(－'), findsWidgets);
   });
 
   testWidgets('la nuit tombe quand l\'échange est arrêté depuis la notification', (tester) async {
@@ -218,7 +218,7 @@ void main() {
     );
     await tester.pump();
     await tester.pump();
-    await tester.tap(find.byType(AppBedbugFrames));
+    await tester.tap(find.byType(AppBedbugFrames).first);
     await tester.pump();
     await tester.pump();
 
@@ -255,7 +255,7 @@ void main() {
     unawaited(Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ExchangeScreen())));
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
-    await tester.tap(find.byType(AppBedbugFrames));
+    await tester.tap(find.byType(AppBedbugFrames).first);
     await tester.pump();
     await tester.pump();
     Navigator.of(tester.element(find.byType(ExchangeScreen))).pop();

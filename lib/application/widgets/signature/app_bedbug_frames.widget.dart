@@ -16,12 +16,14 @@ class AppBedbugFrames extends ConsumerStatefulWidget {
   /// - [style] : style du texte de chaque frame.
   /// - [speed] : multiplicateur de la vitesse normale de l'animation, strictement positif (défaut 1).
   /// - [isAnimating] : `false` pour figer le bedbug sur sa première frame (défaut `true`).
+  /// - [alignment] : placement d'une frame plus étroite que la plus large (défaut [Alignment.center]).
   const AppBedbugFrames({
     super.key,
     required this.frames,
     required this.style,
     this.speed = 1,
     this.isAnimating = true,
+    this.alignment = Alignment.center,
   });
 
   /// Frames du bedbug, affichées tour à tour.
@@ -35,6 +37,12 @@ class AppBedbugFrames extends ConsumerStatefulWidget {
 
   /// Indique si le bedbug passe d'une frame à l'autre.
   final bool isAnimating;
+
+  /// Placement d'une frame plus étroite que la plus large.
+  ///
+  /// Centrée par défaut. Calée au début, elle garde son bord gauche fixe : un texte qui s'allonge d'une frame à
+  /// l'autre (des `z` qui s'accumulent) grandit alors vers la droite sans bouger.
+  final AlignmentGeometry alignment;
 
   @override
   ConsumerState<AppBedbugFrames> createState() => _State();
@@ -68,7 +76,7 @@ class _State extends ConsumerState<AppBedbugFrames> {
       initialData: 0,
       builder: (context, snapshot) {
         return IndexedStack(
-          alignment: Alignment.center,
+          alignment: widget.alignment,
           index: (snapshot.data ?? 0) % widget.frames.length,
           children: [for (final frame in widget.frames) Text(frame, style: widget.style)],
         );
