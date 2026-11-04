@@ -3,7 +3,9 @@ import 'package:bedbug/application/screens/content_detail/reaction_composer_shee
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_values.dart';
-import 'package:bedbug/application/validators/app_validators.dart';
+import 'package:bedbug/application/validators/avatar_text.validator.dart';
+import 'package:bedbug/application/validators/not_empty.validator.dart';
+import 'package:bedbug/application/validators/reaction_bubble.validator.dart';
 import 'package:bedbug/application/widgets/buttons/app_form_submit_button.widget.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.widget.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
@@ -75,13 +77,13 @@ class _State extends ConsumerState<ReactionComposerSheet> {
   /// Contrôle du bedbug choisi, par défaut celui de la réaction actuelle ou de la signature de l'utilisateur.
   late final _avatarTextControl = FormControl<String>(
     value: widget.ownReaction?.avatarText ?? widget.localSignature.avatarText,
-    validators: [AppValidators.required, AppValidators.avatarText],
+    validators: [const NotEmptyValidator(), const AvatarTextValidator()],
   );
 
   /// Contrôle de la bulle de texte, obligatoire.
   late final _bubbleTextControl = FormControl<String>(
     value: widget.ownReaction?.bubbleText,
-    validators: [AppValidators.required, AppValidators.reactionBubble],
+    validators: [const NotEmptyValidator(), const ReactionBubbleValidator()],
   );
 
   /// Contrôle de la couleur du ghost, par défaut celle de la réaction actuelle ou de la signature de l'utilisateur.

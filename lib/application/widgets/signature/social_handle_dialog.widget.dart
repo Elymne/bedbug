@@ -1,6 +1,8 @@
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_icons.dart';
-import 'package:bedbug/application/validators/app_validators.dart';
+
+import 'package:bedbug/application/validators/not_empty.validator.dart';
+import 'package:bedbug/application/validators/social_handle.validator.dart';
 import 'package:bedbug/application/widgets/buttons/app_form_submit_button.widget.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.widget.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
@@ -42,20 +44,13 @@ class SocialHandleDialog extends ConsumerStatefulWidget {
 }
 
 class _State extends ConsumerState<SocialHandleDialog> {
-  /// Contrôle du réseau, fixe : il sert à valider l'identifiant.
-  late final _networkControl = FormControl<SocialNetwork>(value: widget.network);
-
-  /// Contrôle de l'identifiant saisi.
-  late final _handleControl = FormControl<String>(validators: [AppValidators.required]);
+  /// Contrôle de l'identifiant saisi, dont la validité dépend du réseau choisi.
+  late final _handleControl = FormControl<String>(
+    validators: [const NotEmptyValidator(), SocialHandleValidator(widget.network)],
+  );
 
   /// Formulaire de la popup.
-  ///
-  /// La validité de l'identifiant dépend du réseau : elle est vérifiée au
-  /// niveau du groupe par [AppValidators.socialHandle].
-  late final FormGroup _form = FormGroup(
-    {'network': _networkControl, 'handle': _handleControl},
-    validators: [AppValidators.socialHandle('network', 'handle')],
-  );
+  late final FormGroup _form = FormGroup({'handle': _handleControl});
 
   @override
   void dispose() {

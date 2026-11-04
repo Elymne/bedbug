@@ -1,4 +1,5 @@
-import 'package:bedbug/application/validators/app_validators.dart';
+import 'package:bedbug/application/validators/no_digits.validator.dart';
+import 'package:bedbug/application/validators/not_empty.validator.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,8 +10,8 @@ import 'package:reactive_forms/reactive_forms.dart';
 /// S'intègre avec [ReactiveForm] via [formControlName]. Interdit la saisie
 /// de chiffres en temps réel via un InputFormatter.
 ///
-/// Le [FormControl] associé doit déclarer [AppValidators.required] et
-/// [AppValidators.noDigits] pour que les messages d'erreur s'affichent.
+/// Le [FormControl] associé doit déclarer [NotEmptyValidator] et
+/// [NoDigitsValidator] pour que les messages d'erreur s'affichent.
 class ReactiveAppNameFormField extends StatelessWidget {
   /// Crée un [ReactiveAppNameFormField] avec les paramètres fournis.
   const ReactiveAppNameFormField({

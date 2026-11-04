@@ -1,4 +1,5 @@
-import 'package:bedbug/application/validators/app_validators.dart';
+import 'package:bedbug/application/validators/decimal.validator.dart';
+import 'package:bedbug/application/validators/not_negative.validator.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,8 +10,8 @@ import 'package:reactive_forms/reactive_forms.dart';
 /// S'intègre avec [ReactiveForm] via [formControlName]. Restreint la saisie
 /// en temps réel aux chiffres et à un seul séparateur décimal (`.` ou `,`).
 ///
-/// Le [FormControl] associé doit déclarer [AppValidators.decimal] et
-/// [AppValidators.notNegative] pour que les messages d'erreur s'affichent.
+/// Le [FormControl] associé doit déclarer [DecimalValidator] et
+/// [NotNegativeValidator] pour que les messages d'erreur s'affichent.
 class ReactiveAppDecimalFormField extends StatelessWidget {
   /// Crée un [ReactiveAppDecimalFormField] avec les paramètres fournis.
   const ReactiveAppDecimalFormField({

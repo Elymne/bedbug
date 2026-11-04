@@ -1,5 +1,7 @@
 import 'package:bedbug/application/screens/create/create_publishing/create_publishing.notifier.dart';
-import 'package:bedbug/application/validators/app_validators.dart';
+import 'package:bedbug/application/validators/flair.validator.dart';
+import 'package:bedbug/application/validators/not_empty.validator.dart';
+import 'package:bedbug/application/validators/safe_url.validator.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/extensions/string_uuid_x.dart';
@@ -101,22 +103,22 @@ class CreateFormNotifier extends AsyncNotifier<void> {
   @override
   Future<void> build() async {
     typeControl = FormControl<ContentType>(value: ContentType.text);
-    textTitleControl = FormControl<String>(validators: [Validators.required]);
-    textBodyControl = FormControl<String>(validators: [Validators.required]);
+    textTitleControl = FormControl<String>(validators: [const NotEmptyValidator()]);
+    textBodyControl = FormControl<String>(validators: [const NotEmptyValidator()]);
     textForm = FormGroup({'title': textTitleControl, 'body': textBodyControl});
-    mediaUrlsControl = FormControl<List<String>>(value: const [], validators: [AppValidators.required]);
-    mediaUrlInputControl = FormControl<String>(validators: [AppValidators.safeUrl]);
-    mediaTitleControl = FormControl<String>(validators: [Validators.required]);
+    mediaUrlsControl = FormControl<List<String>>(value: const [], validators: [const NotEmptyValidator()]);
+    mediaUrlInputControl = FormControl<String>(validators: [const SafeUrlValidator()]);
+    mediaTitleControl = FormControl<String>(validators: [const NotEmptyValidator()]);
     mediaBodyControl = FormControl<String>();
     mediaForm = FormGroup({'media': mediaUrlsControl, 'title': mediaTitleControl, 'body': mediaBodyControl});
-    drawingControl = FormControl<Drawing>(validators: [AppValidators.required]);
-    drawingTitleControl = FormControl<String>(validators: [Validators.required]);
+    drawingControl = FormControl<Drawing>(validators: [const NotEmptyValidator()]);
+    drawingTitleControl = FormControl<String>(validators: [const NotEmptyValidator()]);
     drawingForm = FormGroup({'drawing': drawingControl, 'title': drawingTitleControl});
-    linkTitleControl = FormControl<String>(validators: [Validators.required]);
-    linkUrlControl = FormControl<String>(validators: [Validators.required, AppValidators.safeUrl]);
+    linkTitleControl = FormControl<String>(validators: [const NotEmptyValidator()]);
+    linkUrlControl = FormControl<String>(validators: [const NotEmptyValidator(), const SafeUrlValidator()]);
     linkForm = FormGroup({'title': linkTitleControl, 'url': linkUrlControl});
     tagsControl = FormControl<List<Tag>>(value: const []);
-    flairControl = FormControl<String>(validators: [AppValidators.flair]);
+    flairControl = FormControl<String>(validators: [const FlairValidator()]);
     isAnonymousControl = FormControl<bool>(value: false);
     form = FormGroup({
       'type': typeControl,

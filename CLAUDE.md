@@ -132,7 +132,7 @@ application/
   drawing/            drawing rendering (rasterizer, flood fill), shared by the editor and the drawing widgets
   router/             router and route paths
   style/              colors, text styles, theme
-  validators/         form validators
+  validators/         form validators, one <name>.validator.dart per validator
   formatters/         input formatters
   l10n/               ARB files and localization
 ```
@@ -389,7 +389,7 @@ Riverpod handles both state management and dependency injection.
   attributes, and the form is disposed in `dispose()`.
 
   ```dart
-  late final _emailControl = FormControl<String>(validators: [AppValidators.required, AppValidators.email]);
+  late final _emailControl = FormControl<String>(validators: [const NotEmptyValidator(), const EmailFormatValidator()]);
   late final FormGroup _form = FormGroup({'email': _emailControl});
   ```
 
@@ -407,7 +407,7 @@ Riverpod handles both state management and dependency injection.
 
   @override
   Future<void> build() async {
-    emailControl = FormControl<String>(validators: [AppValidators.required, AppValidators.email]);
+    emailControl = FormControl<String>(validators: [const NotEmptyValidator(), const EmailFormatValidator()]);
     form = FormGroup({'email': emailControl});
     ref.onDispose(form.dispose);
   }
@@ -416,8 +416,12 @@ Riverpod handles both state management and dependency injection.
 - Either way, declare each `FormControl<T>` as its own typed attribute, then reference it in the `FormGroup`, so values
   are read without casts. Never bind a field by name (`formControlName`) nor read a control through
   `form.control('name')`. Reusable field widgets of `application/widgets/` take a `FormControl<T>` parameter.
-- Validators come from `AppValidators` and are declared on the `FormControl`. Each one is a `const` instance of a private
-  class extending `Validator<dynamic>`, never a plain function.
+- Validators live in `application/validators/`, one per file (`<name>.validator.dart`), and are declared on the
+  `FormControl`. Each one is a public class with a `const` constructor extending `Validator<dynamic>`, named
+  `<Name>Validator` (`NotEmptyValidator`, `PseudoValidator`), never a plain function. Never use the built-in
+  `Validators.*` of reactive_forms, and never reuse one of its class names (`RequiredValidator`, `EmailValidator`…).
+  A domain rule is delegated to the static method of its resource (`Signature.isValidPseudo`); a validator returns
+  `null` on an empty value, leaving it to `NotEmptyValidator`.
 - Before submitting, check `form.valid`; if invalid, call `form.markAllAsTouched()` and return.
 - Text fields use `ReactiveTextField<String>`, dropdowns `ReactiveDropdownField<T>`. To rebuild a part of the UI when a
   control or a group changes, use `ReactiveValueListenableBuilder` (or `ReactiveStatusListenableBuilder`).

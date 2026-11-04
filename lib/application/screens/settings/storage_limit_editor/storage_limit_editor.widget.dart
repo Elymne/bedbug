@@ -1,7 +1,9 @@
 import 'package:bedbug/application/screens/settings/storage_section/storage_section.notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_icons.dart';
-import 'package:bedbug/application/validators/app_validators.dart';
+
+import 'package:bedbug/application/validators/not_empty.validator.dart';
+import 'package:bedbug/application/validators/storage_limit.validator.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.widget.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
@@ -38,7 +40,7 @@ class _State extends ConsumerState<StorageLimitEditor> {
   /// qui est sélectionnée.
   late final _customLimitControl = FormControl<String>(
     value: _isCustomLimit ? '${widget.limitInBytes ~/ bytesPerMegabyte}' : null,
-    validators: [AppValidators.required, AppValidators.storageLimit],
+    validators: [const NotEmptyValidator(), const StorageLimitValidator()],
     disabled: !_isCustomLimit,
   );
 

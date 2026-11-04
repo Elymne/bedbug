@@ -4,7 +4,10 @@ import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/style/app_values.dart';
-import 'package:bedbug/application/validators/app_validators.dart';
+import 'package:bedbug/application/validators/avatar_text.validator.dart';
+import 'package:bedbug/application/validators/not_empty.validator.dart';
+import 'package:bedbug/application/validators/pseudo.validator.dart';
+import 'package:bedbug/application/validators/signature_bio.validator.dart';
 import 'package:bedbug/application/widgets/buttons/app_form_submit_button.widget.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.widget.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
@@ -68,11 +71,14 @@ class _State extends ConsumerState<AppSignatureForm> {
   /// Contrôle du pseudo.
   late final _pseudoControl = FormControl<String>(
     value: widget.signature?.pseudo,
-    validators: [AppValidators.required, AppValidators.pseudo],
+    validators: [const NotEmptyValidator(), const PseudoValidator()],
   );
 
   /// Contrôle de la courte description.
-  late final _bioControl = FormControl<String>(value: widget.signature?.bio, validators: [AppValidators.signatureBio]);
+  late final _bioControl = FormControl<String>(
+    value: widget.signature?.bio,
+    validators: [const SignatureBioValidator()],
+  );
 
   /// Contrôle de la police de la description.
   late final _bioFontControl = FormControl<TextFont>(value: widget.signature?.bioFont ?? TextFont.standard);
@@ -80,7 +86,7 @@ class _State extends ConsumerState<AppSignatureForm> {
   /// Contrôle de l'icône texte.
   late final _avatarTextControl = FormControl<String>(
     value: widget.signature?.avatarText ?? defaultSignatureAvatarText,
-    validators: [AppValidators.required, AppValidators.avatarText],
+    validators: [const NotEmptyValidator(), const AvatarTextValidator()],
   );
 
   /// Contrôle de la couleur de l'effet ghost.
