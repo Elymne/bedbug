@@ -74,7 +74,15 @@
   },
   "createTagsLabel": "Tags",
   "@createTagsLabel": {
-    "description": "Label au-dessus du sélecteur de tags sur la page de création"
+    "description": "Label du champ des tags sur la page de création"
+  },
+  "createTagsHint": "Aucun tag",
+  "@createTagsHint": {
+    "description": "Texte du champ des tags tant qu'aucun tag n'est choisi"
+  },
+  "tagPickerTitle": "Tags",
+  "@tagPickerTitle": {
+    "description": "Titre de la page de sélection des tags d'un contenu"
   },
   "createFlairLabel": "Flair",
   "@createFlairLabel": {
@@ -1099,6 +1107,26 @@
   "signatureSetupSubmit": "C'est parti",
   "@signatureSetupSubmit": {
     "description": "Bouton enregistrant la signature et menant à l'accueil depuis la page de création"
+  },
+  "signatureSetupInfoTitle": "C'est quoi, une signature ?",
+  "@signatureSetupInfoTitle": {
+    "description": "Titre de la popup expliquant la signature, ouverte à l'arrivée sur la page de création de la signature"
+  },
+  "signatureSetupInfoStyle": "Ta signature, c'est ton style : un pseudo, un bedbug et une couleur qui accompagnent tes contenus et tes réactions.",
+  "@signatureSetupInfoStyle": {
+    "description": "Paragraphe de la popup de la signature expliquant ce qu'elle contient et à quoi elle sert"
+  },
+  "signatureSetupInfoNotAccount": "Ce n'est pas un compte utilisateur : pas de mot de passe, pas de serveur, rien qui prouve que c'est toi. N'importe qui peut prendre le même pseudo.",
+  "@signatureSetupInfoNotAccount": {
+    "description": "Paragraphe de la popup de la signature, en gras, précisant qu'elle n'est pas un compte utilisateur"
+  },
+  "signatureSetupInfoTravel": "Elle reste sur ton téléphone et ne voyage qu'avec tes contenus, de téléphone en téléphone. Tu peux la changer à tout moment, ou publier en anonyme.",
+  "@signatureSetupInfoTravel": {
+    "description": "Paragraphe de la popup de la signature expliquant comment elle circule"
+  },
+  "signatureSetupInfoConfirm": "Compris",
+  "@signatureSetupInfoConfirm": {
+    "description": "Bouton fermant la popup de la signature"
   },
   "settingsPseudoHint": "punaise-rose",
   "@settingsPseudoHint": {

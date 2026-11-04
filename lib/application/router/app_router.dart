@@ -29,11 +29,13 @@ import 'package:bedbug/application/screens/settings/trust_section/trust_section.
 import 'package:bedbug/application/screens/signature/signature.screen.dart';
 import 'package:bedbug/application/screens/signature_setup/signature_setup.screen.dart';
 import 'package:bedbug/application/screens/splash/splash.screen.dart';
+import 'package:bedbug/application/screens/tag_picker/tag_picker.screen.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:bedbug/resources/content/content/content.entity.dart';
 import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
 import 'package:bedbug/resources/content/content/link_content.entity.dart';
 import 'package:bedbug/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/resources/content/content/tag.enum.dart';
 import 'package:bedbug/resources/content/content/text_content.entity.dart';
 import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
 import 'package:flutter/material.dart';
@@ -95,6 +97,13 @@ const String avatarPickerPath = '/avatar-picker';
 /// Les options sont transmises via `extra` (`SelectOptionsParams`), et la
 /// valeur choisie est retournée au `pop`.
 const String selectOptionsPath = '/select-options';
+
+/// Chemin vers la page de sélection des tags d'un contenu.
+///
+/// Les tags déjà choisis sont transmis via `extra` (`List<Tag>`), et la
+/// sélection est retournée au `pop`, à récupérer avec
+/// `context.push<List<Tag>>(tagPickerPath)`.
+const String tagPickerPath = '/tag-picker';
 
 /// Chemin vers la page de choix du bedbug d'une réaction.
 ///
@@ -221,6 +230,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: selectOptionsPath,
         pageBuilder: (context, state) => _fadePage(SelectOptionsScreen(params: state.extra! as SelectOptionsParams)),
+      ),
+      GoRoute(
+        path: tagPickerPath,
+        pageBuilder: (context, state) => _fadePage(TagPickerScreen(selectedTags: state.extra! as List<Tag>)),
       ),
       GoRoute(
         path: reactionPickerPath,

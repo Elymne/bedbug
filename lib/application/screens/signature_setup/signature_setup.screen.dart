@@ -1,4 +1,5 @@
 import 'package:bedbug/application/router/app_router.dart';
+import 'package:bedbug/application/screens/signature_setup/signature_info_dialog/signature_info_dialog.widget.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/application/widgets/signature/app_signature_form.widget.dart';
@@ -14,12 +15,35 @@ import 'package:go_router/go_router.dart';
 /// signature locale, autant la choisir avant de commencer. La page n'a pas de
 /// bouton retour ni de passage direct à l'accueil, l'enregistrement est la
 /// seule sortie.
-class SignatureSetupScreen extends ConsumerWidget {
+///
+/// À l'arrivée, une popup ([SignatureInfoDialog]) explique ce qu'est une
+/// signature, et surtout qu'il ne s'agit pas d'un compte utilisateur.
+class SignatureSetupScreen extends ConsumerStatefulWidget {
   /// Crée un [SignatureSetupScreen].
   const SignatureSetupScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SignatureSetupScreen> createState() => _State();
+}
+
+class _State extends ConsumerState<SignatureSetupScreen> {
+  /// Ouvre la popup d'explication une fois la page affichée.
+  ///
+  /// Une popup ne peut s'ouvrir qu'après la première frame : la page doit exister dans le navigateur pour servir de
+  /// fond à la popup.
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      SignatureInfoDialog.show(context);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.loc;
 
     return Scaffold(

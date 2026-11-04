@@ -174,19 +174,6 @@ class CreateFormNotifier extends AsyncNotifier<void> {
     return flairControl.valid && activeForm.valid;
   }
 
-  /// Ajoute ou retire [tag] de la sélection.
-  ///
-  /// Relit la sélection au moment de l'appel plutôt que celle affichée au dernier rebuild : deux taps rapprochés
-  /// écraseraient sinon la sélection précédente au lieu de s'accumuler.
-  ///
-  /// - [tag] : tag touché.
-  void toggleTag(Tag tag) {
-    final selectedTags = tagsControl.value ?? const [];
-    tagsControl.value = selectedTags.contains(tag)
-        ? selectedTags.where((selectedTag) => selectedTag != tag).toList()
-        : [...selectedTags, tag];
-  }
-
   /// Vérifie l'adresse saisie dans [mediaUrlInputControl], l'ajoute à la suite des médias, puis vide le champ.
   ///
   /// Une adresse déjà ajoutée n'est pas dupliquée. Une adresse refusée reste dans le champ, avec son message d'erreur,

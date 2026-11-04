@@ -5,7 +5,7 @@ import 'package:bedbug/application/screens/create/create_publish_button/create_p
 import 'package:bedbug/application/screens/create/drawing_content_form/drawing_content_form.widget.dart';
 import 'package:bedbug/application/screens/create/link_content_form/link_content_form.widget.dart';
 import 'package:bedbug/application/screens/create/media_content_form/media_content_form.widget.dart';
-import 'package:bedbug/application/screens/create/tag_selector/tag_selector.widget.dart';
+import 'package:bedbug/application/screens/create/tag_select_box/tag_select_box.widget.dart';
 import 'package:bedbug/application/screens/create/text_content_form/text_content_form.widget.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_values.dart';
@@ -87,8 +87,7 @@ class CreateForm extends ConsumerWidget {
                                 ),
                               ),
                             ),
-                            Text(l10n.createTagsLabel),
-                            const TagSelector(),
+                            const TagSelectBox(),
                             ReactiveCheckboxListTile(
                               formControl: ref.read(createFormNotifierProvider.notifier).isAnonymousControl,
                               contentPadding: EdgeInsets.zero,
