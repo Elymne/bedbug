@@ -4,17 +4,22 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   build-and-validate:
     runs-on: ubuntu-latest
 
     steps:
       - name: 📥 Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: 🔍 Validate PR title
+        # Le titre passe par une variable : injecté dans le script, un titre piégé y exécuterait des commandes.
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
         run: |
-          TITLE="${{ github.event.pull_request.title }}"
           echo "PR title: $TITLE"
           if ! echo "$TITLE" | grep -Eq "^(feat|fix|perf|revert|docs|chore|refactor|test|ci|style)(\(.+\))?: .+"; then
             echo "❌ Invalid PR title format"
@@ -24,7 +29,7 @@ jobs:
           echo "✅ PR title valid"
 
       - name: 🐦 Setup Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           flutter-version: "3.47.7"
           cache: true
