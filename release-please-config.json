@@ -11,7 +11,9 @@
       "bump-patch-for-minor-pre-major": true,
       "prerelease": true,
       "prerelease-type": "beta",
-      "versioning": "prerelease"
+
+      "versioning": "prerelease",
+      "initial-version": "0.1.0-beta.1"
     }
   }
 }
