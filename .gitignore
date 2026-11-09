@@ -51,3 +51,7 @@ app.*.map.json
 .claude/
 .vscode/
 .zed/
+
+# Signing keys and their passwords (never committed)
+/.key/
+/android/key.properties

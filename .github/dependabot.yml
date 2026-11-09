@@ -1,0 +1,16 @@
+# Les actions des workflows sont épinglées par SHA de commit, pour qu'un tag déplacé chez un tiers ne puisse pas
+# injecter du code qui lirait les secrets. Dependabot propose chaque mois une PR qui met ces SHA à jour, avec un titre
+# Conventional Commits (`chore(deps): …`) accepté par la CI.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      github-actions:
+        patterns:
+          - "*"

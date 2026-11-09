@@ -1,0 +1,40 @@
+name: Release
+
+# À chaque merge sur `main`, release-please tient à jour une PR de release (version suivante et changelog, calculés
+# depuis les Conventional Commits). Merger cette PR crée le tag et la release GitHub, puis déploie l'app.
+#
+# release-please est en mode préversion (`release-please-config.json`) : il propose `0.1.0-beta.1`, `0.1.0-beta.2`…
+# Pour sortir la version finale, pousser un commit dont le message contient `Release-As: 0.1.0`.
+#
+# Le déploiement est appelé d'ici plutôt que déclenché par le tag : un tag créé avec le jeton par défaut de GitHub
+# Actions ne déclenche aucun autre workflow.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+
+    steps:
+      - name: 📝 Update release PR, or create the release
+        id: release
+        uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  deploy-beta:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true' && contains(needs.release-please.outputs.tag_name, '-beta')
+    uses: ./.github/workflows/deploy_beta.yml
+    with:
+      tag: ${{ needs.release-please.outputs.tag_name }}
+    secrets: inherit

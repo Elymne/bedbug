@@ -1,0 +1,175 @@
+name: Deploy beta
+
+# Publie une beta sur le Play Store pour un tag de préversion : `v0.1.0-beta.1`, `v0.1.0-beta.2`…
+#
+# Appelé par le workflow `release.yml` quand release-please vient de créer une beta. Un tag de beta posé à la main le
+# déclenche aussi, en secours.
+#
+# Lancé à la main (onglet Actions → Run workflow), il construit et signe le bundle sans l'envoyer : le fichier est à
+# télécharger dans le résumé du run. C'est ainsi qu'on obtient le tout premier `.aab`, que Google exige d'envoyer à la
+# main, sans jamais écrire le mot de passe de la clé sur un ordinateur.
+#
+# Le nom de version vu par les testeurs vient du tag (`0.1.0-beta.2`). Le numéro de build (`versionCode`), qui doit
+# augmenter à chaque envoi, est le nombre de minutes écoulées depuis 1970 : il croît toujours, quel que soit le
+# chemin qui a lancé le build, et les betas successives d'une même version ne font jamais grimper le nom vu par les
+# utilisateurs. Une beta validée se promeut ensuite en production depuis la Play Console, sans rebuild.
+#
+# Sécurité : les secrets vivent dans l'environnement GitHub `play-store`, accessible seulement depuis `main` et les
+# tags de beta (voir `tool/setup_github_deployment.dart`) ; les actions sont épinglées par SHA de commit, pour qu'un
+# tag déplacé chez un tiers ne puisse pas voler la clé ; la clé n'est écrite que dans le dossier temporaire du runner,
+# et effacée à la fin.
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: Tag de la beta à publier (ex. v0.1.0-beta.1).
+        required: true
+        type: string
+  push:
+    tags:
+      - "v*-beta*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Nom de version du bundle (ex. 0.0.0-beta.0). Le bundle est construit et signé, mais pas envoyé.
+        required: true
+        default: 0.0.0-beta.0
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  # Identifiant de l'app sur le Play Store, celui de `android/app/build.gradle.kts`.
+  PACKAGE_NAME: fr.bedbug
+  # Piste du Play Store : `internal` (test interne) ou `alpha` (test fermé).
+  PLAY_TRACK: internal
+  # `completed` publie la beta aux testeurs. Tant que l'app n'a jamais été publiée (état « brouillon » dans la Play
+  # Console), Google n'accepte que `draft` : il faut alors finir la publication à la main dans la console.
+  RELEASE_STATUS: completed
+  # Configuration d'environnement embarquée dans l'app (`assets/config/<env>.json`).
+  BUILD_ENV: preproduction
+  # Alias de la clé dans le keystore, fixé par `tool/generate_upload_key.dart`.
+  KEY_ALIAS: upload
+  # Lancement à la main : construire et signer, sans envoyer.
+  IS_MANUAL_BUILD: ${{ github.event_name == 'workflow_dispatch' }}
+  # Tag à publier : celui passé par `release.yml`, sinon celui qui a déclenché le workflow.
+  RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+  # Version demandée lors d'un lancement à la main. Passée par une variable, jamais injectée dans un script.
+  MANUAL_VERSION: ${{ inputs.version }}
+  # Bundle produit par Flutter.
+  BUNDLE_PATH: build/app/outputs/bundle/release/app-release.aab
+
+jobs:
+  deploy-beta:
+    runs-on: ubuntu-latest
+    environment: play-store
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.IS_MANUAL_BUILD == 'true' && github.sha || env.RELEASE_TAG }}
+          persist-credentials: false
+
+      - name: 🏷️ Compute version
+        run: |
+          if [ "$IS_MANUAL_BUILD" = "true" ]; then
+            VERSION_NAME="$MANUAL_VERSION"
+            if ! echo "$VERSION_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-beta\.[0-9]+)?$'; then
+              echo "❌ Invalid version: $VERSION_NAME"
+              echo "Expected: MAJOR.MINOR.PATCH or MAJOR.MINOR.PATCH-beta.N (e.g. 0.0.0-beta.0)"
+              exit 1
+            fi
+          else
+            if ! echo "$RELEASE_TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$'; then
+              echo "❌ Invalid beta tag: $RELEASE_TAG"
+              echo "Expected: vMAJOR.MINOR.PATCH-beta.N (e.g. v0.1.0-beta.1)"
+              exit 1
+            fi
+            VERSION_NAME="${RELEASE_TAG#v}"
+          fi
+          VERSION_CODE=$(( $(date +%s) / 60 ))
+          echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
+          echo "VERSION_CODE=$VERSION_CODE" >> "$GITHUB_ENV"
+          echo "✅ Version $VERSION_NAME (build $VERSION_CODE)"
+
+      - name: ☕ Setup Java
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: "3.47.7"
+          cache: true
+
+      - name: ✅ Run CI checks
+        run: dart run tool/ci_check.dart --ci
+
+      - name: 🔑 Restore signing key
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$ANDROID_KEYSTORE_BASE64" ] || [ -z "$ANDROID_KEYSTORE_PASSWORD" ]; then
+            echo "❌ Signing secrets missing from the play-store environment"
+            echo "Run: dart run tool/setup_github_deployment.dart (see README.md)"
+            exit 1
+          fi
+          KEYSTORE="$RUNNER_TEMP/upload-keystore.jks"
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
+          # Format .properties : un antislash du mot de passe doit être doublé.
+          PASSWORD="${ANDROID_KEYSTORE_PASSWORD//\\/\\\\}"
+          # Keystore PKCS12 : un seul mot de passe protège le keystore et la clé.
+          {
+            echo "storeFile=$KEYSTORE"
+            echo "storePassword=$PASSWORD"
+            echo "keyAlias=$KEY_ALIAS"
+            echo "keyPassword=$PASSWORD"
+          } > android/key.properties
+
+      - name: 📦 Build app bundle
+        run: |
+          flutter build appbundle --release \
+            --build-name="$VERSION_NAME" \
+            --build-number="$VERSION_CODE" \
+            --dart-define=ENV="$BUILD_ENV"
+
+      - name: 🧹 Remove signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/upload-keystore.jks" android/key.properties
+
+      # Sans `android/key.properties`, Gradle signe en silence avec la clé de debug : on refuse un tel bundle ici
+      # plutôt que de le découvrir au refus du Play Store.
+      - name: 🔍 Check bundle signature
+        run: |
+          CERTIFICATE=$(keytool -printcert -jarfile "$BUNDLE_PATH")
+          if [ -z "$CERTIFICATE" ] || echo "$CERTIFICATE" | grep -q "CN=Android Debug"; then
+            echo "❌ The bundle is not signed with the upload key"
+            exit 1
+          fi
+          echo "$CERTIFICATE" | grep -E "Owner|SHA256:"
+          echo "✅ Bundle signed with the upload key"
+
+      - name: 🚀 Upload to Play Store
+        if: env.IS_MANUAL_BUILD != 'true'
+        uses: r0adkll/upload-google-play@935ef9c68bb393a8e6116b1575626a7f5be3a7fb # v1.1.3
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: ${{ env.PACKAGE_NAME }}
+          releaseFiles: ${{ env.BUNDLE_PATH }}
+          releaseName: ${{ env.VERSION_NAME }}
+          track: ${{ env.PLAY_TRACK }}
+          status: ${{ env.RELEASE_STATUS }}
+
+      - name: 📎 Attach bundle to the run
+        if: env.IS_MANUAL_BUILD == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: bedbug-${{ env.VERSION_NAME }}
+          path: ${{ env.BUNDLE_PATH }}
+          if-no-files-found: error
+          retention-days: 1

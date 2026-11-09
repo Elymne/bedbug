@@ -16,10 +16,16 @@ Future<void> main(List<String> arguments) async {
   final steps = [
     ('📦 Install dependencies', ['flutter', 'pub', 'get']),
     if (!isCiMode) ('🔧 Auto-fix analyzer issues', ['dart', 'fix', '--apply']),
-    if (!isCiMode) ('🎨 Auto-format code', ['dart', 'format', 'lib/', 'test/', 'tool/']),
+    if (!isCiMode) ('🎨 Auto-format code', ['dart', 'format', 'lib/', 'test/', 'integration_test/', 'tool/']),
     ('🔍 Analyze code', ['flutter', 'analyze', '--fatal-infos', '--fatal-warnings']),
-    if (isCiMode) ('🎨 Check formatting', ['dart', 'format', '--set-exit-if-changed', 'lib/', 'test/', 'tool/']),
-    ('🧪 Run unit and use case tests', ['flutter', 'test', 'test/unit', 'test/integration']),
+    if (isCiMode)
+      (
+        '🎨 Check formatting',
+        ['dart', 'format', '--set-exit-if-changed', 'lib/', 'test/', 'integration_test/', 'tool/'],
+      ),
+    // Tous les tests de `test/` : unitaires, d'intégration et widgets. Le smoke test (`integration_test/`) demande un
+    // vrai téléphone : il se lance à la main.
+    ('🧪 Run all tests', ['flutter', 'test']),
   ];
 
   for (final (label, command) in steps) {
