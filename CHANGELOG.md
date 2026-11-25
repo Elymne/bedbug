@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0-beta.2](https://github.com/Elymne/bedbug/compare/v0.1.0-beta.1...v0.1.0-beta.2) (2026-11-25)
+
+
+### Performance Improvements
+
+* hive to drift for data storage ([#20](https://github.com/Elymne/bedbug/issues/20)) ([74174e8](https://github.com/Elymne/bedbug/commit/74174e8c72de85bd0732adf2e48715e1227d948c))
+
 ## 0.1.0-beta.1 (2026-11-09)
 
 
