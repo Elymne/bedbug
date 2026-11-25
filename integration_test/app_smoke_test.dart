@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bedbug/application/app_root.widget.dart';
 import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:bedbug/application/notifiers/passive_exchange.notifier.dart';
@@ -24,18 +26,19 @@ import 'package:bedbug/application/screens/signature/signature.screen.dart';
 import 'package:bedbug/application/screens/signature_setup/signature_setup.screen.dart';
 import 'package:bedbug/application/screens/tag_picker/tag_picker.screen.dart';
 import 'package:bedbug/core/config/app_config.dart';
-import 'package:bedbug/resources/content/content/tag.enum.dart';
-import 'package:bedbug/resources/hive.initializer.dart';
-import 'package:bedbug/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/infra/resources/content/content/tag.enum.dart';
+import 'package:bedbug/infra/resources/drift.database.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
+import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
-/// Dossier des données Hive du smoke test, à part de celles de l'app : le test les efface à chaque lancement.
-const String _kSmokeHiveDirectory = 'smoke_test';
+/// Nom de la base SQLite du smoke test, à part de celle de l'app : le test l'efface à chaque lancement.
+const String _kSmokeDatabaseName = 'smoke_test';
 
 /// Temps laissé à une page pour s'ouvrir et se construire.
 ///
@@ -50,7 +53,7 @@ const Duration _kAppearTimeout = Duration(seconds: 15);
 /// être publié.
 ///
 /// Ne vérifie pas le détail des pages : seulement qu'aucune ne lève d'erreur. Contrairement aux tests de `test/`, il
-/// passe par le vrai Hive sur disque, les vraies polices et le vrai moteur de rendu. L'échange Bluetooth n'est pas
+/// passe par la vraie base SQLite sur disque, les vraies polices et le vrai moteur de rendu. L'échange Bluetooth n'est pas
 /// lancé : la demande de permission est une fenêtre système, hors de portée du test.
 ///
 /// À lancer avant chaque version, téléphone Android branché :
@@ -61,10 +64,21 @@ void main() {
   testWidgets('premier lancement, tour de toutes les pages, publication d\'un contenu', (tester) async {
     // Démarrage comme `main.dart`, sur une base vide à part : le test repart toujours du premier lancement.
     await AppConfig.init();
-    await initHive(subDirectory: _kSmokeHiveDirectory);
-    await Hive.deleteFromDisk();
-    await initHive(subDirectory: _kSmokeHiveDirectory);
-    final container = ProviderContainer();
+    await _deleteSmokeDatabase();
+    final container = ProviderContainer(
+      overrides: [
+        appDatabaseProvider.overrideWith((ref) {
+          final database = AppDatabase(
+            driftDatabase(
+              name: _kSmokeDatabaseName,
+              native: const DriftNativeOptions(setup: configureSqlite),
+            ),
+          );
+          ref.onDispose(database.close);
+          return database;
+        }),
+      ],
+    );
     addTearDown(container.dispose);
     container.read(passiveExchangeNotifierProvider);
     await tester.pumpWidget(UncontrolledProviderScope(container: container, child: const AppRoot()));
@@ -114,7 +128,7 @@ void main() {
       await tester.pump(_kPageSettleDuration);
     }
 
-    // Publication d'un texte : écriture dans Hive, puis ouverture du contenu publié.
+    // Publication d'un texte : écriture dans la base, puis ouverture du contenu publié.
     router.push(createPath);
     await _pumpUntilFound(tester, find.byType(CreateScreen));
     await tester.pump(_kPageSettleDuration);
@@ -130,9 +144,23 @@ void main() {
   });
 }
 
+/// Efface la base du smoke test et ses fichiers de journal, pour repartir d'un premier lancement.
+///
+/// La base est rangée par drift dans le dossier documents de l'app, sous `<nom>.sqlite`, avec ses éventuels fichiers
+/// de journal (`-wal`, `-shm`, `-journal`).
+Future<void> _deleteSmokeDatabase() async {
+  final directory = await getApplicationDocumentsDirectory();
+  for (final suffix in ['', '-wal', '-shm', '-journal']) {
+    final file = File('${directory.path}/$_kSmokeDatabaseName.sqlite$suffix');
+    if (file.existsSync()) {
+      await file.delete();
+    }
+  }
+}
+
 /// Avance l'horloge jusqu'à ce que [finder] trouve un widget, ou échoue après [_kAppearTimeout].
 ///
-/// Une page met un temps variable à apparaître (splash, chargement depuis Hive, transition) : attendre une durée
+/// Une page met un temps variable à apparaître (splash, chargement depuis la base, transition) : attendre une durée
 /// fixe rendrait le test fragile sur un téléphone lent.
 ///
 /// - [tester] : testeur du widget.

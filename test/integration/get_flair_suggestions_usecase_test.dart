@@ -1,15 +1,13 @@
-import 'dart:io';
-
-import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.config.dart';
-import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.params.dart';
-import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.usecase.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/logic/usecases/feed/get_flair_suggestions/get_flair_suggestions.config.dart';
+import 'package:bedbug/logic/usecases/feed/get_flair_suggestions/get_flair_suggestions.params.dart';
+import 'package:bedbug/logic/usecases/feed/get_flair_suggestions/get_flair_suggestions.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/content_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 
 /// Construit un contenu texte portant le flair [flair].
 ///
@@ -34,21 +32,18 @@ TextContent _buildContent(String id, String flair) {
 }
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
   setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+    container = createTestContainer();
   });
 
   tearDown(() async {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   test('regroupe les flairs par nombre de contenus, puis par ordre alphabétique', () async {
-    await container.read(contentRepositoryProvider).addMany([
+    await insertTestContents(container, [
       _buildContent('a', 'france'),
       _buildContent('b', 'fromage'),
       _buildContent('c', 'fromage'),
@@ -66,7 +61,7 @@ void main() {
   });
 
   test('limite le nombre de suggestions', () async {
-    await container.read(contentRepositoryProvider).addMany([
+    await insertTestContents(container, [
       for (var index = 0; index < maxFlairSuggestions + 3; index++) _buildContent('c$index', 'flair$index'),
     ]);
 

@@ -9,9 +9,9 @@ import 'package:bedbug/application/widgets/media/app_remote_image.widget.dart';
 import 'package:bedbug/application/widgets/media/app_remote_video.widget.dart';
 import 'package:bedbug/application/widgets/media/app_unknown_remote_media.widget.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
-import 'package:bedbug/resources/content/content/media_content.entity.dart';
-import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
-import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
+import 'package:bedbug/infra/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.value_object.dart';
+import 'package:bedbug/infra/resources/url/safe_url/safe_url.value_object.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

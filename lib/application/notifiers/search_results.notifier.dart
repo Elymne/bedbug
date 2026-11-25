@@ -1,22 +1,24 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
+import 'package:bedbug/application/notifiers/reaction_count_changes.notifier.dart';
+import 'package:bedbug/core/domain/cursor_page.dart';
 import 'package:bedbug/core/notifier/notifier_state.dart';
-import 'package:bedbug/resources/content/content/content.entity.dart';
-import 'package:bedbug/usecases/feed/get_contents_by_flair/get_contents_by_flair.failure.dart';
-import 'package:bedbug/usecases/feed/get_contents_by_flair/get_contents_by_flair.params.dart';
-import 'package:bedbug/usecases/feed/get_contents_by_flair/get_contents_by_flair.usecase.dart';
-import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.failure.dart';
-import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.params.dart';
-import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.usecase.dart';
-import 'package:bedbug/usecases/feed/get_filtered_contents/get_filtered_contents.failure.dart';
-import 'package:bedbug/usecases/feed/get_filtered_contents/get_filtered_contents.params.dart';
-import 'package:bedbug/usecases/feed/get_filtered_contents/get_filtered_contents.usecase.dart';
+import 'package:bedbug/infra/resources/content/content/content.entity.detailed.dart';
+import 'package:bedbug/logic/usecases/feed/get_contents_by_flair/get_contents_by_flair.failure.dart';
+import 'package:bedbug/logic/usecases/feed/get_contents_by_flair/get_contents_by_flair.params.dart';
+import 'package:bedbug/logic/usecases/feed/get_contents_by_flair/get_contents_by_flair.usecase.dart';
+import 'package:bedbug/logic/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.failure.dart';
+import 'package:bedbug/logic/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.params.dart';
+import 'package:bedbug/logic/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.usecase.dart';
+import 'package:bedbug/logic/usecases/feed/get_filtered_contents/get_filtered_contents.failure.dart';
+import 'package:bedbug/logic/usecases/feed/get_filtered_contents/get_filtered_contents.params.dart';
+import 'package:bedbug/logic/usecases/feed/get_filtered_contents/get_filtered_contents.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SearchResultsNotifier], un par [SearchCriteria].
 final searchResultsNotifierProvider = AsyncNotifierProvider.autoDispose
     .family<SearchResultsNotifier, SearchResultsState, SearchCriteria>(SearchResultsNotifier.new);
 
-/// Notifier chargeant les contenus correspondant à un [SearchCriteria].
+/// Notifier chargeant les contenus correspondant à un [SearchCriteria], page après page.
 class SearchResultsNotifier extends AsyncNotifier<SearchResultsState> {
   /// Crée un [SearchResultsNotifier].
   ///
@@ -35,61 +37,125 @@ class SearchResultsNotifier extends AsyncNotifier<SearchResultsState> {
   /// Cas d'usage de recherche globale sur le titre et le flair.
   late final _getFilteredContentsUsecase = ref.read(getFilteredContentsUsecaseProvider);
 
+  /// Nombre d'entrées du journal [reactionCountChangesNotifierProvider] déjà reflétées par la liste.
+  int _appliedReactionChangeCount = 0;
+
+  /// Charge la première page des résultats.
   @override
   Future<SearchResultsState> build() async {
-    return switch (criteria) {
-      FlairSearchCriteria(:final flair) => _loadByFlair(flair),
-      SignatureSearchCriteria(:final signatureId) => _loadBySignatures([signatureId]),
-      QuerySearchCriteria(:final query) => _loadByQuery(query),
-    };
+    // La première page lue juste après inclut déjà les réactions enregistrées jusqu'ici.
+    _appliedReactionChangeCount = ref.read(reactionCountChangesNotifierProvider).length;
+    ref.listen(reactionCountChangesNotifierProvider, (_, changes) => _applyReactionCountChanges(changes));
+
+    final result = await _fetchPage(null);
+    final page = result.page;
+    if (page == null) {
+      return SearchResultsState(contents: const [], failureMessage: result.failureMessage);
+    }
+    return SearchResultsState(contents: page.items, nextCursor: page.nextCursor);
   }
 
-  /// Charge les contenus signés par l'un des [signatureIds].
-  Future<SearchResultsState> _loadBySignatures(List<String> signatureIds) async {
-    final result = await _getContentsBySignaturesUsecase(GetContentsBySignaturesParams(signatureIds: signatureIds));
-    return result.fold(
-      onFailure: (GetContentsBySignaturesFailure failure) {
-        final message = switch (failure) {
-          GetContentsBySignaturesFailure.invalidData => ref.l10n.homeGetContentsInvalidData,
-          GetContentsBySignaturesFailure.storageError => ref.l10n.homeGetContentsStorageError,
-          GetContentsBySignaturesFailure.unknown => ref.l10n.homeGetContentsUnknown,
-        };
-        return SearchResultsState(contents: const [], failureMessage: message);
-      },
-      onSuccess: (List<Content> contents) => SearchResultsState(contents: contents),
+  /// Charge la page suivante des résultats et l'ajoute à la suite des contenus affichés.
+  ///
+  /// Appelé quand l'utilisateur approche de la fin de la liste. Sans effet pendant un chargement, ou quand les
+  /// résultats sont épuisés. Un échec garde la liste affichée telle quelle, avec un message et de quoi réessayer à
+  /// sa fin.
+  Future<void> loadMore() async {
+    final current = state.value;
+    final after = current?.nextCursor;
+    if (current == null || after == null || state.isLoading || current.isLoadingMore) {
+      return;
+    }
+    state = AsyncData(SearchResultsState(contents: current.contents, nextCursor: after, isLoadingMore: true));
+    final result = await _fetchPage(after);
+    final latest = state.value;
+    if (!ref.mounted || latest == null || state.isLoading) {
+      return;
+    }
+    final page = result.page;
+    if (page == null) {
+      state = AsyncData(
+        SearchResultsState(
+          contents: latest.contents,
+          nextCursor: latest.nextCursor,
+          loadMoreFailureMessage: result.failureMessage,
+        ),
+      );
+      return;
+    }
+    state = AsyncData(
+      SearchResultsState(
+        contents: ContentDetailed.appendPage(latest.contents, page.items),
+        nextCursor: page.nextCursor,
+      ),
     );
   }
 
-  /// Charge les contenus rattachés exactement à [flair].
-  Future<SearchResultsState> _loadByFlair(String flair) async {
-    final result = await _getContentsByFlairUsecase(GetContentsByFlairParams(flair: flair));
-    return result.fold(
-      onFailure: (GetContentsByFlairFailure failure) {
-        final message = switch (failure) {
-          GetContentsByFlairFailure.invalidData => ref.l10n.homeGetContentsInvalidData,
-          GetContentsByFlairFailure.storageError => ref.l10n.homeGetContentsStorageError,
-          GetContentsByFlairFailure.unknown => ref.l10n.homeGetContentsUnknown,
-        };
-        return SearchResultsState(contents: const [], failureMessage: message);
-      },
-      onSuccess: (List<Content> contents) => SearchResultsState(contents: contents),
+  /// Reporte sur les contenus affichés les nombres de réactions du journal pas encore appliqués.
+  ///
+  /// - [changes] : journal complet des changements de nombre de réactions.
+  void _applyReactionCountChanges(List<ReactionCountChange> changes) {
+    final pending = changes.skip(_appliedReactionChangeCount);
+    _appliedReactionChangeCount = changes.length;
+    final current = state.value;
+    // Pendant un chargement, la liste lue ensuite inclura déjà ces réactions.
+    if (current == null || state.isLoading) {
+      return;
+    }
+    state = AsyncData(
+      SearchResultsState(
+        contents: ReactionCountChangesNotifier.apply(current.contents, pending),
+        nextCursor: current.nextCursor,
+        isLoadingMore: current.isLoadingMore,
+        loadMoreFailureMessage: current.loadMoreFailureMessage,
+        failureMessage: current.failureMessage,
+      ),
     );
   }
 
-  /// Charge les contenus dont le titre ou le flair contient [query].
-  Future<SearchResultsState> _loadByQuery(String query) async {
-    final result = await _getFilteredContentsUsecase(GetFilteredContentsParams(query: query));
-    return result.fold(
-      onFailure: (GetFilteredContentsFailure failure) {
-        final message = switch (failure) {
-          GetFilteredContentsFailure.invalidData => ref.l10n.homeGetContentsInvalidData,
-          GetFilteredContentsFailure.storageError => ref.l10n.homeGetContentsStorageError,
-          GetFilteredContentsFailure.unknown => ref.l10n.homeGetContentsUnknown,
-        };
-        return SearchResultsState(contents: const [], failureMessage: message);
-      },
-      onSuccess: (List<Content> contents) => SearchResultsState(contents: contents),
-    );
+  /// Lit la page des résultats qui suit [after], selon le type de [criteria].
+  ///
+  /// Retourne la page lue, ou le message à afficher en cas d'échec.
+  ///
+  /// - [after] : curseur renvoyé par la page précédente, `null` pour la première page.
+  Future<({CursorPage<ContentDetailed>? page, String? failureMessage})> _fetchPage(String? after) async {
+    switch (criteria) {
+      case FlairSearchCriteria(:final flair):
+        final result = await _getContentsByFlairUsecase(GetContentsByFlairParams(flair: flair, after: after));
+        return (
+          page: result.right,
+          failureMessage: switch (result.left) {
+            null => null,
+            GetContentsByFlairFailure.invalidData => ref.l10n.homeGetContentsInvalidData,
+            GetContentsByFlairFailure.storageError => ref.l10n.homeGetContentsStorageError,
+            GetContentsByFlairFailure.unknown => ref.l10n.homeGetContentsUnknown,
+          },
+        );
+      case SignatureSearchCriteria(:final signatureId):
+        final result = await _getContentsBySignaturesUsecase(
+          GetContentsBySignaturesParams(signatureIds: [signatureId], after: after),
+        );
+        return (
+          page: result.right,
+          failureMessage: switch (result.left) {
+            null => null,
+            GetContentsBySignaturesFailure.invalidData => ref.l10n.homeGetContentsInvalidData,
+            GetContentsBySignaturesFailure.storageError => ref.l10n.homeGetContentsStorageError,
+            GetContentsBySignaturesFailure.unknown => ref.l10n.homeGetContentsUnknown,
+          },
+        );
+      case QuerySearchCriteria(:final query):
+        final result = await _getFilteredContentsUsecase(GetFilteredContentsParams(query: query, after: after));
+        return (
+          page: result.right,
+          failureMessage: switch (result.left) {
+            null => null,
+            GetFilteredContentsFailure.invalidData => ref.l10n.homeGetContentsInvalidData,
+            GetFilteredContentsFailure.storageError => ref.l10n.homeGetContentsStorageError,
+            GetFilteredContentsFailure.unknown => ref.l10n.homeGetContentsUnknown,
+          },
+        );
+    }
   }
 }
 
@@ -97,12 +163,38 @@ class SearchResultsNotifier extends AsyncNotifier<SearchResultsState> {
 class SearchResultsState extends NotifierState {
   /// Crée un [SearchResultsState].
   ///
-  /// - [contents] : contenus correspondant au critère de recherche.
-  /// - [failureMessage] : message d'erreur éventuel.
-  SearchResultsState({required this.contents, super.failureMessage});
+  /// - [contents] : contenus correspondant au critère de recherche, chargés jusqu'ici, toutes pages confondues.
+  /// - [nextCursor] : curseur de la page suivante, `null` quand les résultats sont épuisés.
+  /// - [isLoadingMore] : indique si une page suivante est en cours de chargement.
+  /// - [loadMoreFailureMessage] : message d'erreur du dernier chargement d'une page suivante, `null` sans échec.
+  /// - [failureMessage] : message d'erreur du chargement de la première page.
+  SearchResultsState({
+    required this.contents,
+    this.nextCursor,
+    this.isLoadingMore = false,
+    this.loadMoreFailureMessage,
+    super.failureMessage,
+  });
 
-  /// Contenus correspondant au critère de recherche.
-  final List<Content> contents;
+  /// Contenus correspondant au critère de recherche, chargés jusqu'ici, toutes pages confondues.
+  final List<ContentDetailed> contents;
+
+  /// Curseur de la page suivante, `null` quand les résultats sont épuisés.
+  final String? nextCursor;
+
+  /// Indique si une page suivante est en cours de chargement.
+  ///
+  /// Exception assumée à l'absence de champ de chargement dans un état : `AsyncValue` couvre le chargement de la
+  /// première page, ce champ celui d'une page suivante, pendant lequel la liste reste affichée.
+  final bool isLoadingMore;
+
+  /// Message d'erreur du dernier chargement d'une page suivante, `null` sans échec.
+  final String? loadMoreFailureMessage;
+
+  /// Indique s'il reste des résultats après ceux chargés.
+  bool get hasMore {
+    return nextCursor != null;
+  }
 }
 
 /// Critère de recherche des contenus à afficher.

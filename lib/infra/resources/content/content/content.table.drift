@@ -1,0 +1,43 @@
+-- Contenus : texte, lien, média et dessin partagent une seule table, distingués par [type]. Les colonnes propres à un
+-- type restent nulles pour les autres.
+import '../../drift.converters.dart';
+
+CREATE TABLE contents (
+  id TEXT NOT NULL PRIMARY KEY,
+  created_at INTEGER NOT NULL MAPPED BY `const MillisDateTimeConverter()`,
+  updated_at INTEGER NOT NULL MAPPED BY `const MillisDateTimeConverter()`,
+  -- Date d'enregistrement sur ce téléphone, à ne pas confondre avec [created_at], la date de l'auteur d'origine : le
+  -- fil d'accueil s'en sert pour figer les contenus d'une session de lecture.
+  stored_at INTEGER NOT NULL MAPPED BY `const MillisDateTimeConverter()`,
+  -- Pas de clé étrangère : un contenu peut être anonyme, ou signé par la signature locale avant qu'elle existe.
+  signature_id TEXT NOT NULL,
+  type INTEGER NOT NULL,
+  origin INTEGER NOT NULL,
+  bounce INTEGER NOT NULL,
+  title TEXT,
+  -- Titre en minuscules, calculé en Dart à l'écriture : la recherche y cherche la saisie sans dépendre de `lower()`
+  -- de SQLite, qui ignore les lettres non ASCII.
+  search_title TEXT NOT NULL,
+  body TEXT,
+  url TEXT,
+  flair TEXT NOT NULL,
+  size_in_bytes INTEGER NOT NULL,
+  og_image_url TEXT,
+  og_title TEXT,
+  og_description TEXT,
+  broadcast_score REAL NOT NULL,
+  survival_score REAL NOT NULL,
+  display_score REAL NOT NULL,
+  tag_values TEXT NOT NULL MAPPED BY `const IntListConverter()`,
+  media_urls TEXT NOT NULL MAPPED BY `const StringListConverter()`,
+  media_kinds TEXT NOT NULL MAPPED BY `const IntListConverter()`,
+  -- Dernière colonne : SQLite ne lit les pages de débordement d'un gros dessin que si la requête demande cette colonne.
+  drawing_data BLOB
+) AS ContentRow;
+
+CREATE INDEX contents_display_score ON contents (display_score DESC, id);
+CREATE INDEX contents_broadcast_score ON contents (broadcast_score DESC);
+CREATE INDEX contents_survival_score ON contents (survival_score, created_at);
+CREATE INDEX contents_flair ON contents (flair);
+CREATE INDEX contents_signature_id ON contents (signature_id);
+CREATE INDEX contents_origin ON contents (origin, created_at DESC);

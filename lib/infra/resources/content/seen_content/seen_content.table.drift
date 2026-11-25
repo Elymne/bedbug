@@ -1,0 +1,11 @@
+-- Contenus déjà reçus : volontairement sans clé étrangère, cette trace doit survivre à la suppression du contenu pour
+-- qu'un échange ne le re-télécharge pas.
+import '../../drift.converters.dart';
+
+CREATE TABLE seen_contents (
+  id TEXT NOT NULL PRIMARY KEY,
+  created_at INTEGER NOT NULL MAPPED BY `const MillisDateTimeConverter()`,
+  updated_at INTEGER NOT NULL MAPPED BY `const MillisDateTimeConverter()`
+) AS SeenContentRow;
+
+CREATE INDEX seen_contents_created_at ON seen_contents (created_at);

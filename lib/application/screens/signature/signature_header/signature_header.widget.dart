@@ -7,8 +7,8 @@ import 'package:bedbug/application/widgets/signature/app_signature_avatar.widget
 import 'package:bedbug/application/widgets/signature/app_signature_bio.widget.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.widget.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.widget.dart';
-import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/resources/signature/signature/signature.extension.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

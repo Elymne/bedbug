@@ -32,10 +32,11 @@ La configuration est lue depuis `l10n.yaml`, et les fichiers sont générés dan
 flutter gen-l10n
 ```
 
-### Générer le code automatique (Hive)
+### Générer le code automatique (drift)
 
-À lancer après chaque modification d'un modèle annoté `@HiveType` / `@HiveField`. Génère les fichiers `*.g.dart`
-et `lib/hive_registrar.g.dart`.
+À lancer après chaque modification d'un schéma `*.table.drift` ou de la base `lib/infra/resources/drift.database.dart`.
+Génère `lib/infra/resources/drift.database.g.dart` (tables, lignes, companions). Un changement de schéma s'accompagne
+d'une nouvelle `schemaVersion` et de son étape de migration.
 
 ```sh
 dart run build_runner build --delete-conflicting-outputs
@@ -75,8 +76,9 @@ flutter test test/widget    # un seul jeu
 ```
 
 Un smoke test parcourt l'app sur un vrai téléphone : premier lancement, ouverture de chaque page, publication d'un
-contenu. Il ne vérifie pas le détail des pages, seulement qu'aucune ne plante, avec le vrai Hive, les vraies polices et le
-vrai rendu. Ses données vivent dans un dossier à part, effacé à chaque lancement : celles de l'app ne sont pas touchées.
+contenu. Il ne vérifie pas le détail des pages, seulement qu'aucune ne plante, avec la vraie base SQLite, les vraies polices
+et le vrai rendu. Ses données vivent dans une base à part, effacée à chaque lancement : celles de l'app ne sont pas
+touchées.
 À lancer avant chaque version, téléphone Android branché :
 
 ```sh

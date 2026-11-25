@@ -1,35 +1,35 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.dart';
-import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.json_zlib.dart';
-import 'package:bedbug/resources/content/content/content.entity.dart';
-import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
-import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
-import 'package:bedbug/resources/content/seen_content/seen_content.entity.dart';
-import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
-import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
-import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
-import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.params.dart';
-import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.usecase.dart';
-import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.params.dart';
-import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.usecase.dart';
-import 'package:bedbug/usecases/exchange/build_exchange_offer/build_exchange_offer.usecase.dart';
-import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.config.dart';
-import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.params.dart';
-import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.usecase.dart';
-import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.params.dart';
-import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.usecase.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_codec/exchange_codec.gateway.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_codec/exchange_codec.gateway.json_zlib.dart';
+import 'package:bedbug/infra/resources/content/content/content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/seen_content/seen_content.entity.dart';
+import 'package:bedbug/infra/resources/content/seen_content/seen_content.repository.drift.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.repository.drift.dart';
+import 'package:bedbug/logic/usecases/content/delete_own_content/delete_own_content.params.dart';
+import 'package:bedbug/logic/usecases/content/delete_own_content/delete_own_content.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/build_exchange_bundle/build_exchange_bundle.params.dart';
+import 'package:bedbug/logic/usecases/exchange/build_exchange_bundle/build_exchange_bundle.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/build_exchange_offer/build_exchange_offer.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.config.dart';
+import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.params.dart';
+import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.params.dart';
+import 'package:bedbug/logic/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 import '../helpers/fake_error_log_repository.dart';
-import '../helpers/hive_test_helper.dart';
 
 /// Codec utilisé pour fabriquer les messages d'un pair simulé et relire ceux de l'appareil.
 const JsonZlibExchangeCodecGateway _codec = JsonZlibExchangeCodecGateway();
@@ -103,17 +103,14 @@ Signature _signature({String pseudo = 'bedbug'}) {
 }
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
   setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+    container = createTestContainer();
   });
 
   tearDown(() async {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   /// Retourne un [SelectFromExchangeOfferUsecase] au hasard reproductible.
@@ -122,7 +119,6 @@ void main() {
   SelectFromExchangeOfferUsecase selectUsecase({int seed = 1}) {
     return SelectFromExchangeOfferUsecase(
       container.read(contentRepositoryProvider),
-      container.read(reactionRepositoryProvider),
       container.read(seenContentRepositoryProvider),
       _codec,
       Random(seed),
@@ -151,13 +147,13 @@ void main() {
 
   group('offre', () {
     test('propose les contenus par priorité de diffusion décroissante, avec le résumé de leurs réactions', () async {
-      await container.read(contentRepositoryProvider).addMany([
+      await insertTestContents(container, [
         _text('low', broadcastScore: 0.2),
         _text('high', broadcastScore: 0.9),
         _text('mid', broadcastScore: 0.5),
       ]);
       final latest = _date.add(const Duration(hours: 2));
-      await container.read(reactionRepositoryProvider).addMany([
+      await insertTestReactions(container, [
         _reaction('r1', contentId: 'mid'),
         _reaction('r2', contentId: 'mid', authorId: 'other', updatedAt: latest),
       ]);
@@ -220,8 +216,8 @@ void main() {
     });
 
     test('redemande les réactions d\'un contenu possédé si le pair en a de plus récentes', () async {
-      await container.read(contentRepositoryProvider).addMany([_text('fresh'), _text('stale')]);
-      await container.read(reactionRepositoryProvider).addMany([
+      await insertTestContents(container, [_text('fresh'), _text('stale')]);
+      await insertTestReactions(container, [
         _reaction('r1', contentId: 'fresh', updatedAt: _date.add(const Duration(days: 1))),
         _reaction('r2', contentId: 'stale'),
       ]);
@@ -258,12 +254,12 @@ void main() {
               avatarFrames: const ['(・ω・)'],
             ),
           );
-      await container.read(contentRepositoryProvider).addMany([
+      await insertTestContents(container, [
         _text('mine'),
         _text('anonymous', signatureId: anonymousSignatureId),
         _text('not-requested'),
       ]);
-      await container.read(reactionRepositoryProvider).addMany([
+      await insertTestReactions(container, [
         _reaction('r1', contentId: 'mine'),
         _reaction('r2', contentId: 'not-requested'),
       ]);
@@ -325,8 +321,7 @@ void main() {
         ],
       );
 
-      final repository = container.read(contentRepositoryProvider);
-      final contents = {for (final content in await repository.getAll()) content.id: content};
+      final contents = {for (final content in await readTestContents(container)) content.id: content};
       expect(contents['a']!.signatureId, contents['b']!.signatureId);
       expect(contents['c']!.signatureId, isNot(contents['a']!.signatureId));
       expect(contents['d']!.signatureId, anonymousSignatureId);
@@ -346,7 +341,7 @@ void main() {
 
     test('importe les réactions sans auteur, sans jamais remplacer celle de l\'utilisateur', () async {
       await container.read(contentRepositoryProvider).addOne(_text('post', signatureId: 'someone'));
-      await container.read(reactionRepositoryProvider).addOne(_reaction('mine', contentId: 'post'));
+      await insertTestReactions(container, [_reaction('mine', contentId: 'post')]);
 
       await importFromPeer(
         const ExchangeRequest(contentIds: [], reactionContentIds: ['post']),
@@ -381,7 +376,7 @@ void main() {
 
     test('un cycle complet entre deux appareils transfère les contenus choisis', () async {
       // Côté A : l'appareil courant, avec trois contenus.
-      await container.read(contentRepositoryProvider).addMany([_text('a1'), _text('a2'), _text('a3')]);
+      await insertTestContents(container, [_text('a1'), _text('a2'), _text('a3')]);
       final offerBytes = (await container.read(buildExchangeOfferUsecaseProvider)(const NoParams())).right!;
 
       // Côté B, simulé : il ne possède rien et demande tout.
@@ -401,7 +396,7 @@ void main() {
       );
 
       expect(result.right?.importedContents, 3);
-      final contents = await container.read(contentRepositoryProvider).getAll();
+      final contents = await readTestContents(container);
       expect(contents.map((Content content) => content.origin).toSet(), {ContentOrigin.public});
     });
   });

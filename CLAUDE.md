@@ -13,10 +13,12 @@ and a separate **application** layer holds UI and framework concerns.
 
 ```
 lib/
-  resources/     persisted data: entities, value objects, repositories and their implementations, by data scope
-  gateways/      external sources (HTTP, gallery, BLE…): interfaces and implementations, by source
-  services/      "sub use cases" reused by several use cases, by business scope
-  usecases/      business operations, by business scope
+  infra/         data access: everything the business logic reads or writes
+    resources/   persisted data: entities, value objects, repositories and their implementations, by data scope
+    gateways/    external sources (HTTP, gallery, BLE…): interfaces and implementations, by source
+  logic/         business logic
+    services/    "sub use cases" reused by several use cases, by business scope
+    usecases/    business operations, by business scope
   application/   UI and framework orchestration
   core/          cross-cutting technical code, no business logic
 ```
@@ -48,20 +50,25 @@ does not extend `ValueObject`: only its owner does, since the part never lives o
 folder holds everything about that data:
 
 ```
-resources/<scope>/<resource>/
+infra/resources/<scope>/<resource>/
   <name>.entity.dart            entity
+  <name>.entity.detailed.dart   read-only entity enriched by a join (see "Entities and value objects")
+  <name>.entity.summary.dart    read-only reduced projection (see "Entities and value objects")
   <name>.value_object.dart      value object
   <name>.enum.dart              enum tied to the resource
   <resource>.extension.dart     extensions on the resource types themselves (computed getters), in one file
   <name>.repository.dart        repository interface
-  <name>.repository.hive.dart   repository implementation, suffixed with its technology
-  <name>.model.hive.dart        Hive DTO (+ generated <name>.model.hive.g.dart)
-  <resource>.config.dart        public constants of the resource (limits, defaults, box names)
-resources/
+  <name>.repository.drift.dart  repository implementation, suffixed with its technology
+  <name>.table.drift            SQL schema of the resource's table(s): CREATE TABLE, indexes, foreign keys
+  <name>.mapper.drift.dart      row ↔ entity / value object conversion
+  <resource>.config.dart        public constants of the resource (limits, defaults)
+infra/resources/
   data.exception.dart           invalid or corrupted data
   datasource.exception.dart     storage failure
-  hive.initializer.dart         Hive setup, box opening
-  hive.type_ids.dart            HiveTypeIds
+  drift.database.dart           AppDatabase (includes every .table.drift), its provider, SQLite setup, migrations
+  drift.converters.dart         column type converters (dates in milliseconds, JSON lists and maps)
+  drift.guard.dart              guardDrift: turns drift / SQLite errors into DatasourceException
+  drift.config.dart             database name, id of single-row tables
 ```
 
 ### Gateways
@@ -91,7 +98,7 @@ the file that uses them.
 Same layout as use cases: one folder per service, inside its business scope.
 
 ```
-services/<business_scope>/<name>/
+logic/services/<business_scope>/<name>/
   <name>.service.dart   provider, service, its constants and private helpers
   <name>.params.dart    params class, absent with NoParams
   <name>.failure.dart   failure enum
@@ -105,7 +112,7 @@ One folder per use case, inside its business scope (`content`, `feed`, `reaction
 `exchange`, `signature`, `settings`…):
 
 ```
-usecases/<business_scope>/<name>/
+logic/usecases/<business_scope>/<name>/
   <name>.usecase.dart   provider, use case, its constants and private helpers
   <name>.params.dart    params class, absent with NoParams
   <name>.failure.dart   failure enum
@@ -163,8 +170,8 @@ core/
 ### Service rules
 
 - A service is a "sub use case": a sequence of operations that several use cases would otherwise duplicate
-  (`DeleteContentsService`: delete contents with their reactions, comments, traces and weight; `MergeReactionService`:
-  integrate a reaction within its limits). It is written once, and each use case calls it.
+  (`DeleteContentsService`: delete contents with their reactions, comments, traces and weight; `MergeReactionsService`:
+  integrate a batch of reactions within their limits). It is written once, and each use case calls it.
 - Extend `Service<P extends Params, F, V>` and implement `call(params)`, returning `Future<Either<F, V>>`: same shape
   and same error rules as a use case (typed failure enum, catch-all logged and recorded in `ErrorLogRepository`).
 - May depend on repositories, gateways and other services, never on a use case. Only use cases call services.
@@ -187,11 +194,23 @@ core/
   or value object** (`Comment.isValidBody(body)`, `Signature.isValidPseudo(pseudo)`): pure, synchronous, never throw,
   no data access. They take the raw value rather than the object, so forms can check a field before the object
   exists. Never write them as extensions on a base type (`String`, `int`…).
+- A read that needs data from several tables gets its own read-only entity, built by the repository implementation
+  with a join, never by a use case stitching independent reads together:
+  - `<Resource>Detailed`: the resource enriched with related data (`ContentDetailed`: the content, its author's
+    signature, its reaction count, whether it was viewed);
+  - `<Resource>Summary`: a reduced projection when only a few columns or aggregates are needed (`ContentSummary`: id,
+    weight, reaction count, latest reaction).
+
+  Both stay in the main resource's folder, as `<name>.entity.detailed.dart` / `<name>.entity.summary.dart`, since
+  they are only views of that resource (`content/content/content.entity.detailed.dart`,
+  `content/content/content_score.entity.summary.dart` for `ContentScoreSummary`). They may join tables of other data
+  scopes, and are never written by a repository. Create one only when a read actually needs it.
 
 ### Enums and extensions
 
 - Tied to a single class → same file as the class.
-- Tied to an entity / value object → its resource folder `resources/<scope>/<resource>/` (or its gateway folder).
+- Tied to an entity / value object → its resource folder `infra/resources/<scope>/<resource>/` (or its gateway
+  folder).
 - Tied to a use case → that use case's folder.
 
 ### Repositories
@@ -202,15 +221,22 @@ core/
   deleted exposes neither `update` nor `delete`.
 - The interface exists only to swap the storage implementation, to ease testing (mocks) and to stay symmetric with use
   cases. It is not meant to impose a shape.
-- No generic pagination system (`Page<T>`, `RepositoryParams`…): each listing method declares the parameters and return
-  type it needs.
+- Joins, filters, sorts, limits and aggregates are done in SQL by the implementation, never by loading everything and
+  filtering in Dart. A use case never loops over a repository call per item (N+1): add a batch method instead.
+- Writes that must succeed or fail together go in one repository method, inside `_database.transaction`. Upserts use
+  `insertOnConflictUpdate` (or `ON CONFLICT DO UPDATE`), never `REPLACE`, which deletes the row first and triggers the
+  `ON DELETE CASCADE` of its children.
+- Every method body goes through `guardDrift`, so only `DataException` / `DatasourceException` leave the repository.
+- No generic repository parameters (`RepositoryParams`…): each listing method declares the parameters it needs. The
+  only shared listing type is `CursorPage<T>` (`core/domain/cursor_page.dart`), for lists read page by page: keyset
+  pagination with an opaque cursor that only the implementation reads, never `OFFSET`.
 
 ### Core principles
 
 - One file = one responsibility.
 - Never mix UI, business logic and data access.
 - File names are `snake_case`, with dot-separated suffixes for their role and technology (`reaction.entity.dart`,
-  `reaction.repository.hive.dart`). In `application`: `<name>.screen.dart`, `<name>.widget.dart`,
+  `reaction.repository.drift.dart`). In `application`: `<name>.screen.dart`, `<name>.widget.dart`,
   `<name>.notifier.dart`.
 
 ## Code style
@@ -287,7 +313,7 @@ core/
 
 - No single-character identifiers, including in lambdas and loops.
 - `bool` variables and parameters always use the `is` prefix (`isSaving`).
-- Implementation classes are prefixed with the concrete technology they depend on (`HiveContentRepository`,
+- Implementation classes are prefixed with the concrete technology they depend on (`DriftContentRepository`,
   `GalImageGalleryGateway`), never a vague word (`RemoteProductRepository`, `FirebaseUserRepository`).
 
 ## Flutter
@@ -313,7 +339,7 @@ core/
 | State management + DI | `flutter_riverpod`                                      |
 | Routing               | `go_router`                                             |
 | Forms                 | `reactive_forms`                                        |
-| Local persistence     | `hive_ce` (+ `hive_ce_generator`), `shared_preferences` |
+| Local persistence     | `drift` (+ `drift_dev`), `shared_preferences`           |
 | Localization          | `flutter_localizations`, `intl`                         |
 | HTTP                  | `dio`                                                   |
 | Icons                 | `flutter_svg`                                           |
@@ -333,6 +359,8 @@ Riverpod handles both state management and dependency injection.
 - Never store `ref.read` in a variable inside `build`: call `ref.read(provider.notifier).doSomething()` (or read
   `ref.read(provider.notifier).someControl`) directly.
 - A notifier using async functions extends `AsyncNotifier`. Never add an `isLoading` field: `AsyncValue` has it.
+  Exception: a paginated list keeps an `isLoadingMore` flag in its state, for a further page loading while the list
+  stays displayed, which `AsyncValue` does not cover.
 - In `ref.listen`, always start with `if (next.isLoading) return;` before reading `next.value` or `next.hasError`.
 
 #### Dependency injection
@@ -426,11 +454,21 @@ Riverpod handles both state management and dependency injection.
 - Text fields use `ReactiveTextField<String>`, dropdowns `ReactiveDropdownField<T>`. To rebuild a part of the UI when a
   control or a group changes, use `ReactiveValueListenableBuilder` (or `ReactiveStatusListenableBuilder`).
 
-### Hive
+### Drift
 
-- Hive models live in `resources/<scope>/<resource>/<name>.model.hive.dart`, annotated with `@HiveType` / `@HiveField`.
-- Every `typeId` is declared in `HiveTypeIds`. Never reuse a removed `typeId`.
-- Regenerate with `build_runner` after each model change (see README).
+- Tables are declared in SQL, in `infra/resources/<scope>/<resource>/<name>.table.drift`, never as Dart `Table`
+  classes (drift requires `=>` getters for them). Each file is listed in the `include` of `AppDatabase`.
+- A table name must not generate a class that collides with an entity or value object (`user_settings_store`, not
+  `user_settings`, which would generate `UserSettings`). Name the row class with `AS <Name>Row`.
+- Dates are stored as milliseconds (`` MAPPED BY `const MillisDateTimeConverter()` ``), lists and maps that no query
+  filters on as JSON text. A large blob goes last in its table.
+- Children of a row reference it with `ON DELETE CASCADE`. Data that must outlive its parent (`seen_contents`) has no
+  foreign key.
+- Single-row tables (settings) use the row id `singleRowId`.
+- Every schema change increments `AppDatabase.schemaVersion` with a migration step.
+- Regenerate with `build_runner` after each `.drift` change (see README).
+- Tests run on an in-memory database: `createTestContainer()` / `testDatabaseOverride()` in
+  `test/helpers/drift_test_helper.dart`.
 
 ### Localization
 

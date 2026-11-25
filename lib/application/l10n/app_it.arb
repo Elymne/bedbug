@@ -136,6 +136,7 @@
   "timeAgoMonths": "{count, plural, =1{Un mese fa} other{{count} mesi fa}}",
   "timeAgoYears": "{count, plural, =1{Un anno fa} other{{count} anni fa}}",
   "close": "Chiudi",
+  "retry": "Riprova",
   "contentReactionsTitle": "{count, plural, =0{Reazioni} other{Reazioni ({count})}}",
   "contentReactionsEmpty": "Ancora nessuna reazione.",
   "contentReactionsLoadError": "Impossibile caricare le reazioni.",

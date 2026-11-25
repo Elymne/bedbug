@@ -1,4 +1,4 @@
-import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.entity.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Vérifie que la bulle d'une réaction tient sur une ligne et ne dépasse pas sa longueur maximale.

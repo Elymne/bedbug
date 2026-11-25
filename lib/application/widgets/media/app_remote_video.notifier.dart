@@ -1,8 +1,8 @@
 import 'package:bedbug/application/notifiers/revealed_urls.notifier.dart';
 import 'package:bedbug/application/notifiers/trust_settings.notifier.dart';
 import 'package:bedbug/core/config/http_config.dart';
-import 'package:bedbug/usecases/content/fetch_media/fetch_media.params.dart';
-import 'package:bedbug/usecases/content/fetch_media/fetch_media.usecase.dart';
+import 'package:bedbug/logic/usecases/content/fetch_media/fetch_media.params.dart';
+import 'package:bedbug/logic/usecases/content/fetch_media/fetch_media.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 

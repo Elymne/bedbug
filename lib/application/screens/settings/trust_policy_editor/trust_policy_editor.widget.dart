@@ -6,7 +6,7 @@ import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
 import 'package:bedbug/application/widgets/separators/app_list_separator.widget.dart';
 import 'package:bedbug/application/widgets/snackbars/app_snackbar.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
-import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
+import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reactive_forms/reactive_forms.dart';

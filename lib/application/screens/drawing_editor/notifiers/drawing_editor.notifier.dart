@@ -1,5 +1,5 @@
 import 'package:bedbug/application/notifiers/drawing_draft.notifier.dart';
-import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.value_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Nombre maximal d'étapes gardées pour annuler.

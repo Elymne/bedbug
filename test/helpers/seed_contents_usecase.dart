@@ -5,26 +5,24 @@ import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/extensions/string_uuid_x.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/resources/content/content/content.entity.dart';
-import 'package:bedbug/resources/content/content/content.repository.dart';
-import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
-import 'package:bedbug/resources/content/content/link_content.entity.dart';
-import 'package:bedbug/resources/content/content/media_content.entity.dart';
-import 'package:bedbug/resources/content/content/tag.enum.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/content/drawing/drawing.config.dart';
-import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
-import 'package:bedbug/resources/content/storage/storage.repository.dart';
-import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
-import 'package:bedbug/resources/data.exception.dart';
-import 'package:bedbug/resources/datasource.exception.dart';
+import 'package:bedbug/infra/resources/content/content/content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/drawing_content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/link_content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/tag.enum.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.config.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/infra/resources/data.exception.dart';
+import 'package:bedbug/infra/resources/datasource.exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SeedContentsUsecase].
 final seedContentsUsecaseProvider = Provider<SeedContentsUsecase>((ref) {
-  return SeedContentsUsecase(ref.read(contentRepositoryProvider), ref.read(storageRepositoryProvider));
+  return SeedContentsUsecase(ref.read(contentRepositoryProvider));
 });
 
 /// Liens factices, avec leur image d'aperçu, couvrant chaque niveau de confiance des listes par défaut.
@@ -111,12 +109,12 @@ const List<String> _longBodies = [
 /// Génère une grande quantité de contenus factices pour les tests de charge et d'affichage.
 class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailure, void> {
   /// Crée un [SeedContentsUsecase].
-  SeedContentsUsecase(this._contentRepository, this._storageRepository);
+  SeedContentsUsecase(this._contentRepository);
 
+  /// Repository des contenus factices.
   final ContentRepository _contentRepository;
-  final StorageRepository _storageRepository;
 
-  /// Nombre d'items écrits en une seule opération Hive.
+  /// Nombre d'items écrits en une seule opération.
   static const int _batchSize = 500;
 
   @override
@@ -125,7 +123,6 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
       final now = DateTime.now();
       final random = Random(params.randomSeed);
       final batch = <Content>[];
-      var totalSizeInBytes = 0;
 
       for (var index = 0; index < params.count; index++) {
         final createdAt = now.subtract(Duration(minutes: index));
@@ -135,21 +132,20 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
 
         final signatureId = _pickSignatureId(params, random, index);
         final content = _buildContent(index, createdAt, origin, bounce, flair, signatureId, _pickTags(random));
-        totalSizeInBytes += content.sizeInBytes;
         batch.add(content);
 
         if (batch.length == _batchSize) {
-          await _contentRepository.addMany(List.from(batch));
+          for (final batchContent in batch) {
+            await _contentRepository.addOne(batchContent);
+          }
           batch.clear();
         }
       }
 
       if (batch.isNotEmpty) {
-        await _contentRepository.addMany(List.from(batch));
-      }
-
-      if (totalSizeInBytes > 0) {
-        await _storageRepository.adjustCurrentSizeInBytes(totalSizeInBytes);
+        for (final batchContent in batch) {
+          await _contentRepository.addOne(batchContent);
+        }
       }
 
       return const Right(null);

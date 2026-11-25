@@ -1,7 +1,7 @@
 import 'package:bedbug/application/notifiers/trust_settings.notifier.dart';
 import 'package:bedbug/application/widgets/media/app_remote_media.widget.dart';
-import 'package:bedbug/resources/content/content/media_content.entity.dart';
-import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
+import 'package:bedbug/infra/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.value_object.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

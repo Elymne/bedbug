@@ -1,13 +1,13 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/notifiers/revealed_urls.notifier.dart';
 import 'package:bedbug/application/notifiers/trust_settings.notifier.dart';
-import 'package:bedbug/usecases/content/fetch_media/fetch_media.failure.dart';
-import 'package:bedbug/usecases/content/fetch_media/fetch_media.params.dart';
-import 'package:bedbug/usecases/content/fetch_media/fetch_media.usecase.dart';
-import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.config.dart';
-import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.failure.dart';
-import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.params.dart';
-import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.usecase.dart';
+import 'package:bedbug/logic/usecases/content/fetch_media/fetch_media.failure.dart';
+import 'package:bedbug/logic/usecases/content/fetch_media/fetch_media.params.dart';
+import 'package:bedbug/logic/usecases/content/fetch_media/fetch_media.usecase.dart';
+import 'package:bedbug/logic/usecases/content/save_media_to_gallery/save_media_to_gallery.config.dart';
+import 'package:bedbug/logic/usecases/content/save_media_to_gallery/save_media_to_gallery.failure.dart';
+import 'package:bedbug/logic/usecases/content/save_media_to_gallery/save_media_to_gallery.params.dart';
+import 'package:bedbug/logic/usecases/content/save_media_to_gallery/save_media_to_gallery.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [MediaViewerDownloadButtonNotifier].

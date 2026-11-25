@@ -1,4 +1,4 @@
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.entity.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Vérifie que la description d'une signature tient sur une ligne et ne dépasse pas sa longueur maximale.

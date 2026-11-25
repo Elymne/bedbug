@@ -15,9 +15,9 @@
 | `test/integration/storage_limit_usecases_test.dart` | Nettoyage du stockage, ordre de suppression |
 | `test/widget/storage_section_test.dart` | Choix de la limite dans les paramètres |
 
-`exchange_network_test.dart` donne à chaque appareil ses vrais use cases et sa propre base Hive, et les fait se rencontrer
-par paires, en vagues parallèles. Il vérifie que tout le monde finit par tout posséder, sans doublon, avec un compteur de
-stockage juste, y compris avec 50 % de connexions coupées.
+`exchange_network_test.dart` donne à chaque appareil ses vrais use cases et sa propre base SQLite en mémoire, et les fait
+se rencontrer par paires, en vagues parallèles. Il vérifie que tout le monde finit par tout posséder, sans doublon, y
+compris avec 50 % de connexions coupées.
 
 **Ce que les tests ne couvrent pas** : tout le Kotlin. Le scan, l'annonce, L2CAP, le service et les délais avant de
 recontacter un pair ne se vérifient que sur de vrais téléphones.

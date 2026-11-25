@@ -1,28 +1,24 @@
-import 'dart:io';
-
-import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/reaction/reaction.config.dart';
-import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
-import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.config.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.repository.drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/content_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 import '../helpers/seed_contents_usecase.dart';
 import '../helpers/seed_reactions_usecase.dart';
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
   setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+    container = createTestContainer();
   });
 
   tearDown(() async {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   test('pose le nombre demandé de réactions, d\'auteurs tous différents, sur les premiers contenus du fil', () async {
@@ -32,7 +28,14 @@ void main() {
       const SeedReactionsParams(contentCount: 3, reactionsPerContent: 10, randomSeed: 1),
     );
 
-    final feed = await container.read(contentRepositoryProvider).getAllOrderedByDisplayScoreDesc();
+    final feed = [
+      for (final detailed
+          in (await container
+                  .read(contentRepositoryProvider)
+                  .getHomeFeedPage(feedStartedAt: DateTime.now(), after: null, limit: 10))
+              .items)
+        detailed.content,
+    ];
     final reactionRepository = container.read(reactionRepositoryProvider);
     for (final (index, content) in feed.indexed) {
       final reactions = await reactionRepository.getAllByContentId(content.id);
@@ -49,7 +52,7 @@ void main() {
       const SeedReactionsParams(contentCount: 1, reactionsPerContent: maxReactionsPerContent + 50, randomSeed: 1),
     );
 
-    final content = (await container.read(contentRepositoryProvider).getAll()).single;
+    final content = (await readTestContents(container)).single;
     final reactions = await container.read(reactionRepositoryProvider).getAllByContentId(content.id);
     expect(reactions.length, maxReactionsPerContent);
   });

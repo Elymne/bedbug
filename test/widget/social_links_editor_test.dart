@@ -8,7 +8,7 @@ import 'package:bedbug/application/widgets/signature/linkedin_click_challenge_di
 import 'package:bedbug/application/widgets/signature/linkedin_click_challenge_dialog.widget.dart';
 import 'package:bedbug/application/widgets/signature/social_handle_dialog.widget.dart';
 import 'package:bedbug/application/widgets/signature/social_links_editor.widget.dart';
-import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
+import 'package:bedbug/infra/resources/signature/signature/social_network.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

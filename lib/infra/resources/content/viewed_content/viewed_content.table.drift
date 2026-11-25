@@ -1,0 +1,9 @@
+-- Contenus affichés dans le feed : la trace disparaît avec son contenu.
+import '../../drift.converters.dart';
+import '../content/content.table.drift';
+
+CREATE TABLE viewed_contents (
+  id TEXT NOT NULL PRIMARY KEY REFERENCES contents (id) ON DELETE CASCADE,
+  created_at INTEGER NOT NULL MAPPED BY `const MillisDateTimeConverter()`,
+  updated_at INTEGER NOT NULL MAPPED BY `const MillisDateTimeConverter()`
+) AS ViewedContentRow;

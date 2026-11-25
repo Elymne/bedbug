@@ -1,29 +1,24 @@
-import 'dart:io';
-
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
-import 'package:bedbug/usecases/signature/get_local_signature/get_local_signature.usecase.dart';
-import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.failure.dart';
-import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.params.dart';
-import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.usecase.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/infra/resources/signature/signature/social_network.enum.dart';
+import 'package:bedbug/logic/usecases/signature/get_local_signature/get_local_signature.usecase.dart';
+import 'package:bedbug/logic/usecases/signature/save_local_signature/save_local_signature.failure.dart';
+import 'package:bedbug/logic/usecases/signature/save_local_signature/save_local_signature.params.dart';
+import 'package:bedbug/logic/usecases/signature/save_local_signature/save_local_signature.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
-  setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+  setUp(() {
+    container = createTestContainer();
   });
 
-  tearDown(() async {
+  tearDown(() {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   test('get retourne null tant que le profil n\'a jamais été enregistré', () async {
@@ -33,7 +28,7 @@ void main() {
     expect(result.right, isNull);
   });
 
-  test('save normalise le profil puis get le relit depuis le vrai repository Hive', () async {
+  test('save normalise le profil puis get le relit depuis le vrai repository drift', () async {
     final saveResult = await container.read(saveLocalSignatureUsecaseProvider)(
       const SaveLocalSignatureParams(
         pseudo: '  bed-bug  ',

@@ -3,42 +3,44 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.config.dart';
-import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.dart';
-import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.json_zlib.dart';
-import 'package:bedbug/resources/content/content/content.config.dart';
-import 'package:bedbug/resources/content/content/content.entity.dart';
-import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/media_content.entity.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/content/reaction/reaction.config.dart';
-import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
-import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
-import 'package:bedbug/resources/content/seen_content/seen_content.entity.dart';
-import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
-import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
-import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
-import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.failure.dart';
-import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.params.dart';
-import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.usecase.dart';
-import 'package:bedbug/usecases/exchange/build_exchange_offer/build_exchange_offer.config.dart';
-import 'package:bedbug/usecases/exchange/build_exchange_offer/build_exchange_offer.usecase.dart';
-import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.config.dart';
-import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.failure.dart';
-import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.params.dart';
-import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.result.dart';
-import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.usecase.dart';
-import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.config.dart';
-import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.failure.dart';
-import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.params.dart';
-import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.usecase.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_codec/exchange_codec.config.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_codec/exchange_codec.gateway.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_codec/exchange_codec.gateway.json_zlib.dart';
+import 'package:bedbug/infra/resources/content/content/content.config.dart';
+import 'package:bedbug/infra/resources/content/content/content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.config.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/seen_content/seen_content.entity.dart';
+import 'package:bedbug/infra/resources/content/seen_content/seen_content.repository.drift.dart';
+import 'package:bedbug/infra/resources/drift.database.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.repository.drift.dart';
+import 'package:bedbug/logic/usecases/exchange/build_exchange_bundle/build_exchange_bundle.failure.dart';
+import 'package:bedbug/logic/usecases/exchange/build_exchange_bundle/build_exchange_bundle.params.dart';
+import 'package:bedbug/logic/usecases/exchange/build_exchange_bundle/build_exchange_bundle.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/build_exchange_offer/build_exchange_offer.config.dart';
+import 'package:bedbug/logic/usecases/exchange/build_exchange_offer/build_exchange_offer.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.config.dart';
+import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.failure.dart';
+import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.params.dart';
+import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.result.dart';
+import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.config.dart';
+import 'package:bedbug/logic/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.failure.dart';
+import 'package:bedbug/logic/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.params.dart';
+import 'package:bedbug/logic/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 import '../helpers/fake_error_log_repository.dart';
-import '../helpers/hive_test_helper.dart';
 
 /// Codec utilisé pour fabriquer les messages d'un pair simulé et relire ceux de l'appareil.
 const JsonZlibExchangeCodecGateway _codec = JsonZlibExchangeCodecGateway();
@@ -178,17 +180,14 @@ ExchangeOffer _offerOf(int count, {int sizeInBytes = 10}) {
 }
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
   setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+    container = createTestContainer();
   });
 
   tearDown(() async {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   /// Retourne l'offre construite par l'appareil.
@@ -209,7 +208,6 @@ void main() {
   }) async {
     final usecase = SelectFromExchangeOfferUsecase(
       container.read(contentRepositoryProvider),
-      container.read(reactionRepositoryProvider),
       container.read(seenContentRepositoryProvider),
       _codec,
       Random(1),
@@ -280,7 +278,7 @@ void main() {
     });
 
     test('une offre variée propose peu à peu les contenus hors des plus prioritaires', () async {
-      await container.read(contentRepositoryProvider).addMany([
+      await insertTestContents(container, [
         for (var index = 0; index < 120; index++) _text('c$index', broadcastScore: 1),
       ]);
 
@@ -295,7 +293,7 @@ void main() {
     });
 
     test('commence par les contenus les plus prioritaires, dans la limite de maxOfferedContents', () async {
-      await container.read(contentRepositoryProvider).addMany([
+      await insertTestContents(container, [
         for (var index = 0; index < maxOfferedContents + 10; index++) _text('c$index', broadcastScore: index / 100),
       ]);
 
@@ -396,7 +394,7 @@ void main() {
 
     test('redemande les réactions quand le pair en a plus, même aussi récentes', () async {
       await container.read(contentRepositoryProvider).addOne(_text('post'));
-      await container.read(reactionRepositoryProvider).addOne(_reaction('r1', contentId: 'post', authorId: 'a'));
+      await insertTestReactions(container, [_reaction('r1', contentId: 'post', authorId: 'a')]);
       final offer = ExchangeOffer(
         contents: [OfferedContent(id: 'post', sizeInBytes: 10, reactionCount: 2, latestReactionAt: _date)],
       );
@@ -413,7 +411,7 @@ void main() {
 
     test('borne les réactions redemandées à maxReactionRefreshContents', () async {
       final ids = [for (var index = 0; index < maxReactionRefreshContents + 5; index++) 'c$index'];
-      await container.read(contentRepositoryProvider).addMany([for (final id in ids) _text(id)]);
+      await insertTestContents(container, [for (final id in ids) _text(id)]);
       final offer = ExchangeOffer(
         contents: [
           for (final id in ids) OfferedContent(id: id, sizeInBytes: 10, reactionCount: 1, latestReactionAt: _date),
@@ -444,7 +442,7 @@ void main() {
 
     test('tronque une demande plus longue que ce qu\'un pair honnête envoie', () async {
       final ids = [for (var index = 0; index < defaultMaxRequestedContents + 10; index++) 'c$index'];
-      await container.read(contentRepositoryProvider).addMany([for (final id in ids) _text(id)]);
+      await insertTestContents(container, [for (final id in ids) _text(id)]);
 
       final bundle = await buildBundle(ExchangeRequest(contentIds: ids, reactionContentIds: const []));
 
@@ -453,10 +451,8 @@ void main() {
 
     test('tronque les réactions redemandées', () async {
       final ids = [for (var index = 0; index < maxReactionRefreshContents + 5; index++) 'c$index'];
-      await container.read(contentRepositoryProvider).addMany([for (final id in ids) _text(id)]);
-      await container.read(reactionRepositoryProvider).addMany([
-        for (final id in ids) _reaction('r-$id', contentId: id, authorId: 'a'),
-      ]);
+      await insertTestContents(container, [for (final id in ids) _text(id)]);
+      await insertTestReactions(container, [for (final id in ids) _reaction('r-$id', contentId: id, authorId: 'a')]);
 
       final bundle = await buildBundle(ExchangeRequest(contentIds: const [], reactionContentIds: ids));
 
@@ -473,7 +469,7 @@ void main() {
 
     test('ne répète pas les réactions d\'un contenu demandé des deux façons', () async {
       await container.read(contentRepositoryProvider).addOne(_text('post'));
-      await container.read(reactionRepositoryProvider).addOne(_reaction('r1', contentId: 'post', authorId: 'a'));
+      await insertTestReactions(container, [_reaction('r1', contentId: 'post', authorId: 'a')]);
 
       final bundle = await buildBundle(const ExchangeRequest(contentIds: ['post'], reactionContentIds: ['post']));
 
@@ -528,9 +524,7 @@ void main() {
 
     test('les réactions partent sans auteur', () async {
       await container.read(contentRepositoryProvider).addOne(_text('post'));
-      await container
-          .read(reactionRepositoryProvider)
-          .addOne(_reaction('r1', contentId: 'post', authorId: localSignatureId));
+      await insertTestReactions(container, [_reaction('r1', contentId: 'post', authorId: localSignatureId)]);
 
       final bundle = await buildBundle(const ExchangeRequest(contentIds: ['post'], reactionContentIds: []));
 
@@ -801,7 +795,8 @@ void main() {
         ],
       );
 
-      expect(container.read(hiveSignatureBoxProvider).isEmpty, isTrue);
+      final database = container.read(appDatabaseProvider);
+      expect(await database.select(database.signatures).get(), isEmpty);
     });
 
     test('une signature reçue ne prend jamais la place de celle de l\'utilisateur', () async {

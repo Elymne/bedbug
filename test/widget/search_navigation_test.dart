@@ -3,11 +3,12 @@ import 'package:bedbug/application/router/app_router.dart';
 import 'package:bedbug/application/screens/home/home.screen.dart';
 import 'package:bedbug/application/screens/search/search.screen.dart';
 import 'package:bedbug/application/widgets/fields/content_search_input.widget.dart';
+import 'package:bedbug/core/domain/cursor_page.dart';
 import 'package:bedbug/core/domain/either.dart';
-import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';
-import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.result.dart';
-import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
+import 'package:bedbug/infra/resources/content/content/content.entity.detailed.dart';
+import 'package:bedbug/logic/usecases/feed/get_home_feed/get_home_feed.failure.dart';
+import 'package:bedbug/logic/usecases/feed/get_home_feed/get_home_feed.params.dart';
+import 'package:bedbug/logic/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,8 +17,8 @@ import 'package:go_router/go_router.dart';
 /// Fake [GetHomeFeedUsecase] retournant toujours une liste vide.
 class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
   @override
-  Future<Either<GetHomeFeedFailure, HomeFeed>> call(NoParams params) async {
-    return const Right(HomeFeed(contents: [], unviewedContentIds: {}));
+  Future<Either<GetHomeFeedFailure, CursorPage<ContentDetailed>>> call(GetHomeFeedParams params) async {
+    return const Right(CursorPage(items: [], nextCursor: null));
   }
 }
 

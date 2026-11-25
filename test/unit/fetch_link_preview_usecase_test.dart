@@ -1,10 +1,10 @@
-import 'package:bedbug/gateways/og_metadata/og_metadata/og_metadata.exception.dart';
-import 'package:bedbug/gateways/og_metadata/og_metadata/og_metadata.gateway.dart';
-import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
-import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
-import 'package:bedbug/usecases/content/fetch_link_preview/fetch_link_preview.failure.dart';
-import 'package:bedbug/usecases/content/fetch_link_preview/fetch_link_preview.params.dart';
-import 'package:bedbug/usecases/content/fetch_link_preview/fetch_link_preview.usecase.dart';
+import 'package:bedbug/infra/gateways/og_metadata/og_metadata/og_metadata.exception.dart';
+import 'package:bedbug/infra/gateways/og_metadata/og_metadata/og_metadata.gateway.dart';
+import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.value_object.dart';
+import 'package:bedbug/infra/resources/url/safe_url/safe_url.value_object.dart';
+import 'package:bedbug/logic/usecases/content/fetch_link_preview/fetch_link_preview.failure.dart';
+import 'package:bedbug/logic/usecases/content/fetch_link_preview/fetch_link_preview.params.dart';
+import 'package:bedbug/logic/usecases/content/fetch_link_preview/fetch_link_preview.usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/fake_error_log_repository.dart';

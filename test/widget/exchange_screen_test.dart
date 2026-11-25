@@ -6,22 +6,24 @@ import 'package:bedbug/application/screens/exchange/exchange_scene/exchange_scen
 import 'package:bedbug/application/screens/home/home.screen.dart';
 import 'package:bedbug/application/widgets/ghost/app_ghost_effect.widget.dart';
 import 'package:bedbug/application/widgets/signature/app_bedbug_frames.widget.dart';
+import 'package:bedbug/core/domain/cursor_page.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
-import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.ble.dart';
-import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.dart';
-import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
-import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';
-import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
-import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';
-import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.result.dart';
-import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
-import 'package:bedbug/usecases/settings/get_settings/get_settings.failure.dart';
-import 'package:bedbug/usecases/settings/get_settings/get_settings.usecase.dart';
-import 'package:bedbug/usecases/settings/save_settings/save_settings.failure.dart';
-import 'package:bedbug/usecases/settings/save_settings/save_settings.params.dart';
-import 'package:bedbug/usecases/settings/save_settings/save_settings.usecase.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
+import 'package:bedbug/infra/gateways/exchange/peer_link/peer_link.gateway.ble.dart';
+import 'package:bedbug/infra/gateways/exchange/peer_link/peer_link.gateway.dart';
+import 'package:bedbug/infra/resources/content/content/content.entity.detailed.dart';
+import 'package:bedbug/infra/resources/error_log/error_log/error_log.repository.drift.dart';
+import 'package:bedbug/infra/resources/settings/user_settings/user_settings.config.dart';
+import 'package:bedbug/infra/resources/settings/user_settings/user_settings.value_object.dart';
+import 'package:bedbug/logic/usecases/feed/get_home_feed/get_home_feed.failure.dart';
+import 'package:bedbug/logic/usecases/feed/get_home_feed/get_home_feed.params.dart';
+import 'package:bedbug/logic/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
+import 'package:bedbug/logic/usecases/settings/get_settings/get_settings.failure.dart';
+import 'package:bedbug/logic/usecases/settings/get_settings/get_settings.usecase.dart';
+import 'package:bedbug/logic/usecases/settings/save_settings/save_settings.failure.dart';
+import 'package:bedbug/logic/usecases/settings/save_settings/save_settings.params.dart';
+import 'package:bedbug/logic/usecases/settings/save_settings/save_settings.usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -104,8 +106,8 @@ class _FakeSaveSettingsUsecase implements SaveSettingsUsecase {
 /// Fake [GetHomeFeedUsecase] retournant un fil vide.
 class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
   @override
-  Future<Either<GetHomeFeedFailure, HomeFeed>> call(NoParams params) async {
-    return const Right(HomeFeed(contents: [], unviewedContentIds: {}));
+  Future<Either<GetHomeFeedFailure, CursorPage<ContentDetailed>>> call(GetHomeFeedParams params) async {
+    return const Right(CursorPage(items: [], nextCursor: null));
   }
 }
 

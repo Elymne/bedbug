@@ -1,5 +1,5 @@
-import 'package:bedbug/resources/url/safe_url/safe_url.config.dart';
-import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
+import 'package:bedbug/infra/resources/url/safe_url/safe_url.config.dart';
+import 'package:bedbug/infra/resources/url/safe_url/safe_url.value_object.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -28,6 +28,9 @@ class SignatureContents extends ConsumerWidget {
         return ContentListView(
           contents: state.contents,
           emptyChild: Center(child: Text(state.failureMessage ?? l10n.signatureContentsEmpty)),
+          hasMore: state.hasMore,
+          loadMoreFailureMessage: state.loadMoreFailureMessage,
+          onLoadMore: ref.read(searchResultsNotifierProvider(SignatureSearchCriteria(signatureId)).notifier).loadMore,
         );
       },
     );

@@ -1,4 +1,4 @@
-import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
+import 'package:bedbug/infra/resources/signature/signature/social_network.enum.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Vérifie que l'identifiant saisi est valide sur un réseau social donné.

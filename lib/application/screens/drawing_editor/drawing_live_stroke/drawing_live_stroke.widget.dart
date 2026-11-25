@@ -1,7 +1,7 @@
 import 'package:bedbug/application/drawing/drawing_rasterizer.dart';
 import 'package:bedbug/application/screens/drawing_editor/drawing_live_stroke/drawing_live_stroke.notifier.dart';
 import 'package:bedbug/application/screens/drawing_editor/notifiers/drawing_editor.notifier.dart';
-import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.value_object.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

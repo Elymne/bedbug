@@ -27,9 +27,10 @@ dependencies:
   path_provider: ^2.1.5
   shared_preferences: ^2.5.5
   shared_preferences_android: ^2.4.26
-  hive_ce: ^2.19.3
-  hive_ce_flutter: ^2.3.4
-
+  # Base SQLite (drift) : schéma dans les fichiers `.table.drift`, isolate d'arrière-plan.
+  drift: ^2.35.4
+  drift_flutter: ^0.3.1
+  sqlite3: ^3.9.2
   # Gestion des langues et du texte.
   flutter_localizations:
     sdk: flutter
@@ -56,7 +57,7 @@ dev_dependencies:
 
   flutter_lints: ^6.0.0
   build_runner: ^2.4.15
-  hive_ce_generator: ^1.8.1
+  drift_dev: ^2.35.3
 
 flutter:
   generate: true

@@ -1,29 +1,14 @@
 import 'package:bedbug/application/widgets/stats/content_stats.widget.dart';
-import 'package:bedbug/core/domain/either.dart';
-import 'package:bedbug/usecases/reaction/count_content_reactions/count_content_reactions.failure.dart';
-import 'package:bedbug/usecases/reaction/count_content_reactions/count_content_reactions.params.dart';
-import 'package:bedbug/usecases/reaction/count_content_reactions/count_content_reactions.usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/pump_app.dart';
 
-class _FakeCountContentReactionsUsecase implements CountContentReactionsUsecase {
-  @override
-  Future<Either<CountContentReactionsFailure, int>> call(CountContentReactionsParams params) async {
-    return const Right(3);
-  }
-}
-
 void main() {
   testWidgets('affiche le nombre de rebonds précédé de + et le nombre de réactions', (tester) async {
     final semantics = tester.ensureSemantics();
 
-    await pumpApp(
-      tester,
-      const Scaffold(body: ContentStats(contentId: 'content', bounce: 12)),
-      overrides: [countContentReactionsUsecaseProvider.overrideWithValue(_FakeCountContentReactionsUsecase())],
-    );
+    await pumpApp(tester, const Scaffold(body: ContentStats(bounce: 12, reactionCount: 3)));
     await tester.pump();
 
     // Deux fois chacun : le nombre lui-même, et sa silhouette dans la couche de l'effet ghost.
@@ -32,5 +17,13 @@ void main() {
     expect(find.bySemanticsLabel('12 rebonds'), findsOneWidget);
     expect(find.bySemanticsLabel('3 réactions'), findsOneWidget);
     semantics.dispose();
+  });
+
+  testWidgets('n\'affiche pas de nombre de réactions tant qu\'il n\'est pas connu', (tester) async {
+    await pumpApp(tester, const Scaffold(body: ContentStats(bounce: 12, reactionCount: null)));
+    await tester.pump();
+
+    expect(find.text('+12'), findsNWidgets(2));
+    expect(find.text('0'), findsNothing);
   });
 }

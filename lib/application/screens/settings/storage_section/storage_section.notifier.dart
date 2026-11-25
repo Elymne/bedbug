@@ -2,14 +2,14 @@ import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/application/screens/home/home_feed/home_feed.notifier.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/notifier/notifier_state.dart';
-import 'package:bedbug/resources/content/storage/storage.config.dart';
-import 'package:bedbug/resources/content/storage/storage.value_object.dart';
-import 'package:bedbug/usecases/storage/enforce_storage_limit/enforce_storage_limit.usecase.dart';
-import 'package:bedbug/usecases/storage/get_storage/get_storage.failure.dart';
-import 'package:bedbug/usecases/storage/get_storage/get_storage.usecase.dart';
-import 'package:bedbug/usecases/storage/recalculate_survival_scores/recalculate_survival_scores.usecase.dart';
-import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.params.dart';
-import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.usecase.dart';
+import 'package:bedbug/infra/resources/content/storage/storage.config.dart';
+import 'package:bedbug/infra/resources/content/storage/storage.value_object.dart';
+import 'package:bedbug/logic/usecases/storage/enforce_storage_limit/enforce_storage_limit.usecase.dart';
+import 'package:bedbug/logic/usecases/storage/get_storage/get_storage.failure.dart';
+import 'package:bedbug/logic/usecases/storage/get_storage/get_storage.usecase.dart';
+import 'package:bedbug/logic/usecases/storage/recalculate_survival_scores/recalculate_survival_scores.usecase.dart';
+import 'package:bedbug/logic/usecases/storage/save_storage_limit/save_storage_limit.params.dart';
+import 'package:bedbug/logic/usecases/storage/save_storage_limit/save_storage_limit.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [StorageSectionNotifier].

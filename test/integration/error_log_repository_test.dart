@@ -1,31 +1,34 @@
-import 'dart:io';
-
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/error_log/error_log/error_log.config.dart';
-import 'package:bedbug/resources/error_log/error_log/error_log.model.hive.dart';
-import 'package:bedbug/resources/error_log/error_log/error_log.repository.hive.dart';
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
-import 'package:bedbug/resources/signature/signature/signature.repository.dart';
-import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
-import 'package:bedbug/usecases/signature/get_local_signature/get_local_signature.usecase.dart';
+import 'package:bedbug/infra/resources/drift.database.dart';
+import 'package:bedbug/infra/resources/error_log/error_log/error_log.config.dart';
+import 'package:bedbug/infra/resources/error_log/error_log/error_log.entity.dart';
+import 'package:bedbug/infra/resources/error_log/error_log/error_log.mapper.drift.dart';
+import 'package:bedbug/infra/resources/error_log/error_log/error_log.repository.drift.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.repository.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.repository.drift.dart';
+import 'package:bedbug/logic/usecases/signature/get_local_signature/get_local_signature.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hive_ce/hive.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
+
+/// Lit toutes les traces du journal des erreurs, directement dans la base de [container].
+Future<List<ErrorLog>> _readErrorLogs(ProviderContainer container) async {
+  final database = container.read(appDatabaseProvider);
+  final rows = await database.select(database.errorLogs).get();
+  return rows.map(ErrorLogDriftMapper.toEntity).toList();
+}
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
-  setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+  setUp(() {
+    container = createTestContainer();
   });
 
-  tearDown(() async {
+  tearDown(() {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   test('enregistre la source, le type et le message de l\'erreur', () async {
@@ -33,7 +36,7 @@ void main() {
 
     await repository.record(source: 'SomeUsecase', error: StateError('boom'), stackTrace: StackTrace.current);
 
-    final logs = Hive.box<ErrorLogHiveModel>(errorLogBoxName).values.map((model) => model.toEntity()).toList();
+    final logs = await _readErrorLogs(container);
     expect(logs, hasLength(1));
     expect(logs.single.source, 'SomeUsecase');
     expect(logs.single.errorType, 'StateError');
@@ -48,14 +51,15 @@ void main() {
       await repository.record(source: 'Usecase$index', error: Exception('$index'), stackTrace: StackTrace.empty);
     }
 
-    final sources = Hive.box<ErrorLogHiveModel>(errorLogBoxName).values.map((model) => model.source).toSet();
+    final sources = (await _readErrorLogs(container)).map((log) => log.source).toSet();
     expect(sources, hasLength(maxErrorLogs));
     expect(sources, contains('Usecase${maxErrorLogs + 4}'));
+    expect(sources, isNot(contains('Usecase0')));
   });
 
-  test('ne lève pas quand la box est fermée', () async {
+  test('ne lève pas quand la base est fermée', () async {
     final repository = container.read(errorLogRepositoryProvider);
-    await Hive.box<ErrorLogHiveModel>(errorLogBoxName).close();
+    await container.read(appDatabaseProvider).close();
 
     await expectLater(
       repository.record(source: 'SomeUsecase', error: Exception('boom'), stackTrace: StackTrace.empty),
@@ -64,7 +68,7 @@ void main() {
   });
 
   test('un use case enregistre son erreur imprévue dans le journal', () async {
-    final failingContainer = ProviderContainer(
+    final failingContainer = createTestContainer(
       overrides: [signatureRepositoryProvider.overrideWithValue(_FailingSignatureRepository())],
     );
     addTearDown(failingContainer.dispose);
@@ -72,7 +76,7 @@ void main() {
     final result = await failingContainer.read(getLocalSignatureUsecaseProvider)(const NoParams());
 
     expect(result.isFailure, isTrue);
-    final sources = Hive.box<ErrorLogHiveModel>(errorLogBoxName).values.map((model) => model.source);
+    final sources = (await _readErrorLogs(failingContainer)).map((log) => log.source);
     expect(sources, contains('GetLocalSignatureUsecase'));
   });
 }

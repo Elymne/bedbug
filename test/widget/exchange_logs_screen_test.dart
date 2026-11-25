@@ -1,11 +1,11 @@
 import 'package:bedbug/application/screens/exchange_logs/exchange_logs.screen.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/exchange/exchange_log/exchange_log.entity.dart';
-import 'package:bedbug/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
-import 'package:bedbug/resources/exchange/exchange_log/exchange_log_step.enum.dart';
-import 'package:bedbug/usecases/exchange/get_exchange_logs/get_exchange_logs.failure.dart';
-import 'package:bedbug/usecases/exchange/get_exchange_logs/get_exchange_logs.usecase.dart';
+import 'package:bedbug/infra/resources/exchange/exchange_log/exchange_log.entity.dart';
+import 'package:bedbug/infra/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
+import 'package:bedbug/infra/resources/exchange/exchange_log/exchange_log_step.enum.dart';
+import 'package:bedbug/logic/usecases/exchange/get_exchange_logs/get_exchange_logs.failure.dart';
+import 'package:bedbug/logic/usecases/exchange/get_exchange_logs/get_exchange_logs.usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/pump_app.dart';

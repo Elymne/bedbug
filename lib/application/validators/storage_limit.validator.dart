@@ -1,4 +1,4 @@
-import 'package:bedbug/resources/content/storage/storage.config.dart';
+import 'package:bedbug/infra/resources/content/storage/storage.config.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Vérifie que la limite de stockage saisie, en mégaoctets, reste dans les bornes autorisées.

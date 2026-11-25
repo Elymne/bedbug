@@ -1,0 +1,22 @@
+-- Journal des échanges avec les pairs.
+import '../../drift.converters.dart';
+
+CREATE TABLE exchange_logs (
+  id TEXT NOT NULL PRIMARY KEY,
+  created_at INTEGER NOT NULL MAPPED BY `const MillisDateTimeConverter()`,
+  updated_at INTEGER NOT NULL MAPPED BY `const MillisDateTimeConverter()`,
+  peer_address TEXT NOT NULL,
+  outcome INTEGER NOT NULL,
+  is_initiator BOOLEAN,
+  duration_in_millis INTEGER NOT NULL,
+  awaited_step INTEGER,
+  sent_bytes INTEGER NOT NULL,
+  received_bytes INTEGER NOT NULL,
+  imported_contents INTEGER NOT NULL,
+  rejected_contents INTEGER NOT NULL,
+  imported_reactions INTEGER NOT NULL,
+  rejected_reactions INTEGER NOT NULL,
+  removed_contents INTEGER NOT NULL
+) AS ExchangeLogRow;
+
+CREATE INDEX exchange_logs_created_at ON exchange_logs (created_at DESC);

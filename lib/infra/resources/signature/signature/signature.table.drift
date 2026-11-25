@@ -1,0 +1,18 @@
+-- Signatures : la signature locale et celles reçues des pairs. La locale a pour id `localSignatureId`.
+import '../../drift.converters.dart';
+
+CREATE TABLE signatures (
+  id TEXT NOT NULL PRIMARY KEY,
+  created_at INTEGER NOT NULL MAPPED BY `const MillisDateTimeConverter()`,
+  updated_at INTEGER NOT NULL MAPPED BY `const MillisDateTimeConverter()`,
+  pseudo TEXT NOT NULL,
+  avatar_frames TEXT NOT NULL MAPPED BY `const StringListConverter()`,
+  color_argb INTEGER,
+  ghost_speed REAL NOT NULL,
+  avatar_frame_speed REAL NOT NULL,
+  social_links TEXT NOT NULL MAPPED BY `const IntStringMapConverter()`,
+  bio TEXT,
+  bio_font INTEGER NOT NULL
+) AS SignatureRow;
+
+CREATE INDEX signatures_pseudo ON signatures (pseudo COLLATE NOCASE);

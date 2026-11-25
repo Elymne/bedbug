@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.config.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.binary.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_decoder/exchange_frame_decoder.config.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_decoder/exchange_frame_decoder.gateway.dart';
-import 'package:bedbug/resources/data.exception.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_frame_codec/exchange_frame_codec.config.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.binary.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_frame_decoder/exchange_frame_decoder.config.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_frame_decoder/exchange_frame_decoder.gateway.dart';
+import 'package:bedbug/infra/resources/data.exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Codec testé.

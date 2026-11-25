@@ -1,6 +1,6 @@
 # Contenus : ce qui est choisi, envoyé, accepté, refusé
 
-Code : `lib/usecases/exchange/`.
+Code : `lib/logic/usecases/exchange/`.
 
 Quatre use cases, un par étape. Ils produisent et reçoivent des octets, encodés en JSON compressé par
 `JsonZlibExchangeCodecGateway`.
@@ -110,19 +110,22 @@ change. S'il y a dépassement :
 Tes propres contenus ne sont jamais supprimés, même s'ils dépassent la limite à eux seuls. Tous les contenus reçus partent
 alors, et ceux qui arrivent ensuite sont retirés après chaque session.
 
-La limite est une limite d'usage, pas de sécurité : un échange peut la dépasser de 200 Ko le temps du nettoyage. Elle est
-bornée à 1000 Mo parce que toute la box `contents` est chargée en mémoire.
+La limite est une limite d'usage, pas de sécurité : un échange peut la dépasser de 200 Ko le temps du nettoyage. Elle
+porte sur le poids réel de la base SQLite (contenus, dessins, signatures, réactions, index, journaux), lu avec `PRAGMA`,
+et non sur la somme des poids des contenus. Le nettoyage supprime par lots, rend les pages libérées au système, puis
+remesure. Elle est bornée à 1000 Mo.
 
 ## Où c'est stocké
 
-| Box Hive | Contenu |
-| --------------- | ---------------------------------------------------- |
-| `contents` | Les contenus ; `origin` distingue les tiens (`owned`) des reçus (`public`) |
-| `reactions` | Les réactions |
-| `seen_contents` | Identifiant → date de vue, 30 jours |
-| `signatures` | Les signatures reçues |
+| Table SQLite    | Contenu                                                                    |
+| --------------- | -------------------------------------------------------------------------- |
+| `contents`      | Les contenus ; `origin` distingue les tiens (`owned`) des reçus (`public`) |
+| `reactions`     | Les réactions, supprimées avec leur contenu                                |
+| `seen_contents` | Identifiant → date de vue, 30 jours ; survit à la suppression du contenu   |
+| `signatures`    | Les signatures reçues, et la tienne sous l'id `local`                      |
 
-Il n'y a pas de date de réception sur un contenu : son `createdAt` reste celui d'origine.
+Le `createdAt` d'un contenu reste celui d'origine. Sa date d'enregistrement sur le téléphone est dans `stored_at`, qui
+sert au fil d'accueil à figer une session de lecture.
 
 `Wrap` et `Keychain`, dans la feature `exchange`, préparent un futur chiffrement par sub. Ils ne sont pas encore branchés :
 les contenus voyagent en clair.

@@ -1,18 +1,18 @@
 import 'dart:typed_data';
 
-import 'package:bedbug/gateways/media/media_gallery/media_gallery.exception.dart';
-import 'package:bedbug/gateways/media/media_gallery/media_gallery.gateway.dart';
-import 'package:bedbug/gateways/media/media_http/media_http.gateway.dart';
-import 'package:bedbug/resources/content/content/media_file_format.enum.dart';
-import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
-import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
-import 'package:bedbug/usecases/content/fetch_media/fetch_media.failure.dart';
-import 'package:bedbug/usecases/content/fetch_media/fetch_media.params.dart';
-import 'package:bedbug/usecases/content/fetch_media/fetch_media.usecase.dart';
-import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.config.dart';
-import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.failure.dart';
-import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.params.dart';
-import 'package:bedbug/usecases/content/save_media_to_gallery/save_media_to_gallery.usecase.dart';
+import 'package:bedbug/infra/gateways/media/media_gallery/media_gallery.exception.dart';
+import 'package:bedbug/infra/gateways/media/media_gallery/media_gallery.gateway.dart';
+import 'package:bedbug/infra/gateways/media/media_http/media_http.gateway.dart';
+import 'package:bedbug/infra/resources/content/content/media_file_format.enum.dart';
+import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.value_object.dart';
+import 'package:bedbug/infra/resources/url/safe_url/safe_url.value_object.dart';
+import 'package:bedbug/logic/usecases/content/fetch_media/fetch_media.failure.dart';
+import 'package:bedbug/logic/usecases/content/fetch_media/fetch_media.params.dart';
+import 'package:bedbug/logic/usecases/content/fetch_media/fetch_media.usecase.dart';
+import 'package:bedbug/logic/usecases/content/save_media_to_gallery/save_media_to_gallery.config.dart';
+import 'package:bedbug/logic/usecases/content/save_media_to_gallery/save_media_to_gallery.failure.dart';
+import 'package:bedbug/logic/usecases/content/save_media_to_gallery/save_media_to_gallery.params.dart';
+import 'package:bedbug/logic/usecases/content/save_media_to_gallery/save_media_to_gallery.usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/fake_error_log_repository.dart';

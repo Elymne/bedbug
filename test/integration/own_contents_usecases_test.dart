@@ -1,33 +1,31 @@
-import 'dart:io';
-
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.failure.dart';
-import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.params.dart';
-import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.usecase.dart';
-import 'package:bedbug/usecases/content/get_own_contents/get_own_contents.usecase.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
-import 'package:bedbug/usecases/storage/get_storage/get_storage.usecase.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/seen_content/seen_content.repository.drift.dart';
+import 'package:bedbug/logic/usecases/content/delete_own_content/delete_own_content.failure.dart';
+import 'package:bedbug/logic/usecases/content/delete_own_content/delete_own_content.params.dart';
+import 'package:bedbug/logic/usecases/content/delete_own_content/delete_own_content.usecase.dart';
+import 'package:bedbug/logic/usecases/content/get_own_contents/get_own_contents.usecase.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/content_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 import '../helpers/seed_contents_usecase.dart';
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
   setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+    container = createTestContainer();
   });
 
   tearDown(() async {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   test('mes posts regroupent mes contenus, anonymes compris, du plus récent au plus ancien', () async {
@@ -42,13 +40,23 @@ void main() {
 
     final result = await container.read(getOwnContentsUsecaseProvider)(const NoParams());
 
-    expect(result.right!.map((content) => content.id), ['anonyme', 'ancien']);
+    expect(result.right!.map((detailed) => detailed.content.id), ['anonyme', 'ancien']);
   });
 
-  test('supprimer un de mes posts le retire et libère son poids dans le stockage', () async {
+  test('supprimer un de mes posts le retire avec ses réactions, et le mémorise comme déjà vu', () async {
     final saveUsecase = container.read(saveContentUsecaseProvider);
     await saveUsecase(SaveContentParams(content: _buildTextContent('mien', ContentOrigin.owned, DateTime(2026))));
-    final storageBefore = (await container.read(getStorageUsecaseProvider)(const NoParams())).right!;
+    await insertTestReactions(container, [
+      Reaction(
+        id: 'reaction',
+        createdAt: DateTime(2026),
+        updatedAt: DateTime(2026),
+        contentId: 'mien',
+        authorId: 'pair',
+        avatarFrames: const ['(◕‿◕)'],
+        bubbleText: 'ok',
+      ),
+    ]);
 
     final result = await container.read(deleteOwnContentUsecaseProvider)(
       const DeleteOwnContentParams(contentId: 'mien'),
@@ -56,8 +64,8 @@ void main() {
 
     expect(result.isSuccess, isTrue);
     expect((await container.read(getOwnContentsUsecaseProvider)(const NoParams())).right, isEmpty);
-    final storageAfter = (await container.read(getStorageUsecaseProvider)(const NoParams())).right!;
-    expect(storageAfter.currentSizeInBytes, lessThan(storageBefore.currentSizeInBytes));
+    expect(await container.read(reactionRepositoryProvider).getAllByContentId('mien'), isEmpty);
+    expect(await container.read(seenContentRepositoryProvider).getSeenAmong({'mien'}), {'mien'});
   });
 
   test("refuse de supprimer un contenu reçu d'un pair, ou introuvable", () async {

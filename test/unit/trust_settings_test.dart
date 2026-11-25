@@ -1,8 +1,13 @@
-import 'package:bedbug/resources/content/content/media_content.entity.dart';
-import 'package:bedbug/resources/content/trust_settings/trust_settings.config.dart';
-import 'package:bedbug/resources/content/trust_settings/trust_settings.model.hive.dart';
-import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
+import 'package:bedbug/infra/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.config.dart';
+import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.mapper.drift.dart';
+import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.value_object.dart';
+import 'package:bedbug/infra/resources/drift.config.dart';
+import 'package:bedbug/infra/resources/drift.database.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../helpers/drift_test_helper.dart';
 
 void main() {
   const imgur = DomainRule(host: 'imgur.com', isIncludingSubdomains: true);
@@ -68,22 +73,26 @@ void main() {
   });
 
   group('stockage', () {
-    test('relit à l\'identique les réglages enregistrés', () {
-      final model = TrustSettingsHiveModel.fromEntity(defaultTrustSettings);
-      final reread = model.toEntity();
+    test('relit à l\'identique les réglages enregistrés', () async {
+      final container = createTestContainer();
+      addTearDown(container.dispose);
+      final repository = container.read(trustSettingsRepositoryProvider);
+      await repository.save(defaultTrustSettings);
+      final reread = (await repository.get())!;
       expect(reread.mediaPolicy.trustedRules, defaultTrustSettings.mediaPolicy.trustedRules);
       expect(reread.mediaPolicy.greyRules, defaultTrustSettings.mediaPolicy.greyRules);
       expect(reread.linkPolicy.trustedRules, defaultTrustSettings.linkPolicy.trustedRules);
     });
 
     test('ignore à la relecture une règle stockée qui ne passe plus les vérifications', () {
-      final model = TrustSettingsHiveModel(
+      const row = TrustSettingsRow(
+        id: singleRowId,
         mediaTrustedPatterns: ['imgur.com', 'іmgur.com', '127.0.0.1', '*.com'],
         mediaGreyPatterns: [],
         linkTrustedPatterns: [],
         linkGreyPatterns: [],
       );
-      final reread = model.toEntity();
+      final reread = TrustSettingsDriftMapper.toEntity(row);
       expect(reread.mediaPolicy.trustedRules, [const DomainRule(host: 'imgur.com', isIncludingSubdomains: false)]);
     });
   });

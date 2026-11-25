@@ -1,26 +1,28 @@
-import 'dart:io';
-
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/content/content.entity.dart';
-import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/link_content.entity.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
-import 'package:bedbug/resources/content/trust_settings/trust_settings.repository.dart';
-import 'package:bedbug/resources/content/trust_settings/trust_settings.repository.hive.dart';
-import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
-import 'package:bedbug/resources/content/viewed_content/viewed_content.repository.hive.dart';
-import 'package:bedbug/resources/datasource.exception.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
-import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.params.dart';
-import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.usecase.dart';
-import 'package:bedbug/usecases/trust/delete_untrusted_contents/delete_untrusted_contents.usecase.dart';
+import 'package:bedbug/infra/resources/content/content/content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/content_url.entity.summary.dart';
+import 'package:bedbug/infra/resources/content/content/drawing_content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/link_content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/infra/resources/content/seen_content/seen_content.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.repository.dart';
+import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.value_object.dart';
+import 'package:bedbug/infra/resources/datasource.exception.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.usecase.dart';
+import 'package:bedbug/logic/usecases/feed/mark_content_viewed/mark_content_viewed.params.dart';
+import 'package:bedbug/logic/usecases/feed/mark_content_viewed/mark_content_viewed.usecase.dart';
+import 'package:bedbug/logic/usecases/trust/delete_untrusted_contents/delete_untrusted_contents.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/content_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 
 /// Construit un contenu lien d'identifiant [id].
 ///
@@ -66,6 +68,50 @@ TextContent _buildText(String id) {
   );
 }
 
+/// Construit un contenu média d'identifiant [id], avec une seule image.
+///
+/// - [id] : identifiant du contenu.
+/// - [url] : adresse de l'image.
+/// - [origin] : provenance du contenu.
+MediaContent _buildMedia(String id, String url, {ContentOrigin origin = ContentOrigin.public}) {
+  return MediaContent(
+    id: id,
+    createdAt: DateTime(2026),
+    updatedAt: DateTime(2026),
+    signatureId: 'local',
+    flair: 'test',
+    origin: origin,
+    broadcastScore: 1,
+    survivalScore: 1,
+    displayScore: 1,
+    bounce: 0,
+    sizeInBytes: 10,
+    media: [ContentMedia(url: url, kind: MediaKind.image)],
+    title: 'Titre',
+  );
+}
+
+/// Construit un contenu dessiné d'identifiant [id], sans aucune adresse.
+///
+/// - [id] : identifiant du contenu.
+DrawingContent _buildDrawing(String id) {
+  return DrawingContent(
+    id: id,
+    createdAt: DateTime(2026),
+    updatedAt: DateTime(2026),
+    signatureId: 'local',
+    flair: 'test',
+    origin: ContentOrigin.public,
+    broadcastScore: 1,
+    survivalScore: 1,
+    displayScore: 1,
+    bounce: 0,
+    sizeInBytes: 10,
+    drawing: const Drawing.empty(),
+    title: 'Titre',
+  );
+}
+
 /// Faux [TrustSettingsRepository] dont la lecture échoue.
 class _FailingTrustSettingsRepository implements TrustSettingsRepository {
   @override
@@ -81,7 +127,6 @@ class _FailingTrustSettingsRepository implements TrustSettingsRepository {
 }
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
   const settings = TrustSettings(
@@ -93,14 +138,12 @@ void main() {
   );
 
   setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+    container = createTestContainer();
     await container.read(trustSettingsRepositoryProvider).save(settings);
   });
 
   tearDown(() async {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   /// Enregistre [contents] avec le vrai repository.
@@ -112,7 +155,7 @@ void main() {
 
   /// Retourne les identifiants des contenus restés sur le téléphone.
   Future<Set<String>> remainingIds() async {
-    final contents = await container.read(contentRepositoryProvider).getAll();
+    final contents = await readTestContents(container);
     return contents.map((content) => content.id).toSet();
   }
 
@@ -146,12 +189,12 @@ void main() {
     await container.read(deleteUntrustedContentsUsecaseProvider)(const NoParams());
 
     expect(await container.read(seenContentRepositoryProvider).getSeenAmong({'inconnu'}), {'inconnu'});
-    expect(await container.read(viewedContentRepositoryProvider).getAllIds(), isEmpty);
+    expect(await readTestViewedIds(container), isEmpty);
   });
 
   test('ne supprime rien si les listes ne peuvent pas être lues', () async {
     await saveAll([_buildLink('inconnu', 'https://evil.com/a')]);
-    final failingContainer = ProviderContainer(
+    final failingContainer = createTestContainer(
       overrides: [trustSettingsRepositoryProvider.overrideWithValue(_FailingTrustSettingsRepository())],
     );
     addTearDown(failingContainer.dispose);
@@ -160,5 +203,38 @@ void main() {
 
     expect(deleted.isSuccess, isFalse);
     expect(await remainingIds(), {'inconnu'});
+  });
+
+  test(
+    'supprime un média reçu d\'un domaine absent des listes, garde le média de l\'utilisateur et le dessin',
+    () async {
+      await saveAll([
+        _buildMedia('media-inconnu', 'https://evil.com/a.png'),
+        _buildMedia('media-mien', 'https://evil.com/b.png', origin: ContentOrigin.owned),
+        _buildDrawing('dessin'),
+      ]);
+
+      final deleted = await container.read(deleteUntrustedContentsUsecaseProvider)(const NoParams());
+
+      expect(deleted.right, 1);
+      expect(await remainingIds(), {'media-mien', 'dessin'});
+    },
+  );
+
+  test('ne lit que les adresses des liens et médias reçus', () async {
+    await saveAll([
+      _buildLink('lien', 'https://evil.com/a'),
+      _buildLink('lien-mien', 'https://evil.com/b', origin: ContentOrigin.owned),
+      _buildMedia('media', 'https://evil.com/c.png'),
+      _buildText('texte'),
+      _buildDrawing('dessin'),
+    ]);
+
+    final summaries = await container.read(contentRepositoryProvider).getReceivedUrlSummaries();
+
+    expect(summaries.toSet(), {
+      const ContentUrlSummary(contentId: 'lien', mediaUrls: [], linkUrls: ['https://evil.com/a']),
+      const ContentUrlSummary(contentId: 'media', mediaUrls: ['https://evil.com/c.png'], linkUrls: []),
+    });
   });
 }

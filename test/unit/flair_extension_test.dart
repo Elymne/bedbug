@@ -1,4 +1,4 @@
-import 'package:bedbug/resources/content/content/content.extension.dart';
+import 'package:bedbug/infra/resources/content/content/content.extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

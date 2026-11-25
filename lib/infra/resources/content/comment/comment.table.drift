@@ -1,0 +1,14 @@
+-- Commentaires : supprimés avec leur contenu.
+import '../../drift.converters.dart';
+import '../content/content.table.drift';
+
+CREATE TABLE comments (
+  id TEXT NOT NULL PRIMARY KEY,
+  created_at INTEGER NOT NULL MAPPED BY `const MillisDateTimeConverter()`,
+  updated_at INTEGER NOT NULL MAPPED BY `const MillisDateTimeConverter()`,
+  content_id TEXT NOT NULL REFERENCES contents (id) ON DELETE CASCADE,
+  signature_id TEXT NOT NULL,
+  body TEXT NOT NULL
+) AS CommentRow;
+
+CREATE INDEX comments_content_id ON comments (content_id);

@@ -1,10 +1,10 @@
 import 'package:bedbug/core/notifier/notifier_state.dart';
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
-import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.params.dart';
-import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.result.dart';
-import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.usecase.dart';
-import 'package:bedbug/usecases/signature/get_signature_suggestions/get_signature_suggestions.params.dart';
-import 'package:bedbug/usecases/signature/get_signature_suggestions/get_signature_suggestions.usecase.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/logic/usecases/feed/get_flair_suggestions/get_flair_suggestions.params.dart';
+import 'package:bedbug/logic/usecases/feed/get_flair_suggestions/get_flair_suggestions.result.dart';
+import 'package:bedbug/logic/usecases/feed/get_flair_suggestions/get_flair_suggestions.usecase.dart';
+import 'package:bedbug/logic/usecases/signature/get_signature_suggestions/get_signature_suggestions.params.dart';
+import 'package:bedbug/logic/usecases/signature/get_signature_suggestions/get_signature_suggestions.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SearchSuggestionsNotifier].

@@ -2,8 +2,8 @@ import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/drawing/drawing_image.provider.dart';
 import 'package:bedbug/application/widgets/media/app_media_placeholder.widget.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
-import 'package:bedbug/resources/content/drawing/drawing.extension.dart';
-import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.extension.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.value_object.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

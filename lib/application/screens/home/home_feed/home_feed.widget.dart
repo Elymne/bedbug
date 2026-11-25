@@ -9,7 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Seul widget de la home à observer le flux : son chargement ou son rechargement ne reconstruit que la liste, pas
 /// les barres qui l'entourent. Il remonte aussi chaque déplacement du scroll vertical pour que la searchbar et la
-/// navbar sortent de l'écran au fil de la lecture.
+/// navbar sortent de l'écran au fil de la lecture. Le fil est paginé : la page suivante est demandée à l'approche de
+/// la fin de la liste.
 class HomeFeed extends ConsumerWidget {
   /// Crée un [HomeFeed].
   const HomeFeed({super.key});
@@ -41,6 +42,9 @@ class HomeFeed extends ConsumerWidget {
             onRefresh: ref.read(homeFeedNotifierProvider.notifier).refresh,
             unviewedContentIds: state.unviewedContentIds,
             onContentViewed: ref.read(homeFeedNotifierProvider.notifier).markViewed,
+            hasMore: state.hasMore,
+            loadMoreFailureMessage: state.loadMoreFailureMessage,
+            onLoadMore: ref.read(homeFeedNotifierProvider.notifier).loadMore,
           ),
         );
       },

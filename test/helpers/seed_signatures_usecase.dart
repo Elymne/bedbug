@@ -4,14 +4,14 @@ import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/resources/data.exception.dart';
-import 'package:bedbug/resources/datasource.exception.dart';
-import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
-import 'package:bedbug/resources/signature/signature/signature.repository.dart';
-import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
-import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
-import 'package:bedbug/resources/signature/signature/text_font.enum.dart';
+import 'package:bedbug/infra/resources/data.exception.dart';
+import 'package:bedbug/infra/resources/datasource.exception.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.repository.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.repository.drift.dart';
+import 'package:bedbug/infra/resources/signature/signature/social_network.enum.dart';
+import 'package:bedbug/infra/resources/signature/signature/text_font.enum.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SeedSignaturesUsecase].

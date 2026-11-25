@@ -1,18 +1,16 @@
-import 'dart:io';
-
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.dart';
-import 'package:bedbug/resources/exchange/exchange_log/exchange_log.entity.dart';
-import 'package:bedbug/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
-import 'package:bedbug/resources/exchange/exchange_log/exchange_log_step.enum.dart';
-import 'package:bedbug/usecases/exchange/get_exchange_logs/get_exchange_logs.usecase.dart';
-import 'package:bedbug/usecases/exchange/save_exchange_log/save_exchange_log.config.dart';
-import 'package:bedbug/usecases/exchange/save_exchange_log/save_exchange_log.params.dart';
-import 'package:bedbug/usecases/exchange/save_exchange_log/save_exchange_log.usecase.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.dart';
+import 'package:bedbug/infra/resources/exchange/exchange_log/exchange_log.entity.dart';
+import 'package:bedbug/infra/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
+import 'package:bedbug/infra/resources/exchange/exchange_log/exchange_log_step.enum.dart';
+import 'package:bedbug/logic/usecases/exchange/get_exchange_logs/get_exchange_logs.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/save_exchange_log/save_exchange_log.config.dart';
+import 'package:bedbug/logic/usecases/exchange/save_exchange_log/save_exchange_log.params.dart';
+import 'package:bedbug/logic/usecases/exchange/save_exchange_log/save_exchange_log.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 
 /// Construit une rencontre datée de [minute] minutes après une date fixe.
 ///
@@ -38,17 +36,14 @@ SaveExchangeLogParams _buildParams(String peerAddress, int minute, {ExchangeFram
 }
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
-  setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+  setUp(() {
+    container = createTestContainer();
   });
 
-  tearDown(() async {
+  tearDown(() {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   /// Enregistre la rencontre décrite par [params].

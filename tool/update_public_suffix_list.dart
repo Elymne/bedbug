@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bedbug/gateways/public_suffix/public_suffix/public_suffix.config.dart';
+import 'package:bedbug/infra/gateways/public_suffix/public_suffix/public_suffix.config.dart';
 
 /// Remplace la Public Suffix List embarquée par la dernière version officielle.
 ///

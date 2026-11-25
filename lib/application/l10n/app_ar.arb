@@ -136,6 +136,7 @@
   "timeAgoMonths": "{count, plural, =1{منذ شهر} =2{منذ شهرين} few{منذ {count} أشهر} many{منذ {count} شهرًا} other{منذ {count} شهر}}",
   "timeAgoYears": "{count, plural, =1{منذ سنة} =2{منذ سنتين} few{منذ {count} سنوات} many{منذ {count} سنة} other{منذ {count} سنة}}",
   "close": "إغلاق",
+  "retry": "إعادة المحاولة",
   "contentReactionsTitle": "{count, plural, =0{التفاعلات} other{التفاعلات ({count})}}",
   "contentReactionsEmpty": "لا توجد تفاعلات حتى الآن.",
   "contentReactionsLoadError": "تعذّر تحميل التفاعلات.",
