@@ -17,7 +17,7 @@ Le service ne contient aucune logique : il garde le processus vivant et possède
 ## Le moteur partagé
 
 Par défaut, l'écran crée son moteur Flutter et le détruit en se fermant. Un second moteur pour le service n'est pas
-possible : deux moteurs, ce sont deux isolates Dart sur les mêmes fichiers Hive, ce qui peut les corrompre.
+possible : deux moteurs, ce sont deux isolates Dart qui écrivent dans la même base SQLite sans se coordonner.
 
 `SharedFlutterEngine` crée donc un moteur unique, gardé dans `FlutterEngineCache`. L'écran et le service l'utilisent tous
 les deux : fermer l'app arrête seulement l'affichage.

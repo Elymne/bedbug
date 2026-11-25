@@ -28,6 +28,9 @@ class SearchResultsList extends ConsumerWidget {
         return ContentListView(
           contents: state.contents,
           emptyChild: Center(child: Text(state.failureMessage ?? l10n.searchResultsEmpty)),
+          hasMore: state.hasMore,
+          loadMoreFailureMessage: state.loadMoreFailureMessage,
+          onLoadMore: ref.read(searchResultsNotifierProvider(criteria).notifier).loadMore,
         );
       },
     );

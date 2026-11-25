@@ -5,16 +5,16 @@ import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/domain/usecase.dart';
 import 'package:bedbug/core/extensions/string_uuid_x.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/resources/content/content/content.repository.dart';
-import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/reaction/reaction.config.dart';
-import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
-import 'package:bedbug/resources/content/reaction/reaction.repository.dart';
-import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
-import 'package:bedbug/resources/data.exception.dart';
-import 'package:bedbug/resources/datasource.exception.dart';
-import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/resources/signature/signature/text_font.enum.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.config.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.repository.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.repository.drift.dart';
+import 'package:bedbug/infra/resources/data.exception.dart';
+import 'package:bedbug/infra/resources/datasource.exception.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/infra/resources/signature/signature/text_font.enum.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SeedReactionsUsecase].
@@ -78,7 +78,12 @@ class SeedReactionsUsecase extends Usecase<SeedReactionsParams, SeedReactionsFai
       final random = Random(params.randomSeed);
       final now = DateTime.now();
       final reactionsPerContent = min(params.reactionsPerContent, maxReactionsPerContent);
-      final contents = (await _contentRepository.getAllOrderedByDisplayScoreDesc()).take(params.contentCount);
+      final page = await _contentRepository.getHomeFeedPage(
+        feedStartedAt: now,
+        after: null,
+        limit: params.contentCount,
+      );
+      final contents = [for (final detailed in page.items) detailed.content];
 
       for (final content in contents) {
         final reactions = [

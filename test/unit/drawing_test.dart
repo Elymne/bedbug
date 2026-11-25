@@ -2,14 +2,16 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bedbug/application/drawing/flood_fill.dart';
-import 'package:bedbug/resources/content/content/content.model.hive.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
-import 'package:bedbug/resources/content/drawing/drawing.codec.binary.dart';
-import 'package:bedbug/resources/content/drawing/drawing.config.dart';
-import 'package:bedbug/resources/content/drawing/drawing.extension.dart';
-import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/drawing_content.entity.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.codec.binary.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.config.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.extension.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.value_object.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../helpers/drift_test_helper.dart';
 
 /// Retourne un trait au stylo passant par [points], avec les réglages fournis.
 DrawingStroke _stroke(
@@ -371,7 +373,7 @@ void main() {
     });
   });
 
-  test('un contenu dessiné se stocke et se relit à l\'identique', () {
+  test('un contenu dessiné se stocke et se relit à l\'identique', () async {
     final now = DateTime.fromMillisecondsSinceEpoch(1000);
     final content = DrawingContent(
       id: 'd',
@@ -388,7 +390,11 @@ void main() {
       drawing: sample,
       title: 'Mon dessin',
     );
-    final reread = ContentHiveModel.fromEntity(content).toEntity() as DrawingContent;
+    final container = createTestContainer();
+    addTearDown(container.dispose);
+    final repository = container.read(contentRepositoryProvider);
+    await repository.addOne(content);
+    final reread = await repository.getById(content.id) as DrawingContent;
     expect(reread.drawing, sample);
     expect(reread.title, 'Mon dessin');
   });

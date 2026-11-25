@@ -1,16 +1,17 @@
 import 'package:bedbug/application/screens/signature/signature.screen.dart';
+import 'package:bedbug/core/domain/cursor_page.dart';
 import 'package:bedbug/core/domain/either.dart';
-import 'package:bedbug/resources/content/content/content.entity.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
-import 'package:bedbug/resources/signature/signature/social_network.enum.dart';
-import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.failure.dart';
-import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.params.dart';
-import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.usecase.dart';
-import 'package:bedbug/usecases/signature/get_signature/get_signature.failure.dart';
-import 'package:bedbug/usecases/signature/get_signature/get_signature.params.dart';
-import 'package:bedbug/usecases/signature/get_signature/get_signature.usecase.dart';
+import 'package:bedbug/infra/resources/content/content/content.entity.detailed.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/infra/resources/signature/signature/social_network.enum.dart';
+import 'package:bedbug/logic/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.failure.dart';
+import 'package:bedbug/logic/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.params.dart';
+import 'package:bedbug/logic/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.usecase.dart';
+import 'package:bedbug/logic/usecases/signature/get_signature/get_signature.failure.dart';
+import 'package:bedbug/logic/usecases/signature/get_signature/get_signature.params.dart';
+import 'package:bedbug/logic/usecases/signature/get_signature/get_signature.usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/pump_app.dart';
@@ -35,24 +36,30 @@ class _FakeGetSignatureUsecase implements GetSignatureUsecase {
 /// Fake [GetContentsBySignaturesUsecase] retournant un unique contenu de l'auteur demandé.
 class _FakeGetContentsBySignaturesUsecase implements GetContentsBySignaturesUsecase {
   @override
-  Future<Either<GetContentsBySignaturesFailure, List<Content>>> call(GetContentsBySignaturesParams params) async {
-    return Right([
-      TextContent(
-        id: 'post',
-        createdAt: DateTime(2026),
-        updatedAt: DateTime(2026),
-        signatureId: params.signatureIds.first,
-        flair: 'literie',
-        origin: ContentOrigin.public,
-        broadcastScore: 1,
-        survivalScore: 1,
-        displayScore: 1,
-        bounce: 0,
-        sizeInBytes: 10,
-        title: 'Mon premier post',
-        body: 'Corps',
+  Future<Either<GetContentsBySignaturesFailure, CursorPage<ContentDetailed>>> call(
+    GetContentsBySignaturesParams params,
+  ) async {
+    final content = TextContent(
+      id: 'post',
+      createdAt: DateTime(2026),
+      updatedAt: DateTime(2026),
+      signatureId: params.signatureIds.first,
+      flair: 'literie',
+      origin: ContentOrigin.public,
+      broadcastScore: 1,
+      survivalScore: 1,
+      displayScore: 1,
+      bounce: 0,
+      sizeInBytes: 10,
+      title: 'Mon premier post',
+      body: 'Corps',
+    );
+    return Right(
+      CursorPage(
+        items: [ContentDetailed(content: content, signature: null, reactionCount: 0, isViewed: false)],
+        nextCursor: null,
       ),
-    ]);
+    );
   }
 }
 

@@ -2,7 +2,7 @@ import 'package:bedbug/application/notifiers/revealed_urls.notifier.dart';
 import 'package:bedbug/application/widgets/media/app_media_veil.widget.dart';
 import 'package:bedbug/application/widgets/media/app_remote_image.widget.dart';
 import 'package:bedbug/application/widgets/media/app_remote_video.widget.dart';
-import 'package:bedbug/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/media_content.entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

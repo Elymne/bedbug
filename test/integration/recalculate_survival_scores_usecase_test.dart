@@ -1,17 +1,15 @@
-import 'dart:io';
-
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/content/content.repository.dart';
-import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
-import 'package:bedbug/usecases/storage/recalculate_survival_scores/recalculate_survival_scores.usecase.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.usecase.dart';
+import 'package:bedbug/logic/usecases/storage/recalculate_survival_scores/recalculate_survival_scores.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 
 /// Construit un [TextContent] minimal pour les besoins du test, avec un
 /// `survivalScore` de départ neutre pour bien observer le recalcul.
@@ -39,17 +37,14 @@ TextContent _buildContent({
 }
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
   setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+    container = createTestContainer();
   });
 
   tearDown(() async {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   Future<double> survivalScoreOf(ContentRepository repository, String id) async {
@@ -57,32 +52,29 @@ void main() {
     return contents.firstWhere((content) => content.id == id).survivalScore;
   }
 
-  test(
-    'ne modifie jamais le survivalScore des contenus owned, quel que soit leur âge, via le vrai repository Hive',
-    () async {
-      final repository = container.read(contentRepositoryProvider);
-      final saveUsecase = container.read(saveContentUsecaseProvider);
-      final usecase = container.read(recalculateSurvivalScoresUsecaseProvider);
+  test('ne modifie jamais le survivalScore des contenus owned, quel que soit leur âge', () async {
+    final repository = container.read(contentRepositoryProvider);
+    final saveUsecase = container.read(saveContentUsecaseProvider);
+    final usecase = container.read(recalculateSurvivalScoresUsecaseProvider);
 
-      final now = DateTime.now();
-      await saveUsecase(
-        SaveContentParams(
-          content: _buildContent(
-            id: 'owned',
-            origin: ContentOrigin.owned,
-            createdAt: now.subtract(const Duration(days: 3650)),
-          ),
+    final now = DateTime.now();
+    await saveUsecase(
+      SaveContentParams(
+        content: _buildContent(
+          id: 'owned',
+          origin: ContentOrigin.owned,
+          createdAt: now.subtract(const Duration(days: 3650)),
         ),
-      );
+      ),
+    );
 
-      final result = await usecase(const NoParams());
+    final result = await usecase(const NoParams());
 
-      expect(result.isSuccess, isTrue);
-      expect(await survivalScoreOf(repository, 'owned'), 0);
-    },
-  );
+    expect(result.isSuccess, isTrue);
+    expect(await survivalScoreOf(repository, 'owned'), 0);
+  });
 
-  test('le survivalScore reste toujours dans [0.0, 1.0], via le vrai repository Hive', () async {
+  test('le survivalScore reste toujours dans [0.0, 1.0]', () async {
     final repository = container.read(contentRepositoryProvider);
     final saveUsecase = container.read(saveContentUsecaseProvider);
     final usecase = container.read(recalculateSurvivalScoresUsecaseProvider);
@@ -110,7 +102,7 @@ void main() {
     }
   });
 
-  test('le survivalScore décroît strictement quand le contenu est plus vieux, pour une origin donnée, via le vrai repository Hive', () async {
+  test('le survivalScore décroît strictement quand le contenu est plus vieux, pour une origin donnée', () async {
     final repository = container.read(contentRepositoryProvider);
     final saveUsecase = container.read(saveContentUsecaseProvider);
     final usecase = container.read(recalculateSurvivalScoresUsecaseProvider);
@@ -142,7 +134,7 @@ void main() {
     expect(recentScore, greaterThan(oldScore));
   });
 
-  test('à âge égal, favorited résiste au moins autant que subscribed, lui-même au moins autant que public, via le vrai repository Hive', () async {
+  test('à âge égal, favorited résiste au moins autant que subscribed, lui-même au moins autant que public', () async {
     final repository = container.read(contentRepositoryProvider);
     final saveUsecase = container.read(saveContentUsecaseProvider);
     final usecase = container.read(recalculateSurvivalScoresUsecaseProvider);
@@ -173,7 +165,7 @@ void main() {
     expect(subscribedScore, greaterThanOrEqualTo(publicScore));
   });
 
-  test('augmenter le bounce ne peut jamais faire baisser le survivalScore, via le vrai repository Hive', () async {
+  test('augmenter le bounce ne peut jamais faire baisser le survivalScore', () async {
     final repository = container.read(contentRepositoryProvider);
     final saveUsecase = container.read(saveContentUsecaseProvider);
     final usecase = container.read(recalculateSurvivalScoresUsecaseProvider);

@@ -1,28 +1,24 @@
-import 'dart:io';
-
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
-import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
-import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.params.dart';
-import 'package:bedbug/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.usecase.dart';
-import 'package:bedbug/usecases/signature/get_signature_suggestions/get_signature_suggestions.params.dart';
-import 'package:bedbug/usecases/signature/get_signature_suggestions/get_signature_suggestions.usecase.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.repository.drift.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.usecase.dart';
+import 'package:bedbug/logic/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.params.dart';
+import 'package:bedbug/logic/usecases/feed/get_contents_by_signatures/get_contents_by_signatures.usecase.dart';
+import 'package:bedbug/logic/usecases/signature/get_signature_suggestions/get_signature_suggestions.params.dart';
+import 'package:bedbug/logic/usecases/signature/get_signature_suggestions/get_signature_suggestions.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
   setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+    container = createTestContainer();
     // Deux signatures distinctes portant le même nom, et une troisième.
     await container.read(signatureRepositoryProvider).saveMany([
       _buildSignature('bedbug-a', 'Bedbug'),
@@ -33,7 +29,6 @@ void main() {
 
   tearDown(() async {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   group('suggestions de signatures', () {
@@ -64,7 +59,7 @@ void main() {
       const GetContentsBySignaturesParams(signatureIds: ['bedbug-a']),
     );
 
-    expect(result.right!.map((content) => content.id), ['a']);
+    expect(result.right!.items.map((detailed) => detailed.content.id), ['a']);
   });
 
   test('aucun auteur donné : aucun contenu', () async {
@@ -72,7 +67,7 @@ void main() {
       const GetContentsBySignaturesParams(signatureIds: []),
     );
 
-    expect(result.right, isEmpty);
+    expect(result.right!.items, isEmpty);
   });
 }
 

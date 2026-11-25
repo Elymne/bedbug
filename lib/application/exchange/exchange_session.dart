@@ -5,22 +5,22 @@ import 'dart:typed_data';
 import 'package:bedbug/application/exchange/exchange_session.config.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/logger/app_logger.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.binary.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_decoder/exchange_frame_decoder.gateway.dart';
-import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
-import 'package:bedbug/resources/data.exception.dart';
-import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.failure.dart';
-import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.params.dart';
-import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.usecase.dart';
-import 'package:bedbug/usecases/exchange/build_exchange_offer/build_exchange_offer.usecase.dart';
-import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.failure.dart';
-import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.params.dart';
-import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.result.dart';
-import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.usecase.dart';
-import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.failure.dart';
-import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.params.dart';
-import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.usecase.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.binary.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_frame_decoder/exchange_frame_decoder.gateway.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
+import 'package:bedbug/infra/resources/data.exception.dart';
+import 'package:bedbug/logic/usecases/exchange/build_exchange_bundle/build_exchange_bundle.failure.dart';
+import 'package:bedbug/logic/usecases/exchange/build_exchange_bundle/build_exchange_bundle.params.dart';
+import 'package:bedbug/logic/usecases/exchange/build_exchange_bundle/build_exchange_bundle.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/build_exchange_offer/build_exchange_offer.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.failure.dart';
+import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.params.dart';
+import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.result.dart';
+import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.failure.dart';
+import 'package:bedbug/logic/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.params.dart';
+import 'package:bedbug/logic/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Temps accordé à l'envoi de la trame d'abandon et à la fermeture du transport.
@@ -68,7 +68,7 @@ final exchangeSessionProvider = Provider.autoDispose.family<ExchangeSession, Exc
 /// Chaque trame reçue est traitée jusqu'au bout avant la suivante, y compris l'envoi de la réponse. Conséquence : la
 /// réponse à une trame part toujours après la réponse à la précédente, et chaque sens du flux suit strictement l'ordre
 /// HELLO, OFFER, REQUEST, DATA, DONE. La session n'attend donc qu'un seul type de trame à la fois, et tout le reste
-/// est une violation du protocole. Ce traitement en série garantit aussi qu'un seul use case touche Hive à la fois.
+/// est une violation du protocole. Ce traitement en série garantit aussi qu'un seul use case écrit dans la base à la fois.
 ///
 /// La lecture du transport, elle, ne s'arrête jamais : les trames sont mises en file pendant que la session envoie.
 /// C'est ce qui permet aux deux lots de se croiser sans que chacun attende que l'autre ait fini.

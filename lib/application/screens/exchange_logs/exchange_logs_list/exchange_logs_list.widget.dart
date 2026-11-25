@@ -3,8 +3,8 @@ import 'package:bedbug/application/screens/exchange_logs/exchange_logs_list/exch
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_values.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
-import 'package:bedbug/resources/exchange/exchange_log/exchange_log.entity.dart';
-import 'package:bedbug/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
+import 'package:bedbug/infra/resources/exchange/exchange_log/exchange_log.entity.dart';
+import 'package:bedbug/infra/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -121,9 +121,9 @@ n'existe qu'une fois sur chaque téléphone, car il est reconnu par son identifi
 android/.../bedbug/exchange/      la radio, en Kotlin
 lib/application/exchange/         la session, le notifier, les compteurs
 lib/application/screens/exchange/ la page de l'onglet Échange
-lib/gateways/exchange/            trames, transport, codec
-lib/usecases/exchange/            offre, sélection, lot, import
-lib/resources/content/            contenus, réactions, « déjà vus »
+lib/infra/gateways/exchange/            trames, transport, codec
+lib/logic/usecases/exchange/            offre, sélection, lot, import
+lib/infra/resources/content/            contenus, réactions, « déjà vus »
 ```
 
 ## Vocabulaire

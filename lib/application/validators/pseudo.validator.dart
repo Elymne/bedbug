@@ -1,4 +1,4 @@
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.entity.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Vérifie que le pseudo ne contient que des lettres non accentuées et des tirets, sur 3 caractères minimum.

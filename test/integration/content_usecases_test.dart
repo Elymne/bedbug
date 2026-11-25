@@ -1,44 +1,40 @@
-import 'dart:io';
-
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/usecases/content/clear_contents/clear_contents.usecase.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
-import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/logic/usecases/content/clear_contents/clear_contents.usecase.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.usecase.dart';
+import 'package:bedbug/logic/usecases/feed/get_home_feed/get_home_feed.params.dart';
+import 'package:bedbug/logic/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 import '../helpers/seed_contents_usecase.dart';
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
   setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+    container = createTestContainer();
   });
 
   tearDown(() async {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
-  test('save puis get retourne le contenu sauvegardé, via le vrai repository Hive', () async {
+  test('save puis get retourne le contenu sauvegardé, via le vrai repository', () async {
     final saveUsecase = container.read(saveContentUsecaseProvider);
     final getUsecase = container.read(getHomeFeedUsecaseProvider);
 
     final saveResult = await saveUsecase(SaveContentParams(content: _buildTextContent('a')));
     expect(saveResult.isSuccess, isTrue);
 
-    final getResult = await getUsecase(const NoParams());
+    final getResult = await getUsecase(GetHomeFeedParams(feedStartedAt: DateTime.now()));
     expect(getResult.isSuccess, isTrue);
-    final contents = getResult.right!.contents;
+    final contents = getResult.right!.items;
     expect(contents, hasLength(1));
-    expect((contents.single as TextContent).title, 'Titre a');
+    expect((contents.single.content as TextContent).title, 'Titre a');
   });
 
   test('clear supprime tous les contenus stockés', () async {
@@ -52,8 +48,8 @@ void main() {
     final clearResult = await clearUsecase(const NoParams());
     expect(clearResult.isSuccess, isTrue);
 
-    final getResult = await getUsecase(const NoParams());
-    expect(getResult.right!.contents, isEmpty);
+    final getResult = await getUsecase(GetHomeFeedParams(feedStartedAt: DateTime.now()));
+    expect(getResult.right!.items, isEmpty);
   });
 
   test('seed insère le nombre de contenus demandé', () async {
@@ -63,8 +59,8 @@ void main() {
     final seedResult = await seedUsecase(const SeedContentsParams(count: 7));
     expect(seedResult.isSuccess, isTrue);
 
-    final getResult = await getUsecase(const NoParams());
-    expect(getResult.right!.contents, hasLength(7));
+    final getResult = await getUsecase(GetHomeFeedParams(feedStartedAt: DateTime.now()));
+    expect(getResult.right!.items, hasLength(7));
   });
 }
 

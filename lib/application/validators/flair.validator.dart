@@ -1,4 +1,4 @@
-import 'package:bedbug/resources/content/content/content.extension.dart';
+import 'package:bedbug/infra/resources/content/content/content.extension.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Vérifie qu'il reste un flair exploitable une fois la saisie normalisée.

@@ -1,18 +1,19 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/drawing/drawing.config.dart';
-import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
-import 'package:bedbug/usecases/content/get_drawing_draft/get_drawing_draft.failure.dart';
-import 'package:bedbug/usecases/content/get_drawing_draft/get_drawing_draft.usecase.dart';
-import 'package:bedbug/usecases/content/save_drawing_draft/save_drawing_draft.params.dart';
-import 'package:bedbug/usecases/content/save_drawing_draft/save_drawing_draft.usecase.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.config.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/infra/resources/drift.config.dart';
+import 'package:bedbug/infra/resources/drift.database.dart';
+import 'package:bedbug/logic/usecases/content/get_drawing_draft/get_drawing_draft.failure.dart';
+import 'package:bedbug/logic/usecases/content/get_drawing_draft/get_drawing_draft.usecase.dart';
+import 'package:bedbug/logic/usecases/content/save_drawing_draft/save_drawing_draft.params.dart';
+import 'package:bedbug/logic/usecases/content/save_drawing_draft/save_drawing_draft.usecase.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hive_ce_flutter/hive_flutter.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 
 /// Dessin en cours : un trait sur une grande surface en portrait.
 const Drawing _draft = Drawing(
@@ -32,17 +33,14 @@ const Drawing _draft = Drawing(
 );
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
-  setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+  setUp(() {
+    container = createTestContainer();
   });
 
-  tearDown(() async {
+  tearDown(() {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   test('il n\'y a pas de brouillon tant que rien n\'a été dessiné', () async {
@@ -64,7 +62,10 @@ void main() {
   });
 
   test('un brouillon illisible est signalé, sans bloquer', () async {
-    await Hive.box<Uint8List>(drawingDraftBoxName).put('drawing_draft', Uint8List.fromList([1, 2, 3]));
+    final database = container.read(appDatabaseProvider);
+    await database
+        .into(database.drawingDrafts)
+        .insert(DrawingDraftsCompanion.insert(id: const Value(singleRowId), data: Uint8List.fromList([1, 2, 3])));
 
     final result = await container.read(getDrawingDraftUsecaseProvider)(const NoParams());
 

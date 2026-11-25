@@ -5,7 +5,7 @@ import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
 import 'package:bedbug/application/widgets/images/app_image_count_badge.widget.dart';
 import 'package:bedbug/application/widgets/media/app_remote_media.widget.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
-import 'package:bedbug/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/media_content.entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

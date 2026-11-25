@@ -4,7 +4,7 @@ import 'package:bedbug/application/screens/drawing_editor/drawing_undo_button/dr
 import 'package:bedbug/application/screens/drawing_editor/drawing_zoom_mode_button/drawing_zoom_mode_button.widget.dart';
 import 'package:bedbug/application/screens/drawing_editor/notifiers/drawing_editor.notifier.dart';
 import 'package:bedbug/application/style/app_colors.dart';
-import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.value_object.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

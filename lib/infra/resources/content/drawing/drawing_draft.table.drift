@@ -1,0 +1,5 @@
+-- Brouillon de l'éditeur de dessin, une seule ligne (id = 0), encodé par DrawingBinaryCodec.
+CREATE TABLE drawing_drafts (
+  id INTEGER NOT NULL PRIMARY KEY,
+  data BLOB NOT NULL
+) AS DrawingDraftRow;

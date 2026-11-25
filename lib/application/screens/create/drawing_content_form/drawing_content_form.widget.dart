@@ -7,7 +7,7 @@ import 'package:bedbug/application/style/app_icons.dart';
 import 'package:bedbug/application/widgets/drawing/app_drawing_image.widget.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.widget.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
-import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.value_object.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

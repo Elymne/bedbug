@@ -1,30 +1,25 @@
-import 'dart:io';
-
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';
-import 'package:bedbug/usecases/settings/get_settings/get_settings.usecase.dart';
-import 'package:bedbug/usecases/settings/save_settings/save_settings.params.dart';
-import 'package:bedbug/usecases/settings/save_settings/save_settings.usecase.dart';
+import 'package:bedbug/infra/resources/settings/user_settings/user_settings.config.dart';
+import 'package:bedbug/logic/usecases/settings/get_settings/get_settings.usecase.dart';
+import 'package:bedbug/logic/usecases/settings/save_settings/save_settings.params.dart';
+import 'package:bedbug/logic/usecases/settings/save_settings/save_settings.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
-  setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+  setUp(() {
+    container = createTestContainer();
   });
 
-  tearDown(() async {
+  tearDown(() {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
-  test('get crée et retourne des settings par défaut quand la box est vide', () async {
+  test('get crée et retourne des settings par défaut quand la base est vide', () async {
     final getUsecase = container.read(getSettingsUsecaseProvider);
 
     final result = await getUsecase(const NoParams());
@@ -34,7 +29,7 @@ void main() {
     expect(result.right!.blockedWords, isEmpty);
   });
 
-  test('save puis get retourne les settings mis à jour, via le vrai repository Hive', () async {
+  test('save puis get retourne les settings mis à jour, via le vrai repository drift', () async {
     final getUsecase = container.read(getSettingsUsecaseProvider);
     final saveUsecase = container.read(saveSettingsUsecaseProvider);
 

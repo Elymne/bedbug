@@ -1,18 +1,17 @@
-import 'dart:io';
-
-import 'package:bedbug/resources/content/reaction/reaction.config.dart';
-import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
-import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
-import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/usecases/reaction/count_content_reactions/count_content_reactions.params.dart';
-import 'package:bedbug/usecases/reaction/count_content_reactions/count_content_reactions.usecase.dart';
-import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.failure.dart';
-import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.params.dart';
-import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.usecase.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.config.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.repository.drift.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/logic/usecases/reaction/count_content_reactions/count_content_reactions.params.dart';
+import 'package:bedbug/logic/usecases/reaction/count_content_reactions/count_content_reactions.usecase.dart';
+import 'package:bedbug/logic/usecases/reaction/save_reaction/save_reaction.failure.dart';
+import 'package:bedbug/logic/usecases/reaction/save_reaction/save_reaction.params.dart';
+import 'package:bedbug/logic/usecases/reaction/save_reaction/save_reaction.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/content_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 
 /// Construit une réaction de test sur le contenu `content`.
 ///
@@ -40,17 +39,15 @@ Reaction _reaction({
 }
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
   setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+    container = createTestContainer();
+    await addTestContents(container, ['content', 'other-content']);
   });
 
   tearDown(() async {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   test('une nouvelle réaction du même auteur remplace la précédente', () async {

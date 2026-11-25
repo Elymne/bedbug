@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:bedbug/gateways/public_suffix/public_suffix/public_suffix.config.dart';
-import 'package:bedbug/gateways/public_suffix/public_suffix/public_suffix.gateway.package.dart';
-import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
-import 'package:bedbug/usecases/trust/parse_domain_rule/parse_domain_rule.failure.dart';
-import 'package:bedbug/usecases/trust/parse_domain_rule/parse_domain_rule.params.dart';
-import 'package:bedbug/usecases/trust/parse_domain_rule/parse_domain_rule.usecase.dart';
+import 'package:bedbug/infra/gateways/public_suffix/public_suffix/public_suffix.config.dart';
+import 'package:bedbug/infra/gateways/public_suffix/public_suffix/public_suffix.gateway.package.dart';
+import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.value_object.dart';
+import 'package:bedbug/logic/usecases/trust/parse_domain_rule/parse_domain_rule.failure.dart';
+import 'package:bedbug/logic/usecases/trust/parse_domain_rule/parse_domain_rule.params.dart';
+import 'package:bedbug/logic/usecases/trust/parse_domain_rule/parse_domain_rule.usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/fake_error_log_repository.dart';

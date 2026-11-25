@@ -1,9 +1,9 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
-import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
-import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/usecases/reaction/get_content_reactions/get_content_reactions.failure.dart';
-import 'package:bedbug/usecases/reaction/get_content_reactions/get_content_reactions.params.dart';
-import 'package:bedbug/usecases/reaction/get_content_reactions/get_content_reactions.usecase.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/logic/usecases/reaction/get_content_reactions/get_content_reactions.failure.dart';
+import 'package:bedbug/logic/usecases/reaction/get_content_reactions/get_content_reactions.params.dart';
+import 'package:bedbug/logic/usecases/reaction/get_content_reactions/get_content_reactions.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [ContentReactionsSectionNotifier], un par identifiant de contenu.

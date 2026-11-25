@@ -3,15 +3,15 @@ import 'package:bedbug/application/notifiers/trust_settings.notifier.dart';
 import 'package:bedbug/application/screens/home/home_feed/home_feed.notifier.dart';
 import 'package:bedbug/application/screens/settings/own_contents_section/own_contents_section.notifier.dart';
 import 'package:bedbug/core/domain/either.dart';
-import 'package:bedbug/gateways/og_metadata/og_metadata/og_metadata.gateway.dart';
-import 'package:bedbug/resources/content/content/content.entity.dart';
-import 'package:bedbug/resources/content/content/link_content.entity.dart';
-import 'package:bedbug/usecases/content/fetch_link_preview/fetch_link_preview.failure.dart';
-import 'package:bedbug/usecases/content/fetch_link_preview/fetch_link_preview.params.dart';
-import 'package:bedbug/usecases/content/fetch_link_preview/fetch_link_preview.usecase.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.failure.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
+import 'package:bedbug/infra/gateways/og_metadata/og_metadata/og_metadata.gateway.dart';
+import 'package:bedbug/infra/resources/content/content/content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/link_content.entity.dart';
+import 'package:bedbug/logic/usecases/content/fetch_link_preview/fetch_link_preview.failure.dart';
+import 'package:bedbug/logic/usecases/content/fetch_link_preview/fetch_link_preview.params.dart';
+import 'package:bedbug/logic/usecases/content/fetch_link_preview/fetch_link_preview.usecase.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.failure.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [CreatePublishingNotifier].

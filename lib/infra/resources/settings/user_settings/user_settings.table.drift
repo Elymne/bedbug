@@ -1,0 +1,10 @@
+-- Réglages de l'utilisateur, une seule ligne (id = 0).
+import '../../drift.converters.dart';
+
+CREATE TABLE user_settings_store (
+  id INTEGER NOT NULL PRIMARY KEY,
+  blocked_urls TEXT NOT NULL MAPPED BY `const StringListConverter()`,
+  blocked_words TEXT NOT NULL MAPPED BY `const StringListConverter()`,
+  is_anonymous_by_default BOOLEAN NOT NULL,
+  is_exchange_enabled BOOLEAN NOT NULL
+) AS UserSettingsRow;

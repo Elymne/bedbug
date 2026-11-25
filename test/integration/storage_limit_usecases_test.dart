@@ -1,27 +1,27 @@
-import 'dart:io';
-
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
-import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
-import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
-import 'package:bedbug/resources/content/storage/storage.config.dart';
-import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
-import 'package:bedbug/usecases/storage/enforce_storage_limit/enforce_storage_limit.usecase.dart';
-import 'package:bedbug/usecases/storage/get_storage/get_storage.usecase.dart';
-import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.params.dart';
-import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.usecase.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/seen_content/seen_content.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/storage/cleanup_strategy.enum.dart';
+import 'package:bedbug/infra/resources/content/storage/storage.config.dart';
+import 'package:bedbug/infra/resources/content/storage/storage.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/storage/storage.value_object.dart';
+import 'package:bedbug/logic/usecases/storage/enforce_storage_limit/enforce_storage_limit.usecase.dart';
+import 'package:bedbug/logic/usecases/storage/save_storage_limit/save_storage_limit.params.dart';
+import 'package:bedbug/logic/usecases/storage/save_storage_limit/save_storage_limit.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 
-/// Poids de chaque contenu de test : deux contenus remplissent 1 Mo.
-const int _contentSize = bytesPerMegabyte ~/ 2;
+/// Poids réel de chaque contenu de test : deux tiennent sous 1 Mo avec le reste de la base, trois le dépassent.
+const int _contentSize = 400 * 1024;
 
-/// Construit un [TextContent] de [_contentSize] octets.
+/// Construit un [TextContent] de [_contentSize] octets, réellement écrits dans son corps : la limite porte sur le
+/// poids réel de la base.
 ///
 /// - [id] : identifiant du contenu.
 /// - [survivalScore] : priorité de conservation.
@@ -47,22 +47,19 @@ TextContent _buildContent(
     bounce: 0,
     sizeInBytes: _contentSize,
     title: 'Titre $id',
-    body: 'Corps $id',
+    body: 'x' * _contentSize,
   );
 }
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
   setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+    container = createTestContainer();
   });
 
   tearDown(() async {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   /// Enregistre [contents] et règle la limite à [megabytes] Mo.
@@ -129,7 +126,7 @@ void main() {
       expect(await remainingIds(), {'mien-1', 'mien-2', 'mien-3'});
     });
 
-    test('mémorise les contenus supprimés, retire leurs réactions et corrige le compteur', () async {
+    test('mémorise les contenus supprimés, retire leurs réactions et repasse sous la limite réelle', () async {
       await arrange([
         _buildContent('garde-1', survivalScore: 0.9),
         _buildContent('garde-2', survivalScore: 0.8),
@@ -154,23 +151,25 @@ void main() {
 
       final seen = await container.read(seenContentRepositoryProvider).getSeenAmong({'supprime', 'garde-1'});
       final reactions = await container.read(reactionRepositoryProvider).getAllByContentId('supprime');
-      final storage = (await container.read(getStorageUsecaseProvider)(const NoParams())).right;
+      final usedBytes = await container.read(storageRepositoryProvider).getUsedSizeInBytes();
       expect(seen, {'supprime'});
       expect(reactions, isEmpty);
-      expect(storage?.currentSizeInBytes, 2 * _contentSize);
+      expect(usedBytes, lessThanOrEqualTo(bytesPerMegabyte));
     });
   });
 
   group('SaveStorageLimitUsecase', () {
-    test('conserve le poids actuel', () async {
-      await container.read(storageRepositoryProvider).adjustCurrentSizeInBytes(42);
+    test('conserve la stratégie de nettoyage', () async {
+      await container
+          .read(storageRepositoryProvider)
+          .save(const Storage(maxSizeInBytes: bytesPerMegabyte, strategy: CleanupStrategy.byDate));
 
       final result = await container.read(saveStorageLimitUsecaseProvider)(
         const SaveStorageLimitParams(maxSizeInBytes: 50 * bytesPerMegabyte),
       );
 
       expect(result.right?.maxSizeInBytes, 50 * bytesPerMegabyte);
-      expect(result.right?.currentSizeInBytes, 42);
+      expect(result.right?.strategy, CleanupStrategy.byDate);
     });
 
     test('refuse une limite hors des bornes', () async {

@@ -1,7 +1,7 @@
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/text_font_x.dart';
 import 'package:bedbug/application/widgets/signature/app_bedbug_frames.widget.dart';
-import 'package:bedbug/resources/signature/signature/text_font.enum.dart';
+import 'package:bedbug/infra/resources/signature/signature/text_font.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

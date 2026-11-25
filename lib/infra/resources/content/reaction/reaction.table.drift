@@ -1,0 +1,19 @@
+-- Réactions : supprimées avec leur contenu.
+import '../../drift.converters.dart';
+import '../content/content.table.drift';
+
+CREATE TABLE reactions (
+  id TEXT NOT NULL PRIMARY KEY,
+  created_at INTEGER NOT NULL MAPPED BY `const MillisDateTimeConverter()`,
+  updated_at INTEGER NOT NULL MAPPED BY `const MillisDateTimeConverter()`,
+  content_id TEXT NOT NULL REFERENCES contents (id) ON DELETE CASCADE,
+  author_id TEXT NOT NULL,
+  avatar_frames TEXT NOT NULL MAPPED BY `const StringListConverter()`,
+  bubble_text TEXT,
+  color_argb INTEGER,
+  ghost_speed REAL NOT NULL,
+  avatar_frame_speed REAL NOT NULL,
+  bubble_font INTEGER NOT NULL
+) AS ReactionRow;
+
+CREATE INDEX reactions_content_id ON reactions (content_id, updated_at);

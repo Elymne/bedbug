@@ -9,17 +9,17 @@ import 'package:bedbug/application/widgets/tags/app_tag.widget.dart';
 import 'package:bedbug/application/widgets/texts/app_loading_text.widget.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/content/content.entity.dart';
-import 'package:bedbug/resources/content/content/tag.enum.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';
-import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
-import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.failure.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
-import 'package:bedbug/usecases/settings/get_settings/get_settings.failure.dart';
-import 'package:bedbug/usecases/settings/get_settings/get_settings.usecase.dart';
+import 'package:bedbug/infra/resources/content/content/content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/tag.enum.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/infra/resources/settings/user_settings/user_settings.config.dart';
+import 'package:bedbug/infra/resources/settings/user_settings/user_settings.value_object.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.failure.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.usecase.dart';
+import 'package:bedbug/logic/usecases/settings/get_settings/get_settings.failure.dart';
+import 'package:bedbug/logic/usecases/settings/get_settings/get_settings.usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -50,7 +50,7 @@ class _SlowSaveContentUsecase extends _FakeSaveContentUsecase {
   }
 }
 
-/// Fake [GetSettingsUsecase] retournant des réglages fixes, sans toucher à Hive.
+/// Fake [GetSettingsUsecase] retournant des réglages fixes, sans toucher à la base.
 class _FakeGetSettingsUsecase implements GetSettingsUsecase {
   /// Crée un [_FakeGetSettingsUsecase].
   ///

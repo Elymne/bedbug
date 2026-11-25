@@ -1,4 +1,5 @@
 import 'package:bedbug/application/screens/content_detail/content_detail_author/content_detail_author.widget.dart';
+import 'package:bedbug/application/screens/content_detail/content_detail_stats/content_detail_stats.widget.dart';
 import 'package:bedbug/application/screens/content_detail/content_reactions_section/content_reactions_section.widget.dart';
 import 'package:bedbug/application/style/app_colors.dart';
 import 'package:bedbug/application/style/app_icons.dart';
@@ -7,13 +8,12 @@ import 'package:bedbug/application/style/tag_color_x.dart';
 import 'package:bedbug/application/widgets/buttons/app_close_button.widget.dart';
 import 'package:bedbug/application/widgets/buttons/delete_content_button.widget.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
-import 'package:bedbug/application/widgets/stats/content_stats.widget.dart';
 import 'package:bedbug/application/widgets/tags/app_tag.widget.dart';
 import 'package:bedbug/application/widgets/texts/app_prefixed_text.widget.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
 import 'package:bedbug/core/extensions/datetime_x.dart';
-import 'package:bedbug/resources/content/content/content.config.dart';
-import 'package:bedbug/resources/content/content/tag.enum.dart';
+import 'package:bedbug/infra/resources/content/content/content.config.dart';
+import 'package:bedbug/infra/resources/content/content/tag.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -148,7 +148,7 @@ class ContentDetailSkeleton extends ConsumerWidget {
                               runSpacing: 8,
                               crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
-                                ContentStats(contentId: contentId, bounce: bounce),
+                                ContentDetailStats(contentId: contentId, bounce: bounce),
                                 for (final tag in tags) AppTag(label: tag.text, colors: tag.flutterColors),
                               ],
                             ),

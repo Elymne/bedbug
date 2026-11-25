@@ -1,7 +1,7 @@
 import 'package:bedbug/application/screens/drawing_editor/drawing_canvas_image/drawing_canvas_image.notifier.dart';
 import 'package:bedbug/application/screens/drawing_editor/notifiers/drawing_editor.notifier.dart';
-import 'package:bedbug/resources/content/drawing/drawing.config.dart';
-import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.config.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.value_object.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [DrawingLiveStrokeNotifier], un par ouverture de l'éditeur.

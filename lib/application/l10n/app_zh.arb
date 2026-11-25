@@ -136,6 +136,7 @@
   "timeAgoMonths": "{count, plural, other{{count} 个月前}}",
   "timeAgoYears": "{count, plural, other{{count} 年前}}",
   "close": "关闭",
+  "retry": "重试",
   "contentReactionsTitle": "{count, plural, =0{回应} other{回应（{count}）}}",
   "contentReactionsEmpty": "还没有回应。",
   "contentReactionsLoadError": "无法加载回应。",

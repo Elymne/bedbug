@@ -1,0 +1,6 @@
+-- Réglages du stockage, une seule ligne (id = 0). Le poids utilisé n'est pas stocké : il est lu sur la base elle-même.
+CREATE TABLE storage_settings (
+  id INTEGER NOT NULL PRIMARY KEY,
+  max_size_in_bytes INTEGER NOT NULL,
+  strategy INTEGER NOT NULL
+) AS StorageRow;

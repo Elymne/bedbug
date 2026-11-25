@@ -3,17 +3,18 @@ import 'package:bedbug/application/screens/home/home.screen.dart';
 import 'package:bedbug/application/widgets/content_tile/content.widget.dart';
 import 'package:bedbug/application/widgets/fields/content_search_input.widget.dart';
 import 'package:bedbug/application/widgets/ghost/app_ghost_icon.widget.dart';
+import 'package:bedbug/core/domain/cursor_page.dart';
 import 'package:bedbug/core/domain/either.dart';
-import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/content/content.entity.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';
-import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.result.dart';
-import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
-import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.failure.dart';
-import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.params.dart';
-import 'package:bedbug/usecases/feed/mark_content_viewed/mark_content_viewed.usecase.dart';
+import 'package:bedbug/infra/resources/content/content/content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/content.entity.detailed.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/logic/usecases/feed/get_home_feed/get_home_feed.failure.dart';
+import 'package:bedbug/logic/usecases/feed/get_home_feed/get_home_feed.params.dart';
+import 'package:bedbug/logic/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
+import 'package:bedbug/logic/usecases/feed/mark_content_viewed/mark_content_viewed.failure.dart';
+import 'package:bedbug/logic/usecases/feed/mark_content_viewed/mark_content_viewed.params.dart';
+import 'package:bedbug/logic/usecases/feed/mark_content_viewed/mark_content_viewed.usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -28,8 +29,21 @@ class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
   final Set<String> unviewedContentIds;
 
   @override
-  Future<Either<GetHomeFeedFailure, HomeFeed>> call(NoParams params) async {
-    return Right(HomeFeed(contents: _contents, unviewedContentIds: unviewedContentIds));
+  Future<Either<GetHomeFeedFailure, CursorPage<ContentDetailed>>> call(GetHomeFeedParams params) async {
+    return Right(
+      CursorPage(
+        items: [
+          for (final content in _contents)
+            ContentDetailed(
+              content: content,
+              signature: null,
+              reactionCount: 0,
+              isViewed: !unviewedContentIds.contains(content.id),
+            ),
+        ],
+        nextCursor: null,
+      ),
+    );
   }
 }
 
@@ -52,7 +66,7 @@ TextContent _buildTextContent(String id) {
     updatedAt: DateTime(2026),
     signatureId: 'local',
     flair: 'test',
-    origin: ContentOrigin.owned,
+    origin: ContentOrigin.public,
     broadcastScore: 1,
     survivalScore: 1,
     displayScore: 1,
@@ -71,8 +85,16 @@ class _ChangingGetHomeFeedUsecase implements GetHomeFeedUsecase {
   List<Content> contents;
 
   @override
-  Future<Either<GetHomeFeedFailure, HomeFeed>> call(NoParams params) async {
-    return Right(HomeFeed(contents: contents, unviewedContentIds: const {}));
+  Future<Either<GetHomeFeedFailure, CursorPage<ContentDetailed>>> call(GetHomeFeedParams params) async {
+    return Right(
+      CursorPage(
+        items: [
+          for (final content in contents)
+            ContentDetailed(content: content, signature: null, reactionCount: 0, isViewed: true),
+        ],
+        nextCursor: null,
+      ),
+    );
   }
 }
 

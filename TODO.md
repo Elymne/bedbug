@@ -25,23 +25,14 @@ Chantiers liés au système de score des `Content` (voir `ContentOrigin`,
   fixe à `1.0`). `GetContentsUsecase` trie par défaut sur `displayScore` décroissant.
   Testé (`test/integration/recalculate_display_scores_usecase_test.dart`).
 
-- Poids de stockage total : `Storage.currentSizeInBytes` (nouveau champ, entité
-  singleton déjà existante avec `maxSizeInBytes` et `strategy`), maintenu de façon
-  incrémentale plutôt que recalculé en parcourant tous les contents à chaque lecture :
-  - `StorageRepository.adjustCurrentSizeInBytes`/`resetCurrentSizeInBytes` : signatures
-    déclarées dans l'interface (domain), implémentées dans `HiveStorageRepository`
-    (infra) en termes de `getUnique`/`addOne`/`updateOne`. Appelées par
-    `SaveContentUsecase`, `SeedContentsUsecase` et `ClearContentsUsecase`.
-  - `GetStorageUsecase` : lecture de la configuration de stockage (crée les valeurs
-    par défaut si absente — `defaultMaxStorageSizeInBytes` = 500 Mo). Journalise un
-    warning si `StorageRepository.countAll()` détecte plus d'une entrée persistée
-    (ne devrait jamais arriver, ce repository gère un singleton).
-  - `RecalculateStorageUsageUsecase` : recalcule le total en parcourant tous les
-    contents et corrige `currentSizeInBytes` s'il a dérivé du compteur incrémental.
-    À n'appeler que ponctuellement (ex. splashscreen), pas comme chemin de lecture
-    principal — c'est un outil de réconciliation, pas la source de vérité au quotidien.
+- Poids de stockage total : poids réel de la base SQLite, lu par
+  `StorageRepository.getUsedSizeInBytes()` (`PRAGMA` page_count − freelist_count, × page_size).
+  Plus de compteur tenu à la main, donc plus de dérive possible ni de réconciliation :
+  `Storage` ne garde que la limite (`maxSizeInBytes`) et la stratégie. Le poids de chaque
+  contenu (`size_in_bytes`) reste stocké pour l'offre d'échange, l'import et le choix des
+  contenus à supprimer.
 
-  Testé (`test/integration/recalculate_storage_usage_usecase_test.dart`).
+  Testé (`test/integration/storage_limit_usecases_test.dart`, `test/integration/app_database_test.dart`).
 
   Reste à faire : `UserSettings.maxStorageBytes` (ou équivalent) pour permettre à
   l'utilisateur de configurer sa propre limite, et le usecase de nettoyage qui

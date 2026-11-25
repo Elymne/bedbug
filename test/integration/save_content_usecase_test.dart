@@ -1,53 +1,28 @@
-import 'dart:io';
-
-import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/drawing_content.entity.dart';
-import 'package:bedbug/resources/content/content/link_content.entity.dart';
-import 'package:bedbug/resources/content/content/media_content.entity.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/content/drawing/drawing.config.dart';
-import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.failure.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
-import 'package:flutter/services.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/drawing_content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/link_content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.config.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.failure.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/hive_test_helper.dart';
-
-/// Canal utilisé par `path_provider` pour résoudre le dossier de documents.
-///
-/// Mocké ici pour rediriger vers le répertoire temporaire de test, sans
-/// dépendre d'une vraie plateforme, comme le fait déjà `openTestHive` pour Hive.
-const MethodChannel _pathProviderChannel = MethodChannel('plugins.flutter.io/path_provider');
+import '../helpers/drift_test_helper.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
-  late Directory tempDir;
   late ProviderContainer container;
 
-  setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
-
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(_pathProviderChannel, (
-      call,
-    ) async {
-      if (call.method == 'getApplicationDocumentsDirectory') return tempDir.path;
-      return null;
-    });
+  setUp(() {
+    container = createTestContainer();
   });
 
-  tearDown(() async {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
-      _pathProviderChannel,
-      null,
-    );
+  tearDown(() {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   test('ignore le sizeInBytes fourni par l\'appelant pour un TextContent et le recalcule depuis title/body', () async {

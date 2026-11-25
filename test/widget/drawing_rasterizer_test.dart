@@ -3,8 +3,8 @@ import 'dart:ui' as ui;
 
 import 'package:bedbug/application/drawing/drawing_rasterizer.dart';
 import 'package:bedbug/application/drawing/flood_fill.dart';
-import 'package:bedbug/resources/content/drawing/drawing.config.dart';
-import 'package:bedbug/resources/content/drawing/drawing.value_object.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.config.dart';
+import 'package:bedbug/infra/resources/content/drawing/drawing.value_object.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Contour carré fermé de (300, 200) à (700, 600), au stylo épais.

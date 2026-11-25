@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:bedbug/application/notifiers/trust_settings.notifier.dart';
-import 'package:bedbug/resources/content/trust_settings/trust_settings.value_object.dart';
-import 'package:bedbug/usecases/content/fetch_media/fetch_media.params.dart';
-import 'package:bedbug/usecases/content/fetch_media/fetch_media.usecase.dart';
+import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.value_object.dart';
+import 'package:bedbug/logic/usecases/content/fetch_media/fetch_media.params.dart';
+import 'package:bedbug/logic/usecases/content/fetch_media/fetch_media.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [TrustedMediaLoader].

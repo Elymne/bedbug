@@ -1,27 +1,22 @@
-import 'dart:io';
-
-import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/usecases/signature/get_signature/get_signature.params.dart';
-import 'package:bedbug/usecases/signature/get_signature/get_signature.usecase.dart';
-import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.params.dart';
-import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.usecase.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/logic/usecases/signature/get_signature/get_signature.params.dart';
+import 'package:bedbug/logic/usecases/signature/get_signature/get_signature.usecase.dart';
+import 'package:bedbug/logic/usecases/signature/save_local_signature/save_local_signature.params.dart';
+import 'package:bedbug/logic/usecases/signature/save_local_signature/save_local_signature.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
-  setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+  setUp(() {
+    container = createTestContainer();
   });
 
-  tearDown(() async {
+  tearDown(() {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   test('un contenu anonyme est présenté avec le profil anonyme codé en dur', () async {

@@ -1,43 +1,32 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bedbug/application/exchange/exchange_session.dart';
-import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.binary.dart';
-import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
-import 'package:bedbug/resources/content/content/content.entity.dart';
-import 'package:bedbug/resources/content/content/content.model.hive.dart';
-import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/content/reaction/reaction.entity.dart';
-import 'package:bedbug/resources/content/reaction/reaction.model.hive.dart';
-import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
-import 'package:bedbug/resources/content/seen_content/seen_content.model.hive.dart';
-import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
-import 'package:bedbug/resources/content/storage/storage.model.hive.dart';
-import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
-import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/resources/signature/signature/signature.model.hive.dart';
-import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
-import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.params.dart';
-import 'package:bedbug/usecases/content/delete_own_content/delete_own_content.usecase.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.params.dart';
-import 'package:bedbug/usecases/content/save_content/save_content.usecase.dart';
-import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.usecase.dart';
-import 'package:bedbug/usecases/exchange/build_exchange_offer/build_exchange_offer.usecase.dart';
-import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.usecase.dart';
-import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.usecase.dart';
-import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.params.dart';
-import 'package:bedbug/usecases/reaction/save_reaction/save_reaction.usecase.dart';
-import 'package:bedbug/usecases/storage/get_storage/get_storage.usecase.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.binary.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
+import 'package:bedbug/infra/resources/content/content/content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.entity.dart';
+import 'package:bedbug/infra/resources/content/reaction/reaction.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/storage/storage.repository.drift.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/logic/usecases/content/delete_own_content/delete_own_content.params.dart';
+import 'package:bedbug/logic/usecases/content/delete_own_content/delete_own_content.usecase.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.params.dart';
+import 'package:bedbug/logic/usecases/content/save_content/save_content.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/build_exchange_bundle/build_exchange_bundle.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/build_exchange_offer/build_exchange_offer.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.usecase.dart';
+import 'package:bedbug/logic/usecases/reaction/save_reaction/save_reaction.params.dart';
+import 'package:bedbug/logic/usecases/reaction/save_reaction/save_reaction.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hive_ce/hive.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 import '../helpers/in_memory_exchange_transport_gateway.dart';
 
 /// Nombre d'appareils du réseau simulé.
@@ -96,7 +85,7 @@ class _CuttingTransport implements ExchangeTransportGateway {
   }
 }
 
-/// Un téléphone simulé : les vrais use cases et les vrais repositories, sur ses propres box Hive.
+/// Un téléphone simulé : les vrais use cases et les vrais repositories, sur sa propre base en mémoire.
 class _Device {
   /// Crée un [_Device].
   ///
@@ -113,24 +102,11 @@ class _Device {
   /// Nombre de contenus publiés.
   int _publishedCount = 0;
 
-  /// Ouvre les box d'un appareil.
+  /// Ouvre la base d'un appareil.
   ///
   /// - [name] : nom de l'appareil.
   static Future<_Device> open(String name) async {
-    final contents = await Hive.openBox<ContentHiveModel>('${name}_contents');
-    final reactions = await Hive.openBox<ReactionHiveModel>('${name}_reactions');
-    final seen = await Hive.openBox<SeenContentHiveModel>('${name}_seen');
-    final signatures = await Hive.openBox<SignatureHiveModel>('${name}_signatures');
-    final storage = await Hive.openBox<StorageHiveModel>('${name}_storage');
-    final container = ProviderContainer(
-      overrides: [
-        hiveContentBoxProvider.overrideWithValue(contents),
-        hiveReactionBoxProvider.overrideWithValue(reactions),
-        hiveSeenContentBoxProvider.overrideWithValue(seen),
-        hiveSignatureBoxProvider.overrideWithValue(signatures),
-        hiveStorageBoxProvider.overrideWithValue(storage),
-      ],
-    );
+    final container = createTestContainer();
     return _Device(name, container);
   }
 
@@ -187,13 +163,16 @@ class _Device {
     return reactions.map((reaction) => reaction.id).toSet();
   }
 
-  /// Vérifie que le compteur de stockage égale la somme des poids des contenus.
+  /// Vérifie que le stockage reste cohérent : chaque contenu présent une seule fois, et le poids réel de la base
+  /// au moins égal à la somme des poids des contenus.
   ///
-  /// Un contenu compté deux fois, ou enregistré sans être compté, ferait diverger ce compteur.
+  /// Un contenu enregistré deux fois, ou dont le poids serait faux, ferait diverger ces chiffres.
   Future<void> expectStorageConsistent() async {
-    final storage = await container.read(getStorageUsecaseProvider)(const NoParams());
-    final total = (await contents()).fold<int>(0, (sum, content) => sum + content.sizeInBytes);
-    expect(storage.right?.currentSizeInBytes, total, reason: 'stockage de $name');
+    final stored = await contents();
+    final total = stored.fold<int>(0, (sum, content) => sum + content.sizeInBytes);
+    final usedBytes = await container.read(storageRepositoryProvider).getUsedSizeInBytes();
+    expect(stored.map((content) => content.id).toSet(), hasLength(stored.length), reason: 'doublons de $name');
+    expect(usedBytes, greaterThanOrEqualTo(total), reason: 'stockage de $name');
   }
 
   /// Retourne une session de cet appareil sur [transport].
@@ -291,11 +270,9 @@ Future<int> _waveUntilConverged(
 }
 
 void main() {
-  late Directory tempDir;
   late List<_Device> devices;
 
   setUp(() async {
-    tempDir = await openTestHive();
     devices = [for (var index = 0; index < _deviceCount; index++) await _Device.open('device$index')];
   });
 
@@ -303,7 +280,6 @@ void main() {
     for (final device in devices) {
       device.container.dispose();
     }
-    await closeTestHive(tempDir);
   });
 
   for (final seed in [1, 2, 3]) {

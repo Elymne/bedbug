@@ -1,13 +1,13 @@
 import 'package:bedbug/application/l10n/app_localizations_provider.dart';
 import 'package:bedbug/core/domain/params.dart';
 import 'package:bedbug/core/notifier/notifier_state.dart';
-import 'package:bedbug/resources/settings/user_settings/user_settings.config.dart';
-import 'package:bedbug/resources/settings/user_settings/user_settings.value_object.dart';
-import 'package:bedbug/usecases/settings/get_settings/get_settings.failure.dart';
-import 'package:bedbug/usecases/settings/get_settings/get_settings.usecase.dart';
-import 'package:bedbug/usecases/settings/save_settings/save_settings.failure.dart';
-import 'package:bedbug/usecases/settings/save_settings/save_settings.params.dart';
-import 'package:bedbug/usecases/settings/save_settings/save_settings.usecase.dart';
+import 'package:bedbug/infra/resources/settings/user_settings/user_settings.config.dart';
+import 'package:bedbug/infra/resources/settings/user_settings/user_settings.value_object.dart';
+import 'package:bedbug/logic/usecases/settings/get_settings/get_settings.failure.dart';
+import 'package:bedbug/logic/usecases/settings/get_settings/get_settings.usecase.dart';
+import 'package:bedbug/logic/usecases/settings/save_settings/save_settings.failure.dart';
+import 'package:bedbug/logic/usecases/settings/save_settings/save_settings.params.dart';
+import 'package:bedbug/logic/usecases/settings/save_settings/save_settings.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [PublishingSectionNotifier].

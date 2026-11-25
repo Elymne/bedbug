@@ -641,6 +641,10 @@
   "@close": {
     "description": "Libellé générique d'une action de fermeture (ex. infobulle de la croix des snackbars)"
   },
+  "retry": "Réessayer",
+  "@retry": {
+    "description": "Libellé générique d'une action pour relancer une opération qui a échoué (ex. chargement de la suite d'une liste)"
+  },
   "contentReactionsTitle": "{count, plural, =0{Réactions} other{Réactions ({count})}}",
   "@contentReactionsTitle": {
     "description": "Titre de la section des réactions sur la page de détail d'un contenu, avec leur nombre",

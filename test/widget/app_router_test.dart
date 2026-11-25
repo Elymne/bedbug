@@ -20,20 +20,22 @@ import 'package:bedbug/application/screens/settings/storage_section/storage_sect
 import 'package:bedbug/application/screens/settings/trust_section/trust_section.widget.dart';
 import 'package:bedbug/application/screens/splash/splash.screen.dart';
 import 'package:bedbug/application/widgets/fields/app_select_option.dart';
+import 'package:bedbug/core/domain/cursor_page.dart';
 import 'package:bedbug/core/domain/either.dart';
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/link_content.entity.dart';
-import 'package:bedbug/resources/content/content/media_content.entity.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
-import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.failure.dart';
-import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.result.dart';
-import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
-import 'package:bedbug/usecases/signature/get_local_signature/get_local_signature.failure.dart';
-import 'package:bedbug/usecases/signature/get_local_signature/get_local_signature.usecase.dart';
-import 'package:bedbug/usecases/trust/delete_untrusted_contents/delete_untrusted_contents.failure.dart';
-import 'package:bedbug/usecases/trust/delete_untrusted_contents/delete_untrusted_contents.usecase.dart';
+import 'package:bedbug/infra/resources/content/content/content.entity.detailed.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/link_content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/media_content.entity.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/logic/usecases/feed/get_home_feed/get_home_feed.failure.dart';
+import 'package:bedbug/logic/usecases/feed/get_home_feed/get_home_feed.params.dart';
+import 'package:bedbug/logic/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
+import 'package:bedbug/logic/usecases/signature/get_local_signature/get_local_signature.failure.dart';
+import 'package:bedbug/logic/usecases/signature/get_local_signature/get_local_signature.usecase.dart';
+import 'package:bedbug/logic/usecases/trust/delete_untrusted_contents/delete_untrusted_contents.failure.dart';
+import 'package:bedbug/logic/usecases/trust/delete_untrusted_contents/delete_untrusted_contents.usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -44,8 +46,8 @@ import '../helpers/find_app_icon.dart';
 /// Fake [GetHomeFeedUsecase] retournant toujours une liste vide.
 class _FakeGetHomeFeedUsecase implements GetHomeFeedUsecase {
   @override
-  Future<Either<GetHomeFeedFailure, HomeFeed>> call(NoParams params) async {
-    return const Right(HomeFeed(contents: [], unviewedContentIds: {}));
+  Future<Either<GetHomeFeedFailure, CursorPage<ContentDetailed>>> call(GetHomeFeedParams params) async {
+    return const Right(CursorPage(items: [], nextCursor: null));
   }
 }
 

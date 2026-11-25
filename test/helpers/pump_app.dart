@@ -2,7 +2,10 @@ import 'package:bedbug/application/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
+
 import 'package:flutter_test/flutter_test.dart';
+
+import 'drift_test_helper.dart';
 
 /// Monte [child] dans un arbre de widgets minimal (localisation + Riverpod)
 /// pour les tests unitaires de vue.
@@ -11,7 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 Future<void> pumpApp(WidgetTester tester, Widget child, {List<Override> overrides = const []}) async {
   await tester.pumpWidget(
     ProviderScope(
-      overrides: overrides,
+      overrides: [testDatabaseOverride(), ...overrides],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,

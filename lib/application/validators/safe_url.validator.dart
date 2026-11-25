@@ -1,4 +1,4 @@
-import 'package:bedbug/resources/url/safe_url/safe_url.value_object.dart';
+import 'package:bedbug/infra/resources/url/safe_url/safe_url.value_object.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// Vérifie que l'adresse est une URL https sans piège (voir [SafeUrl.parse]).

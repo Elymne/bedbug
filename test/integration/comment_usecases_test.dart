@@ -1,19 +1,20 @@
-import 'dart:io';
 import 'dart:math';
 
-import 'package:bedbug/resources/content/comment/comment.config.dart';
-import 'package:bedbug/resources/content/comment/comment.entity.dart';
-import 'package:bedbug/resources/content/comment/comment.repository.hive.dart';
-import 'package:bedbug/usecases/comment/get_content_comments/get_content_comments.params.dart';
-import 'package:bedbug/usecases/comment/get_content_comments/get_content_comments.usecase.dart';
-import 'package:bedbug/usecases/comment/save_comment/save_comment.failure.dart';
-import 'package:bedbug/usecases/comment/save_comment/save_comment.params.dart';
-import 'package:bedbug/usecases/comment/save_comment/save_comment.usecase.dart';
+import 'package:bedbug/infra/resources/content/comment/comment.config.dart';
+import 'package:bedbug/infra/resources/content/comment/comment.entity.dart';
+import 'package:bedbug/infra/resources/content/comment/comment.repository.drift.dart';
+import 'package:bedbug/infra/resources/drift.database.dart';
+import 'package:bedbug/logic/usecases/comment/get_content_comments/get_content_comments.params.dart';
+import 'package:bedbug/logic/usecases/comment/get_content_comments/get_content_comments.usecase.dart';
+import 'package:bedbug/logic/usecases/comment/save_comment/save_comment.failure.dart';
+import 'package:bedbug/logic/usecases/comment/save_comment/save_comment.params.dart';
+import 'package:bedbug/logic/usecases/comment/save_comment/save_comment.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 import '../helpers/fake_error_log_repository.dart';
-import '../helpers/hive_test_helper.dart';
 
 /// Construit un commentaire de test sur le contenu `content`.
 ///
@@ -32,17 +33,15 @@ Comment _comment({required String id, required DateTime createdAt, String body =
 }
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
   setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+    container = createTestContainer();
+    await addTestContents(container, ['content', 'other-content']);
   });
 
   tearDown(() async {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   test('enregistre le corps sans espaces en bordure et autorise plusieurs commentaires du même auteur', () async {
@@ -145,5 +144,82 @@ void main() {
     final ids = result.right!.map((comment) => comment.id).toList();
     expect(ids.toSet(), {for (var index = 0; index < 20; index++) 'comment-$index'});
     expect(ids, isNot(orderedEquals([for (var index = 0; index < 20; index++) 'comment-$index'])));
+  });
+
+  test('l\'insertion et l\'élagage sont atomiques : un élagage refusé annule l\'insertion', () async {
+    final saveUsecase = container.read(saveCommentUsecaseProvider);
+    final repository = container.read(commentRepositoryProvider);
+    for (var index = 0; index < maxCommentsPerContent; index++) {
+      await saveUsecase(
+        SaveCommentParams(
+          comment: _comment(
+            id: 'comment-$index',
+            createdAt: DateTime(2026).add(Duration(minutes: index)),
+          ),
+        ),
+      );
+    }
+    // Toute suppression de commentaire échoue désormais : l'élagage qui suit l'insertion du 101e aussi.
+    await container
+        .read(appDatabaseProvider)
+        .customStatement(
+          "CREATE TRIGGER refuse_comment_delete BEFORE DELETE ON comments BEGIN SELECT RAISE(ABORT, 'refus'); END",
+        );
+
+    final result = await saveUsecase(
+      SaveCommentParams(
+        comment: _comment(id: 'overflow', createdAt: DateTime(2027)),
+      ),
+    );
+
+    expect(result.left, SaveCommentFailure.storageError);
+    final comments = await repository.getAllByContentId('content');
+    expect(comments.length, maxCommentsPerContent);
+    expect(comments.map((comment) => comment.id), isNot(contains('overflow')));
+  });
+
+  test(
+    'l\'élagage ne touche que le contenu du commentaire, et garde les plus récents même pour un nouveau plus ancien',
+    () async {
+      final repository = container.read(commentRepositoryProvider);
+      await repository.addOne(
+        Comment(
+          id: 'ailleurs',
+          createdAt: DateTime(2020),
+          updatedAt: DateTime(2020),
+          contentId: 'other-content',
+          signatureId: 'alice',
+          body: 'Ailleurs',
+        ),
+      );
+      await repository.addOneKeepingLatest(_comment(id: 'recent', createdAt: DateTime(2026, 2)), maxPerContent: 1);
+
+      final stored = await repository.addOneKeepingLatest(
+        _comment(id: 'ancien', createdAt: DateTime(2026)),
+        maxPerContent: 1,
+      );
+
+      expect(stored.id, 'ancien');
+      expect((await repository.getAllByContentId('content')).map((comment) => comment.id), ['recent']);
+      expect((await repository.getAllByContentId('other-content')).map((comment) => comment.id), ['ailleurs']);
+    },
+  );
+
+  test('un commentaire déjà reçu est retourné tel quel, sans être réécrit', () async {
+    final saveUsecase = container.read(saveCommentUsecaseProvider);
+    await saveUsecase(
+      SaveCommentParams(
+        comment: _comment(id: 'a', createdAt: DateTime(2026)),
+      ),
+    );
+
+    final again = await saveUsecase(
+      SaveCommentParams(
+        comment: _comment(id: 'a', createdAt: DateTime(2027), body: 'Autre texte'),
+      ),
+    );
+
+    expect(again.right!.body, 'Trop bien ce post');
+    expect(again.right!.createdAt, DateTime(2026));
   });
 }

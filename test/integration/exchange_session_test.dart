@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -7,45 +6,34 @@ import 'package:bedbug/application/exchange/exchange_session.config.dart';
 import 'package:bedbug/application/exchange/exchange_session.dart';
 import 'package:bedbug/application/notifiers/passive_exchange.notifier.dart';
 import 'package:bedbug/application/screens/settings/exchange_stats_section/exchange_stats_section.notifier.dart';
-import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.dart';
-import 'package:bedbug/gateways/exchange/exchange_codec/exchange_codec.gateway.json_zlib.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.binary.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_decoder/exchange_frame_decoder.config.dart';
-import 'package:bedbug/gateways/exchange/exchange_frame_decoder/exchange_frame_decoder.gateway.dart';
-import 'package:bedbug/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
-import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.ble.dart';
-import 'package:bedbug/gateways/exchange/peer_link/peer_link.gateway.dart';
-import 'package:bedbug/resources/content/content/content.model.hive.dart';
-import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/resources/content/reaction/reaction.model.hive.dart';
-import 'package:bedbug/resources/content/reaction/reaction.repository.hive.dart';
-import 'package:bedbug/resources/content/seen_content/seen_content.model.hive.dart';
-import 'package:bedbug/resources/content/seen_content/seen_content.repository.hive.dart';
-import 'package:bedbug/resources/content/storage/storage.config.dart';
-import 'package:bedbug/resources/content/storage/storage.model.hive.dart';
-import 'package:bedbug/resources/content/storage/storage.repository.hive.dart';
-import 'package:bedbug/resources/exchange/exchange_log/exchange_log.model.hive.dart';
-import 'package:bedbug/resources/exchange/exchange_log/exchange_log.repository.hive.dart';
-import 'package:bedbug/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
-import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
-import 'package:bedbug/resources/signature/signature/signature.model.hive.dart';
-import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
-import 'package:bedbug/usecases/exchange/build_exchange_bundle/build_exchange_bundle.usecase.dart';
-import 'package:bedbug/usecases/exchange/build_exchange_offer/build_exchange_offer.usecase.dart';
-import 'package:bedbug/usecases/exchange/import_exchange_bundle/import_exchange_bundle.usecase.dart';
-import 'package:bedbug/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.usecase.dart';
-import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.params.dart';
-import 'package:bedbug/usecases/storage/save_storage_limit/save_storage_limit.usecase.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_codec/exchange_codec.gateway.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_codec/exchange_codec.gateway.json_zlib.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.binary.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_frame_decoder/exchange_frame_decoder.config.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_frame_decoder/exchange_frame_decoder.gateway.dart';
+import 'package:bedbug/infra/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
+import 'package:bedbug/infra/gateways/exchange/peer_link/peer_link.gateway.ble.dart';
+import 'package:bedbug/infra/gateways/exchange/peer_link/peer_link.gateway.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/infra/resources/content/storage/storage.config.dart';
+import 'package:bedbug/infra/resources/exchange/exchange_log/exchange_log.repository.drift.dart';
+import 'package:bedbug/infra/resources/exchange/exchange_log/exchange_log_outcome.enum.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/logic/usecases/exchange/build_exchange_bundle/build_exchange_bundle.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/build_exchange_offer/build_exchange_offer.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.usecase.dart';
+import 'package:bedbug/logic/usecases/exchange/select_from_exchange_offer/select_from_exchange_offer.usecase.dart';
+import 'package:bedbug/logic/usecases/storage/save_storage_limit/save_storage_limit.params.dart';
+import 'package:bedbug/logic/usecases/storage/save_storage_limit/save_storage_limit.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hive_ce/hive.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 import '../helpers/in_memory_exchange_transport_gateway.dart';
 
 /// Codec utilisé pour fabriquer les messages d'un pair simulé.
@@ -87,31 +75,15 @@ String _noise(Random random, int length) {
   return String.fromCharCodes([for (var index = 0; index < length; index++) 33 + random.nextInt(90)]);
 }
 
-/// Ouvre les box d'un appareil simulé et retourne un conteneur qui les utilise.
+/// Ouvre la base d'un appareil simulé et retourne un conteneur qui l'utilise.
 ///
 /// Deux conteneurs ouverts avec des préfixes différents se comportent comme deux téléphones : les vrais use cases
 /// et les vrais repositories, chacun sur sa propre base.
 ///
-/// - [prefix] : préfixe des box de l'appareil.
+/// - [prefix] : nom de l'appareil, sans effet sur sa base, propre à son conteneur.
 /// - [overrides] : overrides supplémentaires.
 Future<ProviderContainer> _openDevice(String prefix, {List<Override> overrides = const []}) async {
-  final contents = await Hive.openBox<ContentHiveModel>('${prefix}_contents');
-  final reactions = await Hive.openBox<ReactionHiveModel>('${prefix}_reactions');
-  final seen = await Hive.openBox<SeenContentHiveModel>('${prefix}_seen');
-  final signatures = await Hive.openBox<SignatureHiveModel>('${prefix}_signatures');
-  final storage = await Hive.openBox<StorageHiveModel>('${prefix}_storage');
-  final logs = await Hive.openBox<ExchangeLogHiveModel>('${prefix}_exchange_logs');
-  return ProviderContainer(
-    overrides: [
-      hiveContentBoxProvider.overrideWithValue(contents),
-      hiveReactionBoxProvider.overrideWithValue(reactions),
-      hiveSeenContentBoxProvider.overrideWithValue(seen),
-      hiveSignatureBoxProvider.overrideWithValue(signatures),
-      hiveStorageBoxProvider.overrideWithValue(storage),
-      hiveExchangeLogBoxProvider.overrideWithValue(logs),
-      ...overrides,
-    ],
-  );
+  return createTestContainer(overrides: overrides);
 }
 
 /// Retourne une session de l'appareil [device] sur [transport].
@@ -278,14 +250,12 @@ class _ScriptedPeer {
 }
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer deviceA;
   late ProviderContainer deviceB;
   late InMemoryExchangeTransportGateway transportA;
   late InMemoryExchangeTransportGateway transportB;
 
   setUp(() async {
-    tempDir = await openTestHive();
     deviceA = await _openDevice('a');
     deviceB = await _openDevice('b');
     (transportA, transportB) = InMemoryExchangeTransportGateway.pair();
@@ -294,7 +264,6 @@ void main() {
   tearDown(() async {
     deviceA.dispose();
     deviceB.dispose();
-    await closeTestHive(tempDir);
   });
 
   group('échange entre deux appareils', () {
@@ -306,8 +275,8 @@ void main() {
 
       expect(results.map((result) => result.failure), [null, null]);
       expect(results.map((result) => result.report?.importedContents), [1, 1]);
-      final receivedByA = (await deviceA.read(contentRepositoryProvider).getByIds(['de-b'])).single;
-      final receivedByB = (await deviceB.read(contentRepositoryProvider).getByIds(['de-a'])).single;
+      final receivedByA = (await deviceA.read(contentRepositoryProvider).getById('de-b'))!;
+      final receivedByB = (await deviceB.read(contentRepositoryProvider).getById('de-a'))!;
       expect(receivedByA.origin, ContentOrigin.public);
       expect(receivedByA.bounce, 1);
       expect((receivedByB as TextContent).title, 'Titre de-a');
@@ -419,7 +388,7 @@ void main() {
       final result = await session;
       expect(result.isSuccess, isTrue);
       expect(result.report?.importedContents, 0);
-      expect(await deviceA.read(contentRepositoryProvider).getByIds(['poussé']), isEmpty);
+      expect(await deviceA.read(contentRepositoryProvider).getById('poussé'), isNull);
     });
 
     test('un lot trop gros pour la trame n\'est pas envoyé', () async {
@@ -610,7 +579,8 @@ void main() {
         sizeInBytes: 2 * bytesPerMegabyte,
         flair: 'france',
         title: 'Lourd',
-        body: 'Corps',
+        // Poids réellement écrit : la limite porte sur le poids réel de la base.
+        body: 'x' * (2 * bytesPerMegabyte),
       );
       await passiveDevice.read(contentRepositoryProvider).addOne(heavyContent);
       await deviceB.read(contentRepositoryProvider).addOne(_text('de-b'));

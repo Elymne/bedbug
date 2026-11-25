@@ -1,4 +1,4 @@
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.entity.dart';
 import 'package:flutter/services.dart';
 
 /// Bloque en temps réel toute saisie qui ferait apparaître un mot dans l'icône texte.

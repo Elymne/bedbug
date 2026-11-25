@@ -1,15 +1,13 @@
-import 'dart:io';
-
-import 'package:bedbug/resources/content/content/content.repository.hive.dart';
-import 'package:bedbug/resources/content/content/content_origin.enum.dart';
-import 'package:bedbug/resources/content/content/text_content.entity.dart';
-import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.config.dart';
-import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.params.dart';
-import 'package:bedbug/usecases/feed/get_flair_suggestions/get_flair_suggestions.usecase.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
+import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
+import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
+import 'package:bedbug/logic/usecases/feed/get_flair_suggestions/get_flair_suggestions.config.dart';
+import 'package:bedbug/logic/usecases/feed/get_flair_suggestions/get_flair_suggestions.params.dart';
+import 'package:bedbug/logic/usecases/feed/get_flair_suggestions/get_flair_suggestions.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 
 /// Construit un contenu texte portant le flair [flair].
 ///
@@ -34,17 +32,14 @@ TextContent _buildContent(String id, String flair) {
 }
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
   setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+    container = createTestContainer();
   });
 
   tearDown(() async {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   test('regroupe les flairs par nombre de contenus, puis par ordre alphabétique', () async {

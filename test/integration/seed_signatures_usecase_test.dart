@@ -1,34 +1,30 @@
-import 'dart:io';
-
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/resources/signature/signature/signature.config.dart';
-import 'package:bedbug/resources/signature/signature/signature.entity.dart';
-import 'package:bedbug/resources/signature/signature/signature.repository.hive.dart';
-import 'package:bedbug/usecases/feed/get_home_feed/get_home_feed.usecase.dart';
-import 'package:bedbug/usecases/signature/get_local_signature/get_local_signature.usecase.dart';
-import 'package:bedbug/usecases/signature/get_signature_suggestions/get_signature_suggestions.params.dart';
-import 'package:bedbug/usecases/signature/get_signature_suggestions/get_signature_suggestions.usecase.dart';
-import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.params.dart';
-import 'package:bedbug/usecases/signature/save_local_signature/save_local_signature.usecase.dart';
+import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
+import 'package:bedbug/infra/resources/drift.database.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.entity.dart';
+import 'package:bedbug/infra/resources/signature/signature/signature.repository.drift.dart';
+import 'package:bedbug/logic/usecases/signature/get_local_signature/get_local_signature.usecase.dart';
+import 'package:bedbug/logic/usecases/signature/get_signature_suggestions/get_signature_suggestions.params.dart';
+import 'package:bedbug/logic/usecases/signature/get_signature_suggestions/get_signature_suggestions.usecase.dart';
+import 'package:bedbug/logic/usecases/signature/save_local_signature/save_local_signature.params.dart';
+import 'package:bedbug/logic/usecases/signature/save_local_signature/save_local_signature.usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/hive_test_helper.dart';
+import '../helpers/drift_test_helper.dart';
 import '../helpers/seed_contents_usecase.dart';
 import '../helpers/seed_signatures_usecase.dart';
 
 void main() {
-  late Directory tempDir;
   late ProviderContainer container;
 
   setUp(() async {
-    tempDir = await openTestHive();
-    container = ProviderContainer();
+    container = createTestContainer();
   });
 
   tearDown(() async {
     container.dispose();
-    await closeTestHive(tempDir);
   });
 
   test('génère 5 utilisateurs aux profils valides, trouvables par la recherche', () async {
@@ -68,7 +64,8 @@ void main() {
     await seedUsecase(const SeedSignaturesParams(randomSeed: 1));
     await seedUsecase(const SeedSignaturesParams(randomSeed: 2));
 
-    expect(container.read(hiveSignatureBoxProvider).length, 6);
+    final database = container.read(appDatabaseProvider);
+    expect(await database.select(database.signatures).get(), hasLength(6));
     final localSignature = await container.read(getLocalSignatureUsecaseProvider)(const NoParams());
     expect(localSignature.right!.pseudo, 'moi');
   });
@@ -83,7 +80,7 @@ void main() {
       SeedContentsParams(count: 200, signatureIds: allSignatureIds, randomSeed: 7),
     );
 
-    final contents = (await container.read(getHomeFeedUsecaseProvider)(const NoParams())).right!.contents;
+    final contents = await container.read(contentRepositoryProvider).getAll();
     final usedSignatureIds = contents.map((content) => content.signatureId).toSet();
     expect(usedSignatureIds, allSignatureIds.toSet());
   });

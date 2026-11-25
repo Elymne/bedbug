@@ -5,7 +5,7 @@ import 'package:bedbug/application/style/tag_color_x.dart';
 import 'package:bedbug/application/widgets/headers/app_page_header.widget.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
-import 'package:bedbug/resources/content/content/tag.enum.dart';
+import 'package:bedbug/infra/resources/content/content/tag.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

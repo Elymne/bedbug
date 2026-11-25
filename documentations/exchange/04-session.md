@@ -1,6 +1,6 @@
 # Session : dans quel ordre parlent les téléphones
 
-Code : `lib/application/exchange/exchange_session.dart`, `lib/usecases/exchange/`, `lib/gateways/exchange/`.
+Code : `lib/application/exchange/exchange_session.dart`, `lib/logic/usecases/exchange/`, `lib/infra/gateways/exchange/`.
 
 La session vit dans `application` parce qu'elle appelle les use cases d'échange : seule cette couche en a le droit.
 
@@ -34,7 +34,7 @@ HELLO → OFFER → REQUEST → DATA → DONE
 Chaque trame reçue est traitée jusqu'au bout, réponse comprise, avant la suivante. Chaque sens suit donc strictement cet
 ordre, et la session n'attend qu'un seul type de trame à la fois : tout le reste est une violation du protocole.
 
-Ce traitement en série garantit aussi qu'un seul use case touche Hive à la fois.
+Ce traitement en série garantit aussi qu'un seul use case écrit dans la base à la fois.
 
 La lecture, elle, ne s'arrête jamais : les trames sont mises en file pendant que la session envoie. C'est ce qui permet
 aux deux lots de se croiser. Les lots partent par morceaux de 4 Ko.

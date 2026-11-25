@@ -7,7 +7,7 @@ import 'package:bedbug/application/validators/storage_limit.validator.dart';
 import 'package:bedbug/application/widgets/fields/app_field_focus_pulse.widget.dart';
 import 'package:bedbug/application/widgets/icons/app_icon.widget.dart';
 import 'package:bedbug/core/extensions/build_context_x.dart';
-import 'package:bedbug/resources/content/storage/storage.config.dart';
+import 'package:bedbug/infra/resources/content/storage/storage.config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

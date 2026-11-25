@@ -1,0 +1,10 @@
+-- Réglages de confiance des URL, une seule ligne (id = 0).
+import '../../drift.converters.dart';
+
+CREATE TABLE trust_settings_store (
+  id INTEGER NOT NULL PRIMARY KEY,
+  media_trusted_patterns TEXT NOT NULL MAPPED BY `const StringListConverter()`,
+  media_grey_patterns TEXT NOT NULL MAPPED BY `const StringListConverter()`,
+  link_trusted_patterns TEXT NOT NULL MAPPED BY `const StringListConverter()`,
+  link_grey_patterns TEXT NOT NULL MAPPED BY `const StringListConverter()`
+) AS TrustSettingsRow;
