@@ -33,6 +33,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
 import '../helpers/drift_test_helper.dart';
 import '../helpers/in_memory_exchange_transport_gateway.dart';
 
@@ -592,7 +593,7 @@ void main() {
         await Future<void>.delayed(const Duration(milliseconds: 10));
       }
 
-      final remaining = await passiveDevice.read(contentRepositoryProvider).getAll();
+      final remaining = await readTestContents(passiveDevice);
       expect(remaining.map((content) => content.id), ['de-b']);
     });
   });

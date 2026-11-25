@@ -25,36 +25,19 @@ class DriftReactionRepository implements ReactionRepository {
   /// Base SQLite de l'app.
   final AppDatabase _database;
 
-  /// Une réaction de même identifiant est mise à jour sur place, jamais supprimée puis réinsérée.
+  /// Un `batch` s'exécute dans une transaction. Les suppressions passent avant les insertions : une réaction
+  /// enregistrée peut reprendre l'identifiant d'une réaction supprimée. Les insertions mettent à jour sur place
+  /// (`ON CONFLICT DO UPDATE`), jamais par suppression puis réinsertion.
   @override
-  Future<void> addOne(Reaction entity) {
-    return guardDrift(_source, () async {
-      await _database.into(_database.reactions).insertOnConflictUpdate(ReactionDriftMapper.toCompanion(entity));
-    });
-  }
-
-  /// Voir [ReactionRepository.addMany].
-  @override
-  Future<void> addMany(List<Reaction> entities) {
-    return guardDrift(_source, () async {
-      await _database.batch((batch) {
-        batch.insertAllOnConflictUpdate(_database.reactions, [
-          for (final entity in entities) ReactionDriftMapper.toCompanion(entity),
-        ]);
-      });
-    });
-  }
-
-  /// Un `batch` s'exécute dans une transaction. Les suppressions passent avant l'insertion : la réaction enregistrée
-  /// peut reprendre l'identifiant d'une réaction supprimée.
-  @override
-  Future<void> addReplacing(Reaction entity, List<String> removedIds) {
+  Future<void> addReplacing(List<Reaction> entities, Set<String> removedIds) {
     return guardDrift(_source, () async {
       await _database.batch((batch) {
         if (removedIds.isNotEmpty) {
           batch.deleteWhere(_database.reactions, (table) => table.id.isIn(removedIds));
         }
-        batch.insertAllOnConflictUpdate(_database.reactions, [ReactionDriftMapper.toCompanion(entity)]);
+        batch.insertAllOnConflictUpdate(_database.reactions, [
+          for (final entity in entities) ReactionDriftMapper.toCompanion(entity),
+        ]);
       });
     });
   }
@@ -106,17 +89,6 @@ class DriftReactionRepository implements ReactionRepository {
         ..where(reactions.contentId.equals(contentId));
       final row = await query.getSingle();
       return row.read(count) ?? 0;
-    });
-  }
-
-  /// Voir [ReactionRepository.deleteMany].
-  @override
-  Future<void> deleteMany(List<String> ids) {
-    return guardDrift(_source, () async {
-      if (ids.isEmpty) {
-        return;
-      }
-      await (_database.delete(_database.reactions)..where((table) => table.id.isIn(ids))).go();
     });
   }
 }

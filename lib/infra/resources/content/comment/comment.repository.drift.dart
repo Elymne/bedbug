@@ -25,14 +25,6 @@ class DriftCommentRepository implements CommentRepository {
   /// Base SQLite de l'app.
   final AppDatabase _database;
 
-  /// Un commentaire de même identifiant est mis à jour sur place, jamais supprimé puis réinséré.
-  @override
-  Future<void> addOne(Comment entity) {
-    return guardDrift(_source, () async {
-      await _database.into(_database.comments).insertOnConflictUpdate(CommentDriftMapper.toCompanion(entity));
-    });
-  }
-
   /// La recherche du doublon, l'insertion et l'élagage se font dans une même transaction : un commentaire n'est jamais
   /// enregistré sans que le plafond de son contenu soit appliqué. L'élagage supprime en une requête les commentaires
   /// du contenu absents des [maxPerContent] plus récents, sans les relire ; à date égale, l'identifiant départage.

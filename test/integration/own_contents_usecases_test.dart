@@ -13,6 +13,7 @@ import 'package:bedbug/logic/usecases/content/save_content/save_content.usecase.
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
 import '../helpers/drift_test_helper.dart';
 import '../helpers/seed_contents_usecase.dart';
 
@@ -45,19 +46,17 @@ void main() {
   test('supprimer un de mes posts le retire avec ses réactions, et le mémorise comme déjà vu', () async {
     final saveUsecase = container.read(saveContentUsecaseProvider);
     await saveUsecase(SaveContentParams(content: _buildTextContent('mien', ContentOrigin.owned, DateTime(2026))));
-    await container
-        .read(reactionRepositoryProvider)
-        .addOne(
-          Reaction(
-            id: 'reaction',
-            createdAt: DateTime(2026),
-            updatedAt: DateTime(2026),
-            contentId: 'mien',
-            authorId: 'pair',
-            avatarFrames: const ['(◕‿◕)'],
-            bubbleText: 'ok',
-          ),
-        );
+    await insertTestReactions(container, [
+      Reaction(
+        id: 'reaction',
+        createdAt: DateTime(2026),
+        updatedAt: DateTime(2026),
+        contentId: 'mien',
+        authorId: 'pair',
+        avatarFrames: const ['(◕‿◕)'],
+        bubbleText: 'ok',
+      ),
+    ]);
 
     final result = await container.read(deleteOwnContentUsecaseProvider)(
       const DeleteOwnContentParams(contentId: 'mien'),

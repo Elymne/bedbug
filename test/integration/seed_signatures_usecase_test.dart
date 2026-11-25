@@ -1,5 +1,4 @@
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
 import 'package:bedbug/infra/resources/drift.database.dart';
 import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/infra/resources/signature/signature/signature.entity.dart';
@@ -12,6 +11,7 @@ import 'package:bedbug/logic/usecases/signature/save_local_signature/save_local_
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
 import '../helpers/drift_test_helper.dart';
 import '../helpers/seed_contents_usecase.dart';
 import '../helpers/seed_signatures_usecase.dart';
@@ -80,7 +80,7 @@ void main() {
       SeedContentsParams(count: 200, signatureIds: allSignatureIds, randomSeed: 7),
     );
 
-    final contents = await container.read(contentRepositoryProvider).getAll();
+    final contents = await readTestContents(container);
     final usedSignatureIds = contents.map((content) => content.signatureId).toSet();
     expect(usedSignatureIds, allSignatureIds.toSet());
   });

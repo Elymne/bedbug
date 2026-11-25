@@ -27,6 +27,7 @@ import 'package:bedbug/logic/usecases/exchange/select_from_exchange_offer/select
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
 import '../helpers/drift_test_helper.dart';
 import '../helpers/fake_error_log_repository.dart';
 
@@ -146,13 +147,13 @@ void main() {
 
   group('offre', () {
     test('propose les contenus par priorité de diffusion décroissante, avec le résumé de leurs réactions', () async {
-      await container.read(contentRepositoryProvider).addMany([
+      await insertTestContents(container, [
         _text('low', broadcastScore: 0.2),
         _text('high', broadcastScore: 0.9),
         _text('mid', broadcastScore: 0.5),
       ]);
       final latest = _date.add(const Duration(hours: 2));
-      await container.read(reactionRepositoryProvider).addMany([
+      await insertTestReactions(container, [
         _reaction('r1', contentId: 'mid'),
         _reaction('r2', contentId: 'mid', authorId: 'other', updatedAt: latest),
       ]);
@@ -215,8 +216,8 @@ void main() {
     });
 
     test('redemande les réactions d\'un contenu possédé si le pair en a de plus récentes', () async {
-      await container.read(contentRepositoryProvider).addMany([_text('fresh'), _text('stale')]);
-      await container.read(reactionRepositoryProvider).addMany([
+      await insertTestContents(container, [_text('fresh'), _text('stale')]);
+      await insertTestReactions(container, [
         _reaction('r1', contentId: 'fresh', updatedAt: _date.add(const Duration(days: 1))),
         _reaction('r2', contentId: 'stale'),
       ]);
@@ -253,12 +254,12 @@ void main() {
               avatarFrames: const ['(・ω・)'],
             ),
           );
-      await container.read(contentRepositoryProvider).addMany([
+      await insertTestContents(container, [
         _text('mine'),
         _text('anonymous', signatureId: anonymousSignatureId),
         _text('not-requested'),
       ]);
-      await container.read(reactionRepositoryProvider).addMany([
+      await insertTestReactions(container, [
         _reaction('r1', contentId: 'mine'),
         _reaction('r2', contentId: 'not-requested'),
       ]);
@@ -320,8 +321,7 @@ void main() {
         ],
       );
 
-      final repository = container.read(contentRepositoryProvider);
-      final contents = {for (final content in await repository.getAll()) content.id: content};
+      final contents = {for (final content in await readTestContents(container)) content.id: content};
       expect(contents['a']!.signatureId, contents['b']!.signatureId);
       expect(contents['c']!.signatureId, isNot(contents['a']!.signatureId));
       expect(contents['d']!.signatureId, anonymousSignatureId);
@@ -341,7 +341,7 @@ void main() {
 
     test('importe les réactions sans auteur, sans jamais remplacer celle de l\'utilisateur', () async {
       await container.read(contentRepositoryProvider).addOne(_text('post', signatureId: 'someone'));
-      await container.read(reactionRepositoryProvider).addOne(_reaction('mine', contentId: 'post'));
+      await insertTestReactions(container, [_reaction('mine', contentId: 'post')]);
 
       await importFromPeer(
         const ExchangeRequest(contentIds: [], reactionContentIds: ['post']),
@@ -376,7 +376,7 @@ void main() {
 
     test('un cycle complet entre deux appareils transfère les contenus choisis', () async {
       // Côté A : l'appareil courant, avec trois contenus.
-      await container.read(contentRepositoryProvider).addMany([_text('a1'), _text('a2'), _text('a3')]);
+      await insertTestContents(container, [_text('a1'), _text('a2'), _text('a3')]);
       final offerBytes = (await container.read(buildExchangeOfferUsecaseProvider)(const NoParams())).right!;
 
       // Côté B, simulé : il ne possède rien et demande tout.
@@ -396,7 +396,7 @@ void main() {
       );
 
       expect(result.right?.importedContents, 3);
-      final contents = await container.read(contentRepositoryProvider).getAll();
+      final contents = await readTestContents(container);
       expect(contents.map((Content content) => content.origin).toSet(), {ContentOrigin.public});
     });
   });

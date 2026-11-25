@@ -182,19 +182,17 @@ void main() {
         ),
       );
     }
-    await container
-        .read(reactionRepositoryProvider)
-        .addOne(
-          Reaction(
-            id: 'other',
-            createdAt: DateTime(2026),
-            updatedAt: DateTime(2026),
-            contentId: 'other-content',
-            authorId: 'alice',
-            avatarFrames: const ['(◕‿◕)'],
-            bubbleText: 'ok',
-          ),
-        );
+    await insertTestReactions(container, [
+      Reaction(
+        id: 'other',
+        createdAt: DateTime(2026),
+        updatedAt: DateTime(2026),
+        contentId: 'other-content',
+        authorId: 'alice',
+        avatarFrames: const ['(◕‿◕)'],
+        bubbleText: 'ok',
+      ),
+    ]);
 
     final result = await container.read(countContentReactionsUsecaseProvider)(
       const CountContentReactionsParams(contentId: 'content'),

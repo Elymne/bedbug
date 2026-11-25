@@ -12,7 +12,6 @@ import 'package:bedbug/infra/resources/content/seen_content/seen_content.reposit
 import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.repository.dart';
 import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.repository.drift.dart';
 import 'package:bedbug/infra/resources/content/trust_settings/trust_settings.value_object.dart';
-import 'package:bedbug/infra/resources/content/viewed_content/viewed_content.repository.drift.dart';
 import 'package:bedbug/infra/resources/datasource.exception.dart';
 import 'package:bedbug/logic/usecases/content/save_content/save_content.params.dart';
 import 'package:bedbug/logic/usecases/content/save_content/save_content.usecase.dart';
@@ -22,6 +21,7 @@ import 'package:bedbug/logic/usecases/trust/delete_untrusted_contents/delete_unt
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
 import '../helpers/drift_test_helper.dart';
 
 /// Construit un contenu lien d'identifiant [id].
@@ -155,7 +155,7 @@ void main() {
 
   /// Retourne les identifiants des contenus restés sur le téléphone.
   Future<Set<String>> remainingIds() async {
-    final contents = await container.read(contentRepositoryProvider).getAll();
+    final contents = await readTestContents(container);
     return contents.map((content) => content.id).toSet();
   }
 
@@ -189,7 +189,7 @@ void main() {
     await container.read(deleteUntrustedContentsUsecaseProvider)(const NoParams());
 
     expect(await container.read(seenContentRepositoryProvider).getSeenAmong({'inconnu'}), {'inconnu'});
-    expect(await container.read(viewedContentRepositoryProvider).getAllIds(), isEmpty);
+    expect(await readTestViewedIds(container), isEmpty);
   });
 
   test('ne supprime rien si les listes ne peuvent pas être lues', () async {

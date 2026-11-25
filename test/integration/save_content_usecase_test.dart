@@ -1,4 +1,3 @@
-import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
 import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
 import 'package:bedbug/infra/resources/content/content/drawing_content.entity.dart';
 import 'package:bedbug/infra/resources/content/content/link_content.entity.dart';
@@ -12,6 +11,7 @@ import 'package:bedbug/logic/usecases/content/save_content/save_content.usecase.
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
 import '../helpers/drift_test_helper.dart';
 
 void main() {
@@ -27,7 +27,6 @@ void main() {
 
   test('ignore le sizeInBytes fourni par l\'appelant pour un TextContent et le recalcule depuis title/body', () async {
     final saveUsecase = container.read(saveContentUsecaseProvider);
-    final repository = container.read(contentRepositoryProvider);
 
     final now = DateTime.now();
     final content = TextContent(
@@ -48,7 +47,7 @@ void main() {
 
     await saveUsecase(SaveContentParams(content: content));
 
-    final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a');
+    final saved = (await readTestContents(container)).firstWhere((content) => content.id == 'a');
     expect(saved.sizeInBytes, 5);
   });
 
@@ -56,7 +55,6 @@ void main() {
     'ignore le sizeInBytes fourni par l\'appelant pour un LinkContent et le recalcule depuis ses champs texte',
     () async {
       final saveUsecase = container.read(saveContentUsecaseProvider);
-      final repository = container.read(contentRepositoryProvider);
 
       final now = DateTime.now();
       final content = LinkContent(
@@ -77,7 +75,7 @@ void main() {
 
       await saveUsecase(SaveContentParams(content: content));
 
-      final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a');
+      final saved = (await readTestContents(container)).firstWhere((content) => content.id == 'a');
       expect(saved.sizeInBytes, 5);
     },
   );
@@ -86,7 +84,6 @@ void main() {
     "ignore le sizeInBytes fourni par l'appelant pour un MediaContent et ne compte que ses textes et ses adresses",
     () async {
       final saveUsecase = container.read(saveContentUsecaseProvider);
-      final repository = container.read(contentRepositoryProvider);
 
       final now = DateTime.now();
       final content = MediaContent(
@@ -111,7 +108,7 @@ void main() {
 
       await saveUsecase(SaveContentParams(content: content));
 
-      final saved = (await repository.getAll()).firstWhere((content) => content.id == 'a') as MediaContent;
+      final saved = (await readTestContents(container)).firstWhere((content) => content.id == 'a') as MediaContent;
       // « Titre » (5) + « é » (2 octets en UTF-8) + deux adresses de 18 caractères.
       expect(saved.sizeInBytes, 5 + 2 + 18 + 18);
       expect(saved.media.map((media) => media.kind), [MediaKind.image, MediaKind.video]);
@@ -154,7 +151,7 @@ void main() {
 
     // « Titre » (5) + 16 couleurs × 4 + 1 opération × 12 + 2 points × 4.
     expect(result.right!.sizeInBytes, 5 + 64 + 12 + 8);
-    final saved = (await container.read(contentRepositoryProvider).getAll()).single as DrawingContent;
+    final saved = (await readTestContents(container)).single as DrawingContent;
     expect(saved.drawing, drawing);
   });
 
@@ -165,6 +162,6 @@ void main() {
     final result = await saveUsecase(SaveContentParams(content: drawingContent(tooManyColors)));
 
     expect(result.left, SaveContentFailure.invalidContent);
-    expect(await container.read(contentRepositoryProvider).getAll(), isEmpty);
+    expect(await readTestContents(container), isEmpty);
   });
 }

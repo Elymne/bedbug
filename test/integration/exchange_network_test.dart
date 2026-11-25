@@ -6,7 +6,6 @@ import 'package:bedbug/application/exchange/exchange_session.dart';
 import 'package:bedbug/infra/gateways/exchange/exchange_frame_codec/exchange_frame_codec.gateway.binary.dart';
 import 'package:bedbug/infra/gateways/exchange/exchange_transport/exchange_transport.gateway.dart';
 import 'package:bedbug/infra/resources/content/content/content.entity.dart';
-import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
 import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
 import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
 import 'package:bedbug/infra/resources/content/reaction/reaction.entity.dart';
@@ -26,6 +25,7 @@ import 'package:bedbug/logic/usecases/reaction/save_reaction/save_reaction.useca
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
 import '../helpers/drift_test_helper.dart';
 import '../helpers/in_memory_exchange_transport_gateway.dart';
 
@@ -147,7 +147,7 @@ class _Device {
 
   /// Retourne tous les contenus de l'appareil.
   Future<List<Content>> contents() {
-    return container.read(contentRepositoryProvider).getAll();
+    return readTestContents(container);
   }
 
   /// Retourne les identifiants des contenus de l'appareil.

@@ -90,7 +90,7 @@ class SeedReactionsUsecase extends Usecase<SeedReactionsParams, SeedReactionsFai
           for (var index = 0; index < reactionsPerContent; index++)
             _buildReaction(random, content.id, 'seed-reactor-$index', now.subtract(Duration(minutes: index))),
         ];
-        await _reactionRepository.addMany(reactions);
+        await _reactionRepository.addReplacing(reactions, const {});
       }
       return const Right(null);
     } on DataException catch (error, stackTrace) {

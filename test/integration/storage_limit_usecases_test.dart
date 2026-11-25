@@ -1,5 +1,4 @@
 import 'package:bedbug/core/domain/params.dart';
-import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
 import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
 import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
 import 'package:bedbug/infra/resources/content/reaction/reaction.entity.dart';
@@ -15,6 +14,7 @@ import 'package:bedbug/logic/usecases/storage/save_storage_limit/save_storage_li
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
 import '../helpers/drift_test_helper.dart';
 
 /// Poids réel de chaque contenu de test : deux tiennent sous 1 Mo avec le reste de la base, trois le dépassent.
@@ -64,7 +64,7 @@ void main() {
 
   /// Enregistre [contents] et règle la limite à [megabytes] Mo.
   Future<void> arrange(List<TextContent> contents, {required int megabytes}) async {
-    await container.read(contentRepositoryProvider).addMany(contents);
+    await insertTestContents(container, contents);
     await container.read(saveStorageLimitUsecaseProvider)(
       SaveStorageLimitParams(maxSizeInBytes: megabytes * bytesPerMegabyte),
     );
@@ -72,7 +72,7 @@ void main() {
 
   /// Identifiants des contenus encore présents.
   Future<Set<String>> remainingIds() async {
-    final contents = await container.read(contentRepositoryProvider).getAll();
+    final contents = await readTestContents(container);
     return contents.map((content) => content.id).toSet();
   }
 
@@ -133,19 +133,17 @@ void main() {
         _buildContent('supprime', survivalScore: 0.1),
       ], megabytes: 1);
       final now = DateTime.now();
-      await container
-          .read(reactionRepositoryProvider)
-          .addOne(
-            Reaction(
-              id: 'reaction',
-              createdAt: now,
-              updatedAt: now,
-              contentId: 'supprime',
-              authorId: 'auteur',
-              avatarFrames: const [':)'],
-              bubbleText: 'ok',
-            ),
-          );
+      await insertTestReactions(container, [
+        Reaction(
+          id: 'reaction',
+          createdAt: now,
+          updatedAt: now,
+          contentId: 'supprime',
+          authorId: 'auteur',
+          avatarFrames: const [':)'],
+          bubbleText: 'ok',
+        ),
+      ]);
 
       await container.read(enforceStorageLimitUsecaseProvider)(const NoParams());
 

@@ -74,28 +74,6 @@ class DriftContentRepository implements ContentRepository {
     });
   }
 
-  /// Voir [ContentRepository.addMany].
-  @override
-  Future<void> addMany(List<Content> entities) {
-    return guardDrift(_source, () async {
-      final storedAt = DateTime.now();
-      await _database.batch((batch) {
-        for (final entity in entities) {
-          batch.insert(_database.contents, _insertCompanion(entity, storedAt), onConflict: _upsert(entity));
-        }
-      });
-    });
-  }
-
-  /// Voir [ContentRepository.getAll].
-  @override
-  Future<List<Content>> getAll() {
-    return guardDrift(_source, () async {
-      final rows = await _database.select(_database.contents).get();
-      return [for (final row in rows) ContentDriftMapper.toEntity(row)];
-    });
-  }
-
   /// Seules les colonnes des formules de score sont lues : ni les textes, ni les médias, ni surtout le dessin, dont
   /// SQLite ne lit alors pas les pages de débordement.
   @override

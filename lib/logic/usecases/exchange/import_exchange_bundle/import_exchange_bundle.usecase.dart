@@ -28,8 +28,8 @@ import 'package:bedbug/infra/resources/signature/signature/signature.config.dart
 import 'package:bedbug/infra/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/infra/resources/signature/signature/signature.repository.dart';
 import 'package:bedbug/infra/resources/signature/signature/signature.repository.drift.dart';
-import 'package:bedbug/logic/services/reaction/merge_reaction/merge_reaction.params.dart';
-import 'package:bedbug/logic/services/reaction/merge_reaction/merge_reaction.service.dart';
+import 'package:bedbug/logic/services/reaction/merge_reactions/merge_reactions.params.dart';
+import 'package:bedbug/logic/services/reaction/merge_reactions/merge_reactions.service.dart';
 import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.config.dart';
 import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.failure.dart';
 import 'package:bedbug/logic/usecases/exchange/import_exchange_bundle/import_exchange_bundle.params.dart';
@@ -44,7 +44,7 @@ final importExchangeBundleUsecaseProvider = Provider<ImportExchangeBundleUsecase
     ref.read(seenContentRepositoryProvider),
     ref.read(signatureRepositoryProvider),
     ref.read(exchangeCodecGatewayProvider),
-    ref.read(mergeReactionServiceProvider),
+    ref.read(mergeReactionsServiceProvider),
     ref.read(errorLogRepositoryProvider),
   );
 });
@@ -62,7 +62,7 @@ final importExchangeBundleUsecaseProvider = Provider<ImportExchangeBundleUsecase
 ///   que deux contenus portant exactement la même signature se retrouvent sous la même page `s/pseudo`. Une
 ///   signature invalide est ignorée et le contenu s'affiche en anonyme.
 /// - Les limites de contenu sont celles d'un contenu local ([Drawing.isValid], [Content.sizeInBytesOf]), avec
-///   un plafond de poids ([maxReceivedContentBytes]) ; celles des réactions viennent de [MergeReactionService].
+///   un plafond de poids ([maxReceivedContentBytes]) ; celles des réactions viennent de [MergeReactionsService].
 /// - Une réaction n'a pas d'auteur transmis : son identifiant en tient lieu, l'auteur réutilisant le même
 ///   identifiant quand il modifie sa réaction. Une réaction reçue ne remplace jamais celle de l'utilisateur.
 ///
@@ -76,7 +76,7 @@ class ImportExchangeBundleUsecase
     this._seenContentRepository,
     this._signatureRepository,
     this._exchangeCodecGateway,
-    this._mergeReactionService,
+    this._mergeReactionsService,
     this._errorLogRepository,
   );
 
@@ -85,7 +85,7 @@ class ImportExchangeBundleUsecase
   final SeenContentRepository _seenContentRepository;
   final SignatureRepository _signatureRepository;
   final ExchangeCodecGateway _exchangeCodecGateway;
-  final MergeReactionService _mergeReactionService;
+  final MergeReactionsService _mergeReactionsService;
   final ErrorLogRepository _errorLogRepository;
 
   @override
@@ -318,7 +318,7 @@ class ImportExchangeBundleUsecase
     final localReactionIds = await _reactionRepository.getIdsByAuthor(localSignatureId, existingContentIds);
     final receivedCountByContent = <String, int>{};
     final handledIds = <String>{};
-    var imported = 0;
+    final accepted = <Reaction>[];
     var rejected = 0;
 
     for (final received in reactions) {
@@ -341,7 +341,7 @@ class ImportExchangeBundleUsecase
 
       final createdAt = received.createdAt.isAfter(now) ? now : received.createdAt;
       final updatedAt = received.updatedAt.isAfter(now) ? now : received.updatedAt;
-      final isSaved = await _saveReceivedReaction(
+      accepted.add(
         Reaction(
           id: received.id,
           createdAt: createdAt,
@@ -356,23 +356,19 @@ class ImportExchangeBundleUsecase
           bubbleFont: received.bubbleFont,
         ),
       );
-      if (!isSaved) {
-        rejected++;
-        continue;
-      }
-      imported++;
     }
-    return (imported: imported, rejected: rejected);
-  }
 
-  /// Enregistre [reaction] avec [MergeReactionService], et indique si elle a été traitée.
-  ///
-  /// Une version plus ancienne que celle connue compte comme traitée : elle n'est simplement pas écrite. Une réaction
-  /// refusée, ou qui échoue à l'écriture, n'empêche pas d'importer les suivantes.
-  ///
-  /// - [reaction] : réaction reçue, avec ses champs propres à l'appareil.
-  Future<bool> _saveReceivedReaction(Reaction reaction) async {
-    final result = await _mergeReactionService(MergeReactionParams(reaction: reaction));
-    return result.isSuccess;
+    if (accepted.isEmpty) {
+      return (imported: 0, rejected: rejected);
+    }
+    // Une version plus ancienne que celle connue compte comme importée : elle n'est simplement pas écrite. Une réaction
+    // invalide est écartée sans empêcher les autres ; un échec d'écriture écarte tout le lot, qui reste cohérent.
+    final result = await _mergeReactionsService(MergeReactionsParams(reactions: accepted));
+    final kept = result.right;
+    if (kept == null) {
+      return (imported: 0, rejected: rejected + accepted.length);
+    }
+    final imported = kept.where((reaction) => reaction != null).length;
+    return (imported: imported, rejected: rejected + kept.length - imported);
   }
 }

@@ -170,8 +170,8 @@ core/
 ### Service rules
 
 - A service is a "sub use case": a sequence of operations that several use cases would otherwise duplicate
-  (`DeleteContentsService`: delete contents with their reactions, comments, traces and weight; `MergeReactionService`:
-  integrate a reaction within its limits). It is written once, and each use case calls it.
+  (`DeleteContentsService`: delete contents with their reactions, comments, traces and weight; `MergeReactionsService`:
+  integrate a batch of reactions within their limits). It is written once, and each use case calls it.
 - Extend `Service<P extends Params, F, V>` and implement `call(params)`, returning `Future<Either<F, V>>`: same shape
   and same error rules as a use case (typed failure enum, catch-all logged and recorded in `ErrorLogRepository`).
 - May depend on repositories, gateways and other services, never on a use case. Only use cases call services.

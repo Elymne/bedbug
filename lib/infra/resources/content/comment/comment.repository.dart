@@ -5,9 +5,6 @@ import 'package:bedbug/infra/resources/content/comment/comment.entity.dart';
 /// Pas de mise à jour : un commentaire n'est pas modifiable une fois posté. Un commentaire n'existe que sur un contenu
 /// présent, et disparaît avec lui.
 abstract class CommentRepository {
-  /// Persiste le commentaire [entity].
-  Future<void> addOne(Comment entity);
-
   /// Persiste le commentaire [entity] puis ne garde, sur son contenu, que les [maxPerContent] commentaires les plus
   /// récents (`createdAt`), en une seule opération atomique. Retourne le commentaire stocké.
   ///

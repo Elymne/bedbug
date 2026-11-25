@@ -135,13 +135,17 @@ class SeedContentsUsecase extends Usecase<SeedContentsParams, SeedContentsFailur
         batch.add(content);
 
         if (batch.length == _batchSize) {
-          await _contentRepository.addMany(List.from(batch));
+          for (final batchContent in batch) {
+            await _contentRepository.addOne(batchContent);
+          }
           batch.clear();
         }
       }
 
       if (batch.isNotEmpty) {
-        await _contentRepository.addMany(List.from(batch));
+        for (final batchContent in batch) {
+          await _contentRepository.addOne(batchContent);
+        }
       }
 
       return const Right(null);

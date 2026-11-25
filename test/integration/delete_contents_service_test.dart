@@ -1,3 +1,4 @@
+import 'package:bedbug/infra/resources/content/comment/comment.config.dart';
 import 'package:bedbug/infra/resources/content/comment/comment.entity.dart';
 import 'package:bedbug/infra/resources/content/comment/comment.repository.drift.dart';
 import 'package:bedbug/infra/resources/content/content/content.repository.drift.dart';
@@ -22,22 +23,20 @@ void main() {
     container = createTestContainer();
     await addTestContents(container, ['supprime', 'garde']);
     for (final contentId in ['supprime', 'garde']) {
-      await container
-          .read(reactionRepositoryProvider)
-          .addOne(
-            Reaction(
-              id: 'reaction-$contentId',
-              createdAt: date,
-              updatedAt: date,
-              contentId: contentId,
-              authorId: 'pair',
-              avatarFrames: const ['(◕‿◕)'],
-              bubbleText: 'ok',
-            ),
-          );
+      await insertTestReactions(container, [
+        Reaction(
+          id: 'reaction-$contentId',
+          createdAt: date,
+          updatedAt: date,
+          contentId: contentId,
+          authorId: 'pair',
+          avatarFrames: const ['(◕‿◕)'],
+          bubbleText: 'ok',
+        ),
+      ]);
       await container
           .read(commentRepositoryProvider)
-          .addOne(
+          .addOneKeepingLatest(
             Comment(
               id: 'comment-$contentId',
               createdAt: date,
@@ -46,6 +45,7 @@ void main() {
               signatureId: 'pair',
               body: 'Trop bien',
             ),
+            maxPerContent: maxCommentsPerContent,
           );
       await container
           .read(viewedContentRepositoryProvider)
@@ -66,7 +66,7 @@ void main() {
     expect(await container.read(contentRepositoryProvider).getById('supprime'), isNull);
     expect(await container.read(reactionRepositoryProvider).getAllByContentId('supprime'), isEmpty);
     expect(await container.read(commentRepositoryProvider).getAllByContentId('supprime'), isEmpty);
-    expect(await container.read(viewedContentRepositoryProvider).getAllIds(), {'garde'});
+    expect(await readTestViewedIds(container), {'garde'});
     expect(await container.read(reactionRepositoryProvider).getAllByContentId('garde'), hasLength(1));
     expect(await container.read(commentRepositoryProvider).getAllByContentId('garde'), hasLength(1));
   });

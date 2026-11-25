@@ -182,7 +182,7 @@ void main() {
     'l\'élagage ne touche que le contenu du commentaire, et garde les plus récents même pour un nouveau plus ancien',
     () async {
       final repository = container.read(commentRepositoryProvider);
-      await repository.addOne(
+      await repository.addOneKeepingLatest(
         Comment(
           id: 'ailleurs',
           createdAt: DateTime(2020),
@@ -191,6 +191,7 @@ void main() {
           signatureId: 'alice',
           body: 'Ailleurs',
         ),
+        maxPerContent: maxCommentsPerContent,
       );
       await repository.addOneKeepingLatest(_comment(id: 'recent', createdAt: DateTime(2026, 2)), maxPerContent: 1);
 

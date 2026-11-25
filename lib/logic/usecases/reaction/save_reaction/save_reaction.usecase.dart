@@ -4,42 +4,47 @@ import 'package:bedbug/core/logger/app_logger.dart';
 import 'package:bedbug/infra/resources/content/reaction/reaction.entity.dart';
 import 'package:bedbug/infra/resources/error_log/error_log/error_log.repository.dart';
 import 'package:bedbug/infra/resources/error_log/error_log/error_log.repository.drift.dart';
-import 'package:bedbug/logic/services/reaction/merge_reaction/merge_reaction.failure.dart';
-import 'package:bedbug/logic/services/reaction/merge_reaction/merge_reaction.params.dart';
-import 'package:bedbug/logic/services/reaction/merge_reaction/merge_reaction.service.dart';
+import 'package:bedbug/logic/services/reaction/merge_reactions/merge_reactions.failure.dart';
+import 'package:bedbug/logic/services/reaction/merge_reactions/merge_reactions.params.dart';
+import 'package:bedbug/logic/services/reaction/merge_reactions/merge_reactions.service.dart';
 import 'package:bedbug/logic/usecases/reaction/save_reaction/save_reaction.failure.dart';
 import 'package:bedbug/logic/usecases/reaction/save_reaction/save_reaction.params.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider du [SaveReactionUsecase].
 final saveReactionUsecaseProvider = Provider<SaveReactionUsecase>((ref) {
-  return SaveReactionUsecase(ref.read(mergeReactionServiceProvider), ref.read(errorLogRepositoryProvider));
+  return SaveReactionUsecase(ref.read(mergeReactionsServiceProvider), ref.read(errorLogRepositoryProvider));
 });
 
 /// Enregistre une réaction de l'utilisateur sur un contenu.
 ///
 /// Une réaction ne doit pas pouvoir contourner les règles qui bornent les réactions d'un contenu : ce use case passe
-/// par [MergeReactionService], comme l'import des réactions reçues des pairs.
+/// par [MergeReactionsService], comme l'import des réactions reçues des pairs.
 ///
 /// Retourne la réaction effectivement conservée pour cet auteur.
 class SaveReactionUsecase extends Usecase<SaveReactionParams, SaveReactionFailure, Reaction> {
   /// Crée un [SaveReactionUsecase].
-  SaveReactionUsecase(this._mergeReactionService, this._errorLogRepository);
+  SaveReactionUsecase(this._mergeReactionsService, this._errorLogRepository);
 
-  final MergeReactionService _mergeReactionService;
+  final MergeReactionsService _mergeReactionsService;
   final ErrorLogRepository _errorLogRepository;
 
   @override
   Future<Either<SaveReactionFailure, Reaction>> call(SaveReactionParams params) async {
     try {
-      final result = await _mergeReactionService(MergeReactionParams(reaction: params.reaction));
+      final result = await _mergeReactionsService(MergeReactionsParams(reactions: [params.reaction]));
       return result.fold<Either<SaveReactionFailure, Reaction>>(
-        onFailure: (MergeReactionFailure failure) => Left(switch (failure) {
-          MergeReactionFailure.invalidReaction => SaveReactionFailure.invalidReaction,
-          MergeReactionFailure.storageError => SaveReactionFailure.storageError,
-          MergeReactionFailure.unknown => SaveReactionFailure.unknown,
+        onFailure: (MergeReactionsFailure failure) => Left(switch (failure) {
+          MergeReactionsFailure.storageError => SaveReactionFailure.storageError,
+          MergeReactionsFailure.unknown => SaveReactionFailure.unknown,
         }),
-        onSuccess: (Reaction kept) => Right(kept),
+        onSuccess: (List<Reaction?> kept) {
+          final reaction = kept.single;
+          if (reaction == null) {
+            return const Left(SaveReactionFailure.invalidReaction);
+          }
+          return Right(reaction);
+        },
       );
     } catch (error, stackTrace) {
       AppLogger.error('SaveReactionUsecase', error, stackTrace);

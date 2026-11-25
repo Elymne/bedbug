@@ -5,20 +5,15 @@ import 'package:bedbug/infra/resources/content/reaction/reaction.entity.dart';
 /// Pas de mise à jour : une réaction remplacée est supprimée puis la nouvelle enregistrée, sous son propre
 /// identifiant. Une réaction n'existe que sur un contenu présent, et disparaît avec lui.
 abstract class ReactionRepository {
-  /// Persiste la réaction [entity].
-  Future<void> addOne(Reaction entity);
-
-  /// Persiste les réactions [entities] en une seule opération.
-  Future<void> addMany(List<Reaction> entities);
-
-  /// Persiste [entity] et supprime les réactions [removedIds], en une seule opération atomique.
+  /// Persiste [entities] et supprime les réactions [removedIds], en une seule opération atomique.
   ///
   /// Remplacer la réaction d'un auteur et écarter celles qui dépassent le plafond d'un contenu doivent se faire
   /// ensemble : interrompu entre deux, le contenu garderait deux réactions du même auteur ou dépasserait son plafond.
+  /// Une réaction de même identifiant qu'une réaction existante la met à jour.
   ///
-  /// - [entity] : réaction à enregistrer.
+  /// - [entities] : réactions à enregistrer.
   /// - [removedIds] : réactions à supprimer.
-  Future<void> addReplacing(Reaction entity, List<String> removedIds);
+  Future<void> addReplacing(List<Reaction> entities, Set<String> removedIds);
 
   /// Retourne toutes les réactions rattachées au contenu [contentId], sans ordre garanti.
   Future<List<Reaction>> getAllByContentId(String contentId);
@@ -34,7 +29,4 @@ abstract class ReactionRepository {
 
   /// Retourne le nombre de réactions rattachées au contenu [contentId].
   Future<int> countByContentId(String contentId);
-
-  /// Supprime les réactions dont l'identifiant fait partie de [ids].
-  Future<void> deleteMany(List<String> ids);
 }

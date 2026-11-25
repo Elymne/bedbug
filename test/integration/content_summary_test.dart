@@ -5,10 +5,10 @@ import 'package:bedbug/infra/resources/content/content/content.repository.drift.
 import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
 import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
 import 'package:bedbug/infra/resources/content/reaction/reaction.entity.dart';
-import 'package:bedbug/infra/resources/content/reaction/reaction.repository.drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
 import '../helpers/drift_test_helper.dart';
 
 /// Construit un contenu reçu d'identifiant [id].
@@ -72,11 +72,11 @@ void main() {
 
   test('un résumé compte les réactions et retient la plus récente, à la milliseconde', () async {
     final latest = DateTime(2026, 3, 1, 12, 0, 0, 456);
-    await container.read(contentRepositoryProvider).addMany([
+    await insertTestContents(container, [
       _buildContent('avec', sizeInBytes: 123),
       _buildContent('sans', sizeInBytes: 7),
     ]);
-    await container.read(reactionRepositoryProvider).addMany([
+    await insertTestReactions(container, [
       _buildReaction('r1', 'avec', DateTime(2026, 1)),
       _buildReaction('r2', 'avec', latest),
       _buildReaction('r3', 'avec', DateTime(2026, 2)),
@@ -94,7 +94,7 @@ void main() {
   });
 
   test('les plus diffusables passent en tête, du plus fort au plus faible', () async {
-    await container.read(contentRepositoryProvider).addMany([
+    await insertTestContents(container, [
       _buildContent('moyen', broadcastScore: 0.5),
       _buildContent('fort', broadcastScore: 0.9),
       _buildContent('faible', broadcastScore: 0.1),
@@ -106,9 +106,7 @@ void main() {
   });
 
   test('le tirage au hasard écarte les exclus et se reproduit avec la même graine', () async {
-    await container.read(contentRepositoryProvider).addMany([
-      for (var index = 0; index < 20; index++) _buildContent('c$index'),
-    ]);
+    await insertTestContents(container, [for (var index = 0; index < 20; index++) _buildContent('c$index')]);
     final repository = container.read(contentRepositoryProvider);
 
     final first = await repository.getRandomSummariesExcluding(5, {'c0', 'c1'}, Random(3));
@@ -121,7 +119,7 @@ void main() {
   });
 
   test('les candidats à la suppression sont les contenus reçus, du moins au plus digne d\'être gardé', () async {
-    await container.read(contentRepositoryProvider).addMany([
+    await insertTestContents(container, [
       _buildContent('mien', survivalScore: 0, origin: ContentOrigin.owned),
       _buildContent('fort', survivalScore: 0.9),
       _buildContent('faible', survivalScore: 0.1),

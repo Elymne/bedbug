@@ -6,9 +6,6 @@ import 'package:bedbug/infra/resources/content/viewed_content/viewed_content.ent
 /// retélécharger : un contenu reçu y figure dès son arrivée, avant même que l'utilisateur ait pu le voir. Une trace
 /// d'affichage disparaît avec son contenu.
 abstract class ViewedContentRepository {
-  /// Retourne les identifiants des contenus déjà vus par l'utilisateur.
-  Future<Set<String>> getAllIds();
-
   /// Mémorise [entity], le passage d'un contenu à l'écran. Sans effet si ce contenu a déjà été vu.
   ///
   /// - [entity] : contenu vu, identifié par l'identifiant du contenu.

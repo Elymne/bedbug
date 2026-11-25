@@ -16,12 +16,6 @@ abstract class ContentRepository {
   /// Persiste un nouveau contenu [entity], en notant la date de son enregistrement sur ce téléphone.
   Future<Content> addOne(Content entity);
 
-  /// Persiste une liste de contenus [entities] en une seule opération atomique.
-  Future<void> addMany(List<Content> entities);
-
-  /// Retourne tous les contenus, sans filtre ni limite.
-  Future<List<Content>> getAll();
-
   /// Retourne le résumé des scores de chaque contenu reçu (pas ceux de l'utilisateur), sans ordre garanti.
   ///
   /// Les contenus de l'utilisateur gardent des scores fixes : seuls les contenus reçus sont recalculés.

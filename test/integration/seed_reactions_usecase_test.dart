@@ -5,6 +5,7 @@ import 'package:bedbug/infra/resources/content/reaction/reaction.repository.drif
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
 import '../helpers/drift_test_helper.dart';
 import '../helpers/seed_contents_usecase.dart';
 import '../helpers/seed_reactions_usecase.dart';
@@ -51,7 +52,7 @@ void main() {
       const SeedReactionsParams(contentCount: 1, reactionsPerContent: maxReactionsPerContent + 50, randomSeed: 1),
     );
 
-    final content = (await container.read(contentRepositoryProvider).getAll()).single;
+    final content = (await readTestContents(container)).single;
     final reactions = await container.read(reactionRepositoryProvider).getAllByContentId(content.id);
     expect(reactions.length, maxReactionsPerContent);
   });

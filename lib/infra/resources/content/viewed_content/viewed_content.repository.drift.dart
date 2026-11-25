@@ -25,16 +25,6 @@ class DriftViewedContentRepository implements ViewedContentRepository {
   /// Base SQLite de l'app.
   final AppDatabase _database;
 
-  /// Voir [ViewedContentRepository.getAllIds].
-  @override
-  Future<Set<String>> getAllIds() {
-    return guardDrift(_source, () async {
-      final viewedContents = _database.viewedContents;
-      final query = _database.selectOnly(viewedContents)..addColumns([viewedContents.id]);
-      return {for (final row in await query.get()) row.read(viewedContents.id)!};
-    });
-  }
-
   /// La première vue est gardée : la remplacer par une vue récente ferait repasser un contenu dans le groupe des non
   /// vus d'un fil en cours de lecture, figé sur les vues antérieures à son début.
   @override

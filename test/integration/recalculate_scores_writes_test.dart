@@ -16,6 +16,7 @@ import 'package:bedbug/logic/usecases/storage/recalculate_survival_scores/recalc
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
 import '../helpers/drift_test_helper.dart';
 
 /// Colonnes de `contents` qui ne sont pas des scores : aucun recalcul ne doit les écrire.
@@ -155,7 +156,7 @@ void main() {
   test('les trois recalculs donnent les scores de la formule d\'origine, et laissent les contenus owned', () async {
     final now = DateTime.now();
     final contents = _buildContents(now);
-    await container.read(contentRepositoryProvider).addMany(contents);
+    await insertTestContents(container, contents);
 
     expect((await container.read(recalculateBroadcastScoresUsecaseProvider)(const NoParams())).isSuccess, isTrue);
     expect((await container.read(recalculateSurvivalScoresUsecaseProvider)(const NoParams())).isSuccess, isTrue);
@@ -176,7 +177,7 @@ void main() {
 
   test('n\'écrit que les colonnes de score : dessin, dates et textes restent intacts', () async {
     final now = DateTime.now();
-    await container.read(contentRepositoryProvider).addMany(_buildContents(now));
+    await insertTestContents(container, _buildContents(now));
     final before = await rawRows();
 
     await container.read(recalculateBroadcastScoresUsecaseProvider)(const NoParams());
@@ -200,7 +201,7 @@ void main() {
   });
 
   test('un second recalcul sans changement de score n\'écrit rien', () async {
-    await container.read(contentRepositoryProvider).addMany(_buildContents(DateTime.now()));
+    await insertTestContents(container, _buildContents(DateTime.now()));
     await container.read(recalculateDisplayScoresUsecaseProvider)(const NoParams());
     final writesAfterFirstRun = (await loggedIds('score_writes')).length;
 
@@ -212,7 +213,7 @@ void main() {
   test('le résumé des scores ne lit que les contenus reçus', () async {
     // Dates stockées à la milliseconde : la référence l'est aussi pour comparer la date relue.
     final now = DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch);
-    await container.read(contentRepositoryProvider).addMany(_buildContents(now));
+    await insertTestContents(container, _buildContents(now));
 
     final summaries = await container.read(contentRepositoryProvider).getReceivedScoreSummaries();
 
@@ -224,7 +225,7 @@ void main() {
   });
 
   test('une mise à jour de score ignore un contenu absent et écrit les autres', () async {
-    await container.read(contentRepositoryProvider).addMany(_buildContents(DateTime.now()));
+    await insertTestContents(container, _buildContents(DateTime.now()));
 
     await container.read(contentRepositoryProvider).updateSurvivalScores({'absent': 0.5, 'texte': 0.25});
 

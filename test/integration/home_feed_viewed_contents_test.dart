@@ -7,9 +7,7 @@ import 'package:bedbug/infra/resources/content/content/content.repository.drift.
 import 'package:bedbug/infra/resources/content/content/content_origin.enum.dart';
 import 'package:bedbug/infra/resources/content/content/text_content.entity.dart';
 import 'package:bedbug/infra/resources/content/reaction/reaction.entity.dart';
-import 'package:bedbug/infra/resources/content/reaction/reaction.repository.drift.dart';
 import 'package:bedbug/infra/resources/content/storage/storage.config.dart';
-import 'package:bedbug/infra/resources/content/viewed_content/viewed_content.repository.drift.dart';
 import 'package:bedbug/infra/resources/signature/signature/signature.config.dart';
 import 'package:bedbug/infra/resources/signature/signature/signature.entity.dart';
 import 'package:bedbug/infra/resources/signature/signature/signature.repository.drift.dart';
@@ -25,6 +23,7 @@ import 'package:bedbug/logic/usecases/storage/save_storage_limit/save_storage_li
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
 import '../helpers/drift_test_helper.dart';
 
 /// Construit un contenu d'identifiant [id].
@@ -187,7 +186,7 @@ void main() {
         _buildContent('anonyme', 1, signatureId: anonymousSignatureId),
         _buildContent('inconnu', 0, signatureId: 'peer-disparu'),
       ]);
-      await container.read(reactionRepositoryProvider).addMany([
+      await insertTestReactions(container, [
         _buildReaction('r1', 'pair', 'a'),
         _buildReaction('r2', 'pair', 'b'),
         _buildReaction('r3', 'local', 'a'),
@@ -214,7 +213,7 @@ void main() {
       for (var index = 0; index < contentPageSize * 2 + 7; index++)
         _buildContent('c${index.toString().padLeft(3, '0')}', (index % 4).toDouble()),
     ];
-    await container.read(contentRepositoryProvider).addMany(contents);
+    await insertTestContents(container, contents);
     for (var index = 0; index < contents.length; index += 3) {
       await markViewed(contents[index].id);
     }
@@ -240,7 +239,7 @@ void main() {
     final contents = [
       for (var index = 0; index < contentPageSize * 3; index++) _buildContent('c$index', (index % 7).toDouble()),
     ];
-    await container.read(contentRepositoryProvider).addMany(contents);
+    await insertTestContents(container, contents);
     await _tick();
     final feedStartedAt = DateTime.now();
     final reference = await readAllPages(feedStartedAt);
@@ -280,7 +279,7 @@ void main() {
     final removedCount = (await container.read(enforceStorageLimitUsecaseProvider)(const NoParams())).right;
 
     expect(removedCount, 1);
-    final viewedIds = await container.read(viewedContentRepositoryProvider).getAllIds();
+    final viewedIds = await readTestViewedIds(container);
     expect(viewedIds, {'fort'});
   });
 }

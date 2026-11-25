@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -39,6 +38,7 @@ import 'package:bedbug/logic/usecases/exchange/select_from_exchange_offer/select
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
 import '../helpers/drift_test_helper.dart';
 import '../helpers/fake_error_log_repository.dart';
 
@@ -278,7 +278,7 @@ void main() {
     });
 
     test('une offre variée propose peu à peu les contenus hors des plus prioritaires', () async {
-      await container.read(contentRepositoryProvider).addMany([
+      await insertTestContents(container, [
         for (var index = 0; index < 120; index++) _text('c$index', broadcastScore: 1),
       ]);
 
@@ -293,7 +293,7 @@ void main() {
     });
 
     test('commence par les contenus les plus prioritaires, dans la limite de maxOfferedContents', () async {
-      await container.read(contentRepositoryProvider).addMany([
+      await insertTestContents(container, [
         for (var index = 0; index < maxOfferedContents + 10; index++) _text('c$index', broadcastScore: index / 100),
       ]);
 
@@ -394,7 +394,7 @@ void main() {
 
     test('redemande les réactions quand le pair en a plus, même aussi récentes', () async {
       await container.read(contentRepositoryProvider).addOne(_text('post'));
-      await container.read(reactionRepositoryProvider).addOne(_reaction('r1', contentId: 'post', authorId: 'a'));
+      await insertTestReactions(container, [_reaction('r1', contentId: 'post', authorId: 'a')]);
       final offer = ExchangeOffer(
         contents: [OfferedContent(id: 'post', sizeInBytes: 10, reactionCount: 2, latestReactionAt: _date)],
       );
@@ -411,7 +411,7 @@ void main() {
 
     test('borne les réactions redemandées à maxReactionRefreshContents', () async {
       final ids = [for (var index = 0; index < maxReactionRefreshContents + 5; index++) 'c$index'];
-      await container.read(contentRepositoryProvider).addMany([for (final id in ids) _text(id)]);
+      await insertTestContents(container, [for (final id in ids) _text(id)]);
       final offer = ExchangeOffer(
         contents: [
           for (final id in ids) OfferedContent(id: id, sizeInBytes: 10, reactionCount: 1, latestReactionAt: _date),
@@ -442,7 +442,7 @@ void main() {
 
     test('tronque une demande plus longue que ce qu\'un pair honnête envoie', () async {
       final ids = [for (var index = 0; index < defaultMaxRequestedContents + 10; index++) 'c$index'];
-      await container.read(contentRepositoryProvider).addMany([for (final id in ids) _text(id)]);
+      await insertTestContents(container, [for (final id in ids) _text(id)]);
 
       final bundle = await buildBundle(ExchangeRequest(contentIds: ids, reactionContentIds: const []));
 
@@ -451,10 +451,8 @@ void main() {
 
     test('tronque les réactions redemandées', () async {
       final ids = [for (var index = 0; index < maxReactionRefreshContents + 5; index++) 'c$index'];
-      await container.read(contentRepositoryProvider).addMany([for (final id in ids) _text(id)]);
-      await container.read(reactionRepositoryProvider).addMany([
-        for (final id in ids) _reaction('r-$id', contentId: id, authorId: 'a'),
-      ]);
+      await insertTestContents(container, [for (final id in ids) _text(id)]);
+      await insertTestReactions(container, [for (final id in ids) _reaction('r-$id', contentId: id, authorId: 'a')]);
 
       final bundle = await buildBundle(ExchangeRequest(contentIds: const [], reactionContentIds: ids));
 
@@ -471,7 +469,7 @@ void main() {
 
     test('ne répète pas les réactions d\'un contenu demandé des deux façons', () async {
       await container.read(contentRepositoryProvider).addOne(_text('post'));
-      await container.read(reactionRepositoryProvider).addOne(_reaction('r1', contentId: 'post', authorId: 'a'));
+      await insertTestReactions(container, [_reaction('r1', contentId: 'post', authorId: 'a')]);
 
       final bundle = await buildBundle(const ExchangeRequest(contentIds: ['post'], reactionContentIds: ['post']));
 
@@ -526,9 +524,7 @@ void main() {
 
     test('les réactions partent sans auteur', () async {
       await container.read(contentRepositoryProvider).addOne(_text('post'));
-      await container
-          .read(reactionRepositoryProvider)
-          .addOne(_reaction('r1', contentId: 'post', authorId: localSignatureId));
+      await insertTestReactions(container, [_reaction('r1', contentId: 'post', authorId: localSignatureId)]);
 
       final bundle = await buildBundle(const ExchangeRequest(contentIds: ['post'], reactionContentIds: []));
 

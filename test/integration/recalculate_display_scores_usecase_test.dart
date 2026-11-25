@@ -9,6 +9,7 @@ import 'package:bedbug/logic/usecases/feed/recalculate_display_scores/recalculat
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/content_test_helper.dart';
 import '../helpers/drift_test_helper.dart';
 
 /// Construit un [TextContent] minimal pour les besoins du test, avec un
@@ -48,7 +49,7 @@ void main() {
   });
 
   Future<double> displayScoreOf(ContentRepository repository, String id) async {
-    final contents = await repository.getAll();
+    final contents = await readTestContents(container);
     return contents.firstWhere((content) => content.id == id).displayScore;
   }
 
@@ -75,7 +76,6 @@ void main() {
   });
 
   test('le displayScore reste toujours dans [0.0, 1.0]', () async {
-    final repository = container.read(contentRepositoryProvider);
     final saveUsecase = container.read(saveContentUsecaseProvider);
     final usecase = container.read(recalculateDisplayScoresUsecaseProvider);
 
@@ -97,7 +97,7 @@ void main() {
 
     await usecase(const NoParams());
 
-    for (final content in await repository.getAll()) {
+    for (final content in await readTestContents(container)) {
       expect(content.displayScore, inInclusiveRange(0.0, 1.0));
     }
   });
